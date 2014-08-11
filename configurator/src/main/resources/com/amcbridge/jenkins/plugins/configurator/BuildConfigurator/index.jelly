@@ -12,7 +12,19 @@
     <l:layout>
         <st:include page="sidepanel.jelly" it="${app}" />
         <l:main-panel>
-            <div>Build Configurator</div>
+            <f:form method="post" action="save" name="save">
+                <f:entry title="Registered person" >
+                    <table width="40%" >
+                        <j:forEach var="s" items="${it.getPeople()}">
+                            <f:entry title="${s.name}" />
+                        </j:forEach>
+                    </table>
+                </f:entry>
+                <f:entry title="Enter your name">
+                    <f:textbox name="TextBox1" value="" />
+                    <f:submit value="Add" />
+                </f:entry>
+            </f:form>
         </l:main-panel>
     </l:layout>
 </j:jelly>
