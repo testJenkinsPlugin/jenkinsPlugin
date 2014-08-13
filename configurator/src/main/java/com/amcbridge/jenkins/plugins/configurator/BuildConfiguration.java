@@ -11,7 +11,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class BuildConfiguration {
 
     private static final String CONFIG_FILE_NAME = "config.xml";
-    private static final String BUILDCONFIGURATOR_DIRECTORY_NAME = "BuildConfiguration";
+    private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "BuildConfiguration";
 
     static {Jenkins.XSTREAM.processAnnotations(BuildConfiguration.class);}
 
@@ -55,28 +55,28 @@ public class BuildConfiguration {
 
     private static File getRootDir() 
     {
-        return new File(Jenkins.getInstance().getRootDir(), BUILDCONFIGURATOR_DIRECTORY_NAME);
+        return new File(Jenkins.getInstance().getRootDir(), BUILD_CONFIGURATOR_DIRECTORY_NAME);
     }
 
     public void save() throws IOException 
     {
         XStream xs = new XStream();
         xs.alias("BuildConfiguration",  BuildConfiguration.class);
-        XmlFile fileWriter = new XmlFile(Jenkins.XSTREAM, getConfigFileFor(BUILDCONFIGURATOR_DIRECTORY_NAME));
+        XmlFile fileWriter = new XmlFile(Jenkins.XSTREAM, getConfigFileFor(BUILD_CONFIGURATOR_DIRECTORY_NAME));
         fileWriter.write(this); 
     }
 
     protected final XmlFile getConfigFile() 
     {
-        return new XmlFile(Jenkins.XSTREAM, getConfigFileFor(BUILDCONFIGURATOR_DIRECTORY_NAME));
+        return new XmlFile(Jenkins.XSTREAM, getConfigFileFor(BUILD_CONFIGURATOR_DIRECTORY_NAME));
     }
 
     public void load() throws IOException
     {
         XmlFile config = getConfigFile();
-            if (config.exists()) 
-            {
-                config.unmarshal(this);
-            }
+        if (config.exists()) 
+        {
+            config.unmarshal(this);
+        }
      }
 }
