@@ -1,9 +1,14 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
 import hudson.XmlFile;
+import hudson.model.User;
+import hudson.tasks.Mailer;
+
 import java.io.File;
 import java.io.IOException;
+
 import jenkins.model.Jenkins;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -21,11 +26,18 @@ public class BuildConfiguration {
     public BuildConfiguration(String name)
     {
         this.entityName = name;
+        setCreator();
     }
 
     public BuildConfiguration()
     {
         entityName = "";
+        setCreator();
+    }
+    
+    void setCreator()
+    {
+        creator = User.current().getProperty(Mailer.UserProperty.class).getAddress();
     }
 
     public String getName()
@@ -53,7 +65,7 @@ public class BuildConfiguration {
         return new File(new File(getRootDir(), id), CONFIG_FILE_NAME);
     }
 
-    private static File getRootDir() 
+    static File getRootDir() 
     {
         return new File(Jenkins.getInstance().getRootDir(), BUILD_CONFIGURATOR_DIRECTORY_NAME);
     }
@@ -78,5 +90,5 @@ public class BuildConfiguration {
         {
             config.unmarshal(this);
         }
-     }
+    }
 }
