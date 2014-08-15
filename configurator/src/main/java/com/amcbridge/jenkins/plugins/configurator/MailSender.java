@@ -13,7 +13,7 @@ public class MailSender
 
     private static final String MAIL_PROPERTIES_FILE_NAME = "MailSender.properties";
     
-    public void sendMail(String mailAddress, String textMessege) throws AddressException, MessagingException
+    public void sendMail(String to, String textMessege, String subject) throws AddressException, MessagingException
     {
         Properties props = System.getProperties();
         props.put("mail.smtp.host", host);
@@ -22,10 +22,10 @@ public class MailSender
         Session session = Session.getDefaultInstance(props, null);
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress(from));
-        InternetAddress to_address = new InternetAddress(mailAddress);
+        InternetAddress to_address = new InternetAddress(to);
         message.addRecipient(Message.RecipientType.TO, to_address);
-        message.setSubject("sending in a group");
-        message.setText(textMessege + ", welcome to JavaMail ");
+        message.setSubject(subject);
+        message.setText(textMessege);
         Transport transport = session.getTransport("smtp");
         transport.connect(host, from, pass);
         transport.sendMessage(message, message.getAllRecipients());

@@ -25,13 +25,17 @@ public class BuildConfiguration {
 
     public BuildConfiguration(String name)
     {
-        this.entityName = name;
-        setCreator();
+    	initialize(name);
     }
 
     public BuildConfiguration()
     {
-        entityName = "";
+    	initialize("");
+    }
+    
+    void initialize(String name)
+    {
+    	this.entityName = name;
         setCreator();
     }
     

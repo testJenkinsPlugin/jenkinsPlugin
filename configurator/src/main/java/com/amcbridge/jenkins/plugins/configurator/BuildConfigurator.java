@@ -50,11 +50,11 @@ public final class BuildConfigurator implements RootAction
               String textName = formData.getString("TextName");
               buildConfig = new BuildConfiguration(textName);
               buildConfig.save();
-              mail.sendMail(getAdminEmails(), buildConfig.getCreator());
+              mail.sendMail(getAdminEmails(), buildConfig.getCreator(),"Testing mail sending");
            }
            finally
            {
-             response.sendRedirect("../BuildConfigurator");            
+              response.sendRedirect("../BuildConfigurator");
            }
      }
 
