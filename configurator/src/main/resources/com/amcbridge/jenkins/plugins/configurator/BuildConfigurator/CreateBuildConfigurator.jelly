@@ -1,0 +1,323 @@
+<?jelly escape-by-default='true'?>
+
+<j:jelly xmlns:j="jelly:core"
+   xmlns:st="jelly:stapler"
+   xmlns:d="jelly:define"
+   xmlns:l="/lib/layout"
+   xmlns:t="/lib/hudson"
+   xmlns:f="/lib/form"
+   xmlns:i="jelly:fmt"
+   xmlns:p="/lib/hudson/project"
+   >
+   
+   <script>
+        function configurationGroupChange(radio)
+        {
+            if(radio.id == "Other")
+            {
+                document.getElementById("otherConfig").disabled = false;
+            }
+            else
+            {
+                document.getElementById("otherConfig").value = "";
+                document.getElementById("otherConfig").disabled = true;
+            }
+        }
+   
+           function checkBoxChange(cb)
+        {
+            if (!document.getElementById("isVersionFiles").checked)
+            {
+                document.getElementById("versionFileButton").disabled = true;
+            }
+            if (document.getElementById("isVersionFiles").checked)
+            {
+                document.getElementById("versionFileButton").disabled = false;
+            }
+            if (!document.getElementById("isEmail").checked)
+            {
+                document.getElementById("email").disabled = true;
+                document.getElementById("email").value = "";
+            }
+            if (document.getElementById("isEmail").checked)
+            {
+                document.getElementById("email").disabled = false;
+            }
+        }
+  </script>
+
+  <l:layout>
+        <st:include page="sidepanel.jelly" it="${app}"/>
+        <l:main-panel>
+            <h1>Create new build configuration</h1>
+            <f:form method="post" action="createNewConfigurator" name="createNewConfigurator">
+                <table style="margin:0 0 0 480px">
+                    <thead>
+                        <tr>
+                            <th style="width:60pt"></th>
+                            <th style="width:160pt"></th>
+                            <th style="width:60pt"></th>
+                            <th style="width:160pt"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Builder</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:checkbox name="vs2005" title="VS 2005"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:checkbox name="vs2008" title="VS 2008"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:checkbox name="vs2010" title="VS 2010"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:checkbox name="vs2012" title="VS 2012"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:checkbox name="vs2013" title="VS 2013"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:checkbox name="xCode_4_1" title="XCode 4.1"/>
+                            </td>
+                        </tr>
+                        <tr height="50">
+                            <td></td>
+                            <td>
+                                <f:checkbox name="java8" title="Java 8"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Configuration:</td>
+                            <td></td>
+                            <td>Platform:</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:radio name="configuration" value="Release" title="Release" onclick="configurationGroupChange(this)"/>
+                            </td>
+                            <td></td>
+                            <td>
+                                <f:checkbox name="x86" title="x 86"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:radio name="configuration" value="Debug" title="Debug" onclick="configurationGroupChange(this)"/>
+                            </td>
+                            <td></td>
+                            <td>
+                                <f:checkbox name="x64" title="x 64"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:radio name="configuration" value="Other" id="Other" title="Other" onclick="configurationGroupChange(this)"/>
+                            </td>
+                            <td></td>
+                            <td>
+                                <f:checkbox name="anyCpu" title="Any Cpu"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td align="right">
+                                <f:textbox id="otherConfig" disabled="false" name="userConfiguration" field="otherConfig" style="width:140px"/>
+                            </td>
+                            <td></td>
+                            <td>
+                                <f:checkbox name="win32" title="Win 32"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="hidden" id="fileHidden" name="fileHidden" value=""/>
+                            </td>
+                            <td>
+                                <input type="hidden" id="artefactsHidden" name="artefactsHidden" value=""/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="hidden" id="versionFileHidden" name="versionFileHidden" value=""/>
+                            </td>
+                            <td>
+                                <input type="hidden" id="scriptsHidden" name="scriptsHidden" value=""/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table style="margin:-325px 0 0 0">
+                    <thead>
+                        <tr>
+                            <th style="width:120pt"></th>
+                            <th style="width:160pt"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr height="30">
+                            <td>Project name</td>
+                            <td>
+                                <f:textbox field="projectName" id="projectName" style="width:140px"/>
+                            </td>
+                        </tr>
+                        <tr height="30">
+                            <td>URL</td>
+                            <td>
+                                <f:textbox id="url" field="url" style="width:140px"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Source Control Tool</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:radio name="sourceControlTool" value="SVN" title="SVN"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:radio name="sourceControlTool" value="Git" title="Git"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:radio name="sourceControlTool" value="Mercurial" title="Mercurial"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Build machine configuration</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:radio name="buildMachineConfiguration" value="Windows - x86" title="Windows - x86"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:radio name="buildMachineConfiguration" value="Windows - x64" title="Windows - x64"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <f:radio name="buildMachineConfiguration" value="MacOS" title="MacOS"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td height="50"></td>
+                            <td>
+                                <f:radio name="buildMachineConfiguration" value="Linux" title="Linux"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Files to build:</td>
+                            <td>
+                                <input type="button" id="fileToBuildButton" value="Add File" onclick="openFileDialog(1)"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" height="110">
+                                <fieldset>
+                                    <legend>Files</legend>
+                                    <select id="Files" name="files" style="width:265pt" size="5"/>
+                                </fieldset>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Path to artefacts:</td>
+                            <td>
+                                <input type="button" id="artefactsButton" value="Add File" onclick="openFileDialog(2)"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" height="110">
+                                <fieldset>
+                                    <legend>Artefacts</legend>
+                                    <select id="Artefacts" name="artefacts" style="width:265pt" size="5"/>
+                                </fieldset>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <f:checkbox name="isVersionFiles" id="isVersionFiles" onclick="checkBoxChange(this)" title="Version Files:"/>
+                            </td>
+                            <td>
+                                <input type="button" disabled="false" id="versionFileButton" value="Add File" onclick="openFileDialog(2)"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" height="110">
+                                <fieldset>
+                                    <legend>Version Files</legend>
+                                    <select id="VersionFile" name="versionFile" style="width:265pt" size="5"/>
+                                </fieldset>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Postbuild scripts:</td>
+                            <td>
+                                <input type="button" id="scriptsButton" value="Add File" onclick="openFileDialog(2)"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" height="110">
+                                <fieldset>
+                                    <legend>Scripts:</legend>
+                                    <select id="Scripts" name ="scripts" style="width:265pt" size="5"/>
+                                </fieldset>
+                            </td>
+                        </tr>
+                        <tr height="50">
+                            <td>
+                                <f:checkbox name="isEmail" id ="isEmail" onclick="checkBoxChange(this)"  title="E-mails notifications"/>
+                            </td>
+                            <td>
+                                <f:textbox field="email" name="email" disabled="false" id="email" style="width:140px"/>
+                            </td>
+                        </tr>
+                        <tr align="center">
+                            <td>
+                                <f:submit name="save" value="Save"/>
+                            </td>
+                            <td>
+                                <f:submit name="cancelButton" value="Cancel"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </f:form>
+        </l:main-panel>
+    </l:layout>
+</j:jelly>
