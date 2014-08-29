@@ -9,14 +9,66 @@
    xmlns:i="jelly:fmt"
    xmlns:p="/lib/hudson/project"
    >
+   
+    <style>
+        .config tr td,.config tr th 
+        {
+            font-size:15px;
+        }
+    </style>
+    
     <l:layout>
         <st:include page="sidepanel.jelly" it="${app}" />
         <l:main-panel>
             <h1>Configurations</h1>
             <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
-            <f:form method="post" action="save" name="save">
-                
-            </f:form>
+            <table>
+                <thead>
+                    <tr height="10"><td></td></tr>
+                </thead>
+            </table>
+            <table border="1" class="config">
+                <thead>
+                        <tr align="left" height="30" bgcolor="#CCCCCC">
+                            <th style="width:300pt">Project name</th>
+                            <th style="width:100pt">State</th>
+                            <th style="width:200pt">Last update date</th>
+                            <th style="width:250pt">Action</th>
+                        </tr>
+                </thead>
+                <tbody>
+                    <j:forEach items="${it.getAllConfiguration()}" var="configs" indexVar="i">
+                        <tr height="25">
+                            <td>${configs[0]}</td>
+                            <j:if test="${configs[1] == 'New'}">
+                                <td>
+                                    <label style="background-color:#3333FF;color:white">${configs[1]}</label>
+                                </td>
+                            </j:if>
+                            <j:if test="${configs[1] == 'Updated'}">
+                                <td>
+                                    <label style="background-color:#6600CC;color:white">${configs[1]}</label>
+                                </td>
+                            </j:if>
+                            <j:if test="${configs[1] == 'Approved'}">
+                                <td>
+                                    <label style="background-color:#009900;color:white">${configs[1]}</label>
+                                </td>
+                            </j:if>
+                            <j:if test="${configs[1] == 'Rejected'}">
+                                <td>
+                                    <label style="background-color:#FF0000;color:white">${configs[1]}</label>
+                                </td>
+                            </j:if>
+                            <td>${configs[2]}</td>
+                            <td>
+                                <a href="" onclick="confirmDelete(this);return false;" name="${configs[0]}">Delete</a>
+                                <a href="CreateBuildConfigurator?name=${configs[0]}" style="margin:0 0 0 20px">Edit</a>
+                            </td>
+                        </tr>
+                    </j:forEach>
+                </tbody>
+            </table>
         </l:main-panel>
     </l:layout>
 </j:jelly>

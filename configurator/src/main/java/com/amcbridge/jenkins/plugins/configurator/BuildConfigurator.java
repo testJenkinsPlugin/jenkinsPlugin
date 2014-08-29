@@ -1,6 +1,10 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -10,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import jenkins.model.JenkinsLocationConfiguration;
 
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -39,6 +44,29 @@ public final class BuildConfigurator implements RootAction
      public String getUrlName()
      {
          return "BuildConfigurator";
+     }
+     
+     public Object getAllConfiguration() throws IOException
+     {
+    	 BuildConfiguration currenConfig;
+    	 String[] config;
+    	 File currentConfigFile;
+    	 List<String[]> configurations = new ArrayList<String[]>();
+    	 File file = new File(BuildConfiguration.getRootDirectory());
+    	 File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
+    	 for (int i=0; i < directories.length; i++)
+    	 {
+    		 currentConfigFile = BuildConfiguration.getConfigFileFor("\\"+directories[i].getName());
+    		 if (!currentConfigFile.exists())
+    			 continue;
+    		 config = new String[3];
+    		 currenConfig = BuildConfiguration.load(directories[i].getName());
+    		 config[0] = currenConfig.getProjectName();
+    		 config[1] = currenConfig.getState();
+    		 config[2] = currenConfig.getDate();
+    		 configurations.add(config);
+    	 }
+    	return configurations.toArray();
      }
      
      public void doCreateNewConfigurator(final StaplerRequest request, final StaplerResponse response) throws IOException, ServletException, ParserConfigurationException, JAXBException, AddressException, MessagingException
@@ -83,6 +111,22 @@ public final class BuildConfigurator implements RootAction
     	 response.sendRedirect("./");
      }
     
+     public static void setDeletion(String name) throws IOException, ParserConfigurationException, JAXBException
+     {
+		String p="sdf";
+		p+="asdf";
+		if (name == null || name == "")
+			return;
+		BuildConfiguration currentConf = BuildConfiguration.load(name);
+		currentConf.setState("For deletion");
+		currentConf.save();
+     }
+     
+     public static BuildConfiguration getConfiguration(String name) throws IOException
+     {
+    	 return BuildConfiguration.load(name);
+     }
+     
     public String getAdminEmails()
     {
         return JenkinsLocationConfiguration.get().getAdminAddress();

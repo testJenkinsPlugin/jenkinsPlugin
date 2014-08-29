@@ -24,7 +24,7 @@
             }
         }
    
-           function checkBoxChange(cb)
+        function checkBoxChange(cb)
         {
             if (!document.getElementById("isVersionFiles").checked)
             {
@@ -33,6 +33,12 @@
             if (document.getElementById("isVersionFiles").checked)
             {
                 document.getElementById("versionFileButton").disabled = false;
+                document.getElementById("versionFileHidden").value = "";
+                var selectElement = document.getElementById("VersionFile");
+                for (var option in selectElement)
+                {
+                    selectElement.remove(option);
+                }
             }
             if (!document.getElementById("isEmail").checked)
             {
