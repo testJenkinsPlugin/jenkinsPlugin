@@ -51,13 +51,13 @@
             }
         }
   </script>
-
+  
   <l:layout>
         <st:include page="sidepanel.jelly" it="${app}"/>
         <l:main-panel>
-            <h1>Create new build configuration</h1>
+            <h1 style="margin: 5px 0 5px 0">Create new build configuration</h1>
             <f:form method="post" action="createNewConfigurator" name="createNewConfigurator">
-                <table style="margin:0 0 0 480px">
+                <table style="margin: 0 350px 0 0;float:right;">
                     <thead>
                         <tr>
                             <th style="width:60pt"></th>
@@ -177,7 +177,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <table style="margin:-325px 0 0 0">
+                <table style="margin:0 0 0 0; float:left;">
                     <thead>
                         <tr>
                             <th style="width:120pt"></th>

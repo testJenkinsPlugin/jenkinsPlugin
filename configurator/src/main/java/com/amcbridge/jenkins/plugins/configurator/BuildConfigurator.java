@@ -49,6 +49,7 @@ public final class BuildConfigurator implements RootAction
      public Object getAllConfiguration() throws IOException
      {
     	 BuildConfiguration currenConfig;
+    	 String currentUser;
     	 String[] config;
     	 File currentConfigFile;
     	 List<String[]> configurations = new ArrayList<String[]>();
@@ -59,11 +60,19 @@ public final class BuildConfigurator implements RootAction
     		 currentConfigFile = BuildConfiguration.getConfigFileFor("\\"+directories[i].getName());
     		 if (!currentConfigFile.exists())
     			 continue;
-    		 config = new String[3];
+    		 currenConfig = null;
     		 currenConfig = BuildConfiguration.load(directories[i].getName());
+    		 currentUser = BuildConfiguration.getCurrentUserMail();
+    		 if (!getAdminEmails().equals(currentUser) && !isCurrentUserCreator(currenConfig))
+    			 continue;
+    		 config = new String[4];
     		 config[0] = currenConfig.getProjectName();
     		 config[1] = currenConfig.getState();
     		 config[2] = currenConfig.getDate();
+    		 if (isCurrentUserCreator(currenConfig))
+    			 config[3] = "true";
+    		 else
+    			 config[3] = "false";
     		 configurations.add(config);
     	 }
     	return configurations.toArray();
@@ -122,12 +131,26 @@ public final class BuildConfigurator implements RootAction
 		currentConf.save();
      }
      
+     public Boolean isCurrentUserCreator(BuildConfiguration config)
+     {
+    	 return BuildConfiguration.getCurrentUserMail().equals(config.getCreator());
+     }
+     
+     public static Boolean isCurrentUserAdministrator()
+     {
+    	 String currentUser = BuildConfiguration.getCurrentUserMail();
+    	 if (currentUser!="" && getAdminEmails().equals(currentUser))
+    		 return true;
+    	 else
+    		 return false;
+     }
+     
      public static BuildConfiguration getConfiguration(String name) throws IOException
      {
     	 return BuildConfiguration.load(name);
      }
      
-    public String getAdminEmails()
+    public static String getAdminEmails()
     {
         return JenkinsLocationConfiguration.get().getAdminAddress();
     }

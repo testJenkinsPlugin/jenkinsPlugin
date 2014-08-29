@@ -131,6 +131,16 @@ public class BuildConfiguration {
     {
     	if (User.current()!=null)
     		creator = User.current().getProperty(Mailer.UserProperty.class).getAddress();
+    	else
+    		creator = "";
+    }
+    
+    public static String getCurrentUserMail()
+    {
+    	if (User.current()!=null)
+    		return User.current().getProperty(Mailer.UserProperty.class).getAddress();
+    	else
+    		return "";
     }
     
     public String getCreator()
@@ -138,10 +148,10 @@ public class BuildConfiguration {
         return creator;
     }
         
-    public void setCreator(String creat) 
-    {
-        this.creator = creat;
-    }
+//    public void setCreator(String creat) 
+//    {
+//        this.creator = creat;
+//    }
 
     public static File getConfigFileFor(String id) 
     {
