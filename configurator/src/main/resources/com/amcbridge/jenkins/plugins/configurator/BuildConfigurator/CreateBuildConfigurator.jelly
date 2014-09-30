@@ -11,6 +11,126 @@
    >
    
    <script>
+        window.onload = function()
+        {
+            document.getElementById("folderChooser").setIsFolderChooser(true);
+            document.getElementById("folderChooser").setGroup(1);
+            document.getElementById("fileToBuildChooser").setGroup(2);
+            document.getElementById("pathToArtefactsChooser").setGroup(3);
+            document.getElementById("versionFileChooser").setGroup(4);
+            document.getElementById("fileHidden").value = "";
+            document.getElementById("artefactsHidden").value = "";
+            document.getElementById("versionFileHidden").value = "";
+        }
+        
+        function rootFolderChange()
+        {
+            clearSelectionFile("Files", "fileHidden");
+            clearSelectionFile("Artefacts", "artefactsHidden");
+            document.getElementById("isVersionFiles").checked = false;
+            clearSelectionFile("VersionFile", "versionFileHidden");
+            document.getElementById("fileToBuildChooser").setStartPath(document.getElementById("projectRootFolder").value);
+            document.getElementById("pathToArtefactsChooser").setStartPath(document.getElementById("projectRootFolder").value);
+            document.getElementById("versionFileChooser").setStartPath(document.getElementById("projectRootFolder").value);
+        }
+        
+        function clearSelectionFile(selectioGroup, hiddenField)
+        {
+            document.getElementById(hiddenField).value = "";
+            var selectElement = document.getElementById(selectioGroup);
+            for (var option in selectElement)
+            {
+                selectElement.remove(option);
+            }
+        }
+        
+        function userCheckFile(group)
+        {
+            switch (group)
+            {
+                case "1":
+                    var path = getUserChoose("folderChooser");
+                    if (path != "")
+                        if (path != document.getElementById("projectRootFolder").value)
+                            {
+                                document.getElementById("projectRootFolder").value = path;
+                                rootFolderChange();
+                            }
+                    break;
+                    
+                case "2":
+                    var path = getUserChoose("fileToBuildChooser");
+                    if (path != "")
+                        tryAddToSelectionBox("Files" ,path, "fileHidden");
+                    break;
+                    
+                case "3":
+                    var path = getUserChoose("pathToArtefactsChooser");
+                    if (path != "")
+                        tryAddToSelectionBox("Artefacts" ,path, "artefactsHidden");
+                    break;
+                    
+                case "4":
+                    if (!document.getElementById("isVersionFiles").checked)
+                    {
+                        document.getElementById("isVersionFiles").checked = true;
+                    }
+                    var path = getUserChoose("versionFileChooser");
+                    if (path != "")
+                        tryAddToSelectionBox("VersionFile" ,path, "versionFileHidden");
+                    break;
+            }
+        }
+        
+        function tryAddToSelectionBox(selectionBoxId, path, hidenField)
+        {
+            if (document.getElementById("projectRootFolder").value == "")
+            {
+                alert("Please set root project folder before adding files.");
+                return;
+            }
+            if (!checkFilePath(path))
+            {
+                alert("Sorry, but you choose file which not exist in project folders.");
+                return;
+            }
+            path = path.substr(document.getElementById("projectRootFolder").value.length+1);
+            addToSelectionBox(selectionBoxId, path, hidenField);
+        }
+        
+        function addToSelectionBox(selectionBoxId, path, hidenField)
+        {
+            var x = document.getElementById(selectionBoxId);
+            var option = document.createElement("option");
+            option.text = path;
+            x.add(option);
+            if (document.getElementById(hidenField).value == "")
+            {
+                document.getElementById(hidenField).value = path;
+            }
+            else
+            {
+                document.getElementById(hidenField).value += ";"+path;
+            }
+        }
+        
+        function checkFilePath (path)
+        {
+            if (path.indexOf(document.getElementById("projectRootFolder").value)!=-1)
+                return true;
+            else
+                return false;
+        }
+        
+        function getUserChoose(control)
+        {
+            var result = document.getElementById(control).getPath();
+            if (result == "")
+                return "";
+            document.getElementById(control).setPath("");
+            return result;
+        }
+        
         function configurationGroupChange(radio)
         {
             if(radio.id == "Other")
@@ -28,17 +148,7 @@
         {
             if (!document.getElementById("isVersionFiles").checked)
             {
-                document.getElementById("versionFileButton").disabled = true;
-            }
-            if (document.getElementById("isVersionFiles").checked)
-            {
-                document.getElementById("versionFileButton").disabled = false;
-                document.getElementById("versionFileHidden").value = "";
-                var selectElement = document.getElementById("VersionFile");
-                for (var option in selectElement)
-                {
-                    selectElement.remove(option);
-                }
+                clearSelectionFile("VersionFile", "versionFileHidden");
             }
             if (!document.getElementById("isEmail").checked)
             {
@@ -50,8 +160,12 @@
                 document.getElementById("email").disabled = false;
             }
         }
+        
+        function setformResult()
+        {
+            document.getElementById("formResultHidden").value = "cancel";
+        }
   </script>
-  
   <l:layout>
         <st:include page="sidepanel.jelly" it="${app}"/>
         <l:main-panel>
@@ -175,20 +289,25 @@
                                 <input type="hidden" id="scriptsHidden" name="scriptsHidden" value=""/>
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                <input type="hidden" id="formResultHidden" name="formResultHidden" value=""/>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <table style="margin:0 0 0 0; float:left;">
                     <thead>
                         <tr>
                             <th style="width:120pt"></th>
-                            <th style="width:160pt"></th>
+                            <th style="width:180pt"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr height="30">
                             <td>Project name</td>
                             <td>
-                                <f:textbox field="projectName" id="projectName" style="width:140px"/>
+                                <f:textbox id="projectName" name="projectName" style="width:140px"/>
                             </td>
                         </tr>
                         <tr height="30">
@@ -247,31 +366,38 @@
                                 <f:radio name="buildMachineConfiguration" value="Linux" title="Linux"/>
                             </td>
                         </tr>
-                        <tr>
-                            <td>Files to build:</td>
+                        <tr height="35">
+                            <td>Root project folder:</td>
                             <td>
-                                <input type="button" id="fileToBuildButton" value="Add File" onclick="openFileDialog(1)"/>
+                                <f:textbox id="projectRootFolder" onchange="rootFolderChange()" style="width:140px"/>
+                                <applet code="FileChooser.class" archive="FileChooser.jar" id="folderChooser" codebase="../plugin/configurator/applet/" align="right" width="90" height="20"></applet>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2" height="110">
+                            <td>Files to build:</td>
+                            <td>
+                                <applet code="FileChooser.class" archive="FileChooser.jar" id="fileToBuildChooser" codebase="../plugin/configurator/applet/" width="90" height="20"></applet>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" height="120">
                                 <fieldset>
                                     <legend>Files</legend>
-                                    <select id="Files" name="files" style="width:265pt" size="5"/>
+                                    <select id="Files" name="files" style="width:285pt" size="5"/>
                                 </fieldset>
                             </td>
                         </tr>
                         <tr>
                             <td>Path to artefacts:</td>
                             <td>
-                                <input type="button" id="artefactsButton" value="Add File" onclick="openFileDialog(2)"/>
+                                <applet code="FileChooser.class" archive="FileChooser.jar" id="pathToArtefactsChooser" codebase="../plugin/configurator/applet/" width="90" height="20"></applet>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2" height="110">
+                            <td colspan="2" height="120">
                                 <fieldset>
                                     <legend>Artefacts</legend>
-                                    <select id="Artefacts" name="artefacts" style="width:265pt" size="5"/>
+                                    <select id="Artefacts" name="artefacts" style="width:285pt" size="5"/>
                                 </fieldset>
                             </td>
                         </tr>
@@ -280,14 +406,14 @@
                                 <f:checkbox name="isVersionFiles" id="isVersionFiles" onclick="checkBoxChange(this)" title="Version Files:"/>
                             </td>
                             <td>
-                                <input type="button" disabled="false" id="versionFileButton" value="Add File" onclick="openFileDialog(2)"/>
+                                <applet code="FileChooser.class" archive="FileChooser.jar" id="versionFileChooser" codebase="../plugin/configurator/applet/" width="90" height="20"></applet>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2" height="110">
+                            <td colspan="2" height="120">
                                 <fieldset>
                                     <legend>Version Files</legend>
-                                    <select id="VersionFile" name="versionFile" style="width:265pt" size="5"/>
+                                    <select id="VersionFile" name="versionFile" style="width:285pt" size="5"/>
                                 </fieldset>
                             </td>
                         </tr>
@@ -298,10 +424,10 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2" height="110">
+                            <td colspan="2" height="120">
                                 <fieldset>
                                     <legend>Scripts:</legend>
-                                    <select id="Scripts" name ="scripts" style="width:265pt" size="5"/>
+                                    <select id="Scripts" name ="scripts" style="width:285pt" size="5"/>
                                 </fieldset>
                             </td>
                         </tr>
@@ -315,10 +441,10 @@
                         </tr>
                         <tr align="center">
                             <td>
-                                <f:submit name="save" value="Save"/>
+                                <input type="submit" name="save" value="Save"/>
                             </td>
                             <td>
-                                <f:submit name="cancelButton" value="Cancel"/>
+                                <input type="submit" name="cancelButton" id="cancelButton" onclick="setformResult()" value="Cancel"/>
                             </td>
                         </tr>
                     </tbody>

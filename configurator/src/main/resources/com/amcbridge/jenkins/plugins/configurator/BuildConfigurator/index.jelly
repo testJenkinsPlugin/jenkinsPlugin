@@ -43,22 +43,27 @@
                             <td>${configs[0]}</td>
                             <j:if test="${configs[1] == 'New'}">
                                 <td>
-                                    <label style="background-color:#3333FF;color:white">${configs[1]}</label>
+                                    <label id="${configs[0]}Label" style="background-color:#3333FF;color:white">${configs[1]}</label>
                                 </td>
                             </j:if>
                             <j:if test="${configs[1] == 'Updated'}">
                                 <td>
-                                    <label style="background-color:#6600CC;color:white">${configs[1]}</label>
+                                    <label id="${configs[0]}Label" style="background-color:#6600CC;color:white">${configs[1]}</label>
                                 </td>
                             </j:if>
                             <j:if test="${configs[1] == 'Approved'}">
                                 <td>
-                                    <label style="background-color:#009900;color:white">${configs[1]}</label>
+                                    <label id="${configs[0]}Label" style="background-color:#009900;color:white">${configs[1]}</label>
                                 </td>
                             </j:if>
                             <j:if test="${configs[1] == 'Rejected'}">
                                 <td>
-                                    <label style="background-color:#FF0000;color:white">${configs[1]}</label>
+                                    <label id="${configs[0]}Label" style="background-color:#FF0000;color:white">${configs[1]}</label>
+                                </td>
+                            </j:if>
+                            <j:if test="${configs[1] == 'For Deletion'}">
+                                <td>
+                                    <label id="${configs[0]}Label" style="background-color:#000000;color:white">${configs[1]}</label>
                                 </td>
                             </j:if>
                             <td>${configs[2]}</td>
@@ -67,13 +72,13 @@
                                     <a href="CreateBuildConfigurator?name=${configs[0]}" style="margin:0 0 0 10px">Approve/Reject</a>
                                     <j:if test="${configs[3] == 'true'}">
                                         <a href="CreateBuildConfigurator?name=${configs[0]}" style="margin:0 0 0 25px">Edit</a>
-                                        <a href="" onclick="confirmDelete(this);return false;" style="margin:0 0 0 30px" name="${configs[0]}">Delete</a>
+                                        <a href="" onclick="return ${it.setDeletion('sdf')};" style="margin:0 0 0 30px" name="${configs[0]}">Delete</a>
                                     </j:if>
                                 </j:if>
                                 <j:if test="${!isAdmin}">
                                     <j:if test="${configs[3] == 'true'}">
                                         <a href="CreateBuildConfigurator?name=${configs[0]}" style="margin:0 0 0 10px">Edit</a>
-                                        <a href="" onclick="confirmDelete(this);return false;" style="margin:0 0 0 15px" name="${configs[0]}">Delete</a>
+                                        <a href="" onclick="return ${it.setDeletion('sdf')};" style="margin:0 0 0 15px" name="${configs[0]}">Delete</a>
                                     </j:if>
                                 </j:if>
                             </td>

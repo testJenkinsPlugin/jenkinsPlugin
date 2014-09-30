@@ -13,6 +13,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import jenkins.model.JenkinsLocationConfiguration;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -80,7 +81,8 @@ public final class BuildConfigurator implements RootAction
      
      public void doCreateNewConfigurator(final StaplerRequest request, final StaplerResponse response) throws IOException, ServletException, ParserConfigurationException, JAXBException, AddressException, MessagingException
      {
-    	 if (request.getParameter("cancelButton")!=null)
+    	 JSONObject formAttribute = request.getSubmittedForm();
+    	 if (formAttribute.get("formResultHidden")!=null && formAttribute.get("formResultHidden").toString().equals("cancel"))
     	 {
     		 response.sendRedirect("../BuildConfigurator");
     		 return;
@@ -88,49 +90,38 @@ public final class BuildConfigurator implements RootAction
     	 BuildConfiguration newConfig = new BuildConfiguration();
     	 newConfig.setState("New");  	 
     	 request.bindJSON(newConfig, request.getSubmittedForm());
-    	 newConfig.setFiles(request.getParameter("fileHidden").split(";"));
-    	 newConfig.setArtefacts(request.getParameter("artefactsHidden").split(";"));
-    	 newConfig.setVersionFile(request.getParameter("versionFileHidden").split(";"));
-    	 newConfig.setScripts(request.getParameter("scriptsHidden").split(";"));
-    	 if (request.getParameter("vs2005")!=null && request.getParameter("vs2005").equals("on"))
+    	 newConfig.setFiles(formAttribute.get("fileHidden").toString().split(";"));
+    	 newConfig.setArtefacts(formAttribute.get("artefactsHidden").toString().split(";"));
+    	 newConfig.setVersionFile(formAttribute.get("versionFileHidden").toString().split(";"));
+    	 newConfig.setScripts(formAttribute.get("scriptsHidden").toString().split(";"));
+    	 if (formAttribute.get("vs2005")!=null && (Boolean)formAttribute.get("vs2005"))
     		 newConfig.addBuilders(Builder.VS_2005);
-    	 if (request.getParameter("vs2008")!=null && request.getParameter("vs2008").equals("on"))
+    	 if (formAttribute.get("vs2008")!=null && (Boolean)formAttribute.get("vs2008"))
     		 newConfig.addBuilders(Builder.VS_2008);
-    	 if (request.getParameter("vs2010")!=null && request.getParameter("vs2010").equals("on"))
+    	 if (formAttribute.get("vs2010")!=null && (Boolean)formAttribute.get("vs2010"))
     		 newConfig.addBuilders(Builder.VS_2010);
-    	 if (request.getParameter("vs2012")!=null && request.getParameter("vs2012").equals("on"))
+    	 if (formAttribute.get("vs2012")!=null && (Boolean)formAttribute.get("vs2012"))
     		 newConfig.addBuilders(Builder.VS_2012);
-    	 if (request.getParameter("vs2013")!=null && request.getParameter("vs2013").equals("on"))
+    	 if (formAttribute.get("vs2013")!=null && (Boolean)formAttribute.get("vs2013"))
     		 newConfig.addBuilders(Builder.VS_2013);
-    	 if (request.getParameter("xCode_4_1")!=null && request.getParameter("xCode_4_1").equals("on"))
+    	 if (formAttribute.get("xCode_4_1")!=null && (Boolean)formAttribute.get("xCode_4_1"))
     		 newConfig.addBuilders(Builder.XCODE_4_1);
-    	 if (request.getParameter("java8")!=null && request.getParameter("java8").equals("on"))
+    	 if (formAttribute.get("java8")!=null && (Boolean)formAttribute.get("java8"))
     		 newConfig.addBuilders(Builder.JAVA_8);
-    	 if (request.getParameter("x86")!=null && request.getParameter("x86").equals("on"))
+    	 if (formAttribute.get("x86")!=null && (Boolean)formAttribute.get("x86"))
     		 newConfig.addPlatform(Platform.X86);
-    	 if (request.getParameter("x64")!=null && request.getParameter("x64").equals("on"))
+    	 if (formAttribute.get("x64")!=null && (Boolean)formAttribute.get("x64"))
     		 newConfig.addPlatform(Platform.X64);
-    	 if (request.getParameter("anyCpu")!=null && request.getParameter("anyCpu").equals("on"))
+    	 if (formAttribute.get("anyCpu")!=null && (Boolean)formAttribute.get("anyCpu"))
     		 newConfig.addPlatform(Platform.ANY_CPY);
-    	 if (request.getParameter("win32")!=null && request.getParameter("win32").equals("on"))
+    	 if (formAttribute.get("win32")!=null && (Boolean)formAttribute.get("win32"))
     		 newConfig.addPlatform(Platform.WIN_32);
     	 newConfig.save();
     	 String message = "New configuration '" + newConfig.getProjectName() + "' was successfully created!";
     	 mail.sendMail(getAdminEmails(), message, "New configuration");
     	 response.sendRedirect("./");
      }
-    
-     public static void setDeletion(String name) throws IOException, ParserConfigurationException, JAXBException
-     {
-		String p="sdf";
-		p+="asdf";
-		if (name == null || name == "")
-			return;
-		BuildConfiguration currentConf = BuildConfiguration.load(name);
-		currentConf.setState("For deletion");
-		currentConf.save();
-     }
-     
+
      public Boolean isCurrentUserCreator(BuildConfiguration config)
      {
     	 return BuildConfiguration.getCurrentUserMail().equals(config.getCreator());

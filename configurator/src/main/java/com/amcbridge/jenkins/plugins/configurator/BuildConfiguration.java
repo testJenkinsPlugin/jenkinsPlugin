@@ -30,9 +30,9 @@ public class BuildConfiguration {
     static {Jenkins.XSTREAM.processAnnotations(BuildConfiguration.class);}
 
     private String state, creator, projectName, url, sourceControlTool, buildMachineConfiguration, email, configuration, userConfiguration;
-    String[] files, artefacts, versionFile, scripts;
-    List<String> builders, platforms;
-    Date date;
+    private String[] files, artefacts, versionFile, scripts;
+    private List<String> builders, platforms;
+    private Date date;
     
     public BuildConfiguration()
     {
@@ -147,11 +147,6 @@ public class BuildConfiguration {
     {
         return creator;
     }
-        
-//    public void setCreator(String creat) 
-//    {
-//        this.creator = creat;
-//    }
 
     public static File getConfigFileFor(String id) 
     {
@@ -171,7 +166,7 @@ public class BuildConfiguration {
     
     public void save() throws IOException, ParserConfigurationException, JAXBException 
     {
-    	if (projectName=="")
+    	if (projectName.isEmpty())
 	    	return;
     	File checkFile = new File(getRootDirectory()+"\\"+projectName);
     	if (!checkFile.exists())
@@ -181,7 +176,7 @@ public class BuildConfiguration {
     	XmlFile fileWriter = new XmlFile(Jenkins.XSTREAM, getConfigFileFor("\\"+projectName));
         fileWriter.write(this); 
     }
-
+    
     protected final static XmlFile getConfigFile(String nameProject) 
     {
         return new XmlFile(Jenkins.XSTREAM, getConfigFileFor("\\"+nameProject));
