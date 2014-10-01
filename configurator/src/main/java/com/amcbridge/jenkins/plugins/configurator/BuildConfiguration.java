@@ -26,6 +26,9 @@ public class BuildConfiguration {
 
     private static final String CONFIG_FILE_NAME = "config.xml";
     private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "BuildConfiguration";
+    private static final String CONTENT_FOLDER = "userContent";
+    private static final String SCRIPT_FOLDER = "Scripts";
+    private static final String[] SCRIPTS_EXTENSIONS = {"bat", "nant", "powershell", "shell", "ant", "maven"};
     
     static {Jenkins.XSTREAM.processAnnotations(BuildConfiguration.class);}
 
@@ -164,10 +167,18 @@ public class BuildConfiguration {
     	return Jenkins.getInstance().getRootDir()+"\\" + BUILD_CONFIGURATOR_DIRECTORY_NAME;
     }
     
+    public static String getUserContentFolder()
+    {
+    	return Jenkins.getInstance().getRootDir()+"\\" + CONTENT_FOLDER;
+    }
+    
     public void save() throws IOException, ParserConfigurationException, JAXBException 
     {
     	if (projectName.isEmpty())
-	    	return;
+    	{
+    		BuildConfigurator.deleteNotUploadFile(scripts);
+    		return;
+    	}
     	File checkFile = new File(getRootDirectory()+"\\"+projectName);
     	if (!checkFile.exists())
     		checkFile.mkdirs();
@@ -175,6 +186,45 @@ public class BuildConfiguration {
     	xstream.alias("BuildConfiguration",  BuildConfiguration.class);
     	XmlFile fileWriter = new XmlFile(Jenkins.XSTREAM, getConfigFileFor("\\"+projectName));
         fileWriter.write(this); 
+        saveFile();
+    }
+
+    public void saveFile()
+    {
+    	if (projectName=="" || scripts.length == 0)
+	    	return;
+    	String pathFolder = getRootDirectory() + "\\" + projectName + "\\" + SCRIPT_FOLDER;
+    	String filePath;
+    	File checkFolder = new File(pathFolder);
+    	File checkFile;
+    	if (!checkFolder.exists())
+    		checkFolder.mkdirs();
+    	for (int i=0; i<scripts.length; i++)
+    	{
+    		if (scripts[i]=="")
+    			continue;
+    		filePath = getUserContentFolder() + "\\" + scripts[i];
+    		checkFile = new File (filePath);
+    		if (!checkFile.exists())
+    		{
+    			checkFile = new File (pathFolder + "\\" + scripts[i]);
+    			if (!checkFile.exists() || checkFile.length() > 1048576 || checkExtension(checkFile.getName()))
+    				scripts[i] = "";
+    			continue;
+    		}
+    		checkFile.renameTo(new File (pathFolder + "\\" + checkFile.getName()));
+    	}
+    }
+    
+    private Boolean checkExtension (String fileName)
+    {
+    	String extension = fileName.substring(0, fileName.lastIndexOf('.'));
+    	for (int i=0; i < SCRIPTS_EXTENSIONS.length ; i++)
+    	{
+    		if (SCRIPTS_EXTENSIONS[i] == extension)
+    			return true;
+    	}
+    	return false;
     }
     
     protected final static XmlFile getConfigFile(String nameProject) 

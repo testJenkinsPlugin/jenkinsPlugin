@@ -10,6 +10,9 @@
    xmlns:p="/lib/hudson/project"
    >
    
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <st:bind value="${it}" var="buildConfiguration"/>
+
    <script>
         window.onload = function()
         {
@@ -21,6 +24,8 @@
             document.getElementById("fileHidden").value = "";
             document.getElementById("artefactsHidden").value = "";
             document.getElementById("versionFileHidden").value = "";
+            buildConfiguration.deleteNotUploadFile(document.getElementById("scriptsHidden").value.split(';'), function(t) {});
+            document.getElementById("scriptsHidden").value = "";
         }
         
         function rootFolderChange()
@@ -164,6 +169,51 @@
         function setformResult()
         {
             document.getElementById("formResultHidden").value = "cancel";
+        }
+        
+        function validateExtension(filename)
+        {
+            var ext = filename.substring(filename.lastIndexOf('.')+1);
+            var extensions = new Array ("bat","nant","powershell","shell","ant","maven");
+            for (var extension in extensions)
+            {
+                if (extensions[extension] == ext)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        function upload()
+        {
+            var file = document.getElementById("scriptsButton").files[0];
+            if (file.size > 1048576)
+            {
+                alert ("You can't upload file which size is more than 1MB");
+                document.getElementById("scriptsButton").value = "";
+                return;
+            }
+            if (!validateExtension(file.name))
+            {
+                alert ("You can't upload file with this extension. Please choose file with '.bat, .nant, .powershell, .shell, .ant, .maven' extension only.");
+                document.getElementById("scriptsButton").value = "";
+                return;
+            }
+            document.getElementById("scriptsButton").disabled = true;
+            var formdata = new FormData();
+            formdata.append("sampleFile", file);
+            var xhr = new XMLHttpRequest();       
+            xhr.open("post", "uploadFile", true);
+            xhr.send(formdata);
+            xhr.onload = function(e)
+            {
+                if (this.status == 200) {
+                    addToSelectionBox("Scripts", this.responseText, "scriptsHidden");
+                }
+                document.getElementById("scriptsButton").disabled = false;
+                document.getElementById("scriptsButton").value = "";
+            };
         }
   </script>
   <l:layout>
@@ -420,20 +470,20 @@
                         <tr>
                             <td>Postbuild scripts:</td>
                             <td>
-                                <input type="button" id="scriptsButton" value="Add File" onclick="openFileDialog(2)"/>
+                                <input type="file" id="scriptsButton" style="max-width:235px" onchange="upload()" value="Add File"/>
                             </td>
                         </tr>
                         <tr>
                             <td colspan="2" height="120">
                                 <fieldset>
                                     <legend>Scripts:</legend>
-                                    <select id="Scripts" name ="scripts" style="width:285pt" size="5"/>
+                                    <select id="Scripts" name="scripts" style="width:285pt" size="5"/>
                                 </fieldset>
                             </td>
                         </tr>
                         <tr height="50">
                             <td>
-                                <f:checkbox name="isEmail" id ="isEmail" onclick="checkBoxChange(this)"  title="E-mails notifications"/>
+                                <f:checkbox name="isEmail" id ="isEmail" onclick="checkBoxChange(this)" title="E-mails notifications"/>
                             </td>
                             <td>
                                 <f:textbox field="email" name="email" disabled="false" id="email" style="width:140px"/>
