@@ -191,7 +191,7 @@ public class BuildConfiguration {
 
     public void saveFile()
     {
-    	if (projectName=="" || scripts.length == 0)
+    	if (projectName.isEmpty() || scripts.length == 0)
 	    	return;
     	String pathFolder = getRootDirectory() + "\\" + projectName + "\\" + SCRIPT_FOLDER;
     	String filePath;
@@ -201,7 +201,7 @@ public class BuildConfiguration {
     		checkFolder.mkdirs();
     	for (int i=0; i<scripts.length; i++)
     	{
-    		if (scripts[i]=="")
+    		if (scripts[i].isEmpty())
     			continue;
     		filePath = getUserContentFolder() + "\\" + scripts[i];
     		checkFile = new File (filePath);

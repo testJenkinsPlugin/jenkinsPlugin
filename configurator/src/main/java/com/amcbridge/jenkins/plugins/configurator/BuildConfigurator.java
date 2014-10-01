@@ -180,6 +180,18 @@ public final class BuildConfigurator implements RootAction
      	  }
      }
      
+     @JavaScriptMethod
+     public void setForDeletion(String name) throws IOException, ParserConfigurationException, JAXBException, AddressException, MessagingException
+     {
+    	 BuildConfiguration config = BuildConfiguration.load(name);
+    	 if (config.getState() == "For Deletion")
+    		 return;
+    	 config.setState("For Deletion");
+    	 config.save();
+    	 String message = "Configuration '" + config.getProjectName() + "' was marked for deletion!";
+    	 mail.sendMail(getAdminEmails(), message, "New configuration was marked for deletion");
+     }
+     
      public Boolean isCurrentUserCreator(BuildConfiguration config)
      {
     	 return BuildConfiguration.getCurrentUserMail().equals(config.getCreator());

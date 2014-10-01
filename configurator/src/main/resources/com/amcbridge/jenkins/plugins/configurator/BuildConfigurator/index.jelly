@@ -17,6 +17,22 @@
         }
     </style>
 
+	<st:bind value="${it}" var="buildConfiguration"/>
+	
+	<script>
+		function setDeletion(name)
+		{
+			var result = confirm("Are you sure you want delete '" + name + "' configuration");
+			if (!result)
+				return;
+			var labelName = name+"Label";
+			buildConfiguration.setForDeletion(name, function(t) {});
+			document.getElementById(labelName).innerHTML = "For Deletion";
+			var label = document.getElementById(labelName);
+			label.style.backgroundColor = "#000000";
+		}
+	</script>
+	
     <l:layout>
         <st:include page="sidepanel.jelly" it="${app}" />
         <l:main-panel>
@@ -78,7 +94,7 @@
                                 <j:if test="${!isAdmin}">
                                     <j:if test="${configs[3] == 'true'}">
                                         <a href="CreateBuildConfigurator?name=${configs[0]}" style="margin:0 0 0 10px">Edit</a>
-                                        <a href="" onclick="return ${it.setDeletion('sdf')};" style="margin:0 0 0 15px" name="${configs[0]}">Delete</a>
+                                        <a href="" onclick="setDeletion(this.name); return false;" style="margin:0 0 0 15px" name="${configs[0]}">Delete</a>
                                     </j:if>
                                 </j:if>
                             </td>
