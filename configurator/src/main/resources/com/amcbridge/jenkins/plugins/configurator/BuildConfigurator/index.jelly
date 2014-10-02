@@ -17,22 +17,22 @@
         }
     </style>
 
-	<st:bind value="${it}" var="buildConfiguration"/>
-	
-	<script>
-		function setDeletion(name)
-		{
-			var result = confirm("Are you sure you want delete '" + name + "' configuration");
-			if (!result)
-				return;
-			var labelName = name+"Label";
-			buildConfiguration.setForDeletion(name, function(t) {});
-			document.getElementById(labelName).innerHTML = "For Deletion";
-			var label = document.getElementById(labelName);
-			label.style.backgroundColor = "#000000";
-		}
-	</script>
-	
+    <st:bind value="${it}" var="buildConfiguration"/>
+    
+    <script>
+        function setDeletion(name)
+        {
+            var result = confirm("Are you sure you want delete '" + name + "' configuration");
+            if (!result)
+                return;
+            var labelName = name+"Label";
+            buildConfiguration.setForDeletion(name, function(t) {});
+            document.getElementById(labelName).innerHTML = "For Deletion";
+            var label = document.getElementById(labelName);
+            label.style.backgroundColor = "#000000";
+        }
+    </script>
+    
     <l:layout>
         <st:include page="sidepanel.jelly" it="${app}" />
         <l:main-panel>

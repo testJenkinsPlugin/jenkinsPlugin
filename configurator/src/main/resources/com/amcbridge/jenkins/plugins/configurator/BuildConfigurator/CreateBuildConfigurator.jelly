@@ -24,8 +24,47 @@
             document.getElementById("fileHidden").value = "";
             document.getElementById("artefactsHidden").value = "";
             document.getElementById("versionFileHidden").value = "";
+            document.getElementById("projectRootFolder").value = "";
             buildConfiguration.deleteNotUploadFile(document.getElementById("scriptsHidden").value.split(';'), function(t) {});
             document.getElementById("scriptsHidden").value = "";
+        }
+
+        document.addEventListener('keyup', function (e)
+        {
+            var activeElement = document.activeElement.id;
+            if(activeElement == "projectName" || activeElement == "url" || activeElement == "projectRootFolder" || activeElement=="email" || activeElement=="otherConfig")
+                return;
+            if(e.keyCode == 46)
+            {
+                if (document.getElementById("Files").selectedIndex != -1)
+                    deleteSelectionItem(document.getElementById("Files"), document.getElementById("fileHidden"));
+                if (document.getElementById("Artefacts").selectedIndex != -1)
+                    deleteSelectionItem(document.getElementById("Artefacts"), document.getElementById("artefactsHidden"));
+                if (document.getElementById("VersionFile").selectedIndex != -1)
+                    deleteSelectionItem(document.getElementById("VersionFile"), document.getElementById("versionFileHidden"));
+                if (document.getElementById("Scripts").selectedIndex != -1)
+                {
+                    var selectionValue = document.getElementById("Scripts")[document.getElementById("Scripts").selectedIndex].value;
+                    buildConfiguration.deleteNotUploadFile(selectionValue, function(t) {});
+                    deleteSelectionItem(document.getElementById("Scripts"), document.getElementById("scriptsHidden"));
+                }
+            }
+        }, false);
+        
+        function deleteSelectionItem (selection, hidden)
+        {
+            var selectionValue = selection[selection.selectedIndex].value;
+            hidden.value = hidden.value.replace(selectionValue,"");
+            if (hidden.value.lastIndexOf(";") == hidden.value.length - 1)
+            {
+                hidden.value = hidden.value.substr(0,hidden.value.length - 1);
+            }
+            if (hidden.value[0] == ";")
+            {
+                hidden.value = hidden.value.substr(1, hidden.value.length);
+            }
+            hidden.value = hidden.value.replace(";;",";");
+            selection.remove(selection.selectedIndex);
         }
         
         function rootFolderChange()
@@ -215,12 +254,28 @@
                 document.getElementById("scriptsButton").value = "";
             };
         }
+        
+        function selectionBoxIndexChange(selection)
+        {
+            var sel = document.getElementById("Files");
+            if (sel != selection)
+                sel.selectedIndex = -1;
+            sel = document.getElementById("Artefacts");
+            if (sel != selection)
+                sel.selectedIndex = -1;
+            sel = document.getElementById("VersionFile");
+            if (sel != selection)
+                sel.selectedIndex = -1;
+            sel = document.getElementById("Scripts");
+            if (sel != selection)
+                sel.selectedIndex = -1;
+        }
   </script>
   <l:layout>
         <st:include page="sidepanel.jelly" it="${app}"/>
         <l:main-panel>
             <h1 style="margin: 5px 0 5px 0">Create new build configuration</h1>
-            <f:form method="post" action="createNewConfigurator" name="createNewConfigurator">
+            <f:form method="post" action="createNewConfigurator"  name="createNewConfigurator">
                 <table style="margin: 0 350px 0 0;float:right;">
                     <thead>
                         <tr>
@@ -433,7 +488,7 @@
                             <td colspan="2" height="120">
                                 <fieldset>
                                     <legend>Files</legend>
-                                    <select id="Files" name="files" style="width:285pt" size="5"/>
+                                    <select id="Files" name="files" style="width:285pt" onchange="selectionBoxIndexChange(this)" size="5"/>
                                 </fieldset>
                             </td>
                         </tr>
@@ -447,7 +502,7 @@
                             <td colspan="2" height="120">
                                 <fieldset>
                                     <legend>Artefacts</legend>
-                                    <select id="Artefacts" name="artefacts" style="width:285pt" size="5"/>
+                                    <select id="Artefacts" name="artefacts" style="width:285pt" onchange="selectionBoxIndexChange(this)" size="5"/>
                                 </fieldset>
                             </td>
                         </tr>
@@ -463,7 +518,7 @@
                             <td colspan="2" height="120">
                                 <fieldset>
                                     <legend>Version Files</legend>
-                                    <select id="VersionFile" name="versionFile" style="width:285pt" size="5"/>
+                                    <select id="VersionFile" name="versionFile" style="width:285pt" onchange="selectionBoxIndexChange(this)" size="5"/>
                                 </fieldset>
                             </td>
                         </tr>
@@ -477,7 +532,7 @@
                             <td colspan="2" height="120">
                                 <fieldset>
                                     <legend>Scripts:</legend>
-                                    <select id="Scripts" name="scripts" style="width:285pt" size="5"/>
+                                    <select id="Scripts" name="scripts" style="width:285pt" onchange="selectionBoxIndexChange(this)" size="5"/>
                                 </fieldset>
                             </td>
                         </tr>
@@ -491,7 +546,7 @@
                         </tr>
                         <tr align="center">
                             <td>
-                                <input type="submit" name="save" value="Save"/>
+                                <input type="submit" name="save" onclick="formSubmit()" value="Save"/>
                             </td>
                             <td>
                                 <input type="submit" name="cancelButton" id="cancelButton" onclick="setformResult()" value="Cancel"/>
