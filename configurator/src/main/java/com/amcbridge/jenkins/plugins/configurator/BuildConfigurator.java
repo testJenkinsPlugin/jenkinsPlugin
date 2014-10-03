@@ -192,6 +192,16 @@ public final class BuildConfigurator implements RootAction
     	 mail.sendMail(getAdminEmails(), message, "New configuration was marked for deletion");
      }
      
+     @JavaScriptMethod
+     public Boolean isNameValid(String name)
+     {
+    	 File checkName = new File(BuildConfiguration.getRootDirectory() + "\\" + name);
+    	 if (checkName.exists())
+    		 return false;
+    	 else
+    		 return true;
+     }
+     
      public Boolean isCurrentUserCreator(BuildConfiguration config)
      {
     	 return BuildConfiguration.getCurrentUserMail().equals(config.getCreator());

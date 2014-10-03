@@ -270,12 +270,32 @@
             if (sel != selection)
                 sel.selectedIndex = -1;
         }
+        
+        function isValidForm()
+        {
+            var projectName = document.getElementById("projectName").value;
+            if (projectName == "")
+            {
+                alert("Please, enter your project name");
+                return false;
+            }
+            buildConfiguration.isNameValid(projectName, function(t) {
+                if (t.responseObject() != false)
+                    {
+                        document.getElementById("save").onclick = null;
+                        document.getElementById('save').click();
+                    }
+                else
+                    alert("Configuration with name '" + projectName + "' has already exists. Please select another name.");
+            });
+            return false;
+        }
   </script>
   <l:layout>
         <st:include page="sidepanel.jelly" it="${app}"/>
         <l:main-panel>
             <h1 style="margin: 5px 0 5px 0">Create new build configuration</h1>
-            <f:form method="post" action="createNewConfigurator"  name="createNewConfigurator">
+            <f:form method="post" action="createNewConfigurator" name="createNewConfigurator">
                 <table style="margin: 0 350px 0 0;float:right;">
                     <thead>
                         <tr>
@@ -546,7 +566,7 @@
                         </tr>
                         <tr align="center">
                             <td>
-                                <input type="submit" name="save" onclick="formSubmit()" value="Save"/>
+                                <input type="submit" onclick="return isValidForm();" name="save" id="save" value="Save"/>
                             </td>
                             <td>
                                 <input type="submit" name="cancelButton" id="cancelButton" onclick="setformResult()" value="Cancel"/>
