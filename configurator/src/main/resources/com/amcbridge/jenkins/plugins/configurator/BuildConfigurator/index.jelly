@@ -93,7 +93,7 @@
                                 </j:if>
                                 <j:if test="${!isAdmin}">
                                     <j:if test="${configs[3] == 'true'}">
-                                        <a href="CreateBuildConfigurator?name=${configs[0]}" style="margin:0 0 0 10px">Edit</a>
+                                        <a href="CreateBuildConfigurator?name=${configs[0]}&amp;type=edit" style="margin:0 0 0 10px">Edit</a>
                                         <a href="" onclick="setDeletion(this.name); return false;" style="margin:0 0 0 15px" name="${configs[0]}">Delete</a>
                                     </j:if>
                                 </j:if>

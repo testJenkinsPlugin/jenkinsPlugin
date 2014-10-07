@@ -104,7 +104,6 @@ public final class BuildConfigurator implements RootAction
     		 return;
     	 }
     	 BuildConfiguration newConfig = new BuildConfiguration();
-    	 newConfig.setState("New");  	 
     	 request.bindJSON(newConfig, request.getSubmittedForm());
     	 newConfig.setFiles(formAttribute.get("fileHidden").toString().split(";"));
     	 newConfig.setArtefacts(formAttribute.get("artefactsHidden").toString().split(";"));
@@ -132,9 +131,22 @@ public final class BuildConfigurator implements RootAction
     		 newConfig.addPlatform(Platform.ANY_CPY);
     	 if (formAttribute.get("win32")!=null && (Boolean)formAttribute.get("win32"))
     		 newConfig.addPlatform(Platform.WIN_32);
+    	 String message = "", messageTitle="";
+    	 String type = formAttribute.get("formType").toString();
+    	 if (type.equals("create"))
+    	 {
+    		 newConfig.setState("New");
+    		 message = "New configuration '" + newConfig.getProjectName() + "' was successfully created!";
+    		 messageTitle = "New configuration";
+    	 }
+    	 if (type.equals("edit"))
+    	 {
+    		 newConfig.setState("Updated");
+    		 message = "Configuration '" + newConfig.getProjectName() + "' was changed.";
+    		 messageTitle = "Configuration changes";
+    	 }
     	 newConfig.save();
-    	 String message = "New configuration '" + newConfig.getProjectName() + "' was successfully created!";
-    	 mail.sendMail(getAdminEmails(), message, "New configuration");
+    	 mail.sendMail(getAdminEmails(), message, messageTitle);
     	 response.sendRedirect("./");
      }
 
@@ -216,8 +228,13 @@ public final class BuildConfigurator implements RootAction
     		 return false;
      }
      
-     public static BuildConfiguration getConfiguration(String name) throws IOException
+     @JavaScriptMethod
+     public BuildConfiguration getConfiguration(String name) throws IOException
      {
+    	 BuildConfiguration currenConfig = BuildConfiguration.load(name);
+    	 String currentUser = BuildConfiguration.getCurrentUserMail();
+		 if (!getAdminEmails().equals(currentUser) && !isCurrentUserCreator(currenConfig))
+			 return null;
     	 return BuildConfiguration.load(name);
      }
      

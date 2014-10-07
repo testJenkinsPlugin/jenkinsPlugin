@@ -15,6 +15,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -35,12 +37,10 @@ public class BuildConfiguration {
     private String state, creator, projectName, url, sourceControlTool, buildMachineConfiguration, email, configuration, userConfiguration;
     private String[] files, artefacts, versionFile, scripts;
     private List<String> builders, platforms;
-    private Date date;
     
     public BuildConfiguration()
     {
     	setCreator();
- 	    date = new Date();
     	builders = new ArrayList<String>();
     	platforms = new ArrayList<String>();
     }
@@ -62,6 +62,7 @@ public class BuildConfiguration {
     
     public String getDate()
     {
+    	Date date = new Date();
     	return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
     
@@ -70,9 +71,19 @@ public class BuildConfiguration {
     	userConfiguration = userConfig;
     }
     
+    public String getUserConfiguration()
+    {
+    	return userConfiguration;
+    }
+    
     public void setConfiguration(String config)
     {
     	configuration = config;
+    }
+    
+    public String getConfiguration()
+    {
+    	return configuration;
     }
     
     public void setScripts(String[] Scripts)
@@ -80,9 +91,19 @@ public class BuildConfiguration {
     	scripts = Scripts;
     }
     
+    public String[] getScripts()
+    {
+    	return scripts;
+    }
+    
     public void setVersionFile(String[] VersionFile)
     {
     	versionFile = VersionFile;
+    }
+    
+    public String[] getVersionFile()
+    {
+    	return versionFile;
     }
     
     public void setArtefacts(String[] Artefacts)
@@ -90,9 +111,19 @@ public class BuildConfiguration {
     	artefacts = Artefacts;
     }
     
+    public String[] getArtefacts()
+    {
+    	return artefacts;
+    }
+    
     public void setFiles(String[] Files)
     {
     	files = Files;
+    }
+    
+    public String[] getFiles()
+    {
+    	return files;
     }
     
     public void addPlatform(String Platform)
@@ -100,9 +131,19 @@ public class BuildConfiguration {
     	platforms.add(Platform);
     }
     
+    public List<String> getPlatforms()
+    {
+    	return platforms;
+    }
+    
     public void addBuilders(String value)
     {
     	builders.add(value);
+    }
+    
+    public List<String> getBuilders()
+    {
+    	return builders;
     }
     
     public void setEmail(String Email)
@@ -110,14 +151,29 @@ public class BuildConfiguration {
     	email = Email;
     }
     
+    public String getEmail()
+    {
+    	return email;
+    }
+    
     public void setBuildMachineConfiguration(String config)
     {
     	buildMachineConfiguration = config;
     }
     
+    public String getBuildMachineConfiguration()
+    {
+    	return buildMachineConfiguration;
+    }
+    
     public void setSourceControlTool(String control)
     {
     	sourceControlTool = control;
+    }
+    
+    public String getSourceControlTool()
+    {
+    	return sourceControlTool;
     }
     
     public void setProjectName(String name)
@@ -128,6 +184,11 @@ public class BuildConfiguration {
     public void setUrl(String URL)
     {
     	url = URL;
+    }
+    
+    public String getUrl()
+    {
+    	return url;
     }
     
     void setCreator()
@@ -208,20 +269,36 @@ public class BuildConfiguration {
     		if (!checkFile.exists())
     		{
     			checkFile = new File (pathFolder + "\\" + scripts[i]);
-    			if (!checkFile.exists() || checkFile.length() > 1048576 || checkExtension(checkFile.getName()))
+    			if (!checkFile.exists())
     				scripts[i] = "";
     			continue;
     		}
-    		checkFile.renameTo(new File (pathFolder + "\\" + checkFile.getName()));
+    		if (checkFile.length() < 1048576 && checkExtension(checkFile.getName()))
+    		{
+    			checkFile.renameTo(new File (pathFolder + "\\" + checkFile.getName()));
+    		}
+    		else
+    		{
+    			scripts[i] = "";
+    		}
+    	}
+    	checkFile = new File (pathFolder);
+    	File[] listOfFiles = checkFile.listFiles();
+    	for (int i=0; i<listOfFiles.length; i++)
+    	{
+    		if (ArrayUtils.indexOf(scripts, listOfFiles[i].getName()) == -1)
+    		{
+    			listOfFiles[i].delete();
+    		}
     	}
     }
     
     private Boolean checkExtension (String fileName)
     {
-    	String extension = fileName.substring(0, fileName.lastIndexOf('.'));
+    	String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
     	for (int i=0; i < SCRIPTS_EXTENSIONS.length ; i++)
     	{
-    		if (SCRIPTS_EXTENSIONS[i] == extension)
+    		if (SCRIPTS_EXTENSIONS[i].equals(extension))
     			return true;
     	}
     	return false;
