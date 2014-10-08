@@ -31,6 +31,14 @@
             var label = document.getElementById(labelName);
             label.style.backgroundColor = "#000000";
         }
+        
+        function deletePermanently(name)
+        {
+            var result = confirm("Are you sure you want delete '" + name + "' configuration permanently");
+            if (!result)
+                return;
+            buildConfiguration.deleteConfigurationPermanently(name, function(t) {});
+        }
     </script>
     
     <l:layout>
@@ -85,10 +93,19 @@
                             <td>${configs[2]}</td>
                             <td>
                                 <j:if test="${isAdmin}">
-                                    <a href="CreateBuildConfigurator?name=${configs[0]}" style="margin:0 0 0 10px">Approve/Reject</a>
-                                    <j:if test="${configs[3] == 'true'}">
-                                        <a href="CreateBuildConfigurator?name=${configs[0]}" style="margin:0 0 0 25px">Edit</a>
-                                        <a href="" onclick="return ${it.setDeletion('sdf')};" style="margin:0 0 0 30px" name="${configs[0]}">Delete</a>
+                                    <j:if test="${configs[1] == 'For Deletion'}">
+                                        <j:if test="${h.hasPermission(app.ADMINISTER)}">
+                                            <a href="" onclick="deletePermanently(this.name);" name="${configs[0]}" style="margin:0 0 0 10px">Delete permanently</a>
+                                        </j:if>
+                                    </j:if>
+                                    
+                                    
+                                    <j:if test="${configs[1] != 'For Deletion'}">
+                                        <a href="CreateBuildConfigurator?name=${configs[0]}" style="margin:0 0 0 10px">Approve/Reject</a>
+                                        <j:if test="${configs[3] == 'true'}">
+                                            <a href="CreateBuildConfigurator?name=${configs[0]}&amp;type=edit" style="margin:0 0 0 25px">Edit</a>
+                                            <a href="" onclick="setDeletion(this.name);" style="margin:0 0 0 30px" name="${configs[0]}">Delete</a>
+                                        </j:if>
                                     </j:if>
                                 </j:if>
                                 <j:if test="${!isAdmin}">

@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 
+import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 import net.sf.json.JSONObject;
 
@@ -27,13 +28,20 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.kohsuke.stapler.Ancestor;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 
 import hudson.Extension;
 import hudson.model.RootAction;
+import hudson.model.User;
+import hudson.security.AccessControlled;
+import hudson.security.Permission;
+import hudson.util.Iterators;
 
 @Extension
 public final class BuildConfigurator implements RootAction
@@ -47,20 +55,26 @@ public final class BuildConfigurator implements RootAction
 
      public String getDisplayName()
      {
+    	 if (User.current()==null)
+    		 return null;
           return "Build Configurator";
      }
 
      public String getIconFileName() 
      {
+    	 if (User.current()==null)
+    		 return null;
          return "/plugin/configurator/icons/system_config_services.png";
      }
 
      public String getUrlName()
      {
+    	 if (User.current()==null)
+    		 return null;
          return "BuildConfigurator";
      }
      
-     public Object getAllConfiguration() throws IOException
+     public Object getAllConfiguration() throws IOException, ServletException
      {
     	 BuildConfiguration currenConfig;
     	 String currentUser;
@@ -79,7 +93,7 @@ public final class BuildConfigurator implements RootAction
     		 currenConfig = null;
     		 currenConfig = BuildConfiguration.load(directories[i].getName());
     		 currentUser = BuildConfiguration.getCurrentUserMail();
-    		 if (!getAdminEmails().equals(currentUser) && !isCurrentUserCreator(currenConfig))
+    		 if (!isCurrentUserAdministrator() && !isCurrentUserCreator(currenConfig))
     			 continue;
     		 config = new String[4];
     		 config[0] = currenConfig.getProjectName();
@@ -214,20 +228,43 @@ public final class BuildConfigurator implements RootAction
     		 return true;
      }
      
+     @JavaScriptMethod
+     public void deleteConfigurationPermanently(String name) throws IOException, AddressException, MessagingException
+     {
+    	 File checkFile = new File(BuildConfiguration.getRootDirectory() + "\\" + name);
+    	 String email = BuildConfiguration.load(name).getEmail();
+    	 if (checkFile.exists())
+    		 FileUtils.deleteDirectory(checkFile);
+    	 if (!email.isEmpty())
+    	 {
+    		 String message = "Your configuration '" + name + "' was successfully deleted.";
+    		 mail.sendMail(getAdminEmails(), message, "Configuration was deleted.");
+    	 }
+     }
+     
      public Boolean isCurrentUserCreator(BuildConfiguration config)
      {
     	 return BuildConfiguration.getCurrentUserMail().equals(config.getCreator());
      }
      
-     public static Boolean isCurrentUserAdministrator()
+     public static Boolean isCurrentUserAdministrator() throws IOException, ServletException
      {
-    	 String currentUser = BuildConfiguration.getCurrentUserMail();
-    	 if (currentUser!="" && getAdminEmails().equals(currentUser))
-    		 return true;
-    	 else
-    		 return false;
+    	 Object inst = Jenkins.getInstance();
+    	 Permission permission = Jenkins.ADMINISTER;
+         if (inst instanceof AccessControlled)
+             return ((AccessControlled)inst).hasPermission(permission);
+         else {
+             List<Ancestor> ancs = Stapler.getCurrentRequest().getAncestors();
+             for(Ancestor anc : Iterators.reverse(ancs)) {
+                 Object o = anc.getObject();
+                 if (o instanceof AccessControlled) {
+                     return ((AccessControlled)o).hasPermission(permission);
+                 }
+             }
+             return Jenkins.getInstance().hasPermission(permission);
+         }
      }
-     
+
      @JavaScriptMethod
      public BuildConfiguration getConfiguration(String name) throws IOException
      {
