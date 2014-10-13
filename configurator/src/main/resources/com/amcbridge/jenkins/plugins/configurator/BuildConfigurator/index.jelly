@@ -10,37 +10,10 @@
    xmlns:p="/lib/hudson/project"
    >
 
-    <style>
-        .config tr td,.config tr th 
-        {
-            font-size:15px;
-        }
-    </style>
+  <st:bind value="${it}" var="buildConfiguration"/>
+  <script src="../plugin/configurator/scripts/index.js"/>
+  <link rel="stylesheet" href="../plugin/configurator/css/style.css" type="text/css"/>
 
-    <st:bind value="${it}" var="buildConfiguration"/>
-    
-    <script>
-        function setDeletion(name)
-        {
-            var result = confirm("Are you sure you want delete '" + name + "' configuration");
-            if (!result)
-                return;
-            var labelName = name+"Label";
-            buildConfiguration.setForDeletion(name, function(t) {});
-            document.getElementById(labelName).innerHTML = "For Deletion";
-            var label = document.getElementById(labelName);
-            label.style.backgroundColor = "#000000";
-        }
-        
-        function deletePermanently(name)
-        {
-            var result = confirm("Are you sure you want delete '" + name + "' configuration permanently");
-            if (!result)
-                return;
-            buildConfiguration.deleteConfigurationPermanently(name, function(t) {});
-        }
-    </script>
-    
     <l:layout>
         <st:include page="sidepanel.jelly" it="${app}" />
         <l:main-panel>
@@ -48,72 +21,70 @@
             <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
             <table>
                 <thead>
-                    <tr height="10"><td></td></tr>
+                    <tr height="10">
+                        <td></td>
+                    </tr>
                 </thead>
             </table>
             <table border="1" class="config">
                 <thead>
                         <tr align="left" height="30" bgcolor="#CCCCCC">
-                            <th style="width:330pt">Project name</th>
-                            <th style="width:100pt">State</th>
-                            <th style="width:150pt">Last update date</th>
-                            <th style="width:250pt">Action</th>
+                            <th class="project_name_column">Project name</th>
+                            <th class="state_column">State</th>
+                            <th class="last_update_date_column">Last update date</th>
+                            <th class="action_column">Action</th>
                         </tr>
                 </thead>
                 <tbody>
                     <j:set var="isAdmin" value="${it.isCurrentUserAdministrator()}"/>
                     <j:forEach items="${it.getAllConfiguration()}" var="configs" indexVar="i">
+                        <j:set var="isCreator" value="${it.isCurrentUserCreator(it.getConfiguration(configs[0]))}"/>
                         <tr height="25">
                             <td>${configs[0]}</td>
                             <j:if test="${configs[1] == 'New'}">
                                 <td>
-                                    <label id="${configs[0]}Label" style="background-color:#3333FF;color:white">${configs[1]}</label>
+                                    <label id="${configs[0]}Label" class="new">${configs[1]}</label>
                                 </td>
                             </j:if>
                             <j:if test="${configs[1] == 'Updated'}">
                                 <td>
-                                    <label id="${configs[0]}Label" style="background-color:#6600CC;color:white">${configs[1]}</label>
+                                    <label id="${configs[0]}Label" class="updated">${configs[1]}</label>
                                 </td>
                             </j:if>
                             <j:if test="${configs[1] == 'Approved'}">
                                 <td>
-                                    <label id="${configs[0]}Label" style="background-color:#009900;color:white">${configs[1]}</label>
+                                    <label id="${configs[0]}Label" class="upproved">${configs[1]}</label>
                                 </td>
                             </j:if>
                             <j:if test="${configs[1] == 'Rejected'}">
                                 <td>
-                                    <label id="${configs[0]}Label" style="background-color:#FF0000;color:white">${configs[1]}</label>
+                                    <label id="${configs[0]}Label" class="rejected">${configs[1]}</label>
                                 </td>
                             </j:if>
                             <j:if test="${configs[1] == 'For Deletion'}">
                                 <td>
-                                    <label id="${configs[0]}Label" style="background-color:#000000;color:white">${configs[1]}</label>
+                                    <label id="${configs[0]}Label" class="for_deletion">${configs[1]}</label>
                                 </td>
                             </j:if>
                             <td>${configs[2]}</td>
                             <td>
-                                <j:if test="${isAdmin}">
-                                    <j:if test="${configs[1] == 'For Deletion'}">
-                                        <j:if test="${h.hasPermission(app.ADMINISTER)}">
-                                            <a href="" onclick="deletePermanently(this.name);" name="${configs[0]}" style="margin:0 0 0 10px">Delete permanently</a>
+                                <j:if test ="${configs[1] != 'Approved' &amp;&amp; configs[1] != 'Rejected'}">
+                                    <j:if test="${isAdmin}">
+                                        <j:if test="${configs[1] == 'For Deletion'}">
+                                            <j:if test="${h.hasPermission(app.ADMINISTER)}">
+                                                <a href="" onclick="deletePermanently(this.name);" name="${configs[0]}" class="approve_reject_link">Delete permanently</a>
+                                            </j:if>
                                         </j:if>
-                                    </j:if>
-                                    
-                                    
-                                    <j:if test="${configs[1] != 'For Deletion'}">
-                                        <a href="CreateBuildConfigurator?name=${configs[0]}" style="margin:0 0 0 10px">Approve/Reject</a>
-                                        <j:if test="${configs[3] == 'true'}">
-                                            <a href="CreateBuildConfigurator?name=${configs[0]}&amp;type=edit" style="margin:0 0 0 25px">Edit</a>
-                                            <a href="" onclick="setDeletion(this.name);" style="margin:0 0 0 30px" name="${configs[0]}">Delete</a>
+                                        <j:if test="${configs[1] != 'For Deletion'}">
+                                            <a href="CreateBuildConfigurator?name=${configs[0]}&amp;type=ApproveReject" class="approve_reject_link">Approve/Reject</a>
                                         </j:if>
                                     </j:if>
                                 </j:if>
-                                <j:if test="${!isAdmin}">
-                                    <j:if test="${configs[3] == 'true'}">
-                                        <a href="CreateBuildConfigurator?name=${configs[0]}&amp;type=edit" style="margin:0 0 0 10px">Edit</a>
-                                        <a href="" onclick="setDeletion(this.name); return false;" style="margin:0 0 0 15px" name="${configs[0]}">Delete</a>
-                                    </j:if>
+                                <j:if test="${isCreator &amp;&amp; configs[1] != 'For Deletion'}">
+                                    <a href="CreateBuildConfigurator?name=${configs[0]}&amp;type=edit" class="edit_link">Edit</a>
+                                    <a href="" onclick="setDeletion(this.name); return false;" class="delete_link" name="${configs[0]}">Delete</a>
                                 </j:if>
+                                <span></span>
                             </td>
                         </tr>
                     </j:forEach>
