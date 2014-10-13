@@ -167,6 +167,17 @@ public final class BuildConfigurator implements RootAction {
 			if (!newConfig.getEmail().isEmpty())
 				mail.sendMail(getAdminEmails(), message, messageTitle);
 		}
+		if (type.equals("reject"))
+		{
+			newConfig = currentConfig;
+			newConfig.setState(ConfigurationState.REJECTED);
+			message = "Configuration '" + newConfig.getProjectName()
+					+ "' was rejected by administrator. The reasons of rejection is: "
+					+ formAttribute.get("rejectionReason").toString();
+			messageTitle = "Configuration rejected";
+			if (!newConfig.getEmail().isEmpty())
+				mail.sendMail(getAdminEmails(), message, messageTitle);
+		}
 
 		newConfig.save();
 		mail.sendMail(getAdminEmails(), message, messageTitle);

@@ -357,6 +357,23 @@ function selectionBoxIndexChange(selection)
         sel.selectedIndex = -1;
 }
 
+function rejectConfiguration()
+{
+    var reason = prompt("Please type reasons of rejection:", "");
+    if (reason != null)
+    {
+        if (reason.length == 0)
+        {
+            alert ("You must type reasons of rejection.");
+            return false;
+        }
+        document.getElementById("rejectionReason").value = reason;
+        document.getElementById("formType").value = "reject";
+        return true;
+    }
+    return false;
+}
+
 function isValidForm()
 {
     var projectName = document.getElementById("projectName").value;
