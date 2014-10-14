@@ -13,12 +13,12 @@ public class MailSender
 
 	private static final String MAIL_PROPERTIES_FILE_NAME = "MailSender.properties";
 
-	public void sendMail(String to, String textMessege, String subject) throws AddressException,
+	public void sendMail(String mailTo, String textMessege, String subject) throws AddressException,
 	MessagingException
 	{
 		try
 		{
-			if (to.indexOf('@') == -1 || to.split(" ").length > 1)
+			if (!mailTo.contains("@") || mailTo.trim().contains(" "))
 				return;
 			Properties props = System.getProperties();
 			props.put("mail.smtp.host", host);
@@ -28,7 +28,7 @@ public class MailSender
 			Session session = Session.getDefaultInstance(props, null);
 			MimeMessage message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(from));
-			InternetAddress to_address = new InternetAddress(to);
+			InternetAddress to_address = new InternetAddress(mailTo.trim());
 			message.addRecipient(Message.RecipientType.TO, to_address);
 			message.setSubject(subject);
 			message.setText(textMessege);

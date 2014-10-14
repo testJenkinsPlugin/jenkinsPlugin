@@ -1,37 +1,37 @@
 .header { margin: 5px 0 5px 0;}
 
-.main_tabel 
+.main-tabel 
 {
-	margin:0 0 0 0;
-	float:left;
+    margin:0 0 0 0;
+    float:left;
 }
 
 .textbox { width: 140px;}
 
-.other_config_textbox { width: 130px;}
+.other-config-textbox { width: 130px;}
 
 .select { width: 380px;}
 
-.input_file { max-width:235px;}
+.input-file { max-width:235px;}
 
-.confirm_button { width:100px;}
+.confirm-button { width:100px;}
 
-.reject_button
+.reject-button
 {
-	width:100px;
-	visibility:hidden;
+    width:100px;
+    visibility:hidden;
 }
 
 .span { padding:0 20px;}
 
-.th_name { width:60px;}
+.th-name { width:60px;}
 
-.th_choose { width:180px;}
+.th-choose { width:180px;}
 
-.configuration_tabel
+.configuration-tabel
 {
-	margin: -5px 0 0 0;
-	float:left;
+    margin: -5px 0 0 0;
+    float:left;
 }
 
 .config tr td,.config tr th 
@@ -39,46 +39,46 @@
     font-size:15px;
 }
 
-.project_name_column { width:400px;}
+.project-name-column { width:400px;}
 
-.state_column { width:120px;}
+.state-column { width:120px;}
 
-.last_update_date_column { width:175px;}
+.last-update-date-column { width:175px;}
 
-.action_column { width:300px;}
+.action-column { width:300px;}
 
 .new
 {
-	background-color:#3333FF;
-	color:white;
+    background-color:#3333FF;
+    color:white;
 }
 
 .updated
 {
-	background-color:#6600CC;
-	color:white;
+    background-color:#6600CC;
+    color:white;
 }
 
-.upproved
+.approved
 {
-	background-color:#009900;
-	color:white;
+    background-color:#009900;
+    color:white;
 }
 
 .rejected
 {
-	background-color:#FF0000;
-	color:white;
+    background-color:#FF0000;
+    color:white;
 }
 
-.for_deletion
+.for-deletion
 {
-	background-color:#000000;
-	color:white;
+    background-color:#000000;
+    color:white;
 }
 
-.approve_reject_link { margin:0 0 0 10px;}
+.approve-reject-link { margin:0 0 0 10px;}
 
-.edit_link { margin:0 0 0 10px;}
+.edit-link { margin:0 0 0 10px;}
 
-.delete_link { margin:0 0 0 10px;}
+.delete-link { margin:0 0 0 10px;}

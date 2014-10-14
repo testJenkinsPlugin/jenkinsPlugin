@@ -2,7 +2,6 @@ package com.amcbridge.jenkins.plugins.configurator;
 
 import hudson.XmlFile;
 import hudson.model.User;
-import hudson.tasks.Mailer;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +29,7 @@ public class BuildConfiguration {
 	private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "BuildConfiguration";
 	private static final String CONTENT_FOLDER = "userContent";
 	private static final String SCRIPT_FOLDER = "Scripts";
+	private static final Integer MAX_FILE_SIZE = 1048576;
 	private static final String[] SCRIPTS_EXTENSIONS = { "bat", "nant", "powershell", "shell",
 		"ant", "maven" };
 
@@ -198,8 +198,7 @@ public class BuildConfiguration {
 	void setCreator()
 	{
 		if (User.current() != null)
-			creator = User.current().getProperty(Mailer.UserProperty.class)
-			.getAddress();
+			creator = User.current().getId();
 		else
 			creator = STRING_EMPTY;
 	}
@@ -209,11 +208,10 @@ public class BuildConfiguration {
 		creator = value;
 	}
 
-	public static String getCurrentUserMail()
+	public static String getID()
 	{
 		if (User.current() != null)
-			return User.current().getProperty(Mailer.UserProperty.class)
-					.getAddress();
+			return User.current().getId();
 		else
 			return STRING_EMPTY;
 	}
@@ -288,8 +286,7 @@ public class BuildConfiguration {
 					scripts[i] = STRING_EMPTY;
 				continue;
 			}
-			if (checkFile.length() < 1048576
-					&& checkExtension(checkFile.getName()))
+			if (checkFile.length() < MAX_FILE_SIZE && checkExtension(checkFile.getName()))
 			{
 				checkFile.renameTo(new File(pathFolder + "\\"
 						+ checkFile.getName()));

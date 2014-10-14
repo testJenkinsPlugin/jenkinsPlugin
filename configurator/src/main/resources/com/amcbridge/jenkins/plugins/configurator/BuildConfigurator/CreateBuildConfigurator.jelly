@@ -20,7 +20,7 @@
         <l:main-panel>
             <h1 class="header" id="titlePage">Create new build configuration</h1>
             <f:form method="post" action="createNewConfigurator" name="createNewConfigurator">
-                <table class="main_tabel">
+                <table class="main-tabel">
                     <tbody>
                         <tr height="30">
                             <td>Project name</td>
@@ -38,7 +38,7 @@
                             <td>Source Control Tool</td>
                             <td></td>
                         </tr>
-                        <j:forEach items="${it.getSourceControlTool()}" var="sct" indexVar="i">
+                        <j:forEach items="${it.getSourceControlTools()}" var="sct" indexVar="i">
                             <tr>
                                 <td></td>
                                 <td>
@@ -51,7 +51,7 @@
                             <td>Build machine configuration</td>
                             <td></td>
                         </tr>
-                        <j:forEach items="${it.getBuildMachineConfiguration()}" var="bmc" indexVar="i">
+                        <j:forEach items="${it.getBuildMachineConfigurations()}" var="bmc" indexVar="i">
                             <tr>
                                 <td></td>
                                 <td>
@@ -114,7 +114,7 @@
                         <tr>
                             <td>Postbuild scripts:</td>
                             <td>
-                                <input type="file" id="scriptsButton" class="input_file" onchange="upload()" value="Add File"/>
+                                <input type="file" id="scriptsButton" class="input-file" onchange="upload()" value="Add File"/>
                             </td>
                         </tr>
                         <tr>
@@ -135,12 +135,12 @@
                         </tr>
                         <tr>
                             <td align="center">
-                                <input type="submit" onclick="return isValidForm();" class="confirm_button" name="save" id="save" value="Save"/>
+                                <input type="submit" onclick="return isValidForm();" class="confirm-button" name="save" id="save" value="Save"/>
                             </td>
                             <td>
-                                <input type="submit" onclick="return rejectConfiguration();" class="reject_button" name="reject" id="reject" value="Reject"/>
+                                <input type="submit" onclick="return rejectConfiguration();" class="reject-button" name="reject" id="reject" value="Reject"/>
                                 <span class="span"></span>
-                                <input type="submit" onclick="setformResult();" class="confirm_button" name="cancelButton" id="cancelButton" value="Cancel"/>
+                                <input type="submit" onclick="setformResult();" class="confirm-button" name="cancelButton" id="cancelButton" value="Cancel"/>
                             </td>
                         </tr>
                     </tbody>
@@ -148,8 +148,8 @@
                 <table>
                     <thead>
                         <tr>
-                            <th class="th_name"></th>
-                            <th class="th_choose"></th>
+                            <th class="th-name"></th>
+                            <th class="th-choose"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -157,7 +157,7 @@
                             <td>Builder</td>
                             <td></td>
                         </tr>
-                        <j:forEach items="${it.getBuilder()}" var="builders" indexVar="i">
+                        <j:forEach items="${it.getBuilders()}" var="builders" indexVar="i">
                             <tr>
                                 <td></td>
                                 <td>
@@ -196,11 +196,11 @@
                         </tr>
                     </tbody>
                 </table>
-                <table class="configuration_tabel">
+                <table class="configuration-tabel">
                     <thead>
                         <tr>
-                            <th class="th_name"></th>
-                            <th class="th_choose"></th>
+                            <th class="th-name"></th>
+                            <th class="th-choose"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -219,16 +219,16 @@
                         <tr>
                             <td></td>
                             <td align="right">
-                                <input type="text" id="otherConfig" disabled="false" name="userConfiguration" field="otherConfig" class="other_config_textbox"/>
+                                <input type="text" id="otherConfig" disabled="false" name="userConfiguration" field="otherConfig" class="other-config-textbox"/>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <table class="configuration_tabel">
+                <table class="configuration-tabel">
                     <thead>
                         <tr>
-                            <th class="th_name"></th>
-                            <th class="th_choose"></th>
+                            <th class="th-name"></th>
+                            <th class="th-choose"></th>
                         </tr>
                     </thead>
                     <tbody>

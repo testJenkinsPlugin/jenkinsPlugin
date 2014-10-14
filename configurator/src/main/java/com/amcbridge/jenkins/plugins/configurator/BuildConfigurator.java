@@ -47,6 +47,10 @@ import hudson.util.Iterators;
 public final class BuildConfigurator implements RootAction {
 	private MailSender mail;
 
+	private static final String PLUGIN_NAME = "Build Configurator";
+	private static final String ICON_PATH = "/plugin/configurator/icons/system_config_services.png";
+	private static final String DEFAULT_PAGE_URL = "BuildConfigurator";
+
 	public BuildConfigurator()
 	{
 		mail = new MailSender();
@@ -56,55 +60,39 @@ public final class BuildConfigurator implements RootAction {
 	{
 		if (User.current() == null)
 			return null;
-		return "Build Configurator";
+		return PLUGIN_NAME;
 	}
 
 	public String getIconFileName()
 	{
 		if (User.current() == null)
 			return null;
-		return "/plugin/configurator/icons/system_config_services.png";
+		return ICON_PATH;
 	}
 
 	public String getUrlName()
 	{
 		if (User.current() == null)
 			return null;
-		return "BuildConfigurator";
+		return DEFAULT_PAGE_URL;
 	}
 
-	public Object getAllConfiguration() throws IOException, ServletException
+	public List<ConfigurationInfo> getAllConfigurations() throws IOException, ServletException
 	{
-		BuildConfiguration currenConfig;
-		String currentUser;
-		String[] config;
-		File currentConfigFile;
-		List<String[]> configurations = new ArrayList<String[]>();
-
+		List<ConfigurationInfo> configs = new ArrayList<ConfigurationInfo>();
 		File file = new File(BuildConfiguration.getRootDirectory());
 
 		if (!file.exists())
 			return null;
 
 		File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-
 		for (int i = 0; i < directories.length; i++)
 		{
-			currentConfigFile = BuildConfiguration.getConfigFileFor("\\" + directories[i].getName());
-			if (!currentConfigFile.exists())
+			if (!isCurrentUserAdministrator() && !isCurrentUserCreator(directories[i].getName()))
 				continue;
-			currenConfig = null;
-			currenConfig = BuildConfiguration.load(directories[i].getName());
-			currentUser = BuildConfiguration.getCurrentUserMail();
-			if (!isCurrentUserAdministrator() && !isCurrentUserCreator(currenConfig))
-				continue;
-			config = new String[3];
-			config[0] = currenConfig.getProjectName();
-			config[1] = currenConfig.getState();
-			config[2] = currenConfig.getDate();
-			configurations.add(config);
+			configs.add(new ConfigurationInfo(directories[i].getName()));
 		}
-		return configurations.toArray();
+		return configs;
 	}
 
 	public void doCreateNewConfigurator(final StaplerRequest request,final StaplerResponse response) throws
@@ -113,7 +101,7 @@ public final class BuildConfigurator implements RootAction {
 	{
 		JSONObject formAttribute = request.getSubmittedForm();
 		if (formAttribute.get("formResultHidden") != null && formAttribute.get("formResultHidden")
-				.toString().equals("cancel"))
+				.equals(FormResult.CANCEL.toString()))
 		{
 			deleteNotUploadFile(formAttribute.get("scriptsHidden").toString().split(";"));
 			response.sendRedirect("../BuildConfigurator");
@@ -143,40 +131,40 @@ public final class BuildConfigurator implements RootAction {
 		String message = BuildConfiguration.STRING_EMPTY, messageTitle = BuildConfiguration.STRING_EMPTY;
 		String type = formAttribute.get("formType").toString();
 
-		if (type.equals("create"))
+		if (type.equals(FormResult.CREATE.toString()))
 		{
-			newConfig.setState(ConfigurationState.NEW);
+			newConfig.setState(ConfigurationState.NEW.toString());
 			message = "New configuration '" + newConfig.getProjectName()
 					+ "' was successfully created!";
 			messageTitle = "New configuration";
 		}
-		if (type.equals("edit"))
+		if (type.equals(FormResult.EDIT.toString()))
 		{
-			newConfig.setState(ConfigurationState.UPDATED);
+			newConfig.setState(ConfigurationState.UPDATED.toString());
 			message = "Configuration '" + newConfig.getProjectName()
 					+ "' was changed.";
 			messageTitle = "Configuration changes";
 		}
-		if (type.equals("approved"))
+		if (type.equals(FormResult.APPROVED.toString()))
 		{
-			newConfig.setState(ConfigurationState.APPROVED);
+			newConfig.setState(ConfigurationState.APPROVED.toString());
 			newConfig.setCreator(currentConfig.getCreator());
 			message = "Configuration '" + newConfig.getProjectName()
 					+ "' was successfully approved.";
 			messageTitle = "Configuration approved";
 			if (!newConfig.getEmail().isEmpty())
-				mail.sendMail(getAdminEmails(), message, messageTitle);
+				mail.sendMail(newConfig.getEmail().trim(), message, messageTitle);
 		}
-		if (type.equals("reject"))
+		if (type.equals(FormResult.REJECT.toString()))
 		{
 			newConfig = currentConfig;
-			newConfig.setState(ConfigurationState.REJECTED);
+			newConfig.setState(ConfigurationState.REJECTED.toString());
 			message = "Configuration '" + newConfig.getProjectName()
-					+ "' was rejected by administrator. The reasons of rejection is: "
+					+ "' was rejected by administrator. The reasons of rejection are: "
 					+ formAttribute.get("rejectionReason").toString();
 			messageTitle = "Configuration rejected";
 			if (!newConfig.getEmail().isEmpty())
-				mail.sendMail(getAdminEmails(), message, messageTitle);
+				mail.sendMail(newConfig.getEmail().trim(), message, messageTitle);
 		}
 
 		newConfig.save();
@@ -262,16 +250,16 @@ public final class BuildConfigurator implements RootAction {
 		if (!email.isEmpty())
 		{
 			String message = "Your configuration '" + name + "' was successfully deleted.";
-			mail.sendMail(email, message, "Configuration was deleted.");
+			mail.sendMail(email.trim(), message, "Configuration was deleted.");
 		}
 
 		String message = "Configuration '" + name + "' was successfully deleted.";
 		mail.sendMail(getAdminEmails(), message, "Configuration was deleted.");
 	}
 
-	public Boolean isCurrentUserCreator(BuildConfiguration config)
+	public static Boolean isCurrentUserCreator(String name) throws IOException
 	{
-		return BuildConfiguration.getCurrentUserMail().equals(config.getCreator());
+		return BuildConfiguration.load(name).getCreator().equals(BuildConfiguration.getID());
 	}
 
 	public static Boolean isCurrentUserAdministrator() throws IOException, ServletException
@@ -300,10 +288,9 @@ public final class BuildConfigurator implements RootAction {
 	public BuildConfiguration getConfiguration(String name) throws IOException,	ServletException
 	{
 		BuildConfiguration currenConfig = BuildConfiguration.load(name);
-		String currentUser = BuildConfiguration.getCurrentUserMail();
-		if (!isCurrentUserAdministrator() && !isCurrentUserCreator(currenConfig))
+		if (!isCurrentUserAdministrator() && !isCurrentUserCreator(name))
 			return null;
-		return BuildConfiguration.load(name);
+		return currenConfig;
 	}
 
 	public static String getAdminEmails()
@@ -311,7 +298,7 @@ public final class BuildConfigurator implements RootAction {
 		return JenkinsLocationConfiguration.get().getAdminAddress();
 	}
 
-	public Builder[] getBuilder()
+	public Builder[] getBuilders()
 	{
 		return Builder.values();
 	}
@@ -321,12 +308,12 @@ public final class BuildConfigurator implements RootAction {
 		return Platform.values();
 	}
 
-	public SourceControlTool[] getSourceControlTool()
+	public SourceControlTool[] getSourceControlTools()
 	{
 		return SourceControlTool.values();
 	}
 
-	public BuildMachineConfiguration[] getBuildMachineConfiguration()
+	public BuildMachineConfiguration[] getBuildMachineConfigurations()
 	{
 		return BuildMachineConfiguration.values();
 	}
