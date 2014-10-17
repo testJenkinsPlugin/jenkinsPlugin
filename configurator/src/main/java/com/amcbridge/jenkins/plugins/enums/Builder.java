@@ -1,4 +1,4 @@
-package com.amcbridge.jenkins.plugins.configurator;
+package com.amcbridge.jenkins.plugins.enums;
 
 public enum Builder {
 	VS_2005("VS 2005"),

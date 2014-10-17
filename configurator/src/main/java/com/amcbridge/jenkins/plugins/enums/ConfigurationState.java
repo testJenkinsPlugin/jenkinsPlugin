@@ -1,4 +1,4 @@
-package com.amcbridge.jenkins.plugins.configurator;
+package com.amcbridge.jenkins.plugins.enums;
 
 public enum ConfigurationState {
 	NEW("New", "new"),

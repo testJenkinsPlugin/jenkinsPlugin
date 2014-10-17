@@ -35,6 +35,10 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
+import org.tmatesoft.svn.core.SVNException;
+
+import com.amcbridge.jenkins.plugins.enums.*;
+import com.amcbridge.jenkins.plugins.vsc.*;
 
 import hudson.Extension;
 import hudson.model.RootAction;
@@ -109,6 +113,7 @@ public final class BuildConfigurator implements RootAction {
 		}
 
 		BuildConfiguration newConfig = new BuildConfiguration();
+		newConfig.setCurrentDate();
 		BuildConfiguration currentConfig = BuildConfiguration.load(formAttribute.get("projectName").toString());
 		request.bindJSON(newConfig, request.getSubmittedForm());
 		newConfig.setFiles(formAttribute.get("fileHidden").toString().split(";"));
@@ -133,21 +138,21 @@ public final class BuildConfigurator implements RootAction {
 
 		if (type.equals(FormResult.CREATE.toString()))
 		{
-			newConfig.setState(ConfigurationState.NEW.toString());
+			newConfig.setState(ConfigurationState.NEW);
 			message = "New configuration '" + newConfig.getProjectName()
 					+ "' was successfully created!";
 			messageTitle = "New configuration";
 		}
 		if (type.equals(FormResult.EDIT.toString()))
 		{
-			newConfig.setState(ConfigurationState.UPDATED.toString());
+			newConfig.setState(ConfigurationState.UPDATED);
 			message = "Configuration '" + newConfig.getProjectName()
 					+ "' was changed.";
 			messageTitle = "Configuration changes";
 		}
 		if (type.equals(FormResult.APPROVED.toString()))
 		{
-			newConfig.setState(ConfigurationState.APPROVED.toString());
+			newConfig.setState(ConfigurationState.APPROVED);
 			newConfig.setCreator(currentConfig.getCreator());
 			message = "Configuration '" + newConfig.getProjectName()
 					+ "' was successfully approved.";
@@ -158,7 +163,7 @@ public final class BuildConfigurator implements RootAction {
 		if (type.equals(FormResult.REJECT.toString()))
 		{
 			newConfig = currentConfig;
-			newConfig.setState(ConfigurationState.REJECTED.toString());
+			newConfig.setState(ConfigurationState.REJECTED);
 			message = "Configuration '" + newConfig.getProjectName()
 					+ "' was rejected by administrator. The reasons of rejection are: "
 					+ formAttribute.get("rejectionReason").toString();
@@ -220,12 +225,21 @@ public final class BuildConfigurator implements RootAction {
 	JAXBException, AddressException, MessagingException
 	{
 		BuildConfiguration config = BuildConfiguration.load(name);
-		if (config.getState() == "For Deletion")
+		if (config.getState() == ConfigurationState.FOR_DELETION)
 			return;
-		config.setState("For Deletion");
+		config.setState(ConfigurationState.FOR_DELETION);
 		config.save();
 		String message = "Configuration '" + config.getProjectName() + "' was marked for deletion!";
 		mail.sendMail(getAdminEmails(), message, "New configuration was marked for deletion");
+	}
+
+	@JavaScriptMethod
+	public void exportToXml() throws SVNException, IOException, InterruptedException
+	{
+		XmlExporter xmlExporter = new XmlExporter();
+		String path = xmlExporter.exportToXml();
+		VersionControlSystem svn = new SvnManager();
+		svn.doCommit(path, "https://svn.code.sf.net/p/testingreposetory/svn/", "matvichuk-artem", "asewqd1005");
 	}
 
 	@JavaScriptMethod

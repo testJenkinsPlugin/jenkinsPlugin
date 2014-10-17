@@ -1,4 +1,4 @@
-package com.amcbridge.jenkins.plugins.configurator;
+package com.amcbridge.jenkins.plugins.enums;
 
 public enum Platform {
 	X86("x 86"),

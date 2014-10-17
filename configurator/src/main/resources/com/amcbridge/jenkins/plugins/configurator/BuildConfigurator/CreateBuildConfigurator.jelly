@@ -31,7 +31,7 @@
                         <tr height="30">
                             <td>URL</td>
                             <td>
-                                <input type="text" id="url" field="url" class="textbox"/>
+                                <input type="text" id="url" name="url" field="url" class="textbox"/>
                             </td>
                         </tr>
                         <tr>

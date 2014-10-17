@@ -17,3 +17,8 @@ function deletePermanently(name)
         return;
     buildConfiguration.deleteConfigurationPermanently(name, function(t) {});
 }
+
+function exportToXml()
+{
+    buildConfiguration.exportToXml(function(t) { alert("Operations was done !");});
+}

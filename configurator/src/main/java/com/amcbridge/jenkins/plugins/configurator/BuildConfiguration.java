@@ -16,6 +16,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import com.amcbridge.jenkins.plugins.enums.*;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -25,7 +27,7 @@ import jenkins.model.Jenkins;
 @XmlRootElement
 public class BuildConfiguration {
 
-	private static final String CONFIG_FILE_NAME = "config.xml";
+	public static final String CONFIG_FILE_NAME = "config.xml";
 	private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "BuildConfiguration";
 	private static final String CONTENT_FOLDER = "userContent";
 	private static final String SCRIPT_FOLDER = "Scripts";
@@ -35,10 +37,11 @@ public class BuildConfiguration {
 
 	public static final String STRING_EMPTY = "";
 
-	static { Jenkins.XSTREAM.processAnnotations(BuildConfiguration.class);}
+	static {Jenkins.XSTREAM.processAnnotations(BuildConfiguration.class);}
 
-	private String state, creator, projectName, url, sourceControlTool,	buildMachineConfiguration,
-	email, configuration, userConfiguration;
+	private String creator, projectName, url, sourceControlTool,	buildMachineConfiguration,
+	email, configuration, userConfiguration, date;
+	private ConfigurationState state;
 	private String[] files, artefacts, versionFile, scripts;
 	private List<String> builders, platforms;
 
@@ -49,7 +52,7 @@ public class BuildConfiguration {
 		platforms = new ArrayList<String>();
 	}
 
-	public void setState(String newState)
+	public void setState(ConfigurationState newState)
 	{
 		state = newState;
 	}
@@ -59,15 +62,20 @@ public class BuildConfiguration {
 		return projectName;
 	}
 
-	public String getState()
+	public ConfigurationState getState()
 	{
 		return state;
 	}
 
 	public String getDate()
 	{
-		Date date = new Date();
-		return new SimpleDateFormat("yyyy-MM-dd").format(date);
+		return date;
+	}
+	
+	public void setCurrentDate()
+	{
+		Date currentDate = new Date();
+		date = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);
 	}
 
 	public void setUserConfiguration(String userConfig)
@@ -224,6 +232,11 @@ public class BuildConfiguration {
 	public static File getConfigFileFor(String id)
 	{
 		return new File(new File(getRootDir(), id), CONFIG_FILE_NAME);
+	}
+
+	public static File getFileToExportConfigurations()
+	{
+		return new File(getRootDir()+ "\\" + CONFIG_FILE_NAME);
 	}
 
 	static File getRootDir()

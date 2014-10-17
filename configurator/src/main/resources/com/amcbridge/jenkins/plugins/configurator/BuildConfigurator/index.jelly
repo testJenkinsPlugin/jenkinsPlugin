@@ -19,6 +19,7 @@
         <l:main-panel>
             <h1>Configurations</h1>
             <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
+            <a href="" onclick="exportToXml(); return false;" class="export-to-xml">Export to XML</a>
             <table>
                 <thead>
                     <tr height="10">

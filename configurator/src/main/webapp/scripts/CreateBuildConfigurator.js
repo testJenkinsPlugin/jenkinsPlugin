@@ -20,18 +20,18 @@ window.onload = function()
     else
     {
         document.getElementById("formType").value = "create";
+        document.getElementById("fileHidden").value = "";
+        document.getElementById("artefactsHidden").value = "";
+        document.getElementById("versionFileHidden").value = "";
+        document.getElementById("scriptsHidden").value = "";
     }
     document.getElementById("folderChooser").setIsFolderChooser(true);
     document.getElementById("folderChooser").setGroup(1);
     document.getElementById("fileToBuildChooser").setGroup(2);
     document.getElementById("pathToArtefactsChooser").setGroup(3);
     document.getElementById("versionFileChooser").setGroup(4);
-    document.getElementById("fileHidden").value = "";
-    document.getElementById("artefactsHidden").value = "";
-    document.getElementById("versionFileHidden").value = "";
     document.getElementById("projectRootFolder").value = "";
     buildConfiguration.deleteNotUploadFile(document.getElementById("scriptsHidden").value.split(';'), function(t) {});
-    document.getElementById("scriptsHidden").value = "";
 }
 
 document.addEventListener('keyup', function (e)

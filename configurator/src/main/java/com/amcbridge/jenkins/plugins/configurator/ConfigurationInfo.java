@@ -4,23 +4,21 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
+import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
+
 public class ConfigurationInfo {
 
-	private String state, projectName, date;
+	private String projectName, date;
+	private ConfigurationState state;
 
-	public void setState (String value)
+	public void setState (ConfigurationState value)
 	{
 		state = value;
 	}
 
 	public ConfigurationState getState()
 	{
-		for (ConfigurationState configStates : ConfigurationState.values()) 
-		{
-			if (configStates.toString().equals(state))
-				return configStates;
-		}
-		return null;
+		return state;
 	}
 
 	public void setProjectName (String value)
