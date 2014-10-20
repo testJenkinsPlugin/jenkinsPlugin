@@ -1,24 +1,15 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
-import hudson.XmlFile;
 import hudson.model.User;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang.ArrayUtils;
-
-import com.amcbridge.jenkins.plugins.enums.*;
-
-import com.thoughtworks.xstream.XStream;
+import com.amcbridge.jenkins.plugins.controls.*;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import jenkins.model.Jenkins;
@@ -26,16 +17,6 @@ import jenkins.model.Jenkins;
 @XStreamAlias("buildConfiguration")
 @XmlRootElement
 public class BuildConfiguration {
-
-	public static final String CONFIG_FILE_NAME = "config.xml";
-	private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "BuildConfiguration";
-	private static final String CONTENT_FOLDER = "userContent";
-	private static final String SCRIPT_FOLDER = "Scripts";
-	private static final Integer MAX_FILE_SIZE = 1048576;
-	private static final String[] SCRIPTS_EXTENSIONS = { "bat", "nant", "powershell", "shell",
-		"ant", "maven" };
-
-	public static final String STRING_EMPTY = "";
 
 	static {Jenkins.XSTREAM.processAnnotations(BuildConfiguration.class);}
 
@@ -71,11 +52,11 @@ public class BuildConfiguration {
 	{
 		return date;
 	}
-	
+
 	public void setCurrentDate()
 	{
 		Date currentDate = new Date();
-		date = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);
+		date = new SimpleDateFormat(BuildConfigurationManager.DATE_FORMAT).format(currentDate);
 	}
 
 	public void setUserConfiguration(String userConfig)
@@ -208,7 +189,7 @@ public class BuildConfiguration {
 		if (User.current() != null)
 			creator = User.current().getId();
 		else
-			creator = STRING_EMPTY;
+			creator = BuildConfigurationManager.STRING_EMPTY;
 	}
 
 	public void setCreator(String value)
@@ -216,136 +197,8 @@ public class BuildConfiguration {
 		creator = value;
 	}
 
-	public static String getID()
-	{
-		if (User.current() != null)
-			return User.current().getId();
-		else
-			return STRING_EMPTY;
-	}
-
 	public String getCreator()
 	{
 		return creator;
-	}
-
-	public static File getConfigFileFor(String id)
-	{
-		return new File(new File(getRootDir(), id), CONFIG_FILE_NAME);
-	}
-
-	public static File getFileToExportConfigurations()
-	{
-		return new File(getRootDir()+ "\\" + CONFIG_FILE_NAME);
-	}
-
-	static File getRootDir()
-	{
-		return new File(Jenkins.getInstance().getRootDir(),
-				BUILD_CONFIGURATOR_DIRECTORY_NAME);
-	}
-
-	public static String getRootDirectory()
-	{
-		return Jenkins.getInstance().getRootDir() + "\\"
-				+ BUILD_CONFIGURATOR_DIRECTORY_NAME;
-	}
-
-	public static String getUserContentFolder()
-	{
-		return Jenkins.getInstance().getRootDir() + "\\" + CONTENT_FOLDER;
-	}
-
-	public void save() throws IOException, ParserConfigurationException, JAXBException
-	{
-		if (projectName.isEmpty())
-		{
-			BuildConfigurator.deleteNotUploadFile(scripts);
-			return;
-		}
-
-		File checkFile = new File(getRootDirectory() + "\\" + projectName);
-		if (!checkFile.exists())
-			checkFile.mkdirs();
-
-		XStream xstream = new XStream();
-		xstream.alias("BuildConfiguration", BuildConfiguration.class);
-		XmlFile fileWriter = new XmlFile(Jenkins.XSTREAM, getConfigFileFor("\\"	+ projectName));
-		fileWriter.write(this);
-		saveFile();
-	}
-
-	public void saveFile()
-	{
-		if (projectName.isEmpty() || scripts.length == 0)
-			return;
-		String pathFolder = getRootDirectory() + "\\" + projectName + "\\" + SCRIPT_FOLDER;
-		String filePath;
-		File checkFolder = new File(pathFolder);
-		File checkFile;
-		if (!checkFolder.exists())
-			checkFolder.mkdirs();
-
-		for (int i = 0; i < scripts.length; i++)
-		{
-			if (scripts[i].isEmpty())
-				continue;
-			filePath = getUserContentFolder() + "\\" + scripts[i];
-			checkFile = new File(filePath);
-			if (!checkFile.exists())
-			{
-				checkFile = new File(pathFolder + "\\" + scripts[i]);
-				if (!checkFile.exists())
-					scripts[i] = STRING_EMPTY;
-				continue;
-			}
-			if (checkFile.length() < MAX_FILE_SIZE && checkExtension(checkFile.getName()))
-			{
-				checkFile.renameTo(new File(pathFolder + "\\"
-						+ checkFile.getName()));
-			} 
-			else
-			{
-				scripts[i] = STRING_EMPTY;
-			}
-		}
-
-		checkFile = new File(pathFolder);
-		File[] listOfFiles = checkFile.listFiles();
-
-		for (int i = 0; i < listOfFiles.length; i++)
-		{
-			if (ArrayUtils.indexOf(scripts, listOfFiles[i].getName()) == -1)
-			{
-				listOfFiles[i].delete();
-			}
-		}
-	}
-
-	private Boolean checkExtension(String fileName)
-	{
-		String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
-		for (int i = 0; i < SCRIPTS_EXTENSIONS.length; i++)
-		{
-			if (SCRIPTS_EXTENSIONS[i].equals(extension))
-				return true;
-		}
-		return false;
-	}
-
-	protected final static XmlFile getConfigFile(String nameProject)
-	{
-		return new XmlFile(Jenkins.XSTREAM,	getConfigFileFor("\\" + nameProject));
-	}
-
-	public static BuildConfiguration load(String nameProject) throws IOException
-	{
-		BuildConfiguration result = new BuildConfiguration();
-		XmlFile config = getConfigFile(nameProject);
-		if (config.exists())
-		{
-			config.unmarshal(result);
-		}
-		return result;
 	}
 }

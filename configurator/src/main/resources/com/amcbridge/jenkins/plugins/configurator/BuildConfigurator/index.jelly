@@ -16,10 +16,13 @@
 
     <l:layout>
         <st:include page="sidepanel.jelly" it="${app}" />
+        <j:set var="isAdmin" value="${it.isCurrentUserAdministrator()}"/>
         <l:main-panel>
             <h1>Configurations</h1>
             <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
-            <a href="" onclick="exportToXml(); return false;" class="export-to-xml">Export to XML</a>
+            <j:if test="${isAdmin}">
+                <a href="" onclick="exportToXml(); return false;" class="export-to-xml">Export to XML</a>
+            </j:if>
             <table>
                 <thead>
                     <tr height="10">
@@ -37,7 +40,6 @@
                         </tr>
                 </thead>
                 <tbody>
-                    <j:set var="isAdmin" value="${it.isCurrentUserAdministrator()}"/>
                     <j:forEach items="${it.getAllConfigurations()}" var="configs" indexVar="i">
                         <j:set var="isCreator" value="${it.isCurrentUserCreator(configs.getProjectName())}"/>
                         <tr height="25">

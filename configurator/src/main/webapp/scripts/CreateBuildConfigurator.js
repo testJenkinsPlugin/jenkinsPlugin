@@ -7,7 +7,7 @@ window.onload = function()
     {
         var projectName = getParameterValue("name");
         type = getParameterValue("type");
-        document.getElementById("formType").value = type;
+        document.getElementById("formType").value = type.toUpperCase();
         buildConfiguration.getConfiguration(projectName, function(t) {
         setContent(t.responseObject());});
         if (type == "ApproveReject")
@@ -19,7 +19,7 @@ window.onload = function()
     }
     else
     {
-        document.getElementById("formType").value = "create";
+        document.getElementById("formType").value = "CREATE";
         document.getElementById("fileHidden").value = "";
         document.getElementById("artefactsHidden").value = "";
         document.getElementById("versionFileHidden").value = "";
@@ -368,7 +368,7 @@ function rejectConfiguration()
             return false;
         }
         document.getElementById("rejectionReason").value = reason;
-        document.getElementById("formType").value = "reject";
+        document.getElementById("formType").value = "REJECT";
         return true;
     }
     return false;
@@ -386,10 +386,10 @@ function isValidForm()
         return true;
     if (type == "ApproveReject")
     {
-        document.getElementById("formType").value = "approved";
+        document.getElementById("formType").value = "APPROVED";
         return true;
     }
-    buildConfiguration.isNameValid(projectName, function(t) {
+    buildConfiguration.isNameFree(projectName, function(t) {
         if (t.responseObject() != false)
         {
             document.getElementById("save").onclick = null;

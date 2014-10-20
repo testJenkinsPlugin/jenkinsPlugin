@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 
-import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -39,15 +38,15 @@ public class XmlExporter
 	{
 		List<BuildConfiguration> configs = new ArrayList<BuildConfiguration>();
 		BuildConfiguration config = null;
-		File file = new File(BuildConfiguration.getRootDirectory());
+		File file = new File(BuildConfigurationManager.getRootDirectory());
 
 		if (!file.exists())
-			return BuildConfiguration.STRING_EMPTY;
+			return BuildConfigurationManager.STRING_EMPTY;
 
 		File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
 		for (int i = 0; i < directories.length; i++)
 		{
-			config = BuildConfiguration.load(directories[i].getName());
+			config = BuildConfigurationManager.load(directories[i].getName());
 			if (config.getState().equals(ConfigurationState.APPROVED))
 			{
 				config.setState(null);
@@ -64,7 +63,7 @@ public class XmlExporter
 		XStream xstream = new XStream();
 		xstream.processAnnotations(XmlExporter.class);
 		xstream.addImplicitCollection(XmlExporter.class, "configurations");
-		File outputFile = BuildConfiguration.getFileToExportConfigurations();
+		File outputFile = BuildConfigurationManager.getFileToExportConfigurations();
 		if (!outputFile.exists())
 			outputFile.createNewFile();
 		path = outputFile.getPath();

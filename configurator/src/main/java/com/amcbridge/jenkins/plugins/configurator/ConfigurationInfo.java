@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
-import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
-
 public class ConfigurationInfo {
 
 	private String projectName, date;
@@ -43,7 +41,7 @@ public class ConfigurationInfo {
 
 	public ConfigurationInfo (String nameConfig) throws IOException, ServletException
 	{
-		BuildConfiguration conf = BuildConfiguration.load(nameConfig);
+		BuildConfiguration conf = BuildConfigurationManager.load(nameConfig);
 		setState(conf.getState());
 		setProjectName(conf.getProjectName());
 		setDate(conf.getDate());

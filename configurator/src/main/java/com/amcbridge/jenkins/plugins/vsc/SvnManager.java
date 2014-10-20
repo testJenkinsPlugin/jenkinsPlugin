@@ -16,7 +16,7 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
-import com.amcbridge.jenkins.plugins.configurator.BuildConfiguration;
+import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 
 public class SvnManager implements VersionControlSystem
 {
@@ -24,7 +24,7 @@ public class SvnManager implements VersionControlSystem
 	private static SVNCommitInfo coomitFile(SVNNodeKind nodeKind,
 			ISVNEditor editor, String filePath, byte[] data) throws SVNException
 	{
-		String checksum = BuildConfiguration.STRING_EMPTY;
+		String checksum = BuildConfigurationManager.STRING_EMPTY;
 		try 
 		{
 			editor.openRoot(-1);
@@ -74,7 +74,7 @@ public class SvnManager implements VersionControlSystem
 			SVNNodeKind nodeKind = repository.checkPath("config.xml", repository.getLatestRevision());
 			ISVNEditor editor = repository.getCommitEditor("directory and file added" , null );
 			commitInfo = coomitFile(nodeKind, editor,
-					BuildConfiguration.CONFIG_FILE_NAME, fileBytesArray);
+					BuildConfigurationManager.CONFIG_FILE_NAME, fileBytesArray);
 			repository.closeSession();
 		}
 		catch(Exception ex)

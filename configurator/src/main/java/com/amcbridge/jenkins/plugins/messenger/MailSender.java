@@ -1,8 +1,9 @@
-package com.amcbridge.jenkins.plugins.configurator;
+package com.amcbridge.jenkins.plugins.messenger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+
 import javax.mail.*;
 import javax.mail.internet.*;
 
@@ -13,12 +14,13 @@ public class MailSender
 
 	private static final String MAIL_PROPERTIES_FILE_NAME = "MailSender.properties";
 
-	public void sendMail(String mailTo, String textMessege, String subject) throws AddressException,
+	public void sendMail(MessageInfo message) throws AddressException,
 	MessagingException
 	{
 		try
 		{
-			if (!mailTo.contains("@") || mailTo.trim().contains(" "))
+			if (!message.getDestinationAddress().contains("@") ||
+					message.getDestinationAddress().trim().contains(" "))
 				return;
 			Properties props = System.getProperties();
 			props.put("mail.smtp.host", host);
@@ -26,15 +28,15 @@ public class MailSender
 			props.put("mail.smtp.auth", "true");
 			props.put("mail.smtp.starttls.enable", "true");
 			Session session = Session.getDefaultInstance(props, null);
-			MimeMessage message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(from));
-			InternetAddress to_address = new InternetAddress(mailTo.trim());
-			message.addRecipient(Message.RecipientType.TO, to_address);
-			message.setSubject(subject);
-			message.setText(textMessege);
+			MimeMessage mMessage = new MimeMessage(session);
+			mMessage.setFrom(new InternetAddress(from));
+			InternetAddress to_address = new InternetAddress(message.getDestinationAddress().trim());
+			mMessage.addRecipient(Message.RecipientType.TO, to_address);
+			mMessage.setSubject(message.getSubject());
+			mMessage.setText(message.getMassageText());
 			Transport transport = session.getTransport("smtp");
 			transport.connect(host, from, pass);
-			transport.sendMessage(message, message.getAllRecipients());
+			transport.sendMessage(mMessage, mMessage.getAllRecipients());
 			transport.close();
 		}
 		catch(MessagingException e)
