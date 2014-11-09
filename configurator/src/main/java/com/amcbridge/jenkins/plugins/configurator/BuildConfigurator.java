@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,13 +25,18 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.jelly.JellyException;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.tmatesoft.svn.core.SVNException;
 
+import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
 import com.amcbridge.jenkins.plugins.controls.*;
 import com.amcbridge.jenkins.plugins.messenger.*;
+import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
+import com.amcbridge.jenkins.plugins.view.ViewGenerator;
+import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
 
 import hudson.Extension;
 import hudson.model.RootAction;
@@ -41,6 +47,8 @@ public final class BuildConfigurator implements RootAction {
 
 	private MailSender mail;
 
+	private ViewGenerator viewGenerator;
+
 	private static final String PLUGIN_NAME = "Build Configurator";
 	private static final String ICON_PATH = "/plugin/configurator/icons/system_config_services.png";
 	private static final String DEFAULT_PAGE_URL = "BuildConfigurator";
@@ -48,6 +56,7 @@ public final class BuildConfigurator implements RootAction {
 	public BuildConfigurator()
 	{
 		mail = new MailSender();
+		viewGenerator = new ViewGenerator();
 	}
 
 	public String getDisplayName()
@@ -71,50 +80,43 @@ public final class BuildConfigurator implements RootAction {
 		return DEFAULT_PAGE_URL;
 	}
 
-	public List<BuildConfiguration> getAllConfigurations() throws IOException, ServletException
-	{
+	public List<BuildConfiguration> getAllConfigurations()
+			throws IOException, ServletException, JAXBException 
+			{
 		return BuildConfigurationManager.loadAllConfigurations();
-	}
+			}
 
-	public void doCreateNewConfigurator(final StaplerRequest request,final StaplerResponse response) throws
-	IOException, ServletException, ParserConfigurationException, JAXBException,
-	AddressException, MessagingException
+	public void doCreateNewConfigurator(final StaplerRequest request,
+			final StaplerResponse response) throws
+			IOException, ServletException, ParserConfigurationException, JAXBException,
+			AddressException, MessagingException
 	{
+
 		JSONObject formAttribute = request.getSubmittedForm();
-		if (formAttribute.get("formResultHidden") != null && formAttribute.get("formResultHidden")
-				.equals(FormResult.CANCEL.toString()))
+		if (formAttribute.get("formResultHidden") != null && formAttribute
+				.get("formResultHidden").equals(FormResult.CANCEL.toString()))
 		{
-			deleteNotUploadFile(formAttribute.get("scriptsHidden").toString().split(";"));
+			deleteNotUploadFile(formAttribute.get("scripts").toString().split(";"));
 			response.sendRedirect("../" + DEFAULT_PAGE_URL);
 			return;
 		}
 
 		BuildConfiguration newConfig = new BuildConfiguration();
+
+		request.bindJSON(newConfig, formAttribute);
+
+		newConfig.setScripts(BuildConfigurationManager
+				.getPath(formAttribute.get("scripts").toString()));
 		newConfig.setCurrentDate();
-		BuildConfiguration currentConfig = BuildConfigurationManager
-				.load(formAttribute.get("projectName").toString());
-		request.bindJSON(newConfig, request.getSubmittedForm());
-		newConfig.setFiles(formAttribute.get("fileHidden").toString().split(";"));
-		newConfig.setArtefacts(formAttribute.get("artefactsHidden").toString().split(";"));
-		newConfig.setVersionFile(formAttribute.get("versionFileHidden").toString().split(";"));
-		newConfig.setScripts(formAttribute.get("scriptsHidden").toString().split(";"));
 
-		for (Builder build : Builder.values()) 
-		{
-			if (formAttribute.get(build.name()) != null	&& (Boolean) formAttribute.get(build.name()))
-				newConfig.addBuilders(build);
-		}
-
-		for (Platform platform : Platform.values())
-		{
-			if (formAttribute.get(platform.name()) != null && (Boolean) formAttribute.get(platform.name()))
-				newConfig.addPlatform(platform);
-		}
-
-		ConfigurationStatusMessage message = new ConfigurationStatusMessage(newConfig.getProjectName());
+		ConfigurationStatusMessage message = 
+				new ConfigurationStatusMessage(newConfig.getProjectName());
 		message.setSubject(newConfig.getProjectName());
- 
+
 		FormResult type = FormResult.valueOf(formAttribute.get("formType").toString());
+
+		BuildConfiguration currentConfig = BuildConfigurationManager
+				.load(newConfig.getProjectName());
 
 		switch (type)
 		{
@@ -139,8 +141,8 @@ public final class BuildConfigurator implements RootAction {
 		case REJECT:
 			newConfig = currentConfig;
 			newConfig.setState(ConfigurationState.REJECTED);
-			message.setDescription(MessageDescription.REJECT.toString() + " " + formAttribute
-					.get("rejectionReason").toString());
+			message.setDescription(MessageDescription.REJECT.toString() +
+					" " + formAttribute.get("rejectionReason").toString());
 			if (!newConfig.getEmail().isEmpty())
 			{
 				message.setDestinationAddress(newConfig.getEmail().trim());
@@ -157,8 +159,8 @@ public final class BuildConfigurator implements RootAction {
 		response.sendRedirect("./");
 	}
 
-	public String doUploadFile(final HttpServletRequest request, final HttpServletResponse response)
-			throws FileUploadException, IOException
+	public String doUploadFile(final HttpServletRequest request,
+			final HttpServletResponse response)	throws FileUploadException, IOException
 	{
 		DiskFileItemFactory factory = new DiskFileItemFactory();
 		ServletFileUpload upload = new ServletFileUpload(factory);
@@ -188,6 +190,28 @@ public final class BuildConfigurator implements RootAction {
 	}
 
 	@JavaScriptMethod
+	public ProjectToBuildView getView()
+			throws UnsupportedEncodingException, JellyException
+	{
+		return viewGenerator.getProjectToBuildlView();
+	}
+
+	@JavaScriptMethod
+	public ProjectToBuildView loadViews(String projectName)
+			throws JellyException, IOException, JAXBException
+	{
+		BuildConfiguration conf = BuildConfigurationManager.load(projectName);
+		return viewGenerator.getProjectToBuildlView(conf.getProjectToBuild());
+	}
+
+	@JavaScriptMethod
+	public ProjectToBuildView getBuilderView()
+			throws UnsupportedEncodingException, JellyException
+	{
+		return viewGenerator.getBuilderView();
+	}
+
+	@JavaScriptMethod
 	public static void deleteNotUploadFile(String[] files)
 	{
 		String pathFolder = BuildConfigurationManager.getUserContentFolder();
@@ -202,9 +226,16 @@ public final class BuildConfigurator implements RootAction {
 	}
 
 	@JavaScriptMethod
-	public void exportToXml() throws SVNException, IOException, InterruptedException
+	public VersionControlSystemResult exportToXml()
+			throws SVNException, IOException, InterruptedException
 	{
-		BuildConfigurationManager.exportToXml();
+		return BuildConfigurationManager.exportToXml();
+	}
+
+	@JavaScriptMethod
+	public void loadCreateNewBuildConfiguration()
+	{
+		viewGenerator = new ViewGenerator();
 	}
 
 	@JavaScriptMethod
@@ -215,12 +246,12 @@ public final class BuildConfigurator implements RootAction {
 
 	@JavaScriptMethod
 	public void deleteConfigurationPermanently(String name)
-			throws AddressException, IOException, MessagingException
+			throws AddressException, IOException, MessagingException, JAXBException
 	{
 		BuildConfigurationManager.deleteConfigurationPermanently(name);
 	}
 
-	public static Boolean isCurrentUserCreator(String name) throws IOException
+	public static Boolean isCurrentUserCreator(String name) throws IOException, JAXBException
 	{
 		return BuildConfigurationManager.isCurrentUserCreatorOfConfiguration(name);
 	}
@@ -231,7 +262,7 @@ public final class BuildConfigurator implements RootAction {
 	}
 
 	@JavaScriptMethod
-	public BuildConfiguration getConfiguration(String name) throws IOException
+	public BuildConfiguration getConfiguration(String name) throws IOException, JAXBException
 	{
 		return BuildConfigurationManager.getConfiguration(name);
 	}
@@ -241,28 +272,8 @@ public final class BuildConfigurator implements RootAction {
 		return BuildConfigurationManager.getAdminEmail();
 	}
 
-	public Builder[] getBuilders()
-	{
-		return Builder.values();
-	}
-
-	public Platform[] getPlatform()
-	{
-		return Platform.values();
-	}
-
-	public SourceControlTool[] getSourceControlTools()
-	{
-		return SourceControlTool.values();
-	}
-
 	public BuildMachineConfiguration[] getBuildMachineConfigurations()
 	{
 		return BuildMachineConfiguration.values();
-	}
-
-	public Configuration[] getConfigurations()
-	{
-		return Configuration.values();
 	}
 }

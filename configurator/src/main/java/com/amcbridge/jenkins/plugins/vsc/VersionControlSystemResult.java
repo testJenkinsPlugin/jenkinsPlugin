@@ -44,7 +44,12 @@ public class VersionControlSystemResult
 		return numberOfRevision;
 	}
 
-	public Boolean isSuccess()
+	public void setSuccess(Boolean value)
+	{
+		success = value;
+	}
+
+	public Boolean getSuccess()
 	{
 		return success;
 	}

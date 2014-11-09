@@ -12,6 +12,9 @@ import javax.servlet.ServletException;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 
+import jenkins.model.Jenkins;
+import jenkins.model.JenkinsLocationConfiguration;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang.ArrayUtils;
@@ -19,13 +22,15 @@ import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
 import org.tmatesoft.svn.core.SVNException;
 
+import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
+import com.amcbridge.jenkins.plugins.export.*;
+import com.amcbridge.jenkins.plugins.export.ExportSettings.Settings;
 import com.amcbridge.jenkins.plugins.messenger.*;
+import com.amcbridge.jenkins.plugins.vsc.CommitError;
 import com.amcbridge.jenkins.plugins.vsc.SvnManager;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystem;
-import com.thoughtworks.xstream.XStream;
+import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
 
-import jenkins.model.Jenkins;
-import jenkins.model.JenkinsLocationConfiguration;
 import hudson.XmlFile;
 import hudson.model.User;
 import hudson.security.AccessControlled;
@@ -35,11 +40,12 @@ import hudson.util.Iterators;
 public class BuildConfigurationManager
 {
 	public static final String CONFIG_FILE_NAME = "config.xml";
-	public static final String DATE_FORMAT = "dd-MM-yyyy";
-	private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "BuildConfiguration";
+	public static final String DATE_FORMAT = "MM/dd/yyyy";
+	public static final String ENCODING = "UTF-8";
+	private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "\\plugins\\configurator\\BuildConfiguration";
 	private static final String CONTENT_FOLDER = "userContent";
 	private static final String SCRIPT_FOLDER = "Scripts";
-	private static final Integer MAX_FILE_SIZE = 1048576;
+	private static final Integer MAX_FILE_SIZE = 1048576;//max file size which equal 1 mb in bytes
 	private static final String[] SCRIPTS_EXTENSIONS = { "bat", "nant", "powershell", "shell",
 		"ant", "maven" };
 
@@ -87,7 +93,7 @@ public class BuildConfigurationManager
 	{
 		if (config.getProjectName().isEmpty())
 		{
-			BuildConfigurator.deleteNotUploadFile(config.getScripts());
+			deleteFiles(config.getScripts(), getUserContentFolder());
 			return;
 		}
 
@@ -95,9 +101,7 @@ public class BuildConfigurationManager
 		if (!checkFile.exists())
 			checkFile.mkdirs();
 
-		XStream xstream = new XStream();
-		xstream.alias("BuildConfiguration", BuildConfiguration.class);
-		XmlFile fileWriter = new XmlFile(Jenkins.XSTREAM, getConfigFileFor("\\"	+ config.getProjectName()));
+		XmlFile fileWriter = getConfigFile(config.getProjectName());
 		fileWriter.write(config);
 		saveFile(config);
 	}
@@ -106,7 +110,8 @@ public class BuildConfigurationManager
 	{
 		if (config.getProjectName().isEmpty() || config.getScripts().length == 0)
 			return;
-		String pathFolder = getRootDirectory() + "\\" + config.getProjectName() + "\\" + SCRIPT_FOLDER;
+		String pathFolder = getRootDirectory() + "\\" + config.getProjectName() +
+				"\\" + SCRIPT_FOLDER;
 		String filePath;
 		File checkFolder = new File(pathFolder);
 		File checkFile;
@@ -172,6 +177,7 @@ public class BuildConfigurationManager
 	{
 		BuildConfiguration result = new BuildConfiguration();
 		XmlFile config = getConfigFile(nameProject);
+		
 		if (config.exists())
 		{
 			config.unmarshal(result);
@@ -179,8 +185,9 @@ public class BuildConfigurationManager
 		return result;
 	}
 
-	public static List<BuildConfiguration> loadAllConfigurations() throws IOException, ServletException
-	{
+	public static List<BuildConfiguration> loadAllConfigurations()
+			throws IOException, ServletException, JAXBException
+			{
 		List<BuildConfiguration> configs = new ArrayList<BuildConfiguration>();
 		File file = new File(getRootDirectory());
 
@@ -190,12 +197,13 @@ public class BuildConfigurationManager
 		File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
 		for (int i = 0; i < directories.length; i++)
 		{
-			if (!isCurrentUserAdministrator() && !isCurrentUserCreatorOfConfiguration(directories[i].getName()))
+			if (!isCurrentUserAdministrator() &&
+					!isCurrentUserCreatorOfConfiguration(directories[i].getName()))
 				continue;
 			configs.add(load(directories[i].getName()));
 		}
 		return configs;
-	}
+			}
 
 	public static void deleteFiles(String[] files, String pathFolder)
 	{
@@ -209,8 +217,9 @@ public class BuildConfigurationManager
 		}
 	}
 
-	public static void markConfigurationForDeletion(String name) throws IOException, ParserConfigurationException,
-	JAXBException, AddressException, MessagingException
+	public static void markConfigurationForDeletion(String name)
+			throws IOException, ParserConfigurationException,
+			JAXBException, AddressException, MessagingException
 	{
 		BuildConfiguration config = load(name);
 		if (config.getState() == ConfigurationState.FOR_DELETION)
@@ -219,16 +228,26 @@ public class BuildConfigurationManager
 		config.setCurrentDate();
 		save(config);
 		ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
-				getAdminEmail(), MessageDescription.MARKED_FOR_DELETION.toString(), config.getProjectName());
+				getAdminEmail(), MessageDescription.MARKED_FOR_DELETION.toString(),
+				config.getProjectName());
 		mail.sendMail(message);
 	}
 
-	public static void exportToXml() throws SVNException, IOException, InterruptedException
+	public static VersionControlSystemResult exportToXml()
+			throws SVNException, IOException, InterruptedException
 	{
 		XmlExporter xmlExporter = new XmlExporter();
 		String path = xmlExporter.exportToXml();
 		VersionControlSystem svn = new SvnManager();
-		svn.doCommit(path, "https://svn.code.sf.net/p/testingreposetory/svn/", "matvichuk-artem", "asewqd1005");
+
+		Settings settings = new Settings();
+		if (!settings.isSettingsSet())
+		{
+			VersionControlSystemResult result = new VersionControlSystemResult(false);
+			result.setErrorMassage(CommitError.NONE_PROPERTY.toString());
+			return result;
+		}
+		return svn.doCommit(path, settings.getUrl(), settings.getLogin(), settings.getPassword());
 	}
 
 	public static Boolean isNameUsing(String name)
@@ -241,7 +260,7 @@ public class BuildConfigurationManager
 	}
 
 	public static void deleteConfigurationPermanently(String name) throws IOException,
-	AddressException, MessagingException
+	AddressException, MessagingException, JAXBException
 	{
 		File checkFile = new File(getRootDirectory() + "\\" + name);
 		BuildConfiguration config = load(name);
@@ -262,9 +281,20 @@ public class BuildConfigurationManager
 		mail.sendMail(message);
 	}
 
-	public static Boolean isCurrentUserCreatorOfConfiguration(String name) throws IOException
+	public static Boolean isCurrentUserCreatorOfConfiguration(String name) throws IOException, JAXBException
 	{
 		return load(name).getCreator().equals(getCurrentUserID());
+	}
+
+	public static String[] getPath (String value)
+	{
+		if (value.equals(STRING_EMPTY))
+			return new String[0];
+		if (value.lastIndexOf(';') == value.length()-1)
+		{
+			value = value.substring(0, value.lastIndexOf(';'));
+		}
+		return value.split(";");
 	}
 
 	public static Boolean isCurrentUserAdministrator()
@@ -289,7 +319,7 @@ public class BuildConfigurationManager
 		}
 	}
 
-	public static BuildConfiguration getConfiguration(String name) throws IOException
+	public static BuildConfiguration getConfiguration(String name) throws IOException, JAXBException
 	{
 		BuildConfiguration currenConfig = load(name);
 		if (!isCurrentUserAdministrator() && !isCurrentUserCreatorOfConfiguration(name))

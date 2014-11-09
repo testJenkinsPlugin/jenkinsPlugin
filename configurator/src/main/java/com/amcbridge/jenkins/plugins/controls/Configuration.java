@@ -15,6 +15,6 @@ public enum Configuration {
 	@Override 
 	public String toString()
 	{ 
-		return configurationValue; 
+		return configurationValue;
 	} 
 }

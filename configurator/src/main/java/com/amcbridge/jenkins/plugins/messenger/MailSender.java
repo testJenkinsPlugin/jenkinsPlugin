@@ -7,6 +7,8 @@ import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
 
+import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
+
 public class MailSender
 {
 	String host, from, pass;
@@ -32,8 +34,8 @@ public class MailSender
 			mMessage.setFrom(new InternetAddress(from));
 			InternetAddress to_address = new InternetAddress(message.getDestinationAddress().trim());
 			mMessage.addRecipient(Message.RecipientType.TO, to_address);
-			mMessage.setSubject(message.getSubject());
-			mMessage.setText(message.getMassageText());
+			mMessage.setSubject(message.getSubject(), BuildConfigurationManager.ENCODING);
+			mMessage.setText(message.getMassageText(), BuildConfigurationManager.ENCODING);
 			Transport transport = session.getTransport("smtp");
 			transport.connect(host, from, pass);
 			transport.sendMessage(mMessage, mMessage.getAllRecipients());

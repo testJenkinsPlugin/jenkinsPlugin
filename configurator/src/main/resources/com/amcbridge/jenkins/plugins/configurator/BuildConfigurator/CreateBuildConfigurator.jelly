@@ -1,4 +1,4 @@
-<?jelly escape-by-default='true'?>
+<?jelly escape-by-default='true' encoding='UTF-8'?>
 
 <j:jelly xmlns:j="jelly:core"
    xmlns:st="jelly:stapler"
@@ -8,244 +8,85 @@
    xmlns:f="/lib/form"
    xmlns:i="jelly:fmt"
    xmlns:p="/lib/hudson/project"
+   xmlns:g="glide"
    >
    
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
   <st:bind value="${it}" var="buildConfiguration"/>
-  <script src="../plugin/configurator/scripts/CreateBuildConfigurator.js"/>
+  <script type="text/javascript" src="../plugin/configurator/scripts/CreateBuildConfigurator.js"></script>
   <link rel="stylesheet" href="../plugin/configurator/css/style.css" type="text/css"/>
-  
+
   <l:layout>
         <st:include page="sidepanel.jelly" it="${app}"/>
         <l:main-panel>
             <h1 class="header" id="titlePage">Create new build configuration</h1>
-            <f:form method="post" action="createNewConfigurator" name="createNewConfigurator">
-                <table class="main-tabel">
-                    <tbody>
-                        <tr height="30">
-                            <td>Project name</td>
-                            <td>
-                                <input type="text" id="projectName" name="projectName" class="textbox"/>
-                            </td>
-                        </tr>
-                        <tr height="30">
-                            <td>URL</td>
-                            <td>
-                                <input type="text" id="url" name="url" field="url" class="textbox"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Source Control Tool</td>
-                            <td></td>
-                        </tr>
-                        <j:forEach items="${it.getSourceControlTools()}" var="sct" indexVar="i">
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <f:radio name="sourceControlTool" value="${sct}" title="${sct}"/>
-                                </td>
-                            </tr>
-                        </j:forEach>
-                        <tr height="10"></tr>
-                        <tr>
-                            <td>Build machine configuration</td>
-                            <td></td>
-                        </tr>
-                        <j:forEach items="${it.getBuildMachineConfigurations()}" var="bmc" indexVar="i">
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <f:radio name="buildMachineConfiguration" value="${bmc}" title="${bmc}"/>
-                                </td>
-                            </tr>
-                        </j:forEach>
-                        <tr height="10"></tr>
-                        <tr height="50">
-                            <td>Root project folder:</td>
-                            <td>
-                                <input type="text" id="projectRootFolder" onchange="rootFolderChange()" class="textbox"/>
-                                <applet code="FileChooser.class" archive="FileChooser.jar" id="folderChooser" codebase="../plugin/configurator/applet/" align="right" width="90" height="20"></applet>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Files to build:</td>
-                            <td>
-                                <applet code="FileChooser.class" archive="FileChooser.jar" id="fileToBuildChooser" codebase="../plugin/configurator/applet/" width="90" height="20"></applet>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" height="120">
-                                <fieldset>
-                                    <legend>Files</legend>
-                                    <select id="Files" name="files" class="select" onchange="selectionBoxIndexChange(this)" size="5"/>
-                                </fieldset>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Path to artefacts:</td>
-                            <td>
-                                <applet code="FileChooser.class" archive="FileChooser.jar" id="pathToArtefactsChooser" codebase="../plugin/configurator/applet/" width="90" height="20"></applet>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" height="120">
-                                <fieldset>
-                                    <legend>Artefacts</legend>
-                                    <select id="Artefacts" name="artefacts" class="select" onchange="selectionBoxIndexChange(this)" size="5"/>
-                                </fieldset>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <f:checkbox name="isVersionFiles" id="isVersionFiles" onclick="checkBoxChange(this)" title="Version Files:"/>
-                            </td>
-                            <td>
-                                <applet code="FileChooser.class" archive="FileChooser.jar" id="versionFileChooser" codebase="../plugin/configurator/applet/" width="90" height="20"></applet>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" height="120">
-                                <fieldset>
-                                    <legend>Version Files</legend>
-                                    <select id="VersionFile" name="versionFile" class="select" onchange="selectionBoxIndexChange(this)" size="5"/>
-                                </fieldset>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Postbuild scripts:</td>
-                            <td>
-                                <input type="file" id="scriptsButton" class="input-file" onchange="upload()" value="Add File"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" height="120">
-                                <fieldset>
-                                    <legend>Scripts:</legend>
-                                    <select id="Scripts" name="scripts" class="select" onchange="selectionBoxIndexChange(this)" size="5"/>
-                                </fieldset>
-                            </td>
-                        </tr>
-                        <tr height="50">
-                            <td>
-                                <f:checkbox name="isEmail" id ="isEmail" onclick="checkBoxChange(this)" title="E-mails notifications"/>
-                            </td>
-                            <td>
-                                <input type="text" field="email" name="email" disabled="false" id="email" class="textbox"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="center">
-                                <input type="submit" onclick="return isValidForm();" class="confirm-button" name="save" id="save" value="Save"/>
-                            </td>
-                            <td>
-                                <input type="submit" onclick="return rejectConfiguration();" class="reject-button" name="reject" id="reject" value="Reject"/>
-                                <span class="span"></span>
-                                <input type="submit" onclick="setformResult();" class="confirm-button" name="cancelButton" id="cancelButton" value="Cancel"/>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="th-name"></th>
-                            <th class="th-choose"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Builder</td>
-                            <td></td>
-                        </tr>
-                        <j:forEach items="${it.getBuilders()}" var="builders" indexVar="i">
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <f:checkbox id="${builders.name()}" name="${builders.name()}" value="${builders}" title="${builders}"/>
-                                </td>
-                            </tr>
-                        </j:forEach>
-                        <tr>
-                            <td>
-                                <input type="hidden" id="fileHidden" name="fileHidden" value=""/>
-                            </td>
-                            <td>
-                                <input type="hidden" id="artefactsHidden" name="artefactsHidden" value=""/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="hidden" id="versionFileHidden" name="versionFileHidden" value=""/>
-                            </td>
-                            <td>
-                                <input type="hidden" id="scriptsHidden" name="scriptsHidden" value=""/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="hidden" id="formResultHidden" name="formResultHidden" value=""/>
-                            </td>
-                            <td>
-                                <input type="hidden" id="formType" name="formType" value=""/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="hidden" id="rejectionReason" name="rejectionReason" value=""/>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="configuration-tabel">
-                    <thead>
-                        <tr>
-                            <th class="th-name"></th>
-                            <th class="th-choose"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Configuration:</td>
-                            <td></td>
-                        </tr>
-                        <j:forEach items="${it.getConfigurations()}" var="configurations" indexVar="i">
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <f:radio name="configuration" value="${configurations}" id="${configurations.name()}" title="${configurations}" onclick="configurationGroupChange(this)"/>
-                                </td>
-                            </tr>
-                        </j:forEach>
-                        <tr>
-                            <td></td>
-                            <td align="right">
-                                <input type="text" id="otherConfig" disabled="false" name="userConfiguration" field="otherConfig" class="other-config-textbox"/>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="configuration-tabel">
-                    <thead>
-                        <tr>
-                            <th class="th-name"></th>
-                            <th class="th-choose"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Platform:</td>
-                            <td></td>
-                        </tr>
-                        <j:forEach items="${it.getPlatform()}" var="platform" indexVar="i">
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <f:checkbox name="${platform.name()}" title="${platform}" id="${platform.name()}" value="${platform}"/>
-                                </td>
-                            </tr>
-                        </j:forEach>
-                    </tbody>
-                </table>
+            <f:form method="get" action="createNewConfigurator" name="createNewConfigurator">
+                <div class="div-file-chooser-label">
+                    <label>Project Name</label>
+                </div>
+                <div class="div-textinput">
+                    <input type="text" id="projectName" name="projectName" class="textbox"/>
+                </div>
+
+                <div class="div-build-machine-config">
+                    <label>Build machine configuration:</label>
+                </div>
+
+                <div class="div-radiogroup">
+                    <j:forEach items="${it.getBuildMachineConfigurations()}" var="bmc" indexVar="i">
+                        <f:radio name="buildMachineConfiguration" value="${bmc}" title="${bmc}"/>
+                        <br/>
+                    </j:forEach>
+                </div>
+
+                <div class="div-textinput">
+                    <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="emailCheckBoxChange(this)" title="E-mails notifications"/>
+                    <input type="text" field="email" name="email" disabled="false" id="email" class="textbox"/>
+                </div>
+
+                <div class="div-folder-chooser">
+                    <div class="div-file-chooser-label">
+                        <label>Root project folder:</label>
+                    </div>
+                    <div class="left">
+                        <input type="text" id="projectRootFolder" onchange="rootFolderChange()" class="textbox"/>
+                    </div>
+                    <div>
+                        <applet code="FileChooser.class" archive="FileChooser.jar" id="folderChooser" codebase="../plugin/configurator/applet/" class="applet"></applet>
+                    </div>
+                </div>
+
+                <div id="projectsToBuild">
+                </div>
+
+                <div class="div-add-view">
+                    <input type="button" onClick="addView()" id="addProjectToBuild" value="Add more project to build"/>
+                </div>
+
+                <div>
+                    <label class="div-label">Postbuild scripts:</label>
+                    <input type="file" id="scriptsButton" class="input-file" onchange="upload()" value="Add File"/>
+                    <div class="div-legend">
+                        <fieldset>
+                            <legend>Scripts</legend>
+                            <select id="files_script" name="files_script" class="select" onchange="selectionBoxIndexChange(this)" size="3">
+                            </select>
+                        </fieldset>
+                        <input type="hidden" name="scripts" id="files_hidden_script"/>
+                    </div>
+                </div>
+
+                <div class="div-confirm-button">
+                    <input type="submit" onclick="return isValidForm();" class="confirm-button" name="save" id="save" value="Save"/>
+                    <span class="span"></span>
+                    <input type="submit" onclick="return rejectConfiguration();" class="reject-button" name="reject" id="reject" value="Reject"/>
+                    <span class="span"></span>
+                    <input type="submit" onclick="setFormResultDialog('cancel');" class="confirm-button" name="cancelButton" id="cancelButton" value="Cancel"/>
+
+                    <input type="hidden" name="formResultHidden" id="formResultHidden"/>
+                    <input type="hidden" name="formType" id="formType"/>
+                    <input type="hidden" id="rejectionReason" name="rejectionReason" value=""/>
+                </div>
             </f:form>
         </l:main-panel>
     </l:layout>

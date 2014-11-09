@@ -20,5 +20,16 @@ function deletePermanently(name)
 
 function exportToXml()
 {
-    buildConfiguration.exportToXml(function(t) { alert("Operations was done !");});
+    document.getElementById("loading-div-background").style.visibility='visible';
+    document.getElementById("loading-div").style.visibility='visible';
+    buildConfiguration.exportToXml(function(t) 
+    {
+        document.getElementById("loading-div-background").style.visibility='hidden';
+        document.getElementById("loading-div").style.visibility='hidden';
+
+        if (!t.responseObject().success)
+        {
+            alert(t.responseObject().errorMassage);
+        }
+    });
 }

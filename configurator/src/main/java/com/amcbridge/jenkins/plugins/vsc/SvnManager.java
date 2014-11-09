@@ -76,16 +76,20 @@ public class SvnManager implements VersionControlSystem
 			commitInfo = coomitFile(nodeKind, editor,
 					BuildConfigurationManager.CONFIG_FILE_NAME, fileBytesArray);
 			repository.closeSession();
+			commitResult.setSuccess(true);
 		}
 		catch(Exception ex)
 		{
 			commitResult.setErrorMassage(ex.getMessage());
-			return commitResult;
 		}
 		finally 
 		{
-			commitResult = new VersionControlSystemResult(true, commitInfo.getNewRevision(),
-					commitInfo.getErrorMessage().getFullMessage());
+			commitResult.setNumberOfRevision(commitInfo.getNewRevision());
+			if(commitInfo.getDate() == null)
+			{
+				commitResult.setSuccess(false);
+				commitResult.setErrorMassage(CommitError.FAIL.toString());
+			}
 			return commitResult;
 		}
 	}

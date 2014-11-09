@@ -1,11 +1,11 @@
 package com.amcbridge.jenkins.plugins.messenger;
 
-
 public class ConfigurationStatusMessage implements MessageInfo
 {
 	private String subject, sendTo, description, projectName;
 
-	public ConfigurationStatusMessage (String subject, String sendTo, String description, String projectName)
+	public ConfigurationStatusMessage (String subject,
+			String sendTo, String description, String projectName)
 	{
 		this.subject = subject;
 		this.sendTo = sendTo;
@@ -42,7 +42,6 @@ public class ConfigurationStatusMessage implements MessageInfo
 
 	public void setDestinationAddress(String value) {
 		sendTo = value;
-
 	}
 
 	public void setDescription(String value) {
