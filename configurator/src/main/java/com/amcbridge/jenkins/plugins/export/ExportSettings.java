@@ -80,7 +80,8 @@ public class ExportSettings extends Builder
 
 		public boolean isSettingsSet()
 		{	
-			if(url.isEmpty() || login.isEmpty() || password.isEmpty() )
+			if(url == null || url.isEmpty() || login == null ||
+					login.isEmpty() || password == null || password.isEmpty() )
 			{
 				return false;
 			}
