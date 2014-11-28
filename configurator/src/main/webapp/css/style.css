@@ -15,15 +15,38 @@
 .config tr td,.config tr th 
 {
     font-size:15px;
+    border: 1px solid #000;
 }
 
-.project-name-column { width:400px;}
+.table
+{
+    border: 1px solid #000;
+    border-collapse: collapse;
+}
 
-.state-column { width:120px;}
+.project-name-column
+{
+    width:400px;
+    text-align: center;
+}
 
-.last-update-date-column { width:175px;}
+.state-column
+{
+    width:120px;
+    text-align: center;
+}
 
-.action-column { width:300px;}
+.last-update-date-column
+{
+    width:175px;
+    text-align: center;
+}
+
+.action-column
+{
+    width:300px;
+    text-align: center;
+}
 
 .approve-reject-link { margin:0 0 0 10px;}
 
@@ -36,41 +59,39 @@
     margin:0 0 0 720px;
 }
 
+.state
+{
+    text-align:center;
+}
+
 .new
 {
-    background-color:#3333FF;
-    color:white;
+    color:#3333FF;
+    font-weight: bold;
 }
 
 .updated
 {
-    background-color:#6600CC;
-    color:white;
+    color: #60C;
+    font-weight: bold;
 }
 
 .approved
 {
-    background-color:#009900;
-    color:white;
+    color:#009900;
+    font-weight: bold;
 }
 
 .rejected
 {
-    background-color:#FF0000;
-    color:white;
+    color:#FF0000;
+    font-weight: bold;
 }
 
 .for-deletion
 {
-    background-color:#000000;
-    color:white;
-}
-
-.applet
-{
-    margin:0 0 0 15px;
-    width:90px;
-    height:20px;
+    color:#000000;
+    font-weight: bold;
 }
 
 .reject-button
@@ -84,12 +105,9 @@
     max-width: 95px;
 }
 
-.applet-version-file
+.div-root-project
 {
-    margin:0 0 0 15px;
-    width:90px;
-    height:20px;
-    visibility:hidden;
+    padding-top: 1px;
 }
 
 .div-textinput
@@ -147,8 +165,25 @@
 
 .div-project-to-build
 {
+    margin-top: 55px;
+}
+
+.div-project-version-file
+{
     margin-top: 20px;
-    width: 400px;
+}
+
+.div-plus-button
+{
+    margin-left: 10px;
+    width: 25px;
+}
+
+.div-plus-button-hidden
+{
+    margin-left: 10px;
+    width: 25px;
+    visibility:hidden;
 }
 
 .textbox
@@ -157,9 +192,15 @@
     width: 330px;
 }
 
+.textbox-hidden
+{
+    margin-left:5px;
+    width: 330px;
+    visibility:hidden;
+}
+
 .project-to-build-label
 {
-    float: left;
     width: 145px;
 }
 
@@ -196,7 +237,7 @@
 
 .div-add-project-to-build-view
 {
-    margin-top: 40px;
+    margin-top: 35px;
     width: 660px;
     border: 3px solid rgba(128, 128, 128, 0.79);
     padding-left: 30px;
@@ -219,6 +260,13 @@
 {
     margin-left: 145px;
     margin-top: 3px;
+}
+
+.div-path-to-build
+{
+    float: left;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .loading-div-background

@@ -24,8 +24,6 @@ window.onload = function()
         document.getElementById("formType").value = "CREATE";
     }
 
-    document.getElementById("folderChooser").setIsFolderChooser(true);
-    document.getElementById("folderChooser").setGroup("folderChooser");
     buildConfiguration.deleteNotUploadFile(document.getElementById("files_hidden_script")
         .value.split(';'), function(t) {});
     document.getElementById("files_hidden_script").value = "";
@@ -62,8 +60,7 @@ function setContent(name)
         {
             addToSelectionBox("files_script", scripts[i])
         }
-        
-        
+
     })
 }
 
@@ -115,99 +112,9 @@ function getParameterValue(parameter)
     }
 }
 
-function userCheckFile(group)
-{
-    switch (group)
-    {
-        case "folderChooser":
-            var path = getUserChoose("folderChooser");
-            if (path != null && path!="")
-            {
-                if (path != document.getElementById("projectRootFolder").value)
-                {
-                    document.getElementById("projectRootFolder").value = path;
-                    rootFolderChange();
-                }
-            }
-            break;
-        
-        default:
-            addUserSelectFile(group);
-    }
-}
-
-function addUserSelectFile(group)
-{
-    var path = getUserChoose(group);
-    if (path == "")
-    {
-        return;
-    }
-
-    var divgroupId = document.getElementById(group).parentNode.parentNode.id;
-    var appletNumber = getElementNumber(group);
-
-    if (document.getElementById("files_" + appletNumber).tagName.toLowerCase() == "input")
-    {
-        if (!isPathValid(path))
-        {
-            return;
-        }
-        path = path.substr(document.getElementById("projectRootFolder").value.length);
-        document.getElementById("files_" + appletNumber).value = path;
-        return;
-    }
-
-    var selectionGroups = document.getElementById(divgroupId).getElementsByTagName("select");
-
-    for (var i = 0; i < selectionGroups.length; i++)
-    {
-        if (selectionGroups[i].id.lastIndexOf(appletNumber)!=-1 && selectionGroups[i].id.indexOf("files") != -1)
-        {
-            tryAddToSelectionBox(selectionGroups[i].id, path);
-        }
-    }
-}
-
 function getElementNumber(id)
 {
     return id.substring(id.lastIndexOf('_')+1);
-}
-
-function isPathValid(path)
-{
-    if (document.getElementById("projectRootFolder").value == "")
-    {
-        alert("Please set root project folder before adding files.");
-        return false;
-    }
-    if (path.indexOf(document.getElementById("projectRootFolder").value) == -1)
-    {
-        alert("Sorry, but you choose file which not exist in project folders.");
-        return false;
-    }
-    return true;
-}
-
-function tryAddToSelectionBox(selectionBoxId, path)
-{
-    if (!isPathValid(path))
-    {
-        return;
-    }
-    
-    path = path.substr(document.getElementById("projectRootFolder").value.length);
-    addToSelectionBox(selectionBoxId, path)
-}
-
-function rootFolderChange()
-{
-    var newPath = document.getElementById("projectRootFolder").value;
-    var applets = document.getElementsByTagName("applet");
-    for (var i=0; i<applets.length; i++)
-    {
-        document.getElementById(applets[i].id).setStartPath(newPath);
-    }
 }
 
 function cleacSelectionGroup(groupId)
@@ -217,13 +124,6 @@ function cleacSelectionGroup(groupId)
     {
         selectElement.remove(option);
     }
-}
-
-function getUserChoose(control)
-{
-    var result = document.getElementById(control).getPath();
-    document.getElementById(control).setPath("");
-    return result;
 }
 
 function addView()
@@ -250,7 +150,6 @@ function loadViews(projectName)
         var iDiv = document.createElement("div");
         iDiv.innerHTML = t.responseObject().html;
         document.getElementById("projectsToBuild").appendChild(iDiv);
-        setAppletsId("projectsToBuild");
     });
 }
 
@@ -265,17 +164,6 @@ function addBuilder(button)
         var divs = button.parentNode.parentNode.id;
         document.getElementById("builders_" + divs).appendChild(iDiv);
     });
-}
-
-function setAppletsId(viewId)
-{
-    var elms = document.getElementById(viewId).getElementsByTagName("applet");
-    var newPath = document.getElementById("projectRootFolder").value;
-    for (var i = 0; i < elms.length; i++)
-    {
-        document.getElementById(elms[i].id).setGroup(elms[i].id);
-        document.getElementById(elms[i].id).setStartPath(newPath);
-    }
 }
 
 function selectionBoxIndexChange(selectionBox)
@@ -367,7 +255,16 @@ function addToSelectionBox(selectionBoxId, path)
     x.add(option);
 
     var hiddenInputId = "files_hidden_" + getElementNumber(selectionBoxId);
-    document.getElementById(hiddenInputId).value += path + ";";
+	
+	var hiddenValue = document.getElementById(hiddenInputId).value;
+	if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1)
+	{
+		document.getElementById(hiddenInputId).value += ";" + path + ";";
+	}
+	else
+	{
+		document.getElementById(hiddenInputId).value += path + ";";
+	}
 }
 
 function validateExtension(filename)
@@ -386,17 +283,23 @@ function validateExtension(filename)
 
 function versionFileCheckBoxChange(checkBox)
 {
-    var appletId = "applet_" + getElementNumber(checkBox.id);
+    var pathInput = "path_input_" + getElementNumber(checkBox.id);
+    var addButton = "add_button_" + getElementNumber(checkBox.id);
     if (checkBox.checked)
     {
-        document.getElementById(appletId).style.visibility = "visible";
+        document.getElementById(pathInput).style.visibility = "visible";
+        document.getElementById(addButton).style.visibility = "visible";
+        document.getElementById(pathInput).value = "";
+        var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
+        document.getElementById(hiddenInput).value = "";
     }
     
     if (!checkBox.checked)
     {
         var selectionGroupId = "files_" + getElementNumber(checkBox.id);
         cleacSelectionGroup(selectionGroupId);
-        document.getElementById(appletId).style.visibility = "hidden";
+        document.getElementById(pathInput).style.visibility = "hidden";
+        document.getElementById(addButton).style.visibility = "hidden";
     }
 }
 
@@ -476,4 +379,16 @@ function closeButtonClick(button)
     var element = document.getElementById(divId);
     element.outerHTML = "";
     delete element;
+}
+
+function addPath(button)
+{
+    var number = getElementNumber(button.id);
+    var path = document.getElementById("path_input_" + number).value;
+    if(path.length <= 0)
+    {
+        return;
+    }
+    addToSelectionBox("files_" + number, path);
+    document.getElementById("path_input_" + number).value = "";
 }

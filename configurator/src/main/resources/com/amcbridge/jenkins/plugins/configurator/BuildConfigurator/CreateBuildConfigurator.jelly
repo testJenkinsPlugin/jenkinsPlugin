@@ -44,19 +44,7 @@
                     <input type="text" field="email" name="email" disabled="false" id="email" class="textbox"/>
                 </div>
 
-                <div class="div-folder-chooser">
-                    <div class="div-file-chooser-label">
-                        <label>Root project folder:</label>
-                    </div>
-                    <div class="left">
-                        <input type="text" id="projectRootFolder" onchange="rootFolderChange()" class="textbox"/>
-                    </div>
-                    <div>
-                        <applet code="FileChooser.class" archive="FileChooser.jar" id="folderChooser" codebase="../plugin/configurator/applet/" class="applet"></applet>
-                    </div>
-                </div>
-
-                <div id="projectsToBuild">
+                <div id="projectsToBuild" class="div-root-project">
                 </div>
 
                 <div class="div-add-view">

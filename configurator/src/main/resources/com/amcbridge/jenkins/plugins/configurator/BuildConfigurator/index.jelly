@@ -40,9 +40,9 @@
                     </tr>
                 </thead>
             </table>
-            <table border="1" class="config">
+            <table class="config table">
                 <thead>
-                        <tr align="left" height="30" bgcolor="#CCCCCC">
+                        <tr height="30" bgcolor="#CCCCCC">
                             <th class="project-name-column">Project name</th>
                             <th class="state-column">State</th>
                             <th class="last-update-date-column">Last update date</th>
@@ -54,7 +54,7 @@
                         <j:set var="isCreator" value="${it.isCurrentUserCreator(configs.getProjectName())}"/>
                         <tr height="25">
                             <td>${configs.getProjectName()}</td>
-                            <td>
+                            <td class="state">
                                 <label id="${configs.getState().toString()}" class="${configs.getState().getCSSClassName()}">${configs.getState().toString()}</label>
                             </td>
                             <td>${configs.getDate()}</td>

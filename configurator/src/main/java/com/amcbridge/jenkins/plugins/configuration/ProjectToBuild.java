@@ -7,7 +7,7 @@ import com.amcbridge.jenkins.plugins.controls.SourceControlTool;
 
 public class ProjectToBuild {
 
-	private String projectUrl, fileToBuild;
+	private String projectUrl, fileToBuild, projectFolderPath;
 
 	private Boolean isVersionFiles;
 
@@ -39,6 +39,16 @@ public class ProjectToBuild {
 	public String getFileToBuild ()
 	{
 		return fileToBuild;
+	}
+
+	public void setProjectFolderPath(String value)
+	{
+		projectFolderPath = value;
+	}
+
+	public String getProjectFolderPath()
+	{
+		return projectFolderPath;
 	}
 
 	public void setBuilders (BilderConfig[] value)
@@ -83,12 +93,13 @@ public class ProjectToBuild {
 
 	@DataBoundConstructor
 	public ProjectToBuild(String projectUrl, String fileToBuild,
-			String type, String artefacts, String versionFiles,
+			String type, String artefacts, String versionFiles, String projectFolderPath,
 			Boolean isVersionFiles, BilderConfig[] builders)
 	{
 		this.projectUrl = projectUrl;
 		this.fileToBuild = fileToBuild;
 		this.isVersionFiles = isVersionFiles;
+		this.projectFolderPath = projectFolderPath;
 		if (!type.equals(BuildConfigurationManager.STRING_EMPTY))
 		{
 			this.type = SourceControlTool.valueOf(type);
