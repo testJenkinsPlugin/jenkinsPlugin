@@ -42,7 +42,7 @@ public class BuildConfigurationManager
 	public static final String CONFIG_FILE_NAME = "config.xml";
 	public static final String DATE_FORMAT = "MM/dd/yyyy";
 	public static final String ENCODING = "UTF-8";
-	private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "\\plugins\\configurator\\BuildConfiguration";
+	private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "\\plugins\\BuildConfiguration";
 	private static final String CONTENT_FOLDER = "userContent";
 	private static final String SCRIPT_FOLDER = "Scripts";
 	private static final Integer MAX_FILE_SIZE = 1048576;//max file size which equal 1 mb in bytes
