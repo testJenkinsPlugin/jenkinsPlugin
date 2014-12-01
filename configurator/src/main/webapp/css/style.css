@@ -4,6 +4,16 @@
 {
     width: 565px;
     height: 35px;
+	visibility:visible;
+}
+
+.select-hidden
+{
+   
+   width: 565px;
+   height: 35px;
+   visibility:hidden;
+ 
 }
 
 .input-file { max-width:235px;}
@@ -208,6 +218,14 @@
 {
     width: 585px;
     margin-top: 5px;
+}
+
+.div-legend-hidden
+{
+    width: 585px;
+    margin-top: 5px;
+	height:0px;
+	visibility: hidden;
 }
 
 .div-drop-down

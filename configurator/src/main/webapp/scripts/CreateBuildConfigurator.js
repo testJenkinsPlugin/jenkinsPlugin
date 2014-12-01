@@ -168,6 +168,9 @@ function addBuilder(button)
 
 function selectionBoxIndexChange(selectionBox)
 {
+    
+	
+	
     var selections = document.getElementsByTagName("select");
     for (var i=0; i<selections.length; i++)
     {
@@ -181,6 +184,38 @@ function selectionBoxIndexChange(selectionBox)
             selections[i].selectedIndex  = -1;
         }
     }
+}
+
+function fieldsethidden(id)
+{
+
+    var number = getElementNumber(id);
+	var addfield = "files_" + number;
+	
+	var checkBox = document.getElementById("isVersionFiles_"+number);
+	
+    if (checkBox.checked)
+    {
+       
+        var hiddenInput = "files_hidden_" + number;
+        
+		document.getElementById("div-fieldset_"+number).style.visibility = "visible";
+		document.getElementById(addfield).style.visibility = "visible";
+		document.getElementById("div-fieldset_"+number).style.height = 60;
+		
+	    
+    }
+    
+    if (!checkBox.checked)
+    {
+        var selectionGroupId = "files_" + number;
+        
+		document.getElementById("div-fieldset_"+number).style.visibility = "hidden";
+		document.getElementById(addfield).style.visibility = "hidden";
+		document.getElementById("div-fieldset_"+number).style.height = 0;
+		
+    } 
+
 }
 
 function otherCheckBoxChange(checkBox)
@@ -285,6 +320,8 @@ function versionFileCheckBoxChange(checkBox)
 {
     var pathInput = "path_input_" + getElementNumber(checkBox.id);
     var addButton = "add_button_" + getElementNumber(checkBox.id);
+	var addfield = "files_" + getElementNumber(checkBox.id);
+	
     if (checkBox.checked)
     {
         document.getElementById(pathInput).style.visibility = "visible";
@@ -292,6 +329,11 @@ function versionFileCheckBoxChange(checkBox)
         document.getElementById(pathInput).value = "";
         var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
         document.getElementById(hiddenInput).value = "";
+		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "visible";
+		document.getElementById(addfield).style.visibility = "visible";
+		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 60;
+		
+	    
     }
     
     if (!checkBox.checked)
@@ -300,8 +342,12 @@ function versionFileCheckBoxChange(checkBox)
         cleacSelectionGroup(selectionGroupId);
         document.getElementById(pathInput).style.visibility = "hidden";
         document.getElementById(addButton).style.visibility = "hidden";
+		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "hidden";
+		document.getElementById(addfield).style.visibility = "hidden";
+		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 0;
     }
 }
+
 
 function isValidForm()
 {
@@ -392,3 +438,4 @@ function addPath(button)
     addToSelectionBox("files_" + number, path);
     document.getElementById("path_input_" + number).value = "";
 }
+

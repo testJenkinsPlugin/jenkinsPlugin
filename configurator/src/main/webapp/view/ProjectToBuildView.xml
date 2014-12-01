@@ -75,7 +75,7 @@
             </div>
         </div>
 
-        <div class="div-project-version-file">
+        <div  class="div-project-version-file">
 
             <j:if test="${view.IsVersionFiles()}">
                 <div class="project-to-build-label">
@@ -93,11 +93,12 @@
                 <input type="text" id="path_input_${sourceId[2]}" class="textbox-hidden"/>
                 <input type="button" onclick="addPath(this)" class="div-plus-button-hidden" id="add_button_${sourceId[2]}" value="+"/>
             </j:if>
-
-            <div class="div-legend">
+            
+			<j:if test="${view.IsVersionFiles()}">
+            <div id = "div-fieldset_${sourceId[2]}" class="div-legend">
                 <fieldset>
                     <legend>Version Files</legend>
-                    <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}" class="select" onchange="selectionBoxIndexChange(this)" size="3">
+                    <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select" onchange="selectionBoxIndexChange(this)" size="3">
                         <j:set var="forHidden" value=""/>
                         <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
                             <option value="${vf}">${vf}</option>
@@ -105,9 +106,25 @@
                         </j:forEach>
                     </select>
                 </fieldset>
-
                 <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
             </div>
+			</j:if>
+			<j:if test="${!view.IsVersionFiles()}">
+            <div id = "div-fieldset_${sourceId[2]}" class="div-legend-hidden">
+                <fieldset>
+                    <legend>Version Files</legend>
+                    <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select-hidden" onchange="selectionBoxIndexChange(this)" size="3">
+                        <j:set var="forHidden" value=""/>
+                        <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
+                            <option value="${vf}">${vf}</option>
+                            <j:set var="forHidden" value="${forHidden+vf+';'}"/>
+                        </j:forEach>
+                    </select>
+					
+                </fieldset>
+                <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
+            </div>
+			</j:if>
         </div>
 
         <div id="builders_${divID}" class="builders">
