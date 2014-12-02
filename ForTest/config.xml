@@ -1,2 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<configurations/>
+<configurations>
+  <job name="1234567890" buildMachineConfiguration="Linux">
+    <projects>
+      <project pathToFile="">
+        <repository url="https://bugzilla.amcbridge.com/show_bug.cgi"/>
+        <pathToArtefacts>
+          <file>123</file>
+          <file>456</file>
+          <file>1234567890</file>
+        </pathToArtefacts>
+        <versionFiles versionFile="true">
+          <file>123</file>
+        </versionFiles>
+        <configs>
+          <config builder="VS 2012" platform="Win 32"/>
+        </configs>
+      </project>
+    </projects>
+    <scripts/>
+  </job>
+</configurations>
