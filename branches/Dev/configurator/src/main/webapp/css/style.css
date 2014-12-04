@@ -276,7 +276,6 @@
 
 .div-url-type
 {
-    margin-left: 145px;
     margin-top: 3px;
 }
 
@@ -329,4 +328,10 @@
     display:inline-block;
     padding:2px 5px;
     background:rgba(128, 128, 128, 0.79);
+}
+
+.div-drop-down-list-item
+{
+    margin-left: 5px;
+    width: 165px;
 }

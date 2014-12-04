@@ -28,6 +28,20 @@
                     <input type="text" id="projectName" name="projectName" class="textbox"/>
                 </div>
 
+                <div class="div-textinput">
+                    <div class="div-file-chooser-label">
+                        <label>SCM:</label>
+                    </div>
+
+                    <div class="div-url-type">
+                        <select name="type" id="typeSCM" class="div-drop-down-list-item">
+                            <j:forEach items="${it.getSCM()}" var="sct">
+                                <option value="${sct}">${sct}</option>
+                            </j:forEach>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="div-build-machine-config">
                     <label>Build machine configuration:</label>
                 </div>

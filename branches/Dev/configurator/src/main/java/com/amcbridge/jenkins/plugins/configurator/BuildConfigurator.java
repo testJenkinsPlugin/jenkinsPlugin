@@ -276,4 +276,9 @@ public final class BuildConfigurator implements RootAction {
 	{
 		return BuildMachineConfiguration.values();
 	}
+	
+	public List<String> getSCM()
+	{
+		return BuildConfigurationManager.getSCM();
+	}
 }

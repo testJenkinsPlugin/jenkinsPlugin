@@ -33,6 +33,8 @@ import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
 
 import hudson.XmlFile;
 import hudson.model.User;
+import hudson.scm.SCMDescriptor;
+import hudson.scm.SCM;
 import hudson.security.AccessControlled;
 import hudson.security.Permission;
 import hudson.util.Iterators;
@@ -330,5 +332,16 @@ public class BuildConfigurationManager
 	public static String getAdminEmail()
 	{
 		return JenkinsLocationConfiguration.get().getAdminAddress();
+	}
+	
+	public static List<String> getSCM()
+	{
+		List<String> result = new ArrayList<String>();
+		for (SCMDescriptor<?> scm : SCM.all())
+		{
+			result.add(scm.getDisplayName());
+		}
+
+		return result;
 	}
 }

@@ -74,7 +74,7 @@ public class XmlExporter
 						repo = new Repository();
 						project = new Project();
 
-						repo.setType(config.getProjectToBuild().get(j).getType());
+						repo.setType(config.getType());
 						repo.setUrl(config.getProjectToBuild().get(j).getProjectUrl());
 
 						artefacts = new PathToArtefacts();

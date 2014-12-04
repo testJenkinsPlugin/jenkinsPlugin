@@ -35,6 +35,7 @@ function setContent(name)
 {
     buildConfiguration.getConfiguration(name, function(t){
         document.getElementById("projectName").value = t.responseObject().projectName;
+        document.getElementById("typeSCM").value = t.responseObject().type;
 
         var bmcValue = t.responseObject().buildMachineConfiguration;
         var bmc = document.getElementsByName("buildMachineConfiguration");
@@ -134,7 +135,6 @@ function addView()
         var iDiv = document.createElement("div");
         iDiv.innerHTML = t.responseObject().html;
         document.getElementById("projectsToBuild").appendChild(iDiv);
-        setAppletsId(t.responseObject().viewId);
     });
 }
 
@@ -321,14 +321,12 @@ function versionFileCheckBoxChange(checkBox)
     var pathInput = "path_input_" + getElementNumber(checkBox.id);
     var addButton = "add_button_" + getElementNumber(checkBox.id);
 	var addfield = "files_" + getElementNumber(checkBox.id);
-	
+
     if (checkBox.checked)
     {
         document.getElementById(pathInput).style.visibility = "visible";
         document.getElementById(addButton).style.visibility = "visible";
         document.getElementById(pathInput).value = "";
-        var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
-        document.getElementById(hiddenInput).value = "";
 		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "visible";
 		document.getElementById(addfield).style.visibility = "visible";
 		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 60;
@@ -340,6 +338,8 @@ function versionFileCheckBoxChange(checkBox)
     {
         var selectionGroupId = "files_" + getElementNumber(checkBox.id);
         cleacSelectionGroup(selectionGroupId);
+        var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
+        document.getElementById(hiddenInput).value = "";
         document.getElementById(pathInput).style.visibility = "hidden";
         document.getElementById(addButton).style.visibility = "hidden";
 		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "hidden";
@@ -408,12 +408,6 @@ function deleteFromHidden(hidden, value)
     }
 }
 
-function urlTypeChange(radiobutton)
-{
-    var hiddenId = "sourceControlTool_" + getElementNumber(radiobutton.name);
-    document.getElementById(hiddenId).value = radiobutton.value;
-}
-
 function setFormResultDialog(result)
 {
     document.getElementById("formResultHidden").value = result;
@@ -438,4 +432,3 @@ function addPath(button)
     addToSelectionBox("files_" + number, path);
     document.getElementById("path_input_" + number).value = "";
 }
-

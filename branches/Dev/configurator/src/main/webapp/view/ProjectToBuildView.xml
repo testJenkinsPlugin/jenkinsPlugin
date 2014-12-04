@@ -21,19 +21,6 @@
             </div>
         </div>
 
-        <div class="div-url-type">
-            <j:forEach items="${sourceControlTool}" var="sct" indexVar="i">
-                <j:if test="${sct == view.getType()}">
-                    <input type="radio" name="sourceControlTool_${divID}" onclick="urlTypeChange(this)" checked="checked" value="${sct.name()}"/>${sct}
-                </j:if>
-                <j:if test="${sct != view.getType()}">
-                    <input type="radio" name="sourceControlTool_${divID}" onclick="urlTypeChange(this)"  value="${sct.name()}"/>${sct}
-                </j:if>
-                <br/>
-            </j:forEach>
-            <input type="hidden" name="type" value="${view.getType().name()}" id="sourceControlTool_${divID}"/>
-        </div>
-
         <div class="div-textinput">
             <div class="div-file-chooser-label">
                 <label>Project folder path:</label>
