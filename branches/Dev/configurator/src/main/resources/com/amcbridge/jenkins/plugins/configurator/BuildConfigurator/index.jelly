@@ -1,0 +1,86 @@
+<?jelly escape-by-default='true'?>
+
+<j:jelly xmlns:j="jelly:core"
+   xmlns:st="jelly:stapler"
+   xmlns:d="jelly:define"
+   xmlns:l="/lib/layout"
+   xmlns:t="/lib/hudson"
+   xmlns:f="/lib/form"
+   xmlns:i="jelly:fmt"
+   xmlns:p="/lib/hudson/project"
+   >
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <st:bind value="${it}" var="buildConfiguration"/>
+  <script src="../plugin/configurator/scripts/index.js"/>
+  <link rel="stylesheet" href="../plugin/configurator/css/style.css" type="text/css"/>
+
+    <l:layout>
+        <st:include page="sidepanel.jelly" it="${app}" />
+        <j:set var="isAdmin" value="${it.isCurrentUserAdministrator()}"/>
+        <l:main-panel>
+
+            <div id="loading-div-background" class="loading-div-background">
+                <div id="loading-div" class="loading-div">
+                    <img style="height:64px;width:64px;margin:30px;" src="../plugin/configurator/icons/loader.gif"/>
+                    <br/>
+                    <label>Sending file to SVN repository. Please wait...</label>
+                </div>
+            </div>
+
+            <h1>Configurations</h1>
+            <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
+            <j:if test="${isAdmin}">
+                <a href="" onclick="exportToXml(); return false;" class="export-to-xml">Export to XML</a>
+            </j:if>
+            <table>
+                <thead>
+                    <tr height="10">
+                        <td></td>
+                    </tr>
+                </thead>
+            </table>
+            <table class="config table">
+                <thead>
+                        <tr height="30" bgcolor="#CCCCCC">
+                            <th class="project-name-column">Project name</th>
+                            <th class="state-column">State</th>
+                            <th class="last-update-date-column">Last update date</th>
+                            <th class="action-column">Action</th>
+                        </tr>
+                </thead>
+                <tbody>
+                    <j:forEach items="${it.getAllConfigurations()}" var="configs" indexVar="i">
+                        <j:set var="isCreator" value="${it.isCurrentUserCreator(configs.getProjectName())}"/>
+                        <tr height="25">
+                            <td>${configs.getProjectName()}</td>
+                            <td class="state">
+                                <label id="${configs.getState().toString()}" class="${configs.getState().getCSSClassName()}">${configs.getState().toString()}</label>
+                            </td>
+                            <td>${configs.getDate()}</td>
+                            <td>
+                                <j:if test ="${configs.getState().toString() != 'Approved' &amp;&amp; configs.getState().toString() != 'Rejected'}">
+                                    <j:if test="${isAdmin}">
+                                        <j:if test="${configs.getState().toString() == 'For Deletion'}">
+                                            <j:if test="${h.hasPermission(app.ADMINISTER)}">
+                                                <a href="" onclick="deletePermanently(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">Delete permanently</a>
+                                            </j:if>
+                                        </j:if>
+                                        <j:if test="${configs.getState().toString() != 'For Deletion'}">
+                                            <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=ApproveReject" class="approve-reject-link">Approve/Reject</a>
+                                        </j:if>
+                                    </j:if>
+                                </j:if>
+                                <j:if test="${isCreator &amp;&amp; configs.getState().toString() != 'For Deletion'}">
+                                    <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
+                                    <a href="" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
+                                </j:if>
+                                <span></span>
+                            </td>
+                        </tr>
+                    </j:forEach>
+                </tbody>
+            </table>
+        </l:main-panel>
+    </l:layout>
+</j:jelly>

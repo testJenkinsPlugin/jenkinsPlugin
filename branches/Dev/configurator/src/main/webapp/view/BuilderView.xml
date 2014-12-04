@@ -1,0 +1,79 @@
+<?jelly escape-by-default='true' encoding='UTF-8'?>
+
+<j:jelly xmlns:j="jelly:core"
+   xmlns:st="jelly:stapler"
+   xmlns:d="jelly:define"
+   xmlns:l="/lib/layout"
+   xmlns:t="/lib/hudson"
+   xmlns:f="/lib/form"
+   xmlns:i="jelly:fmt"
+   xmlns:p="/lib/hudson/project"
+   xmlns:g="glide"
+   >
+
+    <div id="build_${divID}" name="builders" class="builders-group">
+        <label id="close_build_${divID}" onclick="closeButtonClick(this)" class="close-builder">X</label>
+
+        <div class="div-drop-down">
+            <label>Builder:</label>
+            <select id="builder_${divID}" class="drop-down" name="builder">
+                
+                <j:forEach items="${builders}" var="build" indexVar="i">
+                    <j:if test="${build.getValue() == view.getBuilder()}">
+                        <option id="${build.getKey()+'_'+divID}" name="${build.getKey()+'_'+divID}" selected="selected" value="${build.getValue()}">${build.getValue()}</option>
+                    </j:if>
+                    <j:if test="${build.getValue() != view.getBuilder()}">
+                        <option id="${build.getKey()+'_'+divID}" name="${build.getKey()+'_'+divID}" value="${build.getValue()}">${build.getValue()}</option>
+                    </j:if>
+                </j:forEach>
+            </select>
+        </div>
+
+        <div class="div-drop-down">
+            <label>Platforms:</label>
+            <select id="platform_${divID}" class="drop-down" name="platform">
+                <j:forEach items="${platforms}" var="platform" indexVar="i">
+                    <j:if test="${platform == view.getPlatform()}">
+                        <option id="${platform.name()+'_'+divID}" name="${platform.name()+'_'+divID}" selected="selected" value="${platform}">${platform}</option>
+                    </j:if>
+                    <j:if test="${platform != view.getPlatform()}">
+                        <option id="${platform.name()+'_'+divID}" name="${platform.name()+'_'+divID}" value="${platform}">${platform}</option>
+                    </j:if>
+                </j:forEach>
+            </select>
+        </div>
+
+        <div class="div-drop-down">
+            <div class="div-configuration">
+                <label>Configuration:</label>
+            </div>
+
+            <j:if test="${view.isConfigChecked('RELEASE')}">
+                <input type="checkbox" id="release" checked="checked" name="release"/>Release
+            </j:if>
+            <j:if test="${!view.isConfigChecked('RELEASE')}">
+                <input type="checkbox" id="release" name="release"/>Release
+            </j:if>
+            <br/>
+
+            <j:if test="${view.isConfigChecked('DEBUG')}">
+                <input type="checkbox" id="debug" checked="checked" name="debug"/>Debug
+            </j:if>
+            <j:if test="${!view.isConfigChecked('DEBUG')}">
+                <input type="checkbox" id="debug" name="debug"/>Debug
+            </j:if>
+            <br/>
+
+            <j:if test="${view.isConfigChecked('OTHER')}">
+                <input type="checkbox" id="Other_${divID}" name="other" checked="checked" onclick="otherCheckBoxChange(this)"/>Other
+                <input type="text" id="userConfig_${divID}" name="userConfig" value="${view.getUserConfig()}" class="othet-config" field="userConfig_${divID}"/>
+            </j:if>
+            <j:if test="${!view.isConfigChecked('OTHER')}">
+                <input type="checkbox" id="Other_${divID}" name="other" onclick="otherCheckBoxChange(this)"/>Other
+                <input type="text" id="userConfig_${divID}" name="userConfig" disabled="false" class="othet-config" field="userConfig_${divID}"/>
+            </j:if>
+        </div>
+    </div>
+    <j:forEach items="s" var="config" indexVar="i">
+    </j:forEach>
+</j:jelly>
