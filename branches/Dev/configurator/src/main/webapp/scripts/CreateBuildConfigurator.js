@@ -29,8 +29,6 @@ window.onload = function()
     document.getElementById("files_hidden_script").value = "";
 }
 
-
-
 function setContent(name)
 {
     buildConfiguration.getConfiguration(name, function(t){
@@ -38,13 +36,19 @@ function setContent(name)
         document.getElementById("typeSCM").value = t.responseObject().type;
 
         var bmcValue = t.responseObject().buildMachineConfiguration;
-        var bmc = document.getElementsByName("buildMachineConfiguration");
-
+        document.getElementById("build_machine_configuration").value = "";
+        var bmc = document.getElementsByName("node");
         for (var i=0; i<bmc.length; i++)
         {
-            if (bmc[i].value == bmcValue)
+            document.getElementById(bmc[i].id).checked = false;
+        }
+
+        for (var i=0; i<bmcValue.length; i++)
+        {
+            if (document.getElementById(bmcValue[i]) != null)
             {
-                bmc[i].checked  = "selected";
+                document.getElementById(bmcValue[i]).checked = true;
+                addToHidden("build_machine_configuration", bmcValue[i]);
             }
         }
 
@@ -61,7 +65,6 @@ function setContent(name)
         {
             addToSelectionBox("files_script", scripts[i])
         }
-
     })
 }
 
@@ -168,9 +171,6 @@ function addBuilder(button)
 
 function selectionBoxIndexChange(selectionBox)
 {
-    
-	
-	
     var selections = document.getElementsByTagName("select");
     for (var i=0; i<selections.length; i++)
     {
@@ -190,30 +190,30 @@ function fieldsethidden(id)
 {
 
     var number = getElementNumber(id);
-	var addfield = "files_" + number;
-	
-	var checkBox = document.getElementById("isVersionFiles_"+number);
-	
+    var addfield = "files_" + number;
+    
+    var checkBox = document.getElementById("isVersionFiles_"+number);
+    
     if (checkBox.checked)
     {
        
         var hiddenInput = "files_hidden_" + number;
         
-		document.getElementById("div-fieldset_"+number).style.visibility = "visible";
-		document.getElementById(addfield).style.visibility = "visible";
-		document.getElementById("div-fieldset_"+number).style.height = 60;
-		
-	    
+        document.getElementById("div-fieldset_"+number).style.visibility = "visible";
+        document.getElementById(addfield).style.visibility = "visible";
+        document.getElementById("div-fieldset_"+number).style.height = 60;
+        
+        
     }
     
     if (!checkBox.checked)
     {
         var selectionGroupId = "files_" + number;
         
-		document.getElementById("div-fieldset_"+number).style.visibility = "hidden";
-		document.getElementById(addfield).style.visibility = "hidden";
-		document.getElementById("div-fieldset_"+number).style.height = 0;
-		
+        document.getElementById("div-fieldset_"+number).style.visibility = "hidden";
+        document.getElementById(addfield).style.visibility = "hidden";
+        document.getElementById("div-fieldset_"+number).style.height = 0;
+        
     } 
 
 }
@@ -290,16 +290,20 @@ function addToSelectionBox(selectionBoxId, path)
     x.add(option);
 
     var hiddenInputId = "files_hidden_" + getElementNumber(selectionBoxId);
-	
-	var hiddenValue = document.getElementById(hiddenInputId).value;
-	if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1)
-	{
-		document.getElementById(hiddenInputId).value += ";" + path + ";";
-	}
-	else
-	{
-		document.getElementById(hiddenInputId).value += path + ";";
-	}
+    addToHidden(hiddenInputId, path);
+}
+
+function addToHidden(hiddenInputId, value)
+{
+    var hiddenValue = document.getElementById(hiddenInputId).value;
+    if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1)
+    {
+        document.getElementById(hiddenInputId).value += ";" + value + ";";
+    }
+    else
+    {
+        document.getElementById(hiddenInputId).value += value + ";";
+    }
 }
 
 function validateExtension(filename)
@@ -320,18 +324,18 @@ function versionFileCheckBoxChange(checkBox)
 {
     var pathInput = "path_input_" + getElementNumber(checkBox.id);
     var addButton = "add_button_" + getElementNumber(checkBox.id);
-	var addfield = "files_" + getElementNumber(checkBox.id);
+    var addfield = "files_" + getElementNumber(checkBox.id);
 
     if (checkBox.checked)
     {
         document.getElementById(pathInput).style.visibility = "visible";
         document.getElementById(addButton).style.visibility = "visible";
         document.getElementById(pathInput).value = "";
-		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "visible";
-		document.getElementById(addfield).style.visibility = "visible";
-		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 60;
-		
-	    
+        document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "visible";
+        document.getElementById(addfield).style.visibility = "visible";
+        document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 60;
+        
+        
     }
     
     if (!checkBox.checked)
@@ -342,9 +346,9 @@ function versionFileCheckBoxChange(checkBox)
         document.getElementById(hiddenInput).value = "";
         document.getElementById(pathInput).style.visibility = "hidden";
         document.getElementById(addButton).style.visibility = "hidden";
-		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "hidden";
-		document.getElementById(addfield).style.visibility = "hidden";
-		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 0;
+        document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "hidden";
+        document.getElementById(addfield).style.visibility = "hidden";
+        document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 0;
     }
 }
 
@@ -431,4 +435,16 @@ function addPath(button)
     }
     addToSelectionBox("files_" + number, path);
     document.getElementById("path_input_" + number).value = "";
+}
+
+function bMCChange(checkBox)
+{
+    if (checkBox.checked)
+    {
+        addToHidden("build_machine_configuration", checkBox.id);
+    }
+    if (!checkBox.checked)
+    {
+        deleteFromHidden(document.getElementById("build_machine_configuration"), checkBox.id);
+    }
 }

@@ -4,7 +4,7 @@
 {
     width: 565px;
     height: 35px;
-	visibility:visible;
+    visibility:visible;
 }
 
 .select-hidden
@@ -136,7 +136,7 @@
 .div-radiogroup
 {
     width: 200px;
-    margin-left: 140px;
+    margin-left: 150px;
     margin-top: 15px;
     margin-bottom: 15px;
 }
@@ -224,8 +224,8 @@
 {
     width: 585px;
     margin-top: 5px;
-	height:0px;
-	visibility: hidden;
+    height:0px;
+    visibility: hidden;
 }
 
 .div-drop-down

@@ -42,16 +42,19 @@
                     </div>
                 </div>
 
-                <div class="div-build-machine-config">
-                    <label>Build machine configuration:</label>
-                </div>
+                <j:if test ="${it.getNodesName().size() > 0}">
+                    <div class="div-build-machine-config">
+                        <label>Build machine configuration:</label>
+                        <input type="hidden" id="build_machine_configuration" name="build_machine_configuration" value=""/>
+                    </div>
 
-                <div class="div-radiogroup">
-                    <j:forEach items="${it.getBuildMachineConfigurations()}" var="bmc" indexVar="i">
-                        <f:radio name="buildMachineConfiguration" value="${bmc}" title="${bmc}"/>
-                        <br/>
-                    </j:forEach>
-                </div>
+                    <div class="div-radiogroup">
+                        <j:forEach items="${it.getNodesName()}" var="node">
+                            <f:checkbox name="node" id="${node}" value="${node}" title="${node}" onclick="bMCChange(this)"/>
+                            <br/>
+                        </j:forEach>
+                    </div>
+                </j:if>
 
                 <div class="div-textinput">
                     <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="emailCheckBoxChange(this)" title="E-mails notifications"/>

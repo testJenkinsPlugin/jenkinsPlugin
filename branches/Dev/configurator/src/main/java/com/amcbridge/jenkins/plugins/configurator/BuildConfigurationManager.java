@@ -32,6 +32,7 @@ import com.amcbridge.jenkins.plugins.vsc.VersionControlSystem;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
 
 import hudson.XmlFile;
+import hudson.model.Node;
 import hudson.model.User;
 import hudson.scm.SCMDescriptor;
 import hudson.scm.SCM;
@@ -340,6 +341,17 @@ public class BuildConfigurationManager
 		for (SCMDescriptor<?> scm : SCM.all())
 		{
 			result.add(scm.getDisplayName());
+		}
+
+		return result;
+	}
+
+	public static List<String> getNodesName()
+	{
+		List<String> result = new ArrayList<String>();
+		for (Node node : Jenkins.getInstance().getNodes())
+		{
+			result.add(node.getNodeName());
 		}
 
 		return result;

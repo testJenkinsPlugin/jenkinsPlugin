@@ -107,6 +107,11 @@ public final class BuildConfigurator implements RootAction {
 
 		newConfig.setScripts(BuildConfigurationManager
 				.getPath(formAttribute.get("scripts").toString()));
+		if (formAttribute.get("build_machine_configuration") != null)
+		{
+			newConfig.setBuildMachineConfiguration(BuildConfigurationManager
+					.getPath(formAttribute.get("build_machine_configuration").toString()));
+		}
 		newConfig.setCurrentDate();
 
 		ConfigurationStatusMessage message = 
@@ -272,13 +277,13 @@ public final class BuildConfigurator implements RootAction {
 		return BuildConfigurationManager.getAdminEmail();
 	}
 
-	public BuildMachineConfiguration[] getBuildMachineConfigurations()
-	{
-		return BuildMachineConfiguration.values();
-	}
-	
 	public List<String> getSCM()
 	{
 		return BuildConfigurationManager.getSCM();
+	}
+
+	public List<String> getNodesName()
+	{
+		return BuildConfigurationManager.getNodesName();
 	}
 }
