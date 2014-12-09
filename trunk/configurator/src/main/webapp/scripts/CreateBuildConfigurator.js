@@ -168,9 +168,6 @@ function addBuilder(button)
 
 function selectionBoxIndexChange(selectionBox)
 {
-    
-	
-	
     var selections = document.getElementsByTagName("select");
     for (var i=0; i<selections.length; i++)
     {
@@ -188,34 +185,26 @@ function selectionBoxIndexChange(selectionBox)
 
 function fieldsethidden(id)
 {
-
     var number = getElementNumber(id);
 	var addfield = "files_" + number;
-	
 	var checkBox = document.getElementById("isVersionFiles_"+number);
 	
     if (checkBox.checked)
     {
        
         var hiddenInput = "files_hidden_" + number;
-        
 		document.getElementById("div-fieldset_"+number).style.visibility = "visible";
 		document.getElementById(addfield).style.visibility = "visible";
-		document.getElementById("div-fieldset_"+number).style.height = 60;
-		
-	    
+		document.getElementById("div-fieldset_"+number).style.height = 60;   
     }
     
     if (!checkBox.checked)
     {
         var selectionGroupId = "files_" + number;
-        
 		document.getElementById("div-fieldset_"+number).style.visibility = "hidden";
 		document.getElementById(addfield).style.visibility = "hidden";
-		document.getElementById("div-fieldset_"+number).style.height = 0;
-		
+		document.getElementById("div-fieldset_"+number).style.height = 0;	
     } 
-
 }
 
 function otherCheckBoxChange(checkBox)
@@ -233,6 +222,8 @@ function textboxDisabled(checkBox, textboxId)
 {
     if (!checkBox.checked)
     {
+        document.getElementById("mailError").style.display = "";
+	document.getElementById("email").style.border = "";	
         document.getElementById(textboxId).disabled = true;
         document.getElementById(textboxId).value = "";
     }
@@ -290,7 +281,6 @@ function addToSelectionBox(selectionBoxId, path)
     x.add(option);
 
     var hiddenInputId = "files_hidden_" + getElementNumber(selectionBoxId);
-	
 	var hiddenValue = document.getElementById(hiddenInputId).value;
 	if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1)
 	{
@@ -331,11 +321,8 @@ function versionFileCheckBoxChange(checkBox)
         document.getElementById(hiddenInput).value = "";
 		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "visible";
 		document.getElementById(addfield).style.visibility = "visible";
-		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 60;
-		
-	    
+		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 60;   
     }
-    
     if (!checkBox.checked)
     {
         var selectionGroupId = "files_" + getElementNumber(checkBox.id);
@@ -352,11 +339,27 @@ function versionFileCheckBoxChange(checkBox)
 function isValidForm()
 {
     var projectName = document.getElementById("projectName").value;
+	var path = document.getElementsByName("projectFolderPath");
     if (projectName == "")
     {
         alert("Please, enter your project name");
         return false;
     }
+	if(document.getElementById("mailError").style.display == "block")
+	{
+	    alert("Please, enter your e-mail");
+		document.getElementById("email").focus();
+		return false;
+	}
+	for(var i=0;i<path.length;i++)
+	{
+	    if(path[i].style.border != "")
+		{
+		    alert("Please, enter path");
+			path[i].focus();
+			return false;
+		}
+	}
     if (type == "edit")
         return true;
     if (type == "ApproveReject")
@@ -431,11 +434,76 @@ function addPath(button)
 {
     var number = getElementNumber(button.id);
     var path = document.getElementById("path_input_" + number).value;
-    if(path.length <= 0)
+	var error = document.getElementById("path_error_" + number).style.display;
+    if((path.length <= 0)||(error == "block"))
     {
         return;
     }
     addToSelectionBox("files_" + number, path);
     document.getElementById("path_input_" + number).value = "";
+}
+
+function imageHelp(id)
+{  
+	var number = getElementNumber(id);
+	if(document.getElementById("block_help_"+number).style.display == 0)
+	{
+		document.getElementById("block_help_"+number).style.display = "block";
+		document.getElementById("text_help_"+number).style.display = "block";
+	}
+	else
+	{
+		document.getElementById("block_help_"+number).style.display = "";
+		document.getElementById("text_help_"+number).style.display = "";
+	}
+}
+
+function validateMail(mail)
+{
+	var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+    if(pattern.test(mail.value)||mail.value=="")
+	{
+		document.getElementById("mailError").style.display = "";
+		document.getElementById("email").style.border = "";
+	}
+	else
+	{
+		document.getElementById("mailError").style.display = "block";
+		document.getElementById("email").style.border = "1px solid red";
+	}
+}
+
+function checkURL(id,add)
+{
+    var url = document.getElementById(id).value;
+	var number = getElementNumber(id);
+    var regURL = /^(?:(?:https?|ftp|telnet):\/\/(?:[a-z0-9_-]{1,32}(?::[a-z0-9_-]{1,32})?@)?)?(?:(?:[a-z0-9-]{1,128}\.)+(?:com|net|org|mil|edu|arpa|ru|gov|biz|info|aero|inc|name|[a-z]{2})|(?!0)(?:(?!0[^.]|255)[0-9]{1,3}\.){3}(?!0|255)[0-9]{1,3})(?:\/[a-z0-9.,_@%&?+=\~\/-]*)?(?:#[^ \'\"&<>]*)?$/i;
+    if(regURL.test(url) || url == "")
+	{
+	    document.getElementById("url_error_"+number+add).style.display = "";
+		document.getElementById(id).style.border = "";
+	}
+	else
+	{
+		document.getElementById("url_error_"+number+add).style.display = "block";
+		document.getElementById(id).style.border = "1px solid red";
+	}
+}
+
+function checkPath(id)
+{
+	var path = document.getElementById(id).value;
+	var number = getElementNumber(id);
+    var regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?*]+)+\\?$/i;
+    if(regPath.test(path) || path == "")
+	{
+	    document.getElementById("path_error_"+number).style.display = "";
+		document.getElementById(id).style.border = "";
+	}
+	else
+	{
+		document.getElementById("path_error_"+number).style.display = "block";
+		document.getElementById(id).style.border = "1px solid red";
+	}
 }
 

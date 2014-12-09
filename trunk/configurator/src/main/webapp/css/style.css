@@ -122,8 +122,8 @@
 
 .div-textinput
 {
-    width: 480px;
-    margin-top: 15px;
+    margin-top: 10px;
+	height:19px;
 }
 
 .div-label
@@ -175,7 +175,7 @@
 
 .div-project-to-build
 {
-    margin-top: 55px;
+    margin-top: 10px;
 }
 
 .div-project-version-file
@@ -256,7 +256,7 @@
 .div-add-project-to-build-view
 {
     margin-top: 35px;
-    width: 660px;
+    width: 625px;
     border: 3px solid rgba(128, 128, 128, 0.79);
     padding-left: 30px;
 }
@@ -329,4 +329,34 @@
     display:inline-block;
     padding:2px 5px;
     background:rgba(128, 128, 128, 0.79);
+}
+
+.block-help-view
+{
+    width:453px;
+	margin-top: 7px;
+	display: none;
+	border: solid #bbb 1px;
+	background-color: #f0f0f0;
+	padding: 1em;
+	margin-bottom: 1em;
+}
+
+.helptext
+{
+	font-family: Verdana, Helvetica, sans serif;
+	font-size: 11px;
+	display:none;
+}
+
+.image
+{
+	margin-left:10px;
+}
+
+.error
+{
+    margin-left: 150px;
+    margin-top: 5px;
+	display: none;
 }

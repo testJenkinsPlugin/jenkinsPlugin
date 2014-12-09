@@ -27,7 +27,7 @@
                 <div class="div-textinput">
                     <input type="text" id="projectName" name="projectName" class="textbox"/>
                 </div>
-
+				
                 <div class="div-build-machine-config">
                     <label>Build machine configuration:</label>
                 </div>
@@ -41,9 +41,11 @@
 
                 <div class="div-textinput">
                     <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="emailCheckBoxChange(this)" title="E-mails notifications"/>
-                    <input type="text" field="email" name="email" disabled="false" id="email" class="textbox"/>
+                    <input type="text" field="email" onblur="validateMail(this)" name="email" disabled="false" id="email" class="textbox"/>
                 </div>
-
+                <div id="mailError" class="error">
+					Not correct e-mail
+				</div>
                 <div id="projectsToBuild" class="div-root-project">
                 </div>
 
