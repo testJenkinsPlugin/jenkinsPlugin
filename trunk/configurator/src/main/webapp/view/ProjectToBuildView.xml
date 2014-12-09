@@ -17,7 +17,7 @@
                 <label>Project url:</label>
             </div>
 			<div>		
-				<input type="text" id="project_Url_${sourceId[0]}" name="projectFolderPath" onblur="checkURL(id,'url')" value="${view.getProjectUrl()}" class="textbox"/>		
+				<input type="text" id="project_Url_${sourceId[0]}" name="projectUrl" onblur="checkURL(id,'url')" value="${view.getProjectUrl()}" class="textbox"/>		
 			</div>
 			<div id="url_error_${sourceId[0]}url" class="error">
 				Not correct url
@@ -72,24 +72,24 @@
 				 Relative path
 			</lebel>
         </div>
-
+		
         <div class="div-project-to-build">
             <div class="project-to-build-label">
                 <label class="div-file-chooser-label">Path to artefacts:</label>
             </div>
-	    <div>
-	    	<input type="text" id="path_input_${sourceId[1]}" name="projectFolderPath" onblur="checkPath(id)" class="textbox"/>
-	    	<input type="button" id="add_button_${sourceId[1]}" onclick="addPath(this)" class="div-plus-button" value="+"/>
-	    	<img id="image_${sourceId[0]}" src="/jenkins/static/e45d7697/images/16x16/help.png" onClick="imageHelp(id+'art')" class="image"/>
-	    </div>
-	    <div id="path_error_${sourceId[1]}" class="error">
-			Not correct path
-	    </div>
-	    <div id="block_help_${sourceId[0]}art" class="block-help-view">
-	    	<lebel id="text_help_${sourceId[0]}art" class="helptext">
-	    	Relative path
-	    	</lebel>
-	    </div>
+			<div>
+				<input type="text" id="path_input_${sourceId[1]}" name="pathToArtefacts" onblur="checkPath(id)" class="textbox"/>
+				<input type="button" id="add_button_${sourceId[1]}" onclick="addPath(this)" class="div-plus-button" value="+"/>
+				<img id="image_${sourceId[0]}" src="/jenkins/static/e45d7697/images/16x16/help.png" onClick="imageHelp(id+'art')" class="image"/>
+			</div>
+			<div id="path_error_${sourceId[1]}" class="error">
+				Not correct path
+			</div>
+			<div id="block_help_${sourceId[0]}art" class="block-help-view">
+				<lebel id="text_help_${sourceId[0]}art" class="helptext">
+				 Relative path
+				</lebel>
+			</div>
             <div class="div-legend">
                 <fieldset>
                     <legend>Artefacts</legend>
@@ -113,7 +113,7 @@
                     <input type="checkbox" class="check-box" name="isVersionFiles" checked="checked" onclick="versionFileCheckBoxChange(this)" id="isVersionFiles_${sourceId[2]}"/>
                     <label class="div-label">Version Files</label>
                 </div>
-                <input type="text" id="path_input_${sourceId[2]}" name="projectFolderPath" onblur="checkPath(id)" class="textbox"/>
+                <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="checkPath(id)" class="textbox"/>
                 <input type="button" onclick="addPath(this)" class="div-plus-button" id="add_button_${sourceId[2]}" value="+"/>
             </j:if>
             <j:if test="${!view.IsVersionFiles()}">
@@ -121,7 +121,7 @@
                     <input type="checkbox" class="check-box" name="isVersionFiles" onclick="versionFileCheckBoxChange(this)" id="isVersionFiles_${sourceId[2]}"/>
                     <label class="div-label">Version Files</label>
                 </div>
-                <input type="text" id="path_input_${sourceId[2]}" name="projectFolderPath" onblur="checkPath(id)" class="textbox-hidden"/>
+                <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="checkPath(id)" class="textbox-hidden"/>
                 <input type="button" onclick="addPath(this)" class="div-plus-button-hidden" id="add_button_${sourceId[2]}" value="+"/>
             </j:if>
 			<div id="path_error_${sourceId[2]}" class="error">

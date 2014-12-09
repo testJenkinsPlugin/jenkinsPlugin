@@ -335,11 +335,13 @@ function versionFileCheckBoxChange(checkBox)
     }
 }
 
-
 function isValidForm()
 {
     var projectName = document.getElementById("projectName").value;
-	var path = document.getElementsByName("projectFolderPath");
+	var pathFolder = document.getElementsByName("projectFolderPath");
+	var pathUrl = document.getElementsByName("projectUrl");
+	var pathArt = document.getElementsByName("pathToArtefacts");
+	var pathVer = document.getElementsByName("versionFilesPath");
     if (projectName == "")
     {
         alert("Please, enter your project name");
@@ -351,15 +353,10 @@ function isValidForm()
 		document.getElementById("email").focus();
 		return false;
 	}
-	for(var i=0;i<path.length;i++)
-	{
-	    if(path[i].style.border != "")
-		{
-		    alert("Please, enter path");
-			path[i].focus();
-			return false;
-		}
-	}
+	return checkingPath(pathFolder);
+	return checkingPath(pathUrl);
+	return checkingPath(pathArt);
+	return checkingPath(pathVer);
     if (type == "edit")
         return true;
     if (type == "ApproveReject")
@@ -378,6 +375,19 @@ function isValidForm()
             alert("Configuration with name '" + projectName + "' has already exists. Please select another name.");
     });
     return false;
+}
+
+function checkingPath(path)
+{
+   for(var i=0;i<path.length;i++)
+	{
+	    if(path[i].style.border != "")
+		{
+		    alert("Please, enter path");
+			path[i].focus();
+			return false;
+		}
+	}
 }
 
 function rejectConfiguration()
@@ -494,7 +504,7 @@ function checkPath(id)
 {
 	var path = document.getElementById(id).value;
 	var number = getElementNumber(id);
-    var regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?*]+)+\\?$/i;
+    var regPath = /^(\\[^<>:"/\\|?*]+)+\\?$/i;
     if(regPath.test(path) || path == "")
 	{
 	    document.getElementById("path_error_"+number).style.display = "";
