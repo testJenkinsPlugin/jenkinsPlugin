@@ -64,6 +64,7 @@
                                         <j:if test="${configs.getState().toString() == 'For Deletion'}">
                                             <j:if test="${h.hasPermission(app.ADMINISTER)}">
                                                 <a href="" onclick="deletePermanently(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">Delete permanently</a>
+					        <a href="" onclick="restore(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">Restore</a>
                                             </j:if>
                                         </j:if>
                                         <j:if test="${configs.getState().toString() != 'For Deletion'}">

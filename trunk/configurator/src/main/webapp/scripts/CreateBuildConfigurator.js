@@ -349,7 +349,6 @@ function isValidForm()
     }
 	if(document.getElementById("mailError").style.display == "block")
 	{
-	    alert("Please, enter your e-mail");
 		document.getElementById("email").focus();
 		return false;
 	}
@@ -383,7 +382,6 @@ function checkingPath(path)
 	{
 	    if(path[i].style.border != "")
 		{
-		    alert("Please, enter path");
 			path[i].focus();
 			return false;
 		}

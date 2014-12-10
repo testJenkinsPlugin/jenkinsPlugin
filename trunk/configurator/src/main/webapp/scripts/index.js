@@ -18,6 +18,14 @@ function deletePermanently(name)
     buildConfiguration.deleteConfigurationPermanently(name, function(t) {});
 }
 
+function restore(name)
+{
+    var result = confirm("Are you sure you want restore '" + name + "' configuration");
+    if (!result)
+        return;
+    buildConfiguration.restoreConfiguration(name, function(t) {})
+}
+
 function exportToXml()
 {
     document.getElementById("loading-div-background").style.visibility='visible';

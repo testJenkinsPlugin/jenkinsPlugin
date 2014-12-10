@@ -251,6 +251,13 @@ public final class BuildConfigurator implements RootAction {
 		BuildConfigurationManager.deleteConfigurationPermanently(name);
 	}
 
+	@JavaScriptMethod
+	public void restoreConfiguration(String name)
+			throws AddressException, IOException, MessagingException, JAXBException,ParserConfigurationException
+	{
+		BuildConfigurationManager.restoreConfiguration(name);
+	}
+	
 	public static Boolean isCurrentUserCreator(String name) throws IOException, JAXBException
 	{
 		return BuildConfigurationManager.isCurrentUserCreatorOfConfiguration(name);

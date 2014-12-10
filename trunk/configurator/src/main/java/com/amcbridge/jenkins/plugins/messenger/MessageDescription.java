@@ -6,7 +6,9 @@ public enum MessageDescription {
 	APPROVE("configuration was successfully approved!"),
 	REJECT("configuration was rejected by administrator. The reasons of rejection are:"),
 	MARKED_FOR_DELETION("configuration was marked for deletion."),
-	DELETE_PERMANENTLY("configuration was successfully deleted.");
+	DELETE_PERMANENTLY("configuration was successfully deleted."),
+	RESTORE("configuration was successfully restored.");
+	
 
 	private String messageDescriptionValue;
 

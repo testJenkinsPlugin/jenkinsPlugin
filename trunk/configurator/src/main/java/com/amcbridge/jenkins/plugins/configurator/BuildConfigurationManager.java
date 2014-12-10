@@ -232,6 +232,20 @@ public class BuildConfigurationManager
 				config.getProjectName());
 		mail.sendMail(message);
 	}
+	
+	public static void restoreConfiguration(String name) throws IOException, ParserConfigurationException,
+	JAXBException, AddressException, MessagingException
+	{
+		BuildConfiguration config = load(name);
+		config.setState(ConfigurationState.UPDATED);
+		config.setCurrentDate();
+		save(config);
+		ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
+		getAdminEmail(), MessageDescription.RESTORE.toString(),
+		config.getProjectName());
+		mail.sendMail(message);
+
+	}
 
 	public static VersionControlSystemResult exportToXml()
 			throws SVNException, IOException, InterruptedException
