@@ -19,7 +19,7 @@
 			<div>		
 				<input type="text" id="project_Url_${sourceId[0]}" name="projectUrl" onblur="checkURL(id,'url')" value="${view.getProjectUrl()}" class="textbox"/>		
 			</div>
-			<div id="url_error_${sourceId[0]}url" class="error">
+			<div id="url_error_${sourceId[0]}url" class="error-none">
 				Not correct url
 			</div>
 			
@@ -47,7 +47,7 @@
 				<img id="image_${sourceId[0]}" src="/jenkins/static/e45d7697/images/16x16/help.png" onClick="imageHelp(id+'path')" class="image"/>
             </div>
         </div>
-		<div id="path_error_${sourceId[0]}" class="error">
+		<div id="path_error_${sourceId[0]}" class="error-none">
 				Not correct path
 		</div>
 		<div id="block_help_${sourceId[0]}path" class="block-help-view">
@@ -82,7 +82,7 @@
 				<input type="button" id="add_button_${sourceId[1]}" onclick="addPath(this)" class="div-plus-button" value="+"/>
 				<img id="image_${sourceId[0]}" src="/jenkins/static/e45d7697/images/16x16/help.png" onClick="imageHelp(id+'art')" class="image"/>
 			</div>
-			<div id="path_error_${sourceId[1]}" class="error">
+			<div id="path_error_${sourceId[1]}" class="error-none">
 				Not correct path
 			</div>
 			<div id="block_help_${sourceId[0]}art" class="block-help-view">
@@ -124,7 +124,7 @@
                 <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="checkPath(id)" class="textbox-hidden"/>
                 <input type="button" onclick="addPath(this)" class="div-plus-button-hidden" id="add_button_${sourceId[2]}" value="+"/>
             </j:if>
-			<div id="path_error_${sourceId[2]}" class="error">
+			<div id="path_error_${sourceId[2]}" class="error-none">
 				Not correct path
 			</div>
             

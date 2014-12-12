@@ -58,6 +58,12 @@
     text-align: center;
 }
 
+.user-name
+{
+    width:275px;
+	text-align: center;
+}
+
 .approve-reject-link { margin:0 0 0 10px;}
 
 .edit-link { margin:0 0 0 10px;}
@@ -122,7 +128,7 @@
 
 .div-textinput
 {
-    margin-top: 10px;
+    margin-top: 15px;
 	height:19px;
 }
 
@@ -209,6 +215,13 @@
     visibility:hidden;
 }
 
+.textbox-error
+{
+    margin-left:5px;
+    width: 330px;
+	border: 1px solid red;
+}
+
 .project-to-build-label
 {
     width: 145px;
@@ -265,6 +278,13 @@
 {
     width: 143px;
     float: left;
+}
+
+.div-project-name
+{
+    float: left;
+	width: 143px;
+	margin-top: 15px;
 }
 
 .div-confirm-button
@@ -331,11 +351,22 @@
     background:rgba(128, 128, 128, 0.79);
 }
 
-.block-help-view
+.help-view
 {
     width:453px;
 	margin-top: 7px;
 	display: none;
+	border: solid #bbb 1px;
+	background-color: #f0f0f0;
+	padding: 1em;
+	margin-bottom: 1em;
+}
+
+.block-help-view
+{
+    width:453px;
+	margin-top: 7px;
+	display: block;
 	border: solid #bbb 1px;
 	background-color: #f0f0f0;
 	padding: 1em;
@@ -349,14 +380,50 @@
 	display:none;
 }
 
+.helptext-block
+{
+	font-family: Verdana, Helvetica, sans serif;
+	font-size: 11px;
+	display:block;
+}
+
 .image
 {
 	margin-left:10px;
 }
 
-.error
+.error-none
 {
     margin-left: 150px;
     margin-top: 5px;
 	display: none;
+	
+	color: #CC0000;
+	font-weight: bold;
+	
+	min-height: 16px;
+	line-height: 16px;
+	background-image: url("/jenkins/static/e45d7697/images/16x16/error.png");
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+
+.error-block
+{
+    margin-left: 150px;
+    margin-top: 5px;
+	display: block;
+	
+	color: #CC0000;
+	font-weight: bold;
+	
+	min-height: 16px;
+	line-height: 16px;
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+
+.user
+{
+    font-size:15px;    
 }

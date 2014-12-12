@@ -21,7 +21,10 @@
         <l:main-panel>
             <h1 class="header" id="titlePage">Create new build configuration</h1>
             <f:form method="get" action="createNewConfigurator" name="createNewConfigurator">
-                <div class="div-file-chooser-label">
+			    <div class="user">
+					<label id="userLabel"></label>
+				</div>
+                <div class="div-project-name">
                     <label>Project Name</label>
                 </div>
                 <div class="div-textinput">
@@ -43,7 +46,8 @@
                     <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="emailCheckBoxChange(this)" title="E-mails notifications"/>
                     <input type="text" field="email" onblur="validateMail(this)" name="email" disabled="false" id="email" class="textbox"/>
                 </div>
-                <div id="mailError" class="error">
+                <div id="mailError" class="error-none">
+				<img src="/jenkins/static/e45d7697/images/16x16/error.png"/>
 					Not correct e-mail
 				</div>
                 <div id="projectsToBuild" class="div-root-project">

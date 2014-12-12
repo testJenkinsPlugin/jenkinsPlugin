@@ -47,6 +47,7 @@
                             <th class="state-column">State</th>
                             <th class="last-update-date-column">Last update date</th>
                             <th class="action-column">Action</th>
+							<th class="user-name">Username</th>
                         </tr>
                 </thead>
                 <tbody>
@@ -78,6 +79,7 @@
                                 </j:if>
                                 <span></span>
                             </td>
+							<td>${configs.getFullNameCreator()}</td>
                         </tr>
                     </j:forEach>
                 </tbody>

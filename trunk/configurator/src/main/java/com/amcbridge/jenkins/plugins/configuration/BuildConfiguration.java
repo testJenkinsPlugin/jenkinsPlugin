@@ -113,4 +113,11 @@ public class BuildConfiguration
 	{
 		return creator;
 	}
+	
+	public String getFullNameCreator()
+	{
+		User user = User.current().get(creator);
+		String fullname = user.getFullName();
+		return fullname;
+	}
 }

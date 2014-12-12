@@ -3,6 +3,7 @@ var type;
 window.onload = function()
 {
     var parameters = document.location.search.substr(1);
+	
     buildConfiguration.loadCreateNewBuildConfiguration(function(t) {});
     if (parameters.length != 0)
     {
@@ -35,10 +36,9 @@ function setContent(name)
 {
     buildConfiguration.getConfiguration(name, function(t){
         document.getElementById("projectName").value = t.responseObject().projectName;
-
+		
         var bmcValue = t.responseObject().buildMachineConfiguration;
         var bmc = document.getElementsByName("buildMachineConfiguration");
-
         for (var i=0; i<bmc.length; i++)
         {
             if (bmc[i].value == bmcValue)
@@ -60,8 +60,15 @@ function setContent(name)
         {
             addToSelectionBox("files_script", scripts[i])
         }
-
+		if(t.responseObject().creator != null)
+		{
+			buildConfiguration.getFullNameCreator(t.responseObject().creator, function(t){
+			
+			document.getElementById("userLabel").innerHTML = "Created by:  "+t.responseObject();
+			})
+		}
     })
+	
 }
 
 document.addEventListener('keyup', function (e)
@@ -223,7 +230,7 @@ function textboxDisabled(checkBox, textboxId)
     if (!checkBox.checked)
     {
         document.getElementById("mailError").style.display = "";
-	document.getElementById("email").style.border = "";	
+		document.getElementById("email").style.border = "";	
         document.getElementById(textboxId).disabled = true;
         document.getElementById(textboxId).value = "";
     }
@@ -347,15 +354,19 @@ function isValidForm()
         alert("Please, enter your project name");
         return false;
     }
-	if(document.getElementById("mailError").style.display == "block")
+	if(document.getElementById("mailError").className == "error-block")
 	{
 		document.getElementById("email").focus();
 		return false;
 	}
-	return checkingPath(pathFolder);
-	return checkingPath(pathUrl);
-	return checkingPath(pathArt);
-	return checkingPath(pathVer);
+	if (!checkingPath(pathUrl))
+		return false;
+	if (!checkingPath(pathFolder))
+		return false;
+	if (!checkingPath(pathArt))
+		return false;
+	if (!checkingPath(pathVer))
+		return false;	
     if (type == "edit")
         return true;
     if (type == "ApproveReject")
@@ -380,11 +391,13 @@ function checkingPath(path)
 {
    for(var i=0;i<path.length;i++)
 	{
-	    if(path[i].style.border != "")
+	    if(path[i].className == "textbox-error")
 		{
 			path[i].focus();
 			return false;
 		}
+		else
+			return true;
 	}
 }
 
@@ -399,6 +412,7 @@ function rejectConfiguration()
             return false;
         }
         document.getElementById("rejectionReason").value = reason;
+		alert(document.getElementById("rejectionReason").value);
         document.getElementById("formType").value = "REJECT";
         return true;
     }
@@ -442,8 +456,8 @@ function addPath(button)
 {
     var number = getElementNumber(button.id);
     var path = document.getElementById("path_input_" + number).value;
-	var error = document.getElementById("path_error_" + number).style.display;
-    if((path.length <= 0)||(error == "block"))
+	var error = document.getElementById("path_error_" + number).className;
+    if((path.length <= 0)||(error == "error-block"))
     {
         return;
     }
@@ -454,15 +468,16 @@ function addPath(button)
 function imageHelp(id)
 {  
 	var number = getElementNumber(id);
-	if(document.getElementById("block_help_"+number).style.display == 0)
+	
+	if(document.getElementById("block_help_"+number).className == "help-view")
 	{
-		document.getElementById("block_help_"+number).style.display = "block";
-		document.getElementById("text_help_"+number).style.display = "block";
+		document.getElementById("block_help_"+number).className = "block-help-view";
+		document.getElementById("text_help_"+number).className = "helptext-block";
 	}
 	else
 	{
-		document.getElementById("block_help_"+number).style.display = "";
-		document.getElementById("text_help_"+number).style.display = "";
+		document.getElementById("block_help_"+number).className = "help-view";
+		document.getElementById("text_help_"+number).className = "helptext";
 	}
 }
 
@@ -471,13 +486,13 @@ function validateMail(mail)
 	var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
     if(pattern.test(mail.value)||mail.value=="")
 	{
-		document.getElementById("mailError").style.display = "";
-		document.getElementById("email").style.border = "";
+		document.getElementById("mailError").className = "error-none";
+		document.getElementById("email").className = "textbox";
 	}
 	else
 	{
-		document.getElementById("mailError").style.display = "block";
-		document.getElementById("email").style.border = "1px solid red";
+		document.getElementById("mailError").className = "error-block";
+		document.getElementById("email").className = "textbox-error";
 	}
 }
 
@@ -488,13 +503,13 @@ function checkURL(id,add)
     var regURL = /^(?:(?:https?|ftp|telnet):\/\/(?:[a-z0-9_-]{1,32}(?::[a-z0-9_-]{1,32})?@)?)?(?:(?:[a-z0-9-]{1,128}\.)+(?:com|net|org|mil|edu|arpa|ru|gov|biz|info|aero|inc|name|[a-z]{2})|(?!0)(?:(?!0[^.]|255)[0-9]{1,3}\.){3}(?!0|255)[0-9]{1,3})(?:\/[a-z0-9.,_@%&?+=\~\/-]*)?(?:#[^ \'\"&<>]*)?$/i;
     if(regURL.test(url) || url == "")
 	{
-	    document.getElementById("url_error_"+number+add).style.display = "";
-		document.getElementById(id).style.border = "";
+	    document.getElementById("url_error_"+number+add).className = "error-none";
+		document.getElementById(id).className = "textbox";
 	}
 	else
 	{
-		document.getElementById("url_error_"+number+add).style.display = "block";
-		document.getElementById(id).style.border = "1px solid red";
+		document.getElementById("url_error_"+number+add).className = "error-block";
+		document.getElementById(id).className= "textbox-error";
 	}
 }
 
@@ -502,16 +517,16 @@ function checkPath(id)
 {
 	var path = document.getElementById(id).value;
 	var number = getElementNumber(id);
-    var regPath = /^(\\[^<>:"/\\|?*]+)+\\?$/i;
+    var regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?*]+)+\\?$/i;
     if(regPath.test(path) || path == "")
 	{
-	    document.getElementById("path_error_"+number).style.display = "";
-		document.getElementById(id).style.border = "";
+	    document.getElementById("path_error_"+number).className = "error-none";
+		document.getElementById(id).className = "textbox";
 	}
 	else
 	{
-		document.getElementById("path_error_"+number).style.display = "block";
-		document.getElementById(id).style.border = "1px solid red";
+		document.getElementById("path_error_"+number).className = "error-block";
+		document.getElementById(id).className= "textbox-error";
 	}
 }
 

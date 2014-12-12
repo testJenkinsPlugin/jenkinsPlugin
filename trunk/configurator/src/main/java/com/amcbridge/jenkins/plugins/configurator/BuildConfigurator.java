@@ -243,6 +243,14 @@ public final class BuildConfigurator implements RootAction {
 	{
 		return !BuildConfigurationManager.isNameUsing(name);
 	}
+	
+	@JavaScriptMethod
+	public String getFullNameCreator(String creator)
+	{
+		User user = User.current().get(creator);
+		String fullname = user.getFullName();
+		return fullname;
+	}
 
 	@JavaScriptMethod
 	public void deleteConfigurationPermanently(String name)
