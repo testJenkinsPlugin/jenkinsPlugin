@@ -36,7 +36,8 @@ function setContent(name)
 {
     buildConfiguration.getConfiguration(name, function(t){
         document.getElementById("projectName").value = t.responseObject().projectName;
-		
+		if(t.responseObject().rejectionReason != "")
+			document.getElementById("reasonLabel").innerHTML = "Reason of rejection:  "+t.responseObject().rejectionReason;
         var bmcValue = t.responseObject().buildMachineConfiguration;
         var bmc = document.getElementsByName("buildMachineConfiguration");
         for (var i=0; i<bmc.length; i++)
@@ -229,8 +230,8 @@ function textboxDisabled(checkBox, textboxId)
 {
     if (!checkBox.checked)
     {
-        document.getElementById("mailError").style.display = "";
-		document.getElementById("email").style.border = "";	
+        document.getElementById("mailError").className = "error-none";
+		document.getElementById("email").className = "textbox";	
         document.getElementById(textboxId).disabled = true;
         document.getElementById(textboxId).value = "";
     }
@@ -321,10 +322,10 @@ function versionFileCheckBoxChange(checkBox)
 	
     if (checkBox.checked)
     {
+		var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
         document.getElementById(pathInput).style.visibility = "visible";
         document.getElementById(addButton).style.visibility = "visible";
         document.getElementById(pathInput).value = "";
-        var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
         document.getElementById(hiddenInput).value = "";
 		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "visible";
 		document.getElementById(addfield).style.visibility = "visible";
@@ -339,6 +340,8 @@ function versionFileCheckBoxChange(checkBox)
 		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "hidden";
 		document.getElementById(addfield).style.visibility = "hidden";
 		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 0;
+		document.getElementById("path_error_"+getElementNumber(checkBox.id)).className = "error-none";
+		document.getElementById("path_input_"+getElementNumber(checkBox.id)).className = "textbox";
     }
 }
 
@@ -389,6 +392,8 @@ function isValidForm()
 
 function checkingPath(path)
 {
+   if(paath.length == 0)
+		return true;
    for(var i=0;i<path.length;i++)
 	{
 	    if(path[i].className == "textbox-error")
@@ -412,7 +417,6 @@ function rejectConfiguration()
             return false;
         }
         document.getElementById("rejectionReason").value = reason;
-		alert(document.getElementById("rejectionReason").value);
         document.getElementById("formType").value = "REJECT";
         return true;
     }

@@ -12,7 +12,7 @@ import com.amcbridge.jenkins.plugins.configurator.ConfigurationState;
 
 public class BuildConfiguration
 {
-	private String projectName, buildMachineConfiguration, email, creator, date;
+	private String projectName, buildMachineConfiguration, email, creator, date, rejectionReason;
 
 	private ConfigurationState state;
 
@@ -119,5 +119,15 @@ public class BuildConfiguration
 		User user = User.current().get(creator);
 		String fullname = user.getFullName();
 		return fullname;
+	}
+	
+	public void setReject(String reject)
+	{
+		rejectionReason = reject;
+	}
+	
+	public String getrejectionReason()
+	{
+		return rejectionReason;
 	}
 }

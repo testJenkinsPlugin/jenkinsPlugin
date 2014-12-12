@@ -148,6 +148,7 @@ public final class BuildConfigurator implements RootAction {
 				message.setDestinationAddress(newConfig.getEmail().trim());
 				mail.sendMail(message);
 			}
+			newConfig.setReject(formAttribute.get("rejectionReason").toString());
 			break;
 		default:
 			break;

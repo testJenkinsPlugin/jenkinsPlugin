@@ -427,3 +427,16 @@
 {
     font-size:15px;    
 }
+
+.reason
+{
+    font-family: Verdana, Helvetica, sans serif;
+	font-size: 15px;
+	color: #CC0000;
+}
+
+.title-header
+{
+    width:600px;
+	margin-bottom: 10px;
+}

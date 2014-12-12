@@ -19,8 +19,11 @@
   <l:layout>
         <st:include page="sidepanel.jelly" it="${app}"/>
         <l:main-panel>
+			<div class="title-header">
             <h1 class="header" id="titlePage">Create new build configuration</h1>
-            <f:form method="get" action="createNewConfigurator" name="createNewConfigurator">
+			<label id="reasonLabel" class="reason"></label>
+            </div>
+			<f:form method="get" action="createNewConfigurator" name="createNewConfigurator">
 			    <div class="user">
 					<label id="userLabel"></label>
 				</div>
