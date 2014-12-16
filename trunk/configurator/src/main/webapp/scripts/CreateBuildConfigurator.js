@@ -3,7 +3,6 @@ var type;
 window.onload = function()
 {
     var parameters = document.location.search.substr(1);
-	
     buildConfiguration.loadCreateNewBuildConfiguration(function(t) {});
     if (parameters.length != 0)
     {
@@ -19,6 +18,12 @@ window.onload = function()
             document.getElementById('save').value='Approve';
             document.getElementById('reject').style.visibility='visible';
         }
+        if(type == "view")
+        {
+            document.getElementById('save').className = "confirm-button-hidden";
+            document.getElementById('reject').className = "reject-button-none";
+            document.getElementById('spanReject').className = "spanReject";
+        }
     }
     else
     {
@@ -30,14 +35,12 @@ window.onload = function()
     document.getElementById("files_hidden_script").value = "";
 }
 
-
-
 function setContent(name)
 {
-    buildConfiguration.getConfiguration(name, function(t){
+        buildConfiguration.getConfiguration(name, function(t){
         document.getElementById("projectName").value = t.responseObject().projectName;
-		if(t.responseObject().rejectionReason != "")
-			document.getElementById("reasonLabel").innerHTML = "Reason of rejection:  "+t.responseObject().rejectionReason;
+        if(t.responseObject().rejectionReason != "")
+            document.getElementById("reasonLabel").innerHTML = "Reason of rejection:  "+t.responseObject().rejectionReason;
         var bmcValue = t.responseObject().buildMachineConfiguration;
         var bmc = document.getElementsByName("buildMachineConfiguration");
         for (var i=0; i<bmc.length; i++)
@@ -61,15 +64,13 @@ function setContent(name)
         {
             addToSelectionBox("files_script", scripts[i])
         }
-		if(t.responseObject().creator != null)
-		{
-			buildConfiguration.getFullNameCreator(t.responseObject().creator, function(t){
-			
-			document.getElementById("userLabel").innerHTML = "Created by:  "+t.responseObject();
-			})
-		}
+        if(t.responseObject().creator != null)
+        {
+            buildConfiguration.getFullNameCreator(t.responseObject().creator, function(t){
+            document.getElementById("userLabel").innerHTML = "Created by:  "+t.responseObject();
+            })
+        }
     })
-	
 }
 
 document.addEventListener('keyup', function (e)
@@ -183,7 +184,6 @@ function selectionBoxIndexChange(selectionBox)
         {
             continue;
         }
-        
         if (selections[i].selectedIndex != -1)
         {
             selections[i].selectedIndex  = -1;
@@ -194,24 +194,21 @@ function selectionBoxIndexChange(selectionBox)
 function fieldsethidden(id)
 {
     var number = getElementNumber(id);
-	var addfield = "files_" + number;
-	var checkBox = document.getElementById("isVersionFiles_"+number);
-	
+    var addfield = "files_" + number;
+    var checkBox = document.getElementById("isVersionFiles_"+number);
     if (checkBox.checked)
     {
-       
         var hiddenInput = "files_hidden_" + number;
-		document.getElementById("div-fieldset_"+number).style.visibility = "visible";
-		document.getElementById(addfield).style.visibility = "visible";
-		document.getElementById("div-fieldset_"+number).style.height = 60;   
-    }
-    
+        document.getElementById("div-fieldset_"+number).style.visibility = "visible";
+        document.getElementById(addfield).style.visibility = "visible";
+        document.getElementById("div-fieldset_"+number).style.height = 60;   
+    } 
     if (!checkBox.checked)
     {
         var selectionGroupId = "files_" + number;
-		document.getElementById("div-fieldset_"+number).style.visibility = "hidden";
-		document.getElementById(addfield).style.visibility = "hidden";
-		document.getElementById("div-fieldset_"+number).style.height = 0;	
+        document.getElementById("div-fieldset_"+number).style.visibility = "hidden";
+        document.getElementById(addfield).style.visibility = "hidden";
+        document.getElementById("div-fieldset_"+number).style.height = 0;
     } 
 }
 
@@ -231,7 +228,7 @@ function textboxDisabled(checkBox, textboxId)
     if (!checkBox.checked)
     {
         document.getElementById("mailError").className = "error-none";
-		document.getElementById("email").className = "textbox";	
+        document.getElementById("email").className = "textbox";	
         document.getElementById(textboxId).disabled = true;
         document.getElementById(textboxId).value = "";
     }
@@ -289,15 +286,15 @@ function addToSelectionBox(selectionBoxId, path)
     x.add(option);
 
     var hiddenInputId = "files_hidden_" + getElementNumber(selectionBoxId);
-	var hiddenValue = document.getElementById(hiddenInputId).value;
-	if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1)
-	{
-		document.getElementById(hiddenInputId).value += ";" + path + ";";
-	}
-	else
-	{
-		document.getElementById(hiddenInputId).value += path + ";";
-	}
+    var hiddenValue = document.getElementById(hiddenInputId).value;
+    if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1)
+    {
+        document.getElementById(hiddenInputId).value += ";" + path + ";";
+    }
+    else
+    {
+        document.getElementById(hiddenInputId).value += path + ";";
+    }
 }
 
 function validateExtension(filename)
@@ -318,18 +315,17 @@ function versionFileCheckBoxChange(checkBox)
 {
     var pathInput = "path_input_" + getElementNumber(checkBox.id);
     var addButton = "add_button_" + getElementNumber(checkBox.id);
-	var addfield = "files_" + getElementNumber(checkBox.id);
-	
+    var addfield = "files_" + getElementNumber(checkBox.id);
     if (checkBox.checked)
     {
-		var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
+        var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
         document.getElementById(pathInput).style.visibility = "visible";
         document.getElementById(addButton).style.visibility = "visible";
         document.getElementById(pathInput).value = "";
         document.getElementById(hiddenInput).value = "";
-		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "visible";
-		document.getElementById(addfield).style.visibility = "visible";
-		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 60;   
+        document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "visible";
+        document.getElementById(addfield).style.visibility = "visible";
+        document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 60;   
     }
     if (!checkBox.checked)
     {
@@ -337,39 +333,40 @@ function versionFileCheckBoxChange(checkBox)
         cleacSelectionGroup(selectionGroupId);
         document.getElementById(pathInput).style.visibility = "hidden";
         document.getElementById(addButton).style.visibility = "hidden";
-		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "hidden";
-		document.getElementById(addfield).style.visibility = "hidden";
-		document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 0;
-		document.getElementById("path_error_"+getElementNumber(checkBox.id)).className = "error-none";
-		document.getElementById("path_input_"+getElementNumber(checkBox.id)).className = "textbox";
+        document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.visibility = "hidden";
+        document.getElementById(addfield).style.visibility = "hidden";
+        document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 0;
+        document.getElementById("path_error_"+getElementNumber(checkBox.id)).className = "error-none";
+        document.getElementById("path_input_"+getElementNumber(checkBox.id)).className = "textbox";
     }
 }
 
 function isValidForm()
 {
     var projectName = document.getElementById("projectName").value;
-	var pathFolder = document.getElementsByName("projectFolderPath");
-	var pathUrl = document.getElementsByName("projectUrl");
-	var pathArt = document.getElementsByName("pathToArtefacts");
-	var pathVer = document.getElementsByName("versionFilesPath");
+    var pathFolder = document.getElementsByName("projectFolderPath");
+    var pathUrl = document.getElementsByName("projectUrl");
+    var pathArt = document.getElementsByName("pathToArtefacts");
+    var pathVer = document.getElementsByName("versionFilesPath");
+    var build = document.getElementsByName("projectToBuild");
     if (projectName == "")
     {
         alert("Please, enter your project name");
         return false;
     }
-	if(document.getElementById("mailError").className == "error-block")
-	{
-		document.getElementById("email").focus();
-		return false;
-	}
-	if (!checkingPath(pathUrl))
-		return false;
-	if (!checkingPath(pathFolder))
-		return false;
-	if (!checkingPath(pathArt))
-		return false;
-	if (!checkingPath(pathVer))
-		return false;	
+    if(document.getElementById("mailError").className == "error-block")
+    {
+        document.getElementById("email").focus();
+        return false;
+    }
+    if (!checkingPath(pathUrl))
+        return false;
+    if (!checkingPath(pathFolder))
+        return false;
+    if (!checkingPath(pathArt))
+        return false;
+    if (!checkingPath(pathVer))
+        return false;
     if (type == "edit")
         return true;
     if (type == "ApproveReject")
@@ -392,18 +389,18 @@ function isValidForm()
 
 function checkingPath(path)
 {
-   if(paath.length == 0)
-		return true;
+   if(path.length == 0)
+        return true;
    for(var i=0;i<path.length;i++)
-	{
-	    if(path[i].className == "textbox-error")
-		{
-			path[i].focus();
-			return false;
-		}
-		else
-			return true;
-	}
+    {
+        if(path[i].className == "textbox-error")
+        {
+            path[i].focus();
+            return false;
+        }
+        else
+            return true;
+    }
 }
 
 function rejectConfiguration()
@@ -460,7 +457,7 @@ function addPath(button)
 {
     var number = getElementNumber(button.id);
     var path = document.getElementById("path_input_" + number).value;
-	var error = document.getElementById("path_error_" + number).className;
+    var error = document.getElementById("path_error_" + number).className;
     if((path.length <= 0)||(error == "error-block"))
     {
         return;
@@ -471,66 +468,82 @@ function addPath(button)
 
 function imageHelp(id)
 {  
-	var number = getElementNumber(id);
-	
-	if(document.getElementById("block_help_"+number).className == "help-view")
-	{
-		document.getElementById("block_help_"+number).className = "block-help-view";
-		document.getElementById("text_help_"+number).className = "helptext-block";
-	}
-	else
-	{
-		document.getElementById("block_help_"+number).className = "help-view";
-		document.getElementById("text_help_"+number).className = "helptext";
-	}
+    var number = getElementNumber(id);
+    if(document.getElementById("block_help_"+number).className == "help-view")
+    {
+        document.getElementById("block_help_"+number).className = "block-help-view";
+        document.getElementById("text_help_"+number).className = "helptext-block";
+    }
+    else
+    {
+        document.getElementById("block_help_"+number).className = "help-view";
+        document.getElementById("text_help_"+number).className = "helptext";
+    }
 }
 
 function validateMail(mail)
 {
-	var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
-    if(pattern.test(mail.value)||mail.value=="")
-	{
-		document.getElementById("mailError").className = "error-none";
-		document.getElementById("email").className = "textbox";
-	}
-	else
-	{
-		document.getElementById("mailError").className = "error-block";
-		document.getElementById("email").className = "textbox-error";
-	}
+    var mailValue = mail.value;
+    var mails = mailValue.split(', ');
+    var cheking = true;
+    for(var i = 0; i < mails.length;i++)
+    {
+        cheking = checkMail(mails[i]);
+        if (!cheking)
+            break;
+    }
+    if(cheking || mail.value=="")
+    {
+        document.getElementById("mailError").className = "error-none";
+        document.getElementById("email").className = "textbox";
+    }
+    else
+    {
+        document.getElementById("mailError").className = "error-block";
+        document.getElementById("email").className = "textbox-error";
+    }
+}
+
+function checkMail(mailp)
+{
+    var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+    if(pattern.test(mailp))
+        return true;
+    else 
+        return false;
 }
 
 function checkURL(id,add)
 {
     var url = document.getElementById(id).value;
-	var number = getElementNumber(id);
+    var number = getElementNumber(id);
     var regURL = /^(?:(?:https?|ftp|telnet):\/\/(?:[a-z0-9_-]{1,32}(?::[a-z0-9_-]{1,32})?@)?)?(?:(?:[a-z0-9-]{1,128}\.)+(?:com|net|org|mil|edu|arpa|ru|gov|biz|info|aero|inc|name|[a-z]{2})|(?!0)(?:(?!0[^.]|255)[0-9]{1,3}\.){3}(?!0|255)[0-9]{1,3})(?:\/[a-z0-9.,_@%&?+=\~\/-]*)?(?:#[^ \'\"&<>]*)?$/i;
     if(regURL.test(url) || url == "")
-	{
-	    document.getElementById("url_error_"+number+add).className = "error-none";
-		document.getElementById(id).className = "textbox";
-	}
-	else
-	{
-		document.getElementById("url_error_"+number+add).className = "error-block";
-		document.getElementById(id).className= "textbox-error";
-	}
+    {
+        document.getElementById("url_error_"+number+add).className = "error-none";
+        document.getElementById(id).className = "textbox";
+    }
+    else
+    {
+        document.getElementById("url_error_"+number+add).className = "error-block";
+        document.getElementById(id).className= "textbox-error";
+    }
 }
 
 function checkPath(id)
 {
-	var path = document.getElementById(id).value;
-	var number = getElementNumber(id);
+    var path = document.getElementById(id).value;
+    var number = getElementNumber(id);
     var regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?*]+)+\\?$/i;
     if(regPath.test(path) || path == "")
-	{
-	    document.getElementById("path_error_"+number).className = "error-none";
-		document.getElementById(id).className = "textbox";
-	}
-	else
-	{
-		document.getElementById("path_error_"+number).className = "error-block";
-		document.getElementById(id).className= "textbox-error";
-	}
+    {
+        document.getElementById("path_error_"+number).className = "error-none";
+        document.getElementById(id).className = "textbox";
+    }
+    else
+    {
+        document.getElementById("path_error_"+number).className = "error-block";
+        document.getElementById(id).className= "textbox-error";
+    }
 }
 

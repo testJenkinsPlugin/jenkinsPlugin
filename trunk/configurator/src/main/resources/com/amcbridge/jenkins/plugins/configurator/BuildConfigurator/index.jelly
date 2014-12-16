@@ -47,7 +47,7 @@
                             <th class="state-column">State</th>
                             <th class="last-update-date-column">Last update date</th>
                             <th class="action-column">Action</th>
-							<th class="user-name">Username</th>
+                            <th class="user-name">Username</th>
                         </tr>
                 </thead>
                 <tbody>
@@ -65,7 +65,7 @@
                                         <j:if test="${configs.getState().toString() == 'For Deletion'}">
                                             <j:if test="${h.hasPermission(app.ADMINISTER)}">
                                                 <a href="" onclick="deletePermanently(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">Delete permanently</a>
-					        <a href="" onclick="restore(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">Restore</a>
+                                                <a href="" onclick="restore(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">Restore</a>
                                             </j:if>
                                         </j:if>
                                         <j:if test="${configs.getState().toString() != 'For Deletion'}">
@@ -77,9 +77,12 @@
                                     <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
                                     <a href="" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
                                 </j:if>
+                                <j:if test="${!isCreator &amp;&amp; configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
+                                    <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
+                                </j:if>
                                 <span></span>
                             </td>
-							<td>${configs.getFullNameCreator()}</td>
+                            <td>${configs.getFullNameCreator()}</td>
                         </tr>
                     </j:forEach>
                 </tbody>

@@ -19,21 +19,22 @@
   <l:layout>
         <st:include page="sidepanel.jelly" it="${app}"/>
         <l:main-panel>
-			<div class="title-header">
+            <div class="title-header">
             <h1 class="header" id="titlePage">Create new build configuration</h1>
-			<label id="reasonLabel" class="reason"></label>
+            <label id="reasonLabel" class="reason"></label>
             </div>
-			<f:form method="get" action="createNewConfigurator" name="createNewConfigurator">
-			    <div class="user">
-					<label id="userLabel"></label>
-				</div>
-                <div class="div-project-name">
-                    <label>Project Name</label>
+            <f:form method="get" action="createNewConfigurator" name="createNewConfigurator" onsubmit="return false;">
+                <div class="user">
+                    <label id="userLabel"></label>
                 </div>
+                
                 <div class="div-textinput">
-                    <input type="text" id="projectName" name="projectName" class="textbox"/>
+                    <div class="div-project-name">
+                        <label>Project Name</label>
+                    </div>
+                    <input type="text" id="projectName" name="projectName" readonly="false" class="textbox"/>
                 </div>
-				
+                
                 <div class="div-build-machine-config">
                     <label>Build machine configuration:</label>
                 </div>
@@ -50,9 +51,9 @@
                     <input type="text" field="email" onblur="validateMail(this)" name="email" disabled="false" id="email" class="textbox"/>
                 </div>
                 <div id="mailError" class="error-none">
-				<img src="/jenkins/static/e45d7697/images/16x16/error.png"/>
-					Not correct e-mail
-				</div>
+                <img src="/jenkins/static/e45d7697/images/16x16/error.png"/>
+                    Not correct e-mail
+                </div>
                 <div id="projectsToBuild" class="div-root-project">
                 </div>
 
@@ -77,9 +78,8 @@
                     <input type="submit" onclick="return isValidForm();" class="confirm-button" name="save" id="save" value="Save"/>
                     <span class="span"></span>
                     <input type="submit" onclick="return rejectConfiguration();" class="reject-button" name="reject" id="reject" value="Reject"/>
-                    <span class="span"></span>
+                    <span id="spanReject" class="span"></span>
                     <input type="submit" onclick="setFormResultDialog('cancel');" class="confirm-button" name="cancelButton" id="cancelButton" value="Cancel"/>
-
                     <input type="hidden" name="formResultHidden" id="formResultHidden"/>
                     <input type="hidden" name="formType" id="formType"/>
                     <input type="hidden" id="rejectionReason" name="rejectionReason" value=""/>

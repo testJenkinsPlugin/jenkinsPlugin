@@ -4,7 +4,7 @@
 {
     width: 565px;
     height: 35px;
-	visibility:visible;
+    visibility:visible;
 }
 
 .select-hidden
@@ -20,7 +20,20 @@
 
 .confirm-button { width:100px;}
 
+.confirm-button-view
+{
+    width:100px;
+}
+
+.confirm-button-hidden
+{
+    display: none;
+    width: 0px;
+}
+
 .span { padding:0 20px;}
+
+.spanReject {padding:0 0px;}
 
 .config tr td,.config tr th 
 {
@@ -61,7 +74,7 @@
 .user-name
 {
     width:275px;
-	text-align: center;
+    text-align: center;
 }
 
 .approve-reject-link { margin:0 0 0 10px;}
@@ -72,7 +85,7 @@
 
 .export-to-xml
 {
-    margin:0 0 0 720px;
+    margin:0 0 0 1000px;
 }
 
 .state
@@ -116,6 +129,12 @@
     visibility:hidden;
 }
 
+.reject-button-none
+{
+    width:0px;
+    visibility:hidden;
+}
+
 .drop-down
 {
     max-width: 95px;
@@ -129,7 +148,7 @@
 .div-textinput
 {
     margin-top: 15px;
-	height:19px;
+    height:19px;
 }
 
 .div-label
@@ -219,7 +238,7 @@
 {
     margin-left:5px;
     width: 330px;
-	border: 1px solid red;
+    border: 1px solid red;
 }
 
 .project-to-build-label
@@ -237,8 +256,8 @@
 {
     width: 585px;
     margin-top: 5px;
-	height:0px;
-	visibility: hidden;
+    height:0px;
+    visibility: hidden;
 }
 
 .div-drop-down
@@ -283,8 +302,7 @@
 .div-project-name
 {
     float: left;
-	width: 143px;
-	margin-top: 15px;
+    width: 143px;
 }
 
 .div-confirm-button
@@ -354,73 +372,73 @@
 .help-view
 {
     width:453px;
-	margin-top: 7px;
-	display: none;
-	border: solid #bbb 1px;
-	background-color: #f0f0f0;
-	padding: 1em;
-	margin-bottom: 1em;
+    margin-top: 7px;
+    display: none;
+    border: solid #bbb 1px;
+    background-color: #f0f0f0;
+    padding: 1em;
+    margin-bottom: 1em;
 }
 
 .block-help-view
 {
     width:453px;
-	margin-top: 7px;
-	display: block;
-	border: solid #bbb 1px;
-	background-color: #f0f0f0;
-	padding: 1em;
-	margin-bottom: 1em;
+    margin-top: 7px;
+    display: block;
+    border: solid #bbb 1px;
+    background-color: #f0f0f0;
+    padding: 1em;
+    margin-bottom: 1em;
 }
 
 .helptext
 {
-	font-family: Verdana, Helvetica, sans serif;
-	font-size: 11px;
-	display:none;
+    font-family: Verdana, Helvetica, sans serif;
+    font-size: 11px;
+    display:none;
 }
 
 .helptext-block
 {
-	font-family: Verdana, Helvetica, sans serif;
-	font-size: 11px;
-	display:block;
+    font-family: Verdana, Helvetica, sans serif;
+    font-size: 11px;
+    display:block;
 }
 
 .image
 {
-	margin-left:10px;
+    margin-left:10px;
 }
 
 .error-none
 {
     margin-left: 150px;
     margin-top: 5px;
-	display: none;
-	
-	color: #CC0000;
-	font-weight: bold;
-	
-	min-height: 16px;
-	line-height: 16px;
-	background-image: url("/jenkins/static/e45d7697/images/16x16/error.png");
-	background-position: left center;
-	background-repeat: no-repeat;
+    display: none;
+    
+    color: #CC0000;
+    font-weight: bold;
+    
+    min-height: 16px;
+    line-height: 16px;
+    background-image: url("/jenkins/static/e45d7697/images/16x16/error.png");
+    background-position: left center;
+    background-repeat: no-repeat;
 }
 
 .error-block
 {
     margin-left: 150px;
     margin-top: 5px;
-	display: block;
-	
-	color: #CC0000;
-	font-weight: bold;
-	
-	min-height: 16px;
-	line-height: 16px;
-	background-position: left center;
-	background-repeat: no-repeat;
+    display: block;
+    
+    color: #CC0000;
+    font-weight: bold;
+    
+    min-height: 16px;
+    line-height: 16px;
+    background-position: left center;
+    background-repeat: no-repeat;
 }
 
 .user
@@ -431,12 +449,12 @@
 .reason
 {
     font-family: Verdana, Helvetica, sans serif;
-	font-size: 15px;
-	color: #CC0000;
+    font-size: 15px;
+    color: #CC0000;
 }
 
 .title-header
 {
     width:600px;
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
