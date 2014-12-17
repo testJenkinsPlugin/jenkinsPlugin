@@ -23,7 +23,7 @@
             <h1 class="header" id="titlePage">Create new build configuration</h1>
             <label id="reasonLabel" class="reason"></label>
             </div>
-            <f:form method="get" action="createNewConfigurator" name="createNewConfigurator" onsubmit="return false;">
+            <f:form method="get" action="createNewConfigurator" name="createNewConfigurator">
                 <div class="user">
                     <label id="userLabel"></label>
                 </div>
@@ -32,7 +32,7 @@
                     <div class="div-project-name">
                         <label>Project Name</label>
                     </div>
-                    <input type="text" id="projectName" name="projectName" readonly="false" class="textbox"/>
+                    <input type="text" id="projectName" name="projectName" class="textbox"/>
                 </div>
                 
                 <div class="div-build-machine-config">
@@ -59,6 +59,7 @@
 
                 <div class="div-add-view">
                     <input type="button" onClick="addView()" id="addProjectToBuild" value="Add more project to build"/>
+                    <label id="label-add-view" class="label-add-view-hidden">You should create one project to build</label>
                 </div>
 
                 <div>

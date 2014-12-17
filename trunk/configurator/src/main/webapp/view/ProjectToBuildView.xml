@@ -8,7 +8,6 @@
    xmlns:i="jelly:fmt"
    xmlns:p="/lib/hudson/project"
    >
-
     <div id="${divID}" name="projectToBuild" class="div-add-project-to-build-view">
         <label id="close_${divID}" onclick="closeButtonClick(this)" class="close-project-to-build">X</label>
         <div class="div-folder-chooser">

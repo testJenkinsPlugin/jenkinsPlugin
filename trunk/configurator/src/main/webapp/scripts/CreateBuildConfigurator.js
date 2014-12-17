@@ -137,6 +137,7 @@ function cleacSelectionGroup(groupId)
 
 function addView()
 {
+    document.getElementById("label-add-view").className = "label-add-view-hidden";
     buildConfiguration.getView(
     function(t)
     {
@@ -352,6 +353,11 @@ function isValidForm()
     if (projectName == "")
     {
         alert("Please, enter your project name");
+        return false;
+    }
+    if(build.length == 0)
+    {
+        document.getElementById("label-add-view").className = "label-add-view";
         return false;
     }
     if(document.getElementById("mailError").className == "error-block")

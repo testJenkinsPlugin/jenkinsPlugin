@@ -179,7 +179,7 @@
 
 .div-add-view
 {
-    width: 180px;
+    width: 600px;
     margin-bottom: 30px;
     margin-top: 35px;
     margin-left: 25px;
@@ -457,4 +457,18 @@
 {
     width:600px;
     margin-bottom: 10px;
+}
+
+.label-add-view
+{
+    font-family: Verdana, Helvetica, sans serif;
+    font-size: 15px;
+    color: #CC0000;
+    margin-left: 10px;
+    visibility: visible;
+}
+
+.label-add-view-hidden
+{
+    visibility: hidden;
 }
