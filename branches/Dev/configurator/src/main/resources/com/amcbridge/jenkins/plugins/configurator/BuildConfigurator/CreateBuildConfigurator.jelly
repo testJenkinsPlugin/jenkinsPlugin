@@ -34,7 +34,7 @@
                     </div>
 
                     <div class="div-url-type">
-                        <select name="type" id="typeSCM" class="div-drop-down-list-item">
+                        <select name="scm" id="typeSCM" class="div-drop-down-list-item">
                             <j:forEach items="${it.getSCM()}" var="sct">
                                 <option value="${sct}">${sct}</option>
                             </j:forEach>

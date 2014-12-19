@@ -71,6 +71,9 @@
                                         </j:if>
                                     </j:if>
                                 </j:if>
+                                <j:if test="${configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
+                                    <a href="" onclick="createJob(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Create Job</a>
+                                </j:if>
                                 <j:if test="${isCreator &amp;&amp; configs.getState().toString() != 'For Deletion'}">
                                     <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
                                     <a href="" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>

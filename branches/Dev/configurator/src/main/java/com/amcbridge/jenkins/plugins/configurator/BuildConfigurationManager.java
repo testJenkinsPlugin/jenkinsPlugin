@@ -11,6 +11,7 @@ import javax.mail.internet.AddressException;
 import javax.servlet.ServletException;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
@@ -18,13 +19,16 @@ import jenkins.model.JenkinsLocationConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
 import org.tmatesoft.svn.core.SVNException;
+import org.xml.sax.SAXException;
 
 import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
 import com.amcbridge.jenkins.plugins.export.*;
 import com.amcbridge.jenkins.plugins.export.ExportSettings.Settings;
+import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.*;
 import com.amcbridge.jenkins.plugins.vsc.CommitError;
 import com.amcbridge.jenkins.plugins.vsc.SvnManager;
@@ -38,6 +42,8 @@ import hudson.scm.SCMDescriptor;
 import hudson.scm.SCM;
 import hudson.security.AccessControlled;
 import hudson.security.Permission;
+import hudson.tasks.Mailer;
+import hudson.tasks.Mailer.UserProperty;
 import hudson.util.Iterators;
 
 public class BuildConfigurationManager
@@ -45,6 +51,7 @@ public class BuildConfigurationManager
 	public static final String CONFIG_FILE_NAME = "config.xml";
 	public static final String DATE_FORMAT = "MM/dd/yyyy";
 	public static final String ENCODING = "UTF-8";
+	private static final String CONFIG_JOB_FILE_NAME = "JobConfig.xml";
 	private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "\\plugins\\BuildConfiguration";
 	private static final String CONTENT_FOLDER = "userContent";
 	private static final String SCRIPT_FOLDER = "Scripts";
@@ -72,6 +79,11 @@ public class BuildConfigurationManager
 	public static File getFileToExportConfigurations()
 	{
 		return new File(getRootDir()+ "\\" + CONFIG_FILE_NAME);
+	}
+
+	public static File getFileToCreateJob()
+	{
+		return new File(getRootDir()+ "\\" + CONFIG_JOB_FILE_NAME);
 	}
 
 	static File getRootDir()
@@ -180,7 +192,7 @@ public class BuildConfigurationManager
 	{
 		BuildConfiguration result = new BuildConfiguration();
 		XmlFile config = getConfigFile(nameProject);
-		
+
 		if (config.exists())
 		{
 			config.unmarshal(result);
@@ -274,9 +286,9 @@ public class BuildConfigurationManager
 		message.setSubject(config.getProjectName());
 		message.setDescription(MessageDescription.DELETE_PERMANENTLY.toString());
 
-		if (!config.getEmail().isEmpty())
+		if (!getUserMailAddress(config.getCreator()).isEmpty())
 		{
-			message.setDestinationAddress(config.getEmail().trim());
+			message.setDestinationAddress(getUserMailAddress(config.getCreator()));
 			mail.sendMail(message);
 		}
 
@@ -334,16 +346,31 @@ public class BuildConfigurationManager
 	{
 		return JenkinsLocationConfiguration.get().getAdminAddress();
 	}
-	
+
 	public static List<String> getSCM()
 	{
 		List<String> result = new ArrayList<String>();
 		for (SCMDescriptor<?> scm : SCM.all())
 		{
-			result.add(scm.getDisplayName());
+			if (isSupportedSCM(scm))
+			{
+				result.add(scm.getDisplayName());
+			}
 		}
-
 		return result;
+	}
+
+	private static Boolean isSupportedSCM(SCMDescriptor<?> scm)
+	{
+		for (com.amcbridge.jenkins.plugins.controls.SCM suportSCM :
+			com.amcbridge.jenkins.plugins.controls.SCM.values())
+		{
+			if (suportSCM.toString().equals(scm.getDisplayName()))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static List<String> getNodesName()
@@ -355,5 +382,26 @@ public class BuildConfigurationManager
 		}
 
 		return result;
+	}
+
+	public static String getUserMailAddress(String userId)
+	{
+		if (User.get(userId) != null)
+		{
+			UserProperty mail = User.get(userId).getProperty(Mailer.UserProperty.class);
+			if (mail.getAddress() != null)
+			{
+				return mail.getAddress();
+			}
+		}
+		return StringUtils.EMPTY;
+	}
+
+	public static void createJob(String name)
+			throws IOException, ParserConfigurationException,
+			SAXException, TransformerException
+	{
+		BuildConfiguration config = load(name);
+		JobManagerGenerator.createJob(config);
 	}
 }

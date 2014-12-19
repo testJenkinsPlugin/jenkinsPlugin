@@ -33,3 +33,8 @@ function exportToXml()
         }
     });
 }
+
+function createJob(name)
+{
+    buildConfiguration.createJob(name, function(t) { alert("Job was successfully created.");});
+}

@@ -33,14 +33,17 @@ function setContent(name)
 {
     buildConfiguration.getConfiguration(name, function(t){
         document.getElementById("projectName").value = t.responseObject().projectName;
-        document.getElementById("typeSCM").value = t.responseObject().type;
+        document.getElementById("typeSCM").value = t.responseObject().scm;
 
         var bmcValue = t.responseObject().buildMachineConfiguration;
-        document.getElementById("build_machine_configuration").value = "";
-        var bmc = document.getElementsByName("node");
-        for (var i=0; i<bmc.length; i++)
+        if (document.getElementById("build_machine_configuration") != null)
         {
-            document.getElementById(bmc[i].id).checked = false;
+            document.getElementById("build_machine_configuration").value = "";
+            var bmc = document.getElementsByName("node");
+            for (var i=0; i<bmc.length; i++)
+            {
+                document.getElementById(bmc[i].id).checked = false;
+            }
         }
 
         for (var i=0; i<bmcValue.length; i++)
