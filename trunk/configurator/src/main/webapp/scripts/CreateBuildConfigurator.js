@@ -360,16 +360,21 @@ function versionFileCheckBoxChange(checkBox)
 
 function isValidForm()
 {
-    var projectName = document.getElementById("projectName").value;
+    var projectName = document.getElementById("projectName");
     var pathFolder = document.getElementsByName("projectFolderPath");
     var pathUrl = document.getElementsByName("projectUrl");
     var pathArt = document.getElementsByName("pathToArtefacts");
     var pathVer = document.getElementsByName("versionFilesPath");
     var build = document.getElementsByName("projectToBuild");
-    if (projectName == "")
+    if (projectName.value == "")
     {
         document.getElementById("fieldHelp").innerHTML = "Please, enter your project name";
         document.getElementById("fieldHelp").className = "field-help-error";
+        return false;
+    }
+    if(projectName.className == "textbox-error")
+    {
+        projectName.focus();
         return false;
     }
     if(build.length == 0)
@@ -591,4 +596,19 @@ function СancelReject()
     document.getElementById("fieldHelp").className = "div-none";
     document.getElementById("rejectDiv").className = "div-none";
     document.getElementById("overlay").className = "div-none";
+}
+
+function validateProject(project)
+{
+    var regPath = /[? “ : < >]$/i;
+    if(!regPath.test(project.value) || project.value == "")
+    {
+        document.getElementById("projectError").className = "error-none";
+        document.getElementById(project.id).className = "textbox";
+    }
+    else
+    {
+        document.getElementById("projectError").className = "error-block";
+        document.getElementById(project.id).className= "textbox-error";
+    }
 }
