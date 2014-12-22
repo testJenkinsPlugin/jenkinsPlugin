@@ -482,12 +482,20 @@ function addPath(button)
 {
     var number = getElementNumber(button.id);
     var path = document.getElementById("path_input_" + number).value;
+    var pathInput = document.getElementById("projectFolderPath_" + (number-1)).value;
     var error = document.getElementById("path_error_" + number).className;
-    if((path.length <= 0)||(error == "error-block"))
+    var errorInput = document.getElementById("path_error_" + (number-1)).className;
+    if((pathInput.length <= 0)||(errorInput == "error-block")||(path.length <= 0)||(error == "error-block"))
     {
         return;
     }
-    addToSelectionBox("files_" + number, path);
+    if(pathInput != path.substring(0,pathInput.length))
+    {
+        document.getElementById("path_error_" + number).className = "error-block";
+        document.getElementById("path_error_" + number).innerHTML = "paths do not coincide";
+        return;
+    }
+    addToSelectionBox("files_" + number, path.substring(pathInput.length+1,path.length));
     document.getElementById("path_input_" + number).value = "";
 }
 
@@ -560,7 +568,7 @@ function checkPath(id)
     var path = document.getElementById(id).value;
     var number = getElementNumber(id);
     var regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?*]+)+\\?$/i;
-    if(regPath.test(path) || path == "")
+    if(regPath.test(path+"s") || path == "")
     {
         document.getElementById("path_error_"+number).className = "error-none";
         document.getElementById(id).className = "textbox";
