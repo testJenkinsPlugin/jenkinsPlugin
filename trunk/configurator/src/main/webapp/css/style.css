@@ -415,10 +415,8 @@
     margin-left: 150px;
     margin-top: 5px;
     display: none;
-    
     color: #CC0000;
     font-weight: bold;
-    
     min-height: 16px;
     line-height: 16px;
     background-image: url("/jenkins/static/e45d7697/images/16x16/error.png");
@@ -431,10 +429,8 @@
     margin-left: 150px;
     margin-top: 5px;
     display: block;
-    
     color: #CC0000;
     font-weight: bold;
-    
     min-height: 16px;
     line-height: 16px;
     background-position: left center;
@@ -471,4 +467,98 @@
 .label-add-view-hidden
 {
     visibility: hidden;
+}
+
+.field-help-error
+{
+    width: 635px;
+    display: block;
+    color: #CD5C5C;
+    font-weight: bold;
+    font-size: 13px;
+    min-height: 16px;
+    line-height: 16px;
+    border: solid #bbb 1px;
+    background-color: #FFE4E1;
+    padding: 1em;
+    margin-bottom: 1em;
+    text-align: center;
+    top: 100px;
+    z-index: 102;
+}
+
+.div-none
+{
+    display: none;
+}
+
+.reject-div
+{
+    width: 535px;
+    display: block;
+    font-weight: bold;
+    font-size: 13px;
+    min-height: 16px;
+    line-height: 16px;
+    border: solid #696969 2px;
+    background-color: #f0f0f0;
+    padding: 1em;
+    margin-bottom: 1em;
+    text-align: center;
+    margin-left: 35%;
+    margin-top: 15%;
+}
+
+.field-help-view-fixed
+{
+    position: fixed;
+    top: 23px;
+    z-index: 102;
+}
+
+.button-reject
+{
+    margin-top: 10px;
+    margin-left: 10px;
+    font-size: 15px;
+}
+
+.textReject
+{   
+    width: 500px;
+    height: 25px;
+    margin-top:10px;
+}
+
+.overlay
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.35);
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+}
+
+.help-top
+{
+    top: 23px;
+}
+
+.reject-label
+{
+    text-align:center;
+    font-size:17px;
+}
+
+.div-background
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.35);
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
 }

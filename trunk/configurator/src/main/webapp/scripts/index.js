@@ -1,29 +1,35 @@
+var scroll=0;
+var nameAction;
+
+window.onscroll = function()
+{
+    var aside = document.getElementById("fieldHelpView");
+    scroll = document.documentElement.getBoundingClientRect().top;
+    aside.className = (document.documentElement.getBoundingClientRect().top != 0 ? 'field-help-view-fixed' : '');
+}
+
 function setDeletion(name)
 {
-    var result = confirm("Are you sure you want delete '" + name + "' configuration");
-    if (!result)
-        return;
-    var labelName = name+"Label";
-    buildConfiguration.setForDeletion(name, function(t) {});
-    document.getElementById(labelName).innerHTML = "For Deletion";
-    var label = document.getElementById(labelName);
-    label.style.backgroundColor = "#000000";
+    document.getElementById("rejectDiv").className = "reject-div";
+    document.getElementById("overlay").className = "overlay";
+    document.getElementById("helpReject").innerHTML = "Are you sure you want delete '" + name + "' configuration";
+    nameAction = name+" setDeletion";     
 }
 
 function deletePermanently(name)
 {
-    var result = confirm("Are you sure you want delete '" + name + "' configuration permanently");
-    if (!result)
-        return;
-    buildConfiguration.deleteConfigurationPermanently(name, function(t) {});
+    document.getElementById("rejectDiv").className = "reject-div";
+    document.getElementById("overlay").className = "overlay";
+    document.getElementById("helpReject").innerHTML = "Are you sure you want delete '" + name + "' configuration permanently";
+    nameAction = name+" deletePermanently"; 
 }
 
 function restore(name)
 {
-    var result = confirm("Are you sure you want restore '" + name + "' configuration");
-    if (!result)
-        return;
-    buildConfiguration.restoreConfiguration(name, function(t) {})
+    document.getElementById("rejectDiv").className = "reject-div";
+    document.getElementById("overlay").className = "overlay";
+    document.getElementById("helpReject").innerHTML = "Are you sure you want restore '" + name + "' configuration";
+    nameAction = name+" restore"; 
 }
 
 function exportToXml()
@@ -40,4 +46,25 @@ function exportToXml()
             alert(t.responseObject().errorMassage);
         }
     });
+}
+
+function OkReject()
+{
+    document.getElementById("rejectDiv").className = "div-none";
+    document.getElementById("overlay").className = "div-none";
+    if(nameAction != null)
+    {
+        var mas = nameAction.split(' ');
+        switch(mas[1])
+        {
+            case("setDeletion"):{buildConfiguration.setForDeletion(mas[0], function(t){});location.reload();break;}
+            case("deletePermanently"):{buildConfiguration.deleteConfigurationPermanently(mas[0], function(t){});location.reload();break;}
+            case("restore"):{buildConfiguration.restoreConfiguration(mas[0], function(t){});location.reload();break;}
+        }
+    }
+}
+
+function СancelReject()
+{
+    document.getElementById("overlay").className = "div-none";
 }

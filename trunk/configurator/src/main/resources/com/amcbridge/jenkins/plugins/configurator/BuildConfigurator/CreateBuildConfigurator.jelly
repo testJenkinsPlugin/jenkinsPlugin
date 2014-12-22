@@ -19,11 +19,23 @@
   <l:layout>
         <st:include page="sidepanel.jelly" it="${app}"/>
         <l:main-panel>
+            <div id="overlay" class="div-none">
+                <div id="rejectDiv" class="div-none">
+                        <label class="reject-label">Please type reasons of rejection: </label>
+                        <input type="text" id="textReject" name="textReject" class="textReject"/>
+                        <input type="button" onClick="OkReject()" id="OkReject" class="button-reject" value="OK"/>
+                        <input type="button" onClick="СancelReject()" id="СancelReject" class="button-reject" value="Cancel"/>
+                </div>
+            </div>
+            <div id="fieldHelpView" class="">
+                <div id="fieldHelp" class="div-none">
+                </div>
+            </div>
             <div class="title-header">
             <h1 class="header" id="titlePage">Create new build configuration</h1>
             <label id="reasonLabel" class="reason"></label>
             </div>
-            <f:form method="get" action="createNewConfigurator" name="createNewConfigurator">
+            <f:form method="get" action="createNewConfigurator" name="createNewConfigurator" id="createNewConfigurator">
                 <div class="user">
                     <label id="userLabel"></label>
                 </div>
@@ -78,7 +90,8 @@
                 <div class="div-confirm-button">
                     <input type="submit" onclick="return isValidForm();" class="confirm-button" name="save" id="save" value="Save"/>
                     <span class="span"></span>
-                    <input type="submit" onclick="return rejectConfiguration();" class="reject-button" name="reject" id="reject" value="Reject"/>
+                    <input type="button" onclick="rejectDiv();" class="reject-button" name="reject" id="reject" value="Reject"/>
+                    <input type="submit" onclick="return rejectionSubmit();" class="div-none" name="rejectSubmit" id="rejectSubmit"/>
                     <span id="spanReject" class="span"></span>
                     <input type="submit" onclick="setFormResultDialog('cancel');" class="confirm-button" name="cancelButton" id="cancelButton" value="Cancel"/>
                     <input type="hidden" name="formResultHidden" id="formResultHidden"/>

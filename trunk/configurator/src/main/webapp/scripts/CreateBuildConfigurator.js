@@ -1,4 +1,5 @@
 var type;
+var scroll=0;
 
 window.onload = function()
 {
@@ -33,6 +34,20 @@ window.onload = function()
     buildConfiguration.deleteNotUploadFile(document.getElementById("files_hidden_script")
         .value.split(';'), function(t) {});
     document.getElementById("files_hidden_script").value = "";
+}
+
+window.onscroll = function()
+{
+    var aside = document.getElementById("fieldHelpView");
+    var overlay = document.getElementById("overlay");
+    scroll = document.documentElement.getBoundingClientRect().top;
+    aside.className = (document.documentElement.getBoundingClientRect().top != 0 ? 'field-help-view-fixed' : '');
+    if(overlay.className != "div-none")
+    {
+        overlay.className = (document.documentElement.getBoundingClientRect().top != 0 ? 'overlay help-top' : 'overlay');
+        
+    }
+
 }
 
 function setContent(name)
@@ -170,7 +185,6 @@ function addBuilder(button)
     {
         var iDiv = document.createElement("div");
         iDiv.innerHTML = t.responseObject().html;
-
         var divs = button.parentNode.parentNode.id;
         document.getElementById("builders_" + divs).appendChild(iDiv);
     });
@@ -244,13 +258,15 @@ function upload()
     var file = document.getElementById("scriptsButton").files[0];
     if (file.size > 1048576)
     {
-        alert ("You can't upload file which size is more than 1MB");
+        document.getElementById("fieldHelp").innerHTML = "You can't upload file which size is more than 1MB";
+        document.getElementById("fieldHelp").className = "field-help-error";
         document.getElementById("scriptsButton").value = "";
         return;
     }
     if (!validateExtension(file.name))
     {
-        alert ("You can't upload file with this extension. Please choose file with '.bat, .nant, .powershell, .shell, .ant, .maven' extension only.");
+        document.getElementById("fieldHelp").innerHTML = "You can't upload file with this extension. Please choose file with '.bat, .nant, .powershell, .shell, .ant, .maven' extension only.";
+        document.getElementById("fieldHelp").className = "field-help-error";
         document.getElementById("scriptsButton").value = "";
         return;
     }
@@ -352,7 +368,8 @@ function isValidForm()
     var build = document.getElementsByName("projectToBuild");
     if (projectName == "")
     {
-        alert("Please, enter your project name");
+        document.getElementById("fieldHelp").innerHTML = "Please, enter your project name";
+        document.getElementById("fieldHelp").className = "field-help-error";
         return false;
     }
     if(build.length == 0)
@@ -388,7 +405,10 @@ function isValidForm()
             document.getElementById('save').click();
         }
         else
-            alert("Configuration with name '" + projectName + "' has already exists. Please select another name.");
+        {
+            document.getElementById("fieldHelp").innerHTML = "Configuration with name '" + projectName + "' has already exists. Please select another name.";
+            document.getElementById("fieldHelp").className = "field-help-error";
+        }
     });
     return false;
 }
@@ -409,21 +429,15 @@ function checkingPath(path)
     }
 }
 
-function rejectConfiguration()
+function rejectDiv()
 {
-    var reason = prompt("Please type reasons of rejection:", "");
-    if (reason != null)
-    {
-        if (reason.length == 0)
-        {
-            alert ("You must type reasons of rejection.");
-            return false;
-        }
-        document.getElementById("rejectionReason").value = reason;
-        document.getElementById("formType").value = "REJECT";
-        return true;
-    }
-    return false;
+    document.getElementById("rejectDiv").className = "reject-div help-top"; 
+    document.getElementById("overlay").className = (scroll != 0 ? 'overlay help-top' : 'overlay');
+}
+
+function rejectionSubmit()
+{
+    return true;
 }
 
 function deleteFromHidden(hidden, value)
@@ -490,7 +504,7 @@ function imageHelp(id)
 function validateMail(mail)
 {
     var mailValue = mail.value;
-    var mails = mailValue.split(', ');
+    var mails = mailValue.split(' ');
     var cheking = true;
     for(var i = 0; i < mails.length;i++)
     {
@@ -553,3 +567,28 @@ function checkPath(id)
     }
 }
 
+function OkReject()
+{
+    var reason = document.getElementById("textReject").value;
+    if (reason != null)
+    {
+        if (reason.length == 0)
+        {
+            document.getElementById("fieldHelp").innerHTML = "You must type reasons of rejection.";
+            document.getElementById("fieldHelp").className = "field-help-error";
+            document.getElementById("textReject").focus();
+            return false;
+        }
+        document.getElementById("rejectionReason").value = reason;
+        document.getElementById("formType").value = "REJECT";
+        document.getElementById("rejectSubmit").click();
+    }
+    return;
+}
+
+function СancelReject()
+{
+    document.getElementById("fieldHelp").className = "div-none";
+    document.getElementById("rejectDiv").className = "div-none";
+    document.getElementById("overlay").className = "div-none";
+}

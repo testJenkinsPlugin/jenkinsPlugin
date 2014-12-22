@@ -19,7 +19,15 @@
         <st:include page="sidepanel.jelly" it="${app}" />
         <j:set var="isAdmin" value="${it.isCurrentUserAdministrator()}"/>
         <l:main-panel>
-
+            <div id="overlay" class="div-none">
+                <div id="rejectDiv" class="div-none">
+                    <label class="reject-label" id="helpReject">Please type reasons of rejection: </label>
+                    <div>
+                    <input type="button" onClick="OkReject()" id="OkReject" class="button-reject" value="OK"/>
+                    <input type="button" onClick="СancelReject()" id="СancelReject" class="button-reject" value="Cancel"/>
+                    </div>
+                </div>
+            </div>
             <div id="loading-div-background" class="loading-div-background">
                 <div id="loading-div" class="loading-div">
                     <img style="height:64px;width:64px;margin:30px;" src="../plugin/configurator/icons/loader.gif"/>
@@ -64,8 +72,8 @@
                                     <j:if test="${isAdmin}">
                                         <j:if test="${configs.getState().toString() == 'For Deletion'}">
                                             <j:if test="${h.hasPermission(app.ADMINISTER)}">
-                                                <a href="" onclick="deletePermanently(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">Delete permanently</a>
-                                                <a href="" onclick="restore(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">Restore</a>
+                                                <a href="" onclick="deletePermanently(this.name); return false" name="${configs.getProjectName()}" class="approve-reject-link">Delete permanently</a>
+                                                <a href="" onclick="restore(this.name); return false" name="${configs.getProjectName()}" class="approve-reject-link">Restore</a>
                                             </j:if>
                                         </j:if>
                                         <j:if test="${configs.getState().toString() != 'For Deletion'}">
@@ -75,7 +83,7 @@
                                 </j:if>
                                 <j:if test="${isCreator &amp;&amp; configs.getState().toString() != 'For Deletion'}">
                                     <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
-                                    <a href="" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
+                                    <a href="" onclick="setDeletion(this.name); return false" class="delete-link" name="${configs.getProjectName()}">Delete</a>
                                 </j:if>
                                 <j:if test="${!isCreator &amp;&amp; configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
                                     <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
