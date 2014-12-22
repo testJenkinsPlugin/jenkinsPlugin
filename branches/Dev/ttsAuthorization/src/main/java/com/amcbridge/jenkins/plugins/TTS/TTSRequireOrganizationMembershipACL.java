@@ -7,6 +7,7 @@ import jenkins.model.Jenkins;
 
 import org.acegisecurity.Authentication;
 
+import hudson.model.Item;
 import hudson.model.Hudson;
 import hudson.security.ACL;
 import hudson.security.Permission;
@@ -49,7 +50,8 @@ public class TTSRequireOrganizationMembershipACL extends ACL {
 			return true;
 		}
 
-		if (permission.equals(Hudson.ADMINISTER))
+		if (permission.equals(Hudson.ADMINISTER) ||
+				permission.equals(Item.CREATE) || permission.equals(Item.DELETE))
 		{
 			return false;
 		}
