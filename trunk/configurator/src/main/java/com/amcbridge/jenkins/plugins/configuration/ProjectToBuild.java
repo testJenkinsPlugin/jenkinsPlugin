@@ -3,7 +3,6 @@ package com.amcbridge.jenkins.plugins.configuration;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
-import com.amcbridge.jenkins.plugins.controls.SourceControlTool;
 
 public class ProjectToBuild {
 
@@ -13,8 +12,6 @@ public class ProjectToBuild {
 
 	private BilderConfig[] builders;
 	private String[] artefacts, versionFiles;
-
-	private SourceControlTool type;
 
 	public void setProjectUrl (String value)
 	{
@@ -61,16 +58,6 @@ public class ProjectToBuild {
 		return builders;
 	}
 
-	public void setType (SourceControlTool value)
-	{
-		type = value;
-	}
-
-	public SourceControlTool getType ()
-	{
-		return type;
-	}
-
 	public String[] getArtefacts ()
 	{
 		return artefacts;
@@ -93,17 +80,13 @@ public class ProjectToBuild {
 
 	@DataBoundConstructor
 	public ProjectToBuild(String projectUrl, String fileToBuild,
-			String type, String artefacts, String versionFiles, String projectFolderPath,
+			String artefacts, String versionFiles, String projectFolderPath,
 			Boolean isVersionFiles, BilderConfig[] builders)
 	{
 		this.projectUrl = projectUrl;
 		this.fileToBuild = fileToBuild;
 		this.isVersionFiles = isVersionFiles;
 		this.projectFolderPath = projectFolderPath;
-		if (!type.equals(BuildConfigurationManager.STRING_EMPTY))
-		{
-			this.type = SourceControlTool.valueOf(type);
-		}
 		setArtefacts(BuildConfigurationManager.getPath(artefacts));
 		setVersionFiles(BuildConfigurationManager.getPath(versionFiles));
 		this.builders = builders;

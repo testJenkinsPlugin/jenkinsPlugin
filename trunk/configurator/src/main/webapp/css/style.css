@@ -73,7 +73,7 @@
 
 .user-name
 {
-    width:380px;
+    width:400px;
     text-align: center;
 }
 
@@ -161,7 +161,7 @@
 .div-radiogroup
 {
     width: 200px;
-    margin-left: 140px;
+    margin-left: 150px;
     margin-top: 15px;
     margin-bottom: 15px;
 }
@@ -288,7 +288,7 @@
 .div-add-project-to-build-view
 {
     margin-top: 35px;
-    width: 625px;
+    width: 655px;
     border: 3px solid rgba(128, 128, 128, 0.79);
     padding-left: 30px;
 }
@@ -563,4 +563,10 @@
     width: 100%;
     height: 100%;
     z-index: 10000;
+}
+
+.div-drop-down-list-item
+{
+    margin-left: 5px;
+    width: 165px;
 }

@@ -54,15 +54,28 @@ function setContent(name)
 {
         buildConfiguration.getConfiguration(name, function(t){
         document.getElementById("projectName").value = t.responseObject().projectName;
+        document.getElementById("typeSCM").value = t.responseObject().scm;
+
         if(t.responseObject().rejectionReason != "")
             document.getElementById("reasonLabel").innerHTML = "Reason of rejection:  "+t.responseObject().rejectionReason;
+
         var bmcValue = t.responseObject().buildMachineConfiguration;
-        var bmc = document.getElementsByName("buildMachineConfiguration");
-        for (var i=0; i<bmc.length; i++)
+        if (document.getElementById("build_machine_configuration") != null)
         {
-            if (bmc[i].value == bmcValue)
+            document.getElementById("build_machine_configuration").value = "";
+            var bmc = document.getElementsByName("node");
+            for (var i=0; i<bmc.length; i++)
             {
-                bmc[i].checked  = "selected";
+                document.getElementById(bmc[i].id).checked = false;
+            }
+        }
+
+        for (var i=0; i<bmcValue.length; i++)
+        {
+            if (document.getElementById(bmcValue[i]) != null)
+            {
+                document.getElementById(bmcValue[i]).checked = true;
+                addToHidden("build_machine_configuration", bmcValue[i]);
             }
         }
 
@@ -159,7 +172,6 @@ function addView()
         var iDiv = document.createElement("div");
         iDiv.innerHTML = t.responseObject().html;
         document.getElementById("projectsToBuild").appendChild(iDiv);
-        setAppletsId(t.responseObject().viewId);
     });
 }
 
@@ -185,6 +197,7 @@ function addBuilder(button)
     {
         var iDiv = document.createElement("div");
         iDiv.innerHTML = t.responseObject().html;
+
         var divs = button.parentNode.parentNode.id;
         document.getElementById("builders_" + divs).appendChild(iDiv);
     });
@@ -199,6 +212,7 @@ function selectionBoxIndexChange(selectionBox)
         {
             continue;
         }
+        
         if (selections[i].selectedIndex != -1)
         {
             selections[i].selectedIndex  = -1;
@@ -211,13 +225,16 @@ function fieldsethidden(id)
     var number = getElementNumber(id);
     var addfield = "files_" + number;
     var checkBox = document.getElementById("isVersionFiles_"+number);
+    
     if (checkBox.checked)
     {
         var hiddenInput = "files_hidden_" + number;
+        
         document.getElementById("div-fieldset_"+number).style.visibility = "visible";
         document.getElementById(addfield).style.visibility = "visible";
         document.getElementById("div-fieldset_"+number).style.height = 60;   
     } 
+    
     if (!checkBox.checked)
     {
         var selectionGroupId = "files_" + number;
@@ -303,14 +320,19 @@ function addToSelectionBox(selectionBoxId, path)
     x.add(option);
 
     var hiddenInputId = "files_hidden_" + getElementNumber(selectionBoxId);
+    addToHidden(hiddenInputId, path);
+}
+
+function addToHidden(hiddenInputId, value)
+{
     var hiddenValue = document.getElementById(hiddenInputId).value;
     if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1)
     {
-        document.getElementById(hiddenInputId).value += ";" + path + ";";
+        document.getElementById(hiddenInputId).value += ";" + value + ";";
     }
     else
     {
-        document.getElementById(hiddenInputId).value += path + ";";
+        document.getElementById(hiddenInputId).value += value + ";";
     }
 }
 
@@ -333,6 +355,7 @@ function versionFileCheckBoxChange(checkBox)
     var pathInput = "path_input_" + getElementNumber(checkBox.id);
     var addButton = "add_button_" + getElementNumber(checkBox.id);
     var addfield = "files_" + getElementNumber(checkBox.id);
+
     if (checkBox.checked)
     {
         var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
@@ -344,6 +367,7 @@ function versionFileCheckBoxChange(checkBox)
         document.getElementById(addfield).style.visibility = "visible";
         document.getElementById("div-fieldset_"+getElementNumber(checkBox.id)).style.height = 60;   
     }
+    
     if (!checkBox.checked)
     {
         var selectionGroupId = "files_" + getElementNumber(checkBox.id);
@@ -457,12 +481,6 @@ function deleteFromHidden(hidden, value)
     {
         hidden.value = hidden.value.substr(0,hidden.value.length - 1);
     }
-}
-
-function urlTypeChange(radiobutton)
-{
-    var hiddenId = "sourceControlTool_" + getElementNumber(radiobutton.name);
-    document.getElementById(hiddenId).value = radiobutton.value;
 }
 
 function setFormResultDialog(result)
@@ -606,7 +624,7 @@ function OkReject()
     if (reason != null)
     {
         if (reason.length == 0)
-        {
+        { 
             document.getElementById("fieldHelp").innerHTML = "You must type reasons of rejection.";
             document.getElementById("fieldHelp").className = "field-help-error";
             document.getElementById("textReject").focus();
@@ -633,10 +651,24 @@ function validateProject(project)
     {
         document.getElementById("projectError").className = "error-none";
         document.getElementById(project.id).className = "textbox";
+        document.getElementById("fieldHelp").innerHTML = "";
+        document.getElementById("fieldHelp").className = "";
     }
     else
     {
         document.getElementById("projectError").className = "error-block";
         document.getElementById(project.id).className= "textbox-error";
+    }
+}
+
+function bMCChange(checkBox)
+{
+    if (checkBox.checked)
+    {
+        addToHidden("build_machine_configuration", checkBox.id);
+    }
+    if (!checkBox.checked)
+    {
+        deleteFromHidden(document.getElementById("build_machine_configuration"), checkBox.id);
     }
 }

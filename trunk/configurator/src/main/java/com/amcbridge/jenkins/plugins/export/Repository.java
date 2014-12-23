@@ -1,6 +1,5 @@
 package com.amcbridge.jenkins.plugins.export;
 
-import com.amcbridge.jenkins.plugins.controls.SourceControlTool;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
@@ -8,12 +7,12 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 public class Repository
 {
 	@XStreamAsAttribute
-	private SourceControlTool type;
+	private String type;
 
 	@XStreamAsAttribute
 	private String url;
 
-	public void setType(SourceControlTool value)
+	public void setType(String value)
 	{
 		type = value;
 	}

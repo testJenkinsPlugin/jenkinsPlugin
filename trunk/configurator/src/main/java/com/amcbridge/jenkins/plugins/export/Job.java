@@ -9,11 +9,11 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 public class Job
 {
 	@XStreamAsAttribute
-	private String name, buildMachineConfiguration;
+	private String name;
 	
 	private List<Project> projects;
 	
-	private String[] scripts;
+	private String[] scripts, buildMachineConfiguration;
 	
 	public Job(String name)
 	{
@@ -30,7 +30,7 @@ public class Job
 		projects = value;
 	}
 	
-	public void setBuildMachineConfiguration(String value)
+	public void setBuildMachineConfiguration(String[] value)
 	{
 		buildMachineConfiguration = value;
 	}

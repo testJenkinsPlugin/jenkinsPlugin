@@ -12,12 +12,12 @@ import com.amcbridge.jenkins.plugins.configurator.ConfigurationState;
 
 public class BuildConfiguration
 {
-	private String projectName, buildMachineConfiguration, email, creator, date, rejectionReason;
+	private String projectName, email, creator, date, rejectionReason, scm;
 
 	private ConfigurationState state;
 
 	private List<ProjectToBuild> projectToBuild;
-	private String[] scripts;
+	private String[] scripts, buildMachineConfiguration;
 
 	public BuildConfiguration()
 	{
@@ -46,12 +46,22 @@ public class BuildConfiguration
 		return projectName;
 	}
 
-	public void setBuildMachineConfiguration (String value)
+	public void setScm (String value)
+	{
+		scm = value;
+	}
+
+	public String getScm ()
+	{
+		return scm;
+	}
+
+	public void setBuildMachineConfiguration (String[] value)
 	{
 		buildMachineConfiguration = value;
 	}
 
-	public String getBuildMachineConfiguration ()
+	public String[] getBuildMachineConfiguration ()
 	{
 		return buildMachineConfiguration;
 	}

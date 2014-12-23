@@ -45,7 +45,6 @@ public class ViewGenerator {
 		jcontext.setVariable("builders", builder.getBuilders());
 		jcontext.setVariable("platforms", Platform.values());
 		jcontext.setVariable("configuration", Configuration.values());
-		jcontext.setVariable("sourceControlTool", SourceControlTool.values());
 
 		result.setViewId(id);
 
@@ -92,7 +91,6 @@ public class ViewGenerator {
 		jcontext.setVariable("builders", builder.getBuilders());
 		jcontext.setVariable("platforms", Platform.values());
 		jcontext.setVariable("configuration", Configuration.values());
-		jcontext.setVariable("sourceControlTool", SourceControlTool.values());
 
 		result.setHtml(launchScript(jcontext, viewTemplatePath));
 		return result;
@@ -120,7 +118,6 @@ public class ViewGenerator {
 		jcontext.setVariable("builders", builder.getBuilders());
 		jcontext.setVariable("platforms", Platform.values());
 		jcontext.setVariable("configuration", Configuration.values());
-		jcontext.setVariable("sourceControlTool", SourceControlTool.values());
 
 		for (int i=0; i<views.size(); i++)
 		{

@@ -18,22 +18,9 @@
                 <input type="text" id="project_Url_${sourceId[0]}" name="projectUrl" onblur="checkURL(id,'url')" value="${view.getProjectUrl()}" class="textbox"/>        
             </div>
             <div id="url_error_${sourceId[0]}url" class="error-none">
-            <img src="/jenkins/static/e45d7697/images/16x16/error.png"/>
+            <img src="../images/16x16/error.png"/>
                 Not correct url
             </div>
-        </div>
-
-        <div class="div-url-type">
-            <j:forEach items="${sourceControlTool}" var="sct" indexVar="i">
-                <j:if test="${sct == view.getType()}">
-                    <input type="radio" name="sourceControlTool_${divID}" onclick="urlTypeChange(this)" checked="checked" value="${sct.name()}"/>${sct}
-                </j:if>
-                <j:if test="${sct != view.getType()}">
-                    <input type="radio" name="sourceControlTool_${divID}" onclick="urlTypeChange(this)"  value="${sct.name()}"/>${sct}
-                </j:if>
-                <br/>
-            </j:forEach>
-            <input type="hidden" name="type" value="${view.getType().name()}" id="sourceControlTool_${divID}"/>
         </div>
 
         <div class="div-textinput">
@@ -42,11 +29,11 @@
             </div>
             <div class="left">
                 <input type="text" id="projectFolderPath_${sourceId[0]}" onblur="checkPath(id)" value="${view.getProjectFolderPath()}" name="projectFolderPath" class="textbox"/>
-                <img id="image_${sourceId[0]}" src="/jenkins/static/e45d7697/images/16x16/help.png" onClick="imageHelp(id+'path')" class="image"/>
+                <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="imageHelp(id+'path')" class="image"/>
             </div>
         </div>
         <div id="path_error_${sourceId[0]}" class="error-none">
-        <img src="/jenkins/static/e45d7697/images/16x16/error.png"/>
+        <img src="../images/16x16/error.png"/>
                 Not correct path
         </div>
         <div id="block_help_${sourceId[0]}path" class="help-view">
@@ -61,7 +48,7 @@
             </div>
             <div class="left">
                 <input type="text" id="project_to_build${sourceId[0]}" name="fileToBuild" value="${view.getFileToBuild()}" class="textbox"/>
-                <img id="image_${sourceId[0]}" src="/jenkins/static/e45d7697/images/16x16/help.png" onClick="imageHelp(id+'build')" class="image"/>
+                <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="imageHelp(id+'build')" class="image"/>
             
             </div>
             
@@ -79,10 +66,10 @@
             <div>
                 <input type="text" id="path_input_${sourceId[1]}" name="pathToArtefacts" onblur="checkPath(id)" class="textbox"/>
                 <input type="button" id="add_button_${sourceId[1]}" onclick="addPath(this)" class="div-plus-button" value="+"/>
-                <img id="image_${sourceId[0]}" src="/jenkins/static/e45d7697/images/16x16/help.png" onClick="imageHelp(id+'art')" class="image"/>
+                <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="imageHelp(id+'art')" class="image"/>
             </div>
             <div id="path_error_${sourceId[1]}" class="error-none">
-            <img src="/jenkins/static/e45d7697/images/16x16/error.png"/>
+            <img src="../images/16x16/error.png"/>
                 <label id="coincide_${sourceId[1]}"> Not correct path</label>
             </div>
             <div id="block_help_${sourceId[0]}art" class="help-view">
@@ -125,7 +112,7 @@
                 <input type="button" onclick="addPathFiles(this)" class="div-plus-button-hidden" id="add_button_${sourceId[2]}" value="+"/>
             </j:if>
             <div id="path_error_${sourceId[2]}" class="error-none">
-            <img src="/jenkins/static/e45d7697/images/16x16/error.png"/>
+            <img src="../images/16x16/error.png"/>
                 Not correct path
             </div>
             

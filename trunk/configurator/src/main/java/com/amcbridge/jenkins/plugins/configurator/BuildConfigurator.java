@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import net.sf.json.JSONObject;
 
@@ -30,6 +31,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.tmatesoft.svn.core.SVNException;
+import org.xml.sax.SAXException;
 
 import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
 import com.amcbridge.jenkins.plugins.controls.*;
@@ -107,6 +109,11 @@ public final class BuildConfigurator implements RootAction {
 
 		newConfig.setScripts(BuildConfigurationManager
 				.getPath(formAttribute.get("scripts").toString()));
+		if (formAttribute.get("build_machine_configuration") != null)
+		{
+			newConfig.setBuildMachineConfiguration(BuildConfigurationManager
+					.getPath(formAttribute.get("build_machine_configuration").toString()));
+		}
 		newConfig.setCurrentDate();
 
 		ConfigurationStatusMessage message = 
@@ -132,9 +139,9 @@ public final class BuildConfigurator implements RootAction {
 			newConfig.setState(ConfigurationState.APPROVED);
 			newConfig.setCreator(currentConfig.getCreator());
 			message.setDescription(MessageDescription.APPROVE.toString());
-			if (!newConfig.getEmail().isEmpty())
+			if (!BuildConfigurationManager.getUserMailAddress(newConfig.getCreator()).isEmpty())
 			{
-				message.setDestinationAddress(newConfig.getEmail().trim());
+				message.setDestinationAddress(BuildConfigurationManager.getUserMailAddress(newConfig.getCreator()));
 				mail.sendMail(message);
 			}
 			break;
@@ -143,9 +150,9 @@ public final class BuildConfigurator implements RootAction {
 			newConfig.setState(ConfigurationState.REJECTED);
 			message.setDescription(MessageDescription.REJECT.toString() +
 					" " + formAttribute.get("rejectionReason").toString());
-			if (!newConfig.getEmail().isEmpty())
+			if (!BuildConfigurationManager.getUserMailAddress(newConfig.getCreator()).isEmpty())
 			{
-				message.setDestinationAddress(newConfig.getEmail().trim());
+				message.setDestinationAddress(BuildConfigurationManager.getUserMailAddress(newConfig.getCreator()));
 				mail.sendMail(message);
 			}
 			newConfig.setReject(formAttribute.get("rejectionReason").toString());
@@ -288,8 +295,21 @@ public final class BuildConfigurator implements RootAction {
 		return BuildConfigurationManager.getAdminEmail();
 	}
 
-	public BuildMachineConfiguration[] getBuildMachineConfigurations()
+	public List<String> getSCM()
 	{
-		return BuildMachineConfiguration.values();
+		return BuildConfigurationManager.getSCM();
+	}
+
+	public List<String> getNodesName()
+	{
+		return BuildConfigurationManager.getNodesName();
+	}
+
+	@JavaScriptMethod
+	public void createJob(String name)
+			throws IOException, ParserConfigurationException,
+			SAXException, TransformerException
+	{
+		BuildConfigurationManager.createJob(name);
 	}
 }

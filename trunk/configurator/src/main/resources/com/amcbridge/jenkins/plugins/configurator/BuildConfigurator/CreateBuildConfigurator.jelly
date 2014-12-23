@@ -47,26 +47,44 @@
                     <input type="text" id="projectName" onblur="validateProject(this)" name="projectName" class="textbox"/>
                 </div>
                 <div id="projectError" class="error-none">
-                    <img src="/jenkins/static/e45d7697/images/16x16/error.png"/>
+                    <img src="../images/16x16/error.png"/>
                     Not correct name
                 </div>
-                <div class="div-build-machine-config">
-                    <label>Build machine configuration:</label>
+
+                <div class="div-textinput">
+                    <div class="div-file-chooser-label">
+                        <label>SCM:</label>
+                    </div>
+
+                    <div class="div-url-type">
+                        <select name="scm" id="typeSCM" class="div-drop-down-list-item">
+                            <j:forEach items="${it.getSCM()}" var="sct">
+                                <option value="${sct}">${sct}</option>
+                            </j:forEach>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="div-radiogroup">
-                    <j:forEach items="${it.getBuildMachineConfigurations()}" var="bmc" indexVar="i">
-                        <f:radio name="buildMachineConfiguration" value="${bmc}" title="${bmc}"/>
-                        <br/>
-                    </j:forEach>
-                </div>
+                <j:if test ="${it.getNodesName().size() > 0}">
+                    <div class="div-build-machine-config">
+                        <label>Build machine configuration:</label>
+                        <input type="hidden" id="build_machine_configuration" name="build_machine_configuration" value=""/>
+                    </div>
+
+                    <div class="div-radiogroup">
+                        <j:forEach items="${it.getNodesName()}" var="node">
+                            <f:checkbox name="node" id="${node}" value="${node}" title="${node}" onclick="bMCChange(this)"/>
+                            <br/>
+                        </j:forEach>
+                    </div>
+                </j:if>
 
                 <div class="div-textinput">
                     <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="emailCheckBoxChange(this)" title="E-mails notifications"/>
                     <input type="text" field="email" onblur="validateMail(this)" name="email" disabled="false" id="email" class="textbox"/>
                 </div>
                 <div id="mailError" class="error-none">
-                    <img src="/jenkins/static/e45d7697/images/16x16/error.png"/>
+                    <img src="../images/16x16/error.png"/>
                     Not correct e-mail
                 </div>
                 <div id="projectsToBuild" class="div-root-project">

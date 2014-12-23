@@ -47,6 +47,18 @@
         <version>${svnkit.version}</version>
     </dependency>
 
+  <dependency>
+    <groupId>org.jenkins-ci.plugins</groupId>
+    <artifactId>subversion</artifactId>
+    <version>1.39</version>
+  </dependency>
+
+  <dependency>
+    <groupId>org.jenkins-ci.plugins</groupId>
+    <artifactId>description-setter</artifactId>
+    <version>1.9</version>
+  </dependency>
+
   </dependencies>
   
   <properties>

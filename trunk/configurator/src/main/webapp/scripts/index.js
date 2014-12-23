@@ -60,17 +60,28 @@ function OkReject()
     if(nameAction != null)
     {
         var mas = nameAction.split('?');
+        nameAction = null;
         switch(mas[1])
         {
-            case("setDeletion"):{buildConfiguration.setForDeletion(mas[0], function(t){});location.reload();break;}
-            case("deletePermanently"):{buildConfiguration.deleteConfigurationPermanently(mas[0], function(t){});location.reload();break;}
-            case("restore"):{buildConfiguration.restoreConfiguration(mas[0], function(t){});location.reload();break;}
+            case("setDeletion"):{buildConfiguration.setForDeletion(mas[0], function(t){location.reload();}); break;}
+            case("deletePermanently"):{buildConfiguration.deleteConfigurationPermanently(mas[0], function(t){location.reload();});break;}
+            case("restore"):{buildConfiguration.restoreConfiguration(mas[0], function(t){location.reload();});break;}
         }
-        nameAction = null;
     }
 }
 
 function СancelReject()
 {
     document.getElementById("overlay").className = "div-none";
+}
+
+function createJob(name)
+{
+    buildConfiguration.createJob(name, function(t)
+    {
+        document.getElementById("rejectDiv").className = "reject-div";
+        document.getElementById("overlay").className = "overlay";
+        document.getElementById("СancelReject").className = "div-none";
+        document.getElementById("helpReject").innerHTML = "Job was successfully created.";
+    });
 }
