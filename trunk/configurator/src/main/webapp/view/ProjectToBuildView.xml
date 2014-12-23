@@ -83,7 +83,7 @@
             </div>
             <div id="path_error_${sourceId[1]}" class="error-none">
             <img src="/jenkins/static/e45d7697/images/16x16/error.png"/>
-                Not correct path
+                <label id="coincide_${sourceId[1]}"> Not correct path</label>
             </div>
             <div id="block_help_${sourceId[0]}art" class="help-view">
                 <lebel id="text_help_${sourceId[0]}art" class="helptext">
@@ -114,7 +114,7 @@
                     <label class="div-label">Version Files</label>
                 </div>
                 <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="checkPath(id)" class="textbox"/>
-                <input type="button" onclick="addPath(this)" class="div-plus-button" id="add_button_${sourceId[2]}" value="+"/>
+                <input type="button" onclick="addPathFiles(this)" class="div-plus-button" id="add_button_${sourceId[2]}" value="+"/>
             </j:if>
             <j:if test="${!view.IsVersionFiles()}">
                 <div class="project-to-build-label">
@@ -122,7 +122,7 @@
                     <label class="div-label">Version Files</label>
                 </div>
                 <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="checkPath(id)" class="textbox-hidden"/>
-                <input type="button" onclick="addPath(this)" class="div-plus-button-hidden" id="add_button_${sourceId[2]}" value="+"/>
+                <input type="button" onclick="addPathFiles(this)" class="div-plus-button-hidden" id="add_button_${sourceId[2]}" value="+"/>
             </j:if>
             <div id="path_error_${sourceId[2]}" class="error-none">
             <img src="/jenkins/static/e45d7697/images/16x16/error.png"/>

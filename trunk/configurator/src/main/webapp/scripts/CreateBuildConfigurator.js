@@ -489,13 +489,33 @@ function addPath(button)
     {
         return;
     }
+    var sab = pathInput.substring(pathInput.length-1,pathInput.length);
+    if(sab != "\\")
+    {
+        pathInput= pathInput+'\\';
+    }
     if(pathInput != path.substring(0,pathInput.length))
     {
         document.getElementById("path_error_" + number).className = "error-block";
-        document.getElementById("path_error_" + number).innerHTML = "paths do not coincide";
+        document.getElementById("coincide_" + number).innerHTML = " paths do not coincide";
         return;
     }
-    addToSelectionBox("files_" + number, path.substring(pathInput.length+1,path.length));
+    addToSelectionBox("files_" + number, path.substring(pathInput.length,path.length));
+    document.getElementById("path_input_" + number).value = "";
+}
+
+function addPathFiles(button)
+{
+    var number = getElementNumber(button.id);
+    var path = document.getElementById("path_input_" + number).value;
+    
+    var error = document.getElementById("path_error_" + number).className;
+    
+    if((path.length <= 0)||(error == "error-block"))
+    {
+        return;
+    }
+    addToSelectionBox("files_" + number, path);
     document.getElementById("path_input_" + number).value = "";
 }
 
