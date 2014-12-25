@@ -426,7 +426,7 @@ function isValidForm()
         document.getElementById("formType").value = "APPROVED";
         return true;
     }
-    buildConfiguration.isNameFree(projectName, function(t) {
+    buildConfiguration.isNameFree(projectName.value, function(t) {
         if (t.responseObject() != false)
         {
             document.getElementById("save").onclick = null;
