@@ -1,12 +1,4 @@
-var scroll=0;
 var nameAction;
-
-window.onscroll = function()
-{
-    var aside = document.getElementById("fieldHelpView");
-    scroll = document.documentElement.getBoundingClientRect().top;
-    aside.className = (document.documentElement.getBoundingClientRect().top != 0 ? 'field-help-view-fixed' : '');
-}
 
 function setDeletion(name)
 {

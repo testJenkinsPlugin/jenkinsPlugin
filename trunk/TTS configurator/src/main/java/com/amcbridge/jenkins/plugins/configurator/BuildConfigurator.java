@@ -27,6 +27,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.jelly.JellyException;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
@@ -49,8 +50,7 @@ public final class BuildConfigurator implements RootAction {
 
 	private MailSender mail;
 
-	private ViewGenerator viewGenerator;
-
+	private static final String VIEW_GENERATOR = "viewGenerator";
 	private static final String PLUGIN_NAME = "Build Configurator";
 	private static final String ICON_PATH = "/plugin/configurator/icons/system_config_services.png";
 	private static final String DEFAULT_PAGE_URL = "BuildConfigurator";
@@ -58,7 +58,6 @@ public final class BuildConfigurator implements RootAction {
 	public BuildConfigurator()
 	{
 		mail = new MailSender();
-		viewGenerator = new ViewGenerator();
 	}
 
 	public String getDisplayName()
@@ -201,7 +200,13 @@ public final class BuildConfigurator implements RootAction {
 	public ProjectToBuildView getView()
 			throws UnsupportedEncodingException, JellyException
 	{
-		return viewGenerator.getProjectToBuildlView();
+		if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null)
+		{
+			loadCreateNewBuildConfiguration();
+		}
+		
+		return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
+				.getProjectToBuildlView();
 	}
 
 	@JavaScriptMethod
@@ -209,14 +214,27 @@ public final class BuildConfigurator implements RootAction {
 			throws JellyException, IOException, JAXBException
 	{
 		BuildConfiguration conf = BuildConfigurationManager.load(projectName);
-		return viewGenerator.getProjectToBuildlView(conf.getProjectToBuild());
+		
+		if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null)
+		{
+			loadCreateNewBuildConfiguration();
+		}
+		
+		return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
+				.getProjectToBuildlView(conf.getProjectToBuild());
 	}
 
 	@JavaScriptMethod
 	public ProjectToBuildView getBuilderView()
 			throws UnsupportedEncodingException, JellyException
 	{
-		return viewGenerator.getBuilderView();
+		if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null)
+		{
+			loadCreateNewBuildConfiguration();
+		}
+		
+		return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
+				.getBuilderView();
 	}
 
 	@JavaScriptMethod
@@ -243,7 +261,7 @@ public final class BuildConfigurator implements RootAction {
 	@JavaScriptMethod
 	public void loadCreateNewBuildConfiguration()
 	{
-		viewGenerator = new ViewGenerator();
+		Stapler.getCurrentRequest().getSession().setAttribute(VIEW_GENERATOR, new ViewGenerator());
 	}
 
 	@JavaScriptMethod
@@ -251,7 +269,7 @@ public final class BuildConfigurator implements RootAction {
 	{
 		return !BuildConfigurationManager.isNameUsing(name);
 	}
-	
+
 	@JavaScriptMethod
 	public String getFullNameCreator(String creator)
 	{
@@ -273,7 +291,7 @@ public final class BuildConfigurator implements RootAction {
 	{
 		BuildConfigurationManager.restoreConfiguration(name);
 	}
-	
+
 	public static Boolean isCurrentUserCreator(String name) throws IOException, JAXBException
 	{
 		return BuildConfigurationManager.isCurrentUserCreatorOfConfiguration(name);
