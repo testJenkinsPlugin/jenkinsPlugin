@@ -27,8 +27,10 @@ import com.thoughtworks.xstream.XStream;
 public class TTSManager {
 
 	private List<TTSProject> projects;
+	private String email;
 
 	private static final String PROJECTS_URL = "http://ttstest.amcbridge.com/wsuserdatas.asmx/GetProjectsByUser";
+	private static final String EMAIL_URL = "http://ttstest.amcbridge.com/wsuserdatas.asmx/GetEmailByUser";
 	private static final String LOGIN_PARAMETER = "login";
 	private static final String PASSWORD_PARAMETER = "password";
 	private static final String ENCODING = "UTF-8";
@@ -71,6 +73,11 @@ public class TTSManager {
 		return result;
 	}
 
+	public String getEmail()
+	{
+		return email;
+	}
+
 	public int getProjectId(String name)
 	{
 		int result = 0;
@@ -91,6 +98,7 @@ public class TTSManager {
 		try
 		{
 			loadProjects();
+			loadEmail();
 		}
 		catch (Exception e)
 		{}
@@ -107,6 +115,19 @@ public class TTSManager {
 		xstream.setClassLoader(TTSProject.class.getClassLoader());
 		xstream.alias("ArrayOfRoleRecord", projects.getClass());
 		projects = (List<TTSProject>) xstream.fromXML(responseValue);
+	}
+
+	private void loadEmail()
+			throws NoSuchAlgorithmException, ClientProtocolException, IOException
+	{
+		email = StringUtils.EMPTY;
+		String responseValue = doRequest(EMAIL_URL);
+
+		XStream xstream = new XStream();
+		xstream.processAnnotations(Email.class);
+		xstream.setClassLoader(Email.class.getClassLoader());
+		xstream.alias("EmailRecord", Email.class);
+		email = ((Email) xstream.fromXML(responseValue)).getEmail();
 	}
 
 	private String doRequest(String url)
