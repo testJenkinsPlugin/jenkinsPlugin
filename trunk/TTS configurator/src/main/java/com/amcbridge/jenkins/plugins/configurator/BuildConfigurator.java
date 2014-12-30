@@ -34,6 +34,7 @@ import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.tmatesoft.svn.core.SVNException;
 import org.xml.sax.SAXException;
 
+import com.amcbridge.jenkins.plugins.TTS.TTSManager;
 import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
 import com.amcbridge.jenkins.plugins.controls.*;
 import com.amcbridge.jenkins.plugins.messenger.*;
@@ -54,6 +55,7 @@ public final class BuildConfigurator implements RootAction {
 	private static final String PLUGIN_NAME = "Build Configurator";
 	private static final String ICON_PATH = "/plugin/configurator/icons/system_config_services.png";
 	private static final String DEFAULT_PAGE_URL = "BuildConfigurator";
+	public static final String TTS_MANAGER = "ttsManager";
 
 	public BuildConfigurator()
 	{
@@ -84,6 +86,11 @@ public final class BuildConfigurator implements RootAction {
 	public List<BuildConfiguration> getAllConfigurations()
 			throws IOException, ServletException, JAXBException 
 			{
+		if (Stapler.getCurrentRequest().getSession().getAttribute(TTS_MANAGER) == null)
+		{
+			Stapler.getCurrentRequest().getSession().setAttribute(TTS_MANAGER, new TTSManager());
+		}
+
 		return BuildConfigurationManager.loadAllConfigurations();
 			}
 
@@ -113,7 +120,10 @@ public final class BuildConfigurator implements RootAction {
 			newConfig.setBuildMachineConfiguration(BuildConfigurationManager
 					.getPath(formAttribute.get("build_machine_configuration").toString()));
 		}
+
 		newConfig.setCurrentDate();
+		TTSManager ttsManager = (TTSManager) Stapler.getCurrentRequest().getSession().getAttribute(TTS_MANAGER);
+		newConfig.setId(ttsManager.getProjectId(newConfig.getProjectName()));
 
 		ConfigurationStatusMessage message = 
 				new ConfigurationStatusMessage(newConfig.getProjectName());

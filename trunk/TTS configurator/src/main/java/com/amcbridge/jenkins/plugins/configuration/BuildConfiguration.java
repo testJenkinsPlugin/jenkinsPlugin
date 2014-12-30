@@ -13,7 +13,7 @@ import com.amcbridge.jenkins.plugins.configurator.ConfigurationState;
 public class BuildConfiguration
 {
 	private String projectName, email, creator, date, rejectionReason, scm;
-
+	private int id;
 	private ConfigurationState state;
 
 	private List<ProjectToBuild> projectToBuild;
@@ -56,6 +56,16 @@ public class BuildConfiguration
 		return scm;
 	}
 
+	public void setId(int id)
+	{
+		this.id = id;
+	}
+	
+	public int getId()
+	{
+		return id;
+	}
+	
 	public void setBuildMachineConfiguration (String[] value)
 	{
 		buildMachineConfiguration = value;
