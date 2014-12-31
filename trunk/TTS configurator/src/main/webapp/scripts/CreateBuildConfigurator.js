@@ -390,7 +390,7 @@ function isValidForm()
     var pathArt = document.getElementsByName("pathToArtefacts");
     var pathVer = document.getElementsByName("versionFilesPath");
     var build = document.getElementsByName("projectToBuild");
-    if (projectName.value == "")
+    if (projectName.value == "None")
     {
         document.getElementById("fieldHelp").innerHTML = "Please, enter your project name";
         document.getElementById("fieldHelp").className = "field-help-error";

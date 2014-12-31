@@ -35,6 +35,7 @@ import org.tmatesoft.svn.core.SVNException;
 import org.xml.sax.SAXException;
 
 import com.amcbridge.jenkins.plugins.TTS.TTSManager;
+import com.amcbridge.jenkins.plugins.TTS.TTSProject;
 import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
 import com.amcbridge.jenkins.plugins.controls.*;
 import com.amcbridge.jenkins.plugins.messenger.*;
@@ -326,6 +327,11 @@ public final class BuildConfigurator implements RootAction {
 	public List<String> getSCM()
 	{
 		return BuildConfigurationManager.getSCM();
+	}
+	
+	public List<TTSProject> getProjectName() throws IOException
+	{
+		return BuildConfigurationManager.getProjectName();
 	}
 
 	public List<String> getNodesName()

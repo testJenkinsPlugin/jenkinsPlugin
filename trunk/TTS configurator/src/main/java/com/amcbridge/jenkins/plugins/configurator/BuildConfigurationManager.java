@@ -1,5 +1,16 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
+import hudson.XmlFile;
+import hudson.model.Node;
+import hudson.model.User;
+import hudson.scm.SCMDescriptor;
+import hudson.scm.SCM;
+import hudson.security.AccessControlled;
+import hudson.security.Permission;
+import hudson.tasks.Mailer;
+import hudson.tasks.Mailer.UserProperty;
+import hudson.util.Iterators;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -25,26 +36,19 @@ import org.kohsuke.stapler.Stapler;
 import org.tmatesoft.svn.core.SVNException;
 import org.xml.sax.SAXException;
 
+import com.amcbridge.jenkins.plugins.TTS.TTSManager;
+import com.amcbridge.jenkins.plugins.TTS.TTSProject;
 import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
-import com.amcbridge.jenkins.plugins.export.*;
+import com.amcbridge.jenkins.plugins.export.XmlExporter;
 import com.amcbridge.jenkins.plugins.export.ExportSettings.Settings;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
-import com.amcbridge.jenkins.plugins.messenger.*;
+import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
+import com.amcbridge.jenkins.plugins.messenger.MailSender;
+import com.amcbridge.jenkins.plugins.messenger.MessageDescription;
 import com.amcbridge.jenkins.plugins.vsc.CommitError;
 import com.amcbridge.jenkins.plugins.vsc.SvnManager;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystem;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
-
-import hudson.XmlFile;
-import hudson.model.Node;
-import hudson.model.User;
-import hudson.scm.SCMDescriptor;
-import hudson.scm.SCM;
-import hudson.security.AccessControlled;
-import hudson.security.Permission;
-import hudson.tasks.Mailer;
-import hudson.tasks.Mailer.UserProperty;
-import hudson.util.Iterators;
 
 public class BuildConfigurationManager
 {
@@ -369,6 +373,22 @@ public class BuildConfigurationManager
 			if (isSupportedSCM(scm))
 			{
 				result.add(scm.getDisplayName());
+			}
+		}
+		return result;
+	}
+	
+	public static List<TTSProject> getProjectName() throws IOException
+	{
+		List<TTSProject> result = new ArrayList<TTSProject>();
+		TTSManager ttsManager = (TTSManager) Stapler.getCurrentRequest().getSession().getAttribute(BuildConfigurator.TTS_MANAGER);
+		for (TTSProject project : ttsManager.getActiveProjects())
+		{
+			BuildConfiguration test = load(project.getName());
+			ConfigurationState state = test.getState();
+			if (state == null)
+			{
+				result.add(project);
 			}
 		}
 		return result;

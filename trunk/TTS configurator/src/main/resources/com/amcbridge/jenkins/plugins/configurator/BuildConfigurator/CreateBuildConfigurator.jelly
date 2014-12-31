@@ -44,11 +44,14 @@
                     <div class="div-project-name">
                         <label>Project Name</label>
                     </div>
-                    <input type="text" id="projectName" onblur="validateProject(this)" name="projectName" class="textbox"/>
-                </div>
-                <div id="projectError" class="error-none">
-                    <img src="../images/16x16/error.png"/>
-                    Not correct name
+                    
+                    <div class="div-url-type">
+                        <select name="projectName" id="projectName" class="textbox">
+                            <j:forEach items="${it.getProjectName()}" var="ProjectName">
+                                <option value="${ProjectName.getName()}">${ProjectName.getName()}</option>
+                            </j:forEach>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="div-textinput">
