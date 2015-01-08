@@ -93,6 +93,11 @@
     text-align:center;
 }
 
+.projectName
+{
+     padding-left: 10px;
+}
+
 .new
 {
     color:#3333FF;

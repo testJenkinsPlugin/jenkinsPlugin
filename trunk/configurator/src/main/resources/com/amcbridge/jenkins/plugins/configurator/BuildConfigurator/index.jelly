@@ -38,7 +38,7 @@
             <h1>Configurations</h1>
             <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
             <j:if test="${isAdmin}">
-                <a href="" onclick="exportToXml(); return false;" id="xml" class="export-to-xml">Export to XML</a>
+                <a href="#" onclick="exportToXml(); return false;" id="xml" class="export-to-xml">Export to XML</a>
             </j:if>
             <table>
                 <thead>
@@ -61,18 +61,18 @@
                     <j:forEach items="${it.getAllConfigurations()}" var="configs" indexVar="i">
                         <j:set var="isCreator" value="${it.isCurrentUserCreator(configs.getProjectName())}"/>
                         <tr height="25">
-                            <td>${configs.getProjectName()}</td>
+                            <td class="projectName">${configs.getProjectName()}</td>
                             <td class="state">
                                 <label id="${configs.getState().toString()}" class="${configs.getState().getCSSClassName()}">${configs.getState().toString()}</label>
                             </td>
-                            <td>${configs.getDate()}</td>
+                            <td class="state">${configs.getDate()}</td>
                             <td>
                                 <j:if test ="${configs.getState().toString() != 'Approved' &amp;&amp; configs.getState().toString() != 'Rejected'}">
                                     <j:if test="${isAdmin}">
                                         <j:if test="${configs.getState().toString() == 'For Deletion'}">
                                             <j:if test="${h.hasPermission(app.ADMINISTER)}">
-                                                <a href="" onclick="deletePermanently(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Delete permanently</a>
-                                                <a href="" onclick="restore(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Restore</a>
+                                                <a href="#" onclick="deletePermanently(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Delete permanently</a>
+                                                <a href="#" onclick="restore(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Restore</a>
                                             </j:if>
                                         </j:if>
                                         <j:if test="${configs.getState().toString() != 'For Deletion'}">
@@ -82,19 +82,19 @@
                                 </j:if>
 
                                 <j:if test="${configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
-                                    <a href="" onclick="createJob(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Create Job</a>
+                                    <a href="#" onclick="createJob(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Create Job</a>
                                 </j:if>
 
                                 <j:if test="${isCreator &amp;&amp; configs.getState().toString() != 'For Deletion'}">
                                     <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
-                                    <a href="" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
+                                    <a href="#" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
                                 </j:if>
                                 <j:if test="${!isCreator &amp;&amp; configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
                                     <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
                                 </j:if>
                                 <span></span>
                             </td>
-                            <td>${configs.getFullNameCreator()}</td>
+                            <td class="state">${configs.getFullNameCreator()}</td>
                         </tr>
                     </j:forEach>
                 </tbody>
