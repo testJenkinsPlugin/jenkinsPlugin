@@ -47,15 +47,17 @@
                 <label>Project to build:</label>
             </div>
             <div class="left">
-                <input type="text" id="project_to_build${sourceId[0]}" name="fileToBuild" value="${view.getFileToBuild()}" class="textbox"/>
+                <input type="text" id="project_to_build_${sourceId[0]}" name="fileToBuild" onblur="checkName(id)" value="${view.getFileToBuild()}" class="textbox"/>
                 <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="imageHelp(id+'build')" class="image"/>
-            
             </div>
-            
+            </div>
+            <div id="name_error_${sourceId[0]}" class="error-none">
+                <img src="../images/16x16/error.png"/>
+                        Not correct name
             </div>
             <div id="block_help_${sourceId[0]}build" class="help-view">
             <lebel id="text_help_${sourceId[0]}build" class="helptext">
-                 Relative path
+                 Name of project to build
             </lebel>
         </div>
         
