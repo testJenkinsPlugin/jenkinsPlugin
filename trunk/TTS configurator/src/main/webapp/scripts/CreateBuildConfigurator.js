@@ -53,9 +53,10 @@ window.onscroll = function()
 function setContent(name)
 {
         buildConfiguration.getConfiguration(name, function(t){
+        document.getElementById("projectName").add(new Option(t.responseObject().projectName));
         document.getElementById("projectName").value = t.responseObject().projectName;
         document.getElementById("typeSCM").value = t.responseObject().scm;
-
+        
         if(t.responseObject().rejectionReason != "")
             document.getElementById("reasonLabel").innerHTML = "Reason of rejection:  "+t.responseObject().rejectionReason;
 

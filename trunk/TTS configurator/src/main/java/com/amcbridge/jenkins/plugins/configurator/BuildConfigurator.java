@@ -42,6 +42,7 @@ import com.amcbridge.jenkins.plugins.messenger.*;
 import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import hudson.Extension;
 import hudson.model.RootAction;
@@ -51,6 +52,7 @@ import hudson.model.User;
 public final class BuildConfigurator implements RootAction {
 
 	private MailSender mail;
+	private Boolean active = false;
 
 	private static final String VIEW_GENERATOR = "viewGenerator";
 	private static final String PLUGIN_NAME = "Build Configurator";
@@ -91,10 +93,12 @@ public final class BuildConfigurator implements RootAction {
 		{
 			Stapler.getCurrentRequest().getSession().setAttribute(TTS_MANAGER, new TTSManager());
 		}
-
-		return BuildConfigurationManager.loadAllConfigurations();
-			}
-
+		if(active)
+			return BuildConfigurationManager.getAllActiveConfigurations();
+		else
+			return BuildConfigurationManager.loadAllConfigurations();
+		}
+	
 	public void doCreateNewConfigurator(final StaplerRequest request,
 			final StaplerResponse response) throws
 			IOException, ServletException, ParserConfigurationException, JAXBException,
@@ -301,6 +305,20 @@ public final class BuildConfigurator implements RootAction {
 			throws AddressException, IOException, MessagingException, JAXBException,ParserConfigurationException
 	{
 		BuildConfigurationManager.restoreConfiguration(name);
+	}
+	
+	@JavaScriptMethod
+	public void ActiveConfiguration(Boolean act)
+			throws AddressException, IOException, MessagingException, JAXBException,ParserConfigurationException
+	{
+		active = act;
+	}
+	
+	@JavaScriptMethod
+	public Boolean GetActiveConfiguration()
+			throws AddressException, IOException, MessagingException, JAXBException,ParserConfigurationException
+	{
+		return active;
 	}
 
 	public static Boolean isCurrentUserCreator(String name) throws IOException, JAXBException

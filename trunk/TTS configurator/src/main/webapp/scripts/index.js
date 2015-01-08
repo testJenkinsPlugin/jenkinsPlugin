@@ -1,5 +1,19 @@
 var nameAction;
 
+window.onload = function()
+{
+    buildConfiguration.GetActiveConfiguration(function(t){
+    if(t.responseObject() == true)
+    {
+        document.getElementById("Active").innerHTML = "All configurations";
+    }
+    else
+    {
+        var r = document.getElementById("Active").innerHTML = "Active configurations";
+    }
+    });
+}
+
 function setDeletion(name)
 {
     document.getElementById("rejectDiv").className = "reject-div";
@@ -76,4 +90,19 @@ function createJob(name)
         document.getElementById("СancelReject").className = "div-none";
         document.getElementById("helpReject").innerHTML = "Job was successfully created.";
     });
+}
+
+function Active()
+{
+    buildConfiguration.GetActiveConfiguration(function(t){
+    if(t.responseObject() == true)
+    {
+        buildConfiguration.ActiveConfiguration(false); 
+    }
+    else
+    {
+        buildConfiguration.ActiveConfiguration(true);
+    }
+    });
+    
 }

@@ -44,7 +44,6 @@
                     <div class="div-project-name">
                         <label>Project Name</label>
                     </div>
-                    
                     <div class="div-url-type">
                         <select name="projectName" id="projectName" class="textbox">
                             <j:forEach items="${it.getProjectName()}" var="ProjectName">
@@ -53,7 +52,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="div-textinput">
                     <div class="div-file-chooser-label">
                         <label>SCM:</label>

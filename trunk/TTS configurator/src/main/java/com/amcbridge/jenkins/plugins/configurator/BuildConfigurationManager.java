@@ -223,6 +223,23 @@ public class BuildConfigurationManager
 		}
 		return configs;
 			}
+	
+	public static List<BuildConfiguration> getAllActiveConfigurations()
+			throws IOException, ServletException, JAXBException
+			{	
+		List<BuildConfiguration> result = new ArrayList<BuildConfiguration>();
+		TTSManager ttsManager = (TTSManager) Stapler.getCurrentRequest().getSession().getAttribute(BuildConfigurator.TTS_MANAGER);
+		for (TTSProject project : ttsManager.getActiveProjects())
+		{
+			BuildConfiguration test = load(project.getName());
+			ConfigurationState state = test.getState();
+			if (state != null)
+			{
+				result.add(test);
+			}
+		}
+		return result;
+			}
 
 	public static void deleteFiles(String[] files, String pathFolder)
 	{
