@@ -42,7 +42,6 @@ import com.amcbridge.jenkins.plugins.messenger.*;
 import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import hudson.Extension;
 import hudson.model.RootAction;

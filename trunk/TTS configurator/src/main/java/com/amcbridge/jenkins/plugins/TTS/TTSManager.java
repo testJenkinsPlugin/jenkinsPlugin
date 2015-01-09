@@ -6,7 +6,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+import javax.xml.parsers.ParserConfigurationException;
 
 import jenkins.model.Jenkins;
 
@@ -22,6 +24,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.thoughtworks.xstream.XStream;
 
 public class TTSManager {
@@ -99,6 +102,7 @@ public class TTSManager {
 		{
 			loadProjects();
 			loadEmail();
+			checkProjectName();
 		}
 		catch (Exception e)
 		{}
@@ -156,5 +160,13 @@ public class TTSManager {
 	{
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		return (new HexBinaryAdapter()).marshal(md.digest(value.getBytes()));
+	}
+	
+	private void checkProjectName() throws IOException, ParserConfigurationException, JAXBException
+	{
+		for (TTSProject project : projects)
+		{
+			BuildConfigurationManager.checkProjectName(project);
+		}
 	}
 }

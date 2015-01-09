@@ -62,10 +62,12 @@ public class BuildConfigurationManager
 	private static final Integer MAX_FILE_SIZE = 1048576;//max file size which equal 1 mb in bytes
 	private static final String[] SCRIPTS_EXTENSIONS = { "bat", "nant", "powershell", "shell",
 		"ant", "maven" };
+	private static final Character[] ILLEGAL_CHARS = {'\\', '/', ':', '*', '?', '"', '<', '>', '|'};
 
 	public static final String STRING_EMPTY = "";
 
 	private static MailSender mail = new MailSender();
+	private static FolderManager FOLDER_MANAGER = new FolderManager();
 
 	public static String getCurrentUserID()
 	{
@@ -116,20 +118,24 @@ public class BuildConfigurationManager
 			return;
 		}
 
-		File checkFile = new File(getRootDirectory() + "\\" + config.getProjectName());
+		String folderName = getFolderName(config.getProjectName());
+		FOLDER_MANAGER.add(config.getId(), folderName);
+
+		File checkFile = new File(getRootDirectory() + "\\" + folderName);
 		if (!checkFile.exists())
 			checkFile.mkdirs();
 
-		XmlFile fileWriter = getConfigFile(config.getProjectName());
+		XmlFile fileWriter = getConfigFile(folderName);
 		fileWriter.write(config);
 		saveFile(config);
 	}
 
 	public static void saveFile(BuildConfiguration config)
 	{
-		if (config.getProjectName().isEmpty() || config.getScripts().length == 0)
+		String folderName = getFolderName(config.getProjectName());
+		if (folderName.isEmpty() || config.getScripts().length == 0)
 			return;
-		String pathFolder = getRootDirectory() + "\\" + config.getProjectName() +
+		String pathFolder = getRootDirectory() + "\\" + folderName +
 				"\\" + SCRIPT_FOLDER;
 		String filePath;
 		File checkFolder = new File(pathFolder);
@@ -189,13 +195,15 @@ public class BuildConfigurationManager
 
 	protected final static XmlFile getConfigFile(String nameProject)
 	{
-		return new XmlFile(Jenkins.XSTREAM,	getConfigFileFor("\\" + nameProject));
+		String folderName = getFolderName(nameProject);
+		return new XmlFile(Jenkins.XSTREAM,	getConfigFileFor("\\" + folderName));
 	}
 
 	public static BuildConfiguration load(String nameProject) throws IOException
 	{
 		BuildConfiguration result = new BuildConfiguration();
-		XmlFile config = getConfigFile(nameProject);
+		String folderName = getFolderName(nameProject);
+		XmlFile config = getConfigFile(folderName);
 
 		if (config.exists())
 		{
@@ -302,7 +310,8 @@ public class BuildConfigurationManager
 
 	public static Boolean isNameUsing(String name)
 	{
-		File checkName = new File(getRootDirectory() + "\\" + name);
+		String folderName = getFolderName(name);
+		File checkName = new File(getRootDirectory() + "\\" + folderName);
 		if (checkName.exists())
 			return true;
 		else
@@ -312,10 +321,13 @@ public class BuildConfigurationManager
 	public static void deleteConfigurationPermanently(String name) throws IOException,
 	AddressException, MessagingException, JAXBException
 	{
-		File checkFile = new File(getRootDirectory() + "\\" + name);
+		String folderName = getFolderName(name);
+		File checkFile = new File(getRootDirectory() + "\\" + folderName);
 		BuildConfiguration config = load(name);
 		if (checkFile.exists())
 			FileUtils.deleteDirectory(checkFile);
+
+		FOLDER_MANAGER.remove(FOLDER_MANAGER.getFolderId(folderName));
 
 		ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName());
 		message.setSubject(config.getProjectName());
@@ -454,5 +466,37 @@ public class BuildConfigurationManager
 	{
 		BuildConfiguration config = load(name);
 		JobManagerGenerator.createJob(config);
+	}
+
+	public static String getFolderName(String projectName)
+	{
+		for (Character character : ILLEGAL_CHARS)
+		{
+			if (projectName.indexOf(character) != -1)
+			{
+				projectName = projectName.replaceAll(character.toString(), " ");
+			}
+		}
+		return projectName;
+	}
+
+	public static void checkProjectName(TTSProject project)
+			throws IOException, ParserConfigurationException, JAXBException
+	{
+		if (!FOLDER_MANAGER.getFolderName(project.getId()).equals(StringUtils.EMPTY) && 
+				!FOLDER_MANAGER.getFolderName(project.getId())
+				.equals(getFolderName(project.getName())))
+		{
+			BuildConfiguration config = load(FOLDER_MANAGER.getFolderName(project.getId()));
+			config.setProjectName(project.getName());
+
+			File oldFolder = new File(getRootDirectory() + "\\"	+
+					FOLDER_MANAGER.getFolderName(project.getId()));
+			File newFolder = new File(getRootDirectory() + "\\"	+ getFolderName(project.getName()));
+			oldFolder.renameTo(newFolder);
+			save(config);
+			FOLDER_MANAGER.remove(project.getId());
+			FOLDER_MANAGER.add(project.getId(), getFolderName(project.getName()));
+		}
 	}
 }

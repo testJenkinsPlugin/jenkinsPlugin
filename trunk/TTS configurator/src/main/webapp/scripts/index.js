@@ -1,5 +1,10 @@
 var nameAction;
 
+window.onload = function()
+{
+    buildConfiguration.ActiveConfiguration(false, function(r){});
+}
+
 function setDeletion(name)
 {
     document.getElementById("rejectDiv").className = "reject-div";
@@ -81,8 +86,9 @@ function createJob(name)
 function ShowActiveConfigurations()
 {
     buildConfiguration.GetActiveConfiguration(function(t){
-    buildConfiguration.ActiveConfiguration(!t.responseObject()); 
-    location.reload();
+    buildConfiguration.ActiveConfiguration(true, function(r){ 
+        location.reload();
+        });
     });
 }
 

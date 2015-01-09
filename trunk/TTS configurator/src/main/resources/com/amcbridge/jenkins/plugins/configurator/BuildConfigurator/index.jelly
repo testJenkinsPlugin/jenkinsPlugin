@@ -48,15 +48,13 @@
             </j:if>
             <j:if test="${isAdmin}">
                 <a href="#" onclick="exportToXml();" id="xml" class="export-to-xml">Export to XML</a>
-            </j:if>
-            <a href="#" onclick="return false;" id="active" class="active"> 
+            </j:if> 
             <j:if test="${isActive}">
-                All configurations
+                <a href="" id="active" class="active">All configurations</a>
             </j:if>
             <j:if test="${!isActive}">
-                Active configurations
+                <a href="#" onclick="ShowActiveConfigurations(); return false;" id="active" class="active">Active configurations</a>
             </j:if>
-            </a>
             <table>
                 <thead>
                     <tr height="10">
@@ -107,6 +105,9 @@
                                     <a href="#" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
                                 </j:if>
                                 <j:if test="${!isCreator &amp;&amp; configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
+                                    <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
+                                </j:if>
+                                <j:if test="${!isCreator &amp;&amp; !h.hasPermission(app.ADMINISTER)}">
                                     <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
                                 </j:if>
                                 <span></span>
