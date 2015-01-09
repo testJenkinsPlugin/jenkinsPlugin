@@ -347,6 +347,7 @@ public final class BuildConfigurator implements RootAction {
 		return BuildConfigurationManager.getSCM();
 	}
 	
+	@JavaScriptMethod
 	public List<TTSProject> getProjectName() throws IOException
 	{
 		return BuildConfigurationManager.getProjectName();

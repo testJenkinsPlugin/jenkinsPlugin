@@ -1,5 +1,4 @@
 var type;
-var scroll=0;
 
 window.onload = function()
 {
@@ -34,20 +33,6 @@ window.onload = function()
     buildConfiguration.deleteNotUploadFile(document.getElementById("files_hidden_script")
         .value.split(';'), function(t) {});
     document.getElementById("files_hidden_script").value = "";
-}
-
-window.onscroll = function()
-{
-    var aside = document.getElementById("fieldHelpView");
-    var overlay = document.getElementById("overlay");
-    scroll = document.documentElement.getBoundingClientRect().top;
-    aside.className = (document.documentElement.getBoundingClientRect().top != 0 ? 'field-help-view-fixed' : '');
-    if(overlay.className != "div-none")
-    {
-        overlay.className = (document.documentElement.getBoundingClientRect().top != 0 ? 'overlay help-top' : 'overlay');
-        
-    }
-
 }
 
 function setContent(name)
@@ -276,18 +261,19 @@ function upload()
     var file = document.getElementById("scriptsButton").files[0];
     if (file.size > 1048576)
     {
-        document.getElementById("fieldHelp").innerHTML = "You can't upload file which size is more than 1MB";
-        document.getElementById("fieldHelp").className = "field-help-error";
+        document.getElementById("scriptErrorText").innerHTML = " You can't upload file which size is more than 1MB";
+        document.getElementById("scriptError").className = "error-block script-error";
         document.getElementById("scriptsButton").value = "";
         return;
     }
     if (!validateExtension(file.name))
     {
-        document.getElementById("fieldHelp").innerHTML = "You can't upload file with this extension. Please choose file with '.bat, .nant, .powershell, .shell, .ant, .maven' extension only.";
-        document.getElementById("fieldHelp").className = "field-help-error";
+        document.getElementById("scriptErrorText").innerHTML = " You can't upload file with this extension. Please choose file with '.bat, .nant, .powershell, .shell, .ant, .maven' extension only.";
+        document.getElementById("scriptError").className = "error-block script-error";
         document.getElementById("scriptsButton").value = "";
         return;
     }
+    document.getElementById("scriptError").className = "div-none";
     document.getElementById("scriptsButton").disabled = true;
     var formdata = new FormData();
     formdata.append("sampleFile", file);
@@ -393,8 +379,9 @@ function isValidForm()
     var build = document.getElementsByName("projectToBuild");
     if (projectName.value == "None")
     {
-        document.getElementById("fieldHelp").innerHTML = "Please, enter your project name";
-        document.getElementById("fieldHelp").className = "field-help-error";
+        document.getElementById("projectErrorText").innerHTML = " Please, enter your project name";
+        document.getElementById("projectError").className = "error-block empty";
+        projectName.focus();
         return false;
     }
     if(projectName.className == "textbox-error")
@@ -463,6 +450,7 @@ function rejectDiv()
 {
     document.getElementById("rejectDiv").className = "reject-div help-top"; 
     document.getElementById("overlay").className = (scroll != 0 ? 'overlay help-top' : 'overlay');
+    document.getElementById("textReject").focus();
 }
 
 function rejectionSubmit()
@@ -625,9 +613,7 @@ function OkReject()
     if (reason != null)
     {
         if (reason.length == 0)
-        { 
-            document.getElementById("fieldHelp").innerHTML = "You must type reasons of rejection.";
-            document.getElementById("fieldHelp").className = "field-help-error";
+        {
             document.getElementById("textReject").focus();
             return false;
         }
@@ -640,7 +626,6 @@ function OkReject()
 
 function СancelReject()
 {
-    document.getElementById("fieldHelp").className = "div-none";
     document.getElementById("rejectDiv").className = "div-none";
     document.getElementById("overlay").className = "div-none";
     document.getElementById("textReject").value = "";
@@ -648,17 +633,22 @@ function СancelReject()
 
 function validateProject(project)
 {
-    var regPath = /[? " : < >]$/i;
-    if(!regPath.test(project.value) || project.value == "")
+    var regPath = /[/ ? " : < >]$/i;
+    var cl = document.getElementById("projectError").className;
+    var classes = cl.split(" ");
+    if((classes.length == 2)&&(project.value.length == 0))
+        return;
+    if(!regPath.test(project.value) || (project.value.length == 0))
     {
         document.getElementById("projectError").className = "error-none";
         document.getElementById(project.id).className = "textbox";
-        document.getElementById("fieldHelp").innerHTML = "";
+        document.getElementById("projectErrorText").innerHTML = "";
         document.getElementById("fieldHelp").className = "";
     }
     else
     {
         document.getElementById("projectError").className = "error-block";
+        document.getElementById("projectErrorText").innerHTML = " Not correct name";
         document.getElementById(project.id).className= "textbox-error";
     }
 }
@@ -672,5 +662,23 @@ function bMCChange(checkBox)
     if (!checkBox.checked)
     {
         deleteFromHidden(document.getElementById("build_machine_configuration"), checkBox.id);
+    }
+}
+
+function checkName(id)
+{
+    var path = document.getElementById(id).value;
+    var number = getElementNumber(id);
+    var regPath = /[/ ? " : < >]$/i;
+
+    if(!regPath.test(path) || path.length == 0)
+    {
+        document.getElementById("name_error_"+number).className = "error-none";
+        document.getElementById(id).className = "textbox";
+    }
+    else
+    {
+        document.getElementById("name_error_"+number).className = "error-block";
+        document.getElementById(id).className= "textbox-error";
     }
 }

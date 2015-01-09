@@ -93,6 +93,11 @@
     text-align:center;
 }
 
+.projectName
+{
+     padding-left: 10px;
+}
+
 .new
 {
     color:#3333FF;
@@ -573,4 +578,14 @@
 .active
 {
     margin-left: 20px
+}
+
+.script-error
+{
+    margin-left:0px;
+}
+
+.conf-error
+{
+    color: #CD5C5C;
 }

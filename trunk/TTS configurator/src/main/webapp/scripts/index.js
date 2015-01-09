@@ -1,19 +1,5 @@
 var nameAction;
 
-window.onload = function()
-{
-    buildConfiguration.GetActiveConfiguration(function(t){
-    if(t.responseObject() == true)
-    {
-        document.getElementById("Active").innerHTML = "All configurations";
-    }
-    else
-    {
-        var r = document.getElementById("Active").innerHTML = "Active configurations";
-    }
-    });
-}
-
 function setDeletion(name)
 {
     document.getElementById("rejectDiv").className = "reject-div";
@@ -92,17 +78,22 @@ function createJob(name)
     });
 }
 
-function Active()
+function ShowActiveConfigurations()
 {
     buildConfiguration.GetActiveConfiguration(function(t){
-    if(t.responseObject() == true)
-    {
-        buildConfiguration.ActiveConfiguration(false); 
-    }
-    else
-    {
-        buildConfiguration.ActiveConfiguration(true);
-    }
+    buildConfiguration.ActiveConfiguration(!t.responseObject()); 
+    location.reload();
     });
-    
+}
+
+function checkingConfigurations()
+{
+    buildConfiguration.getProjectName(function(t){
+        if(t.responseObject().length == 0)
+        {
+            document.getElementById("errorConfig").className = "";
+            document.getElementById("errorConfig").href="#";
+            return false;
+        }   
+    });
 }

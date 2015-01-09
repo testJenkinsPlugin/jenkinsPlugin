@@ -19,6 +19,8 @@
         <st:include page="sidepanel.jelly" it="${app}" />
         <j:set var="isAdmin" value="${it.isCurrentUserAdministrator()}"/>
         <j:set var="isActive" value="${it.GetActiveConfiguration()}"/>
+        <j:set var="conf" value="${it.getAllConfigurations()}"/>
+        <j:set var="projectSize" value="${it.getProjectName().size()}"/>
         <l:main-panel>
             <div id="overlay" class="div-none">
                 <div id="rejectDiv" class="div-none">
@@ -37,11 +39,24 @@
                 </div>
             </div>
             <h1>Configurations</h1>
-            <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
-            <j:if test="${isAdmin}">
-                <a href="" onclick="exportToXml(); return false;" id="xml" class="export-to-xml">Export to XML</a>
+            <j:if test="${projectSize != 0}">
+                <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
             </j:if>
-            <a href="" onclick="Active();" id="Active" class="active"></a>
+            <j:if test="${projectSize == 0}">
+                <a href="#" class="CreateBuildConfigurator">Create new build configuration</a>
+                <label class="conf-error">   (No configurations to creat)</label>
+            </j:if>
+            <j:if test="${isAdmin}">
+                <a href="#" onclick="exportToXml();" id="xml" class="export-to-xml">Export to XML</a>
+            </j:if>
+            <a href="#" onclick="return false;" id="active" class="active"> 
+            <j:if test="${isActive}">
+                All configurations
+            </j:if>
+            <j:if test="${!isActive}">
+                Active configurations
+            </j:if>
+            </a>
             <table>
                 <thead>
                     <tr height="10">
@@ -60,14 +75,14 @@
                         </tr>
                 </thead>
                 <tbody>
-                    <j:forEach items="${it.getAllConfigurations()}" var="configs" indexVar="i">
+                    <j:forEach items="${conf}" var="configs" indexVar="i">
                         <j:set var="isCreator" value="${it.isCurrentUserCreator(configs.getProjectName())}"/>
                         <tr height="25">
-                            <td>${configs.getProjectName()}</td>
+                            <td class="projectName">${configs.getProjectName()}</td>
                             <td class="state">
                                 <label id="${configs.getState().toString()}" class="${configs.getState().getCSSClassName()}">${configs.getState().toString()}</label>
                             </td>
-                            <td>${configs.getDate()}</td>
+                            <td class="state">${configs.getDate()}</td>
                             <td>
                                 <j:if test ="${configs.getState().toString() != 'Approved' &amp;&amp; configs.getState().toString() != 'Rejected'}">
                                     <j:if test="${isAdmin}">
@@ -96,7 +111,7 @@
                                 </j:if>
                                 <span></span>
                             </td>
-                            <td>${configs.getFullNameCreator()}</td>
+                            <td class="state">${configs.getFullNameCreator()}</td>
                         </tr>
                     </j:forEach>
                 </tbody>

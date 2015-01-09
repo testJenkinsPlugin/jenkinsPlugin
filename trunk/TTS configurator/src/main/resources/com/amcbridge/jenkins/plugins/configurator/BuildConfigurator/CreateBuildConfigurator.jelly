@@ -99,6 +99,10 @@
                 <div>
                     <label class="div-label">Postbuild scripts:</label>
                     <input type="file" id="scriptsButton" class="input-file" onchange="upload()" value="Add File"/>
+                    <div id="scriptError" class="error-none">
+                        <img src="../images/16x16/error.png"/>
+                        <label id="scriptErrorText"></label>
+                    </div>
                     <div class="div-legend">
                         <fieldset>
                             <legend>Scripts</legend>
