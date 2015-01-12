@@ -91,7 +91,7 @@
                 </div>
 
                 <div class="div-add-view">
-                    <input type="button" onClick="addView()" id="addProjectToBuild" value="Add more project to build"/>
+                    <input type="button" onClick="addView()" id="addProjectToBuild" value="Add project to build"/>
                     <label id="label-add-view" class="label-add-view-hidden">You should create one project to build</label>
                 </div>
 
