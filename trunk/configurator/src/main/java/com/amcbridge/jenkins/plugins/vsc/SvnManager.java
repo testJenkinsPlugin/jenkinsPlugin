@@ -56,7 +56,7 @@ public class SvnManager implements VersionControlSystem
 
 	@SuppressWarnings("finally")
 	public VersionControlSystemResult doCommit(String filePath, String url, String login,
-			String password)
+			String password, String commitMessage)
 	{
 		SVNCommitInfo commitInfo = new SVNCommitInfo(0, login, null);
 		VersionControlSystemResult commitResult = new VersionControlSystemResult(false);
@@ -72,7 +72,7 @@ public class SvnManager implements VersionControlSystem
 
 			byte[] fileBytesArray = Files.readAllBytes(Paths.get(filePath));
 			SVNNodeKind nodeKind = repository.checkPath("config.xml", repository.getLatestRevision());
-			ISVNEditor editor = repository.getCommitEditor("directory and file added" , null );
+			ISVNEditor editor = repository.getCommitEditor(commitMessage , null );
 			commitInfo = coomitFile(nodeKind, editor,
 					BuildConfigurationManager.CONFIG_FILE_NAME, fileBytesArray);
 			repository.closeSession();

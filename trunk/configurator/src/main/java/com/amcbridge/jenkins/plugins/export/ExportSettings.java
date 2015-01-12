@@ -21,11 +21,21 @@ public class ExportSettings extends Builder
 	@Extension
 	public static final class Settings extends BuildStepDescriptor<Builder>
 	{
-		private String url, login, password;
+		private String url, login, password, commitMessage;
 
 		public Settings()
 		{
 			load();
+		}
+
+		public String getCommitMessage()
+		{
+			return commitMessage;
+		}
+		
+		public  void setCommitMessage(String value)
+		{
+			commitMessage = value;
 		}
 
 		public String getUrl()
@@ -80,8 +90,8 @@ public class ExportSettings extends Builder
 
 		public boolean isSettingsSet()
 		{	
-			if(url == null || url.isEmpty() || login == null ||
-					login.isEmpty() || password == null || password.isEmpty() )
+			if(url == null || url.isEmpty() || login == null || commitMessage == null ||
+					login.isEmpty() || password == null || password.isEmpty() || commitMessage.isEmpty())
 			{
 				return false;
 			}

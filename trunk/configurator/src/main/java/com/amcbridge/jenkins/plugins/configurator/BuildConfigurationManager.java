@@ -276,7 +276,8 @@ public class BuildConfigurationManager
 			result.setErrorMassage(CommitError.NONE_PROPERTY.toString());
 			return result;
 		}
-		return svn.doCommit(path, settings.getUrl(), settings.getLogin(), settings.getPassword());
+		return svn.doCommit(path, settings.getUrl(), settings.getLogin(),
+				settings.getPassword(), settings.getCommitMessage());
 	}
 
 	public static Boolean isNameUsing(String name)
