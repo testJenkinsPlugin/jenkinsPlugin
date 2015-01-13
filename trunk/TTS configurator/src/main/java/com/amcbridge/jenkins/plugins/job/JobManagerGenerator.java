@@ -43,6 +43,7 @@ public class JobManagerGenerator {
 	public static final String COMMA_SEPARATOR = ", ";
 
 	private static final String JOB_TEMPLATE_PATH = "\\plugins\\configurator\\job\\config.xml";
+	private static final Character[] ILLEGAL_CHARS = {'!', '@', '#', '$', '%', '^', '&', '*', ':', ';', '\\', '|', '/', '?', '.', '<', '>'};
 
 	public static String convertToXML(Object obj)
 	{
@@ -54,10 +55,10 @@ public class JobManagerGenerator {
 			throws FileNotFoundException, ParserConfigurationException,
 			SAXException, IOException, TransformerException
 	{
-
-		if (isJobExist(config.getProjectName()))
+		String jobName = validJobName(config.getProjectName());
+		if (isJobExist(jobName))
 		{
-			AbstractItem item= (AbstractItem) Jenkins.getInstance().getItemByFullName(config.getProjectName());
+			AbstractItem item= (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder;
 			Document doc = null;
@@ -70,7 +71,7 @@ public class JobManagerGenerator {
 		else
 		{
 			FileInputStream fis = new FileInputStream(getJobXML(config));
-			Jenkins.getInstance().createProjectFromXML(config.getProjectName(), fis);
+			Jenkins.getInstance().createProjectFromXML(jobName, fis);
 		}
 	}
 
@@ -260,5 +261,17 @@ public class JobManagerGenerator {
 		}
 
 		return result;
+	}
+
+	private static String validJobName(String name)
+	{
+		for (Character character : ILLEGAL_CHARS)
+		{
+			if (name.indexOf(character) != -1)
+			{
+				name = name.replaceAll(character.toString(), " ");
+			}
+		}
+		return name;
 	}
 }

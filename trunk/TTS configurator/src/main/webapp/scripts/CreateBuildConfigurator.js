@@ -3,7 +3,6 @@ var type;
 window.onload = function()
 {
     var parameters = document.location.search.substr(1);
-    buildConfiguration.loadCreateNewBuildConfiguration(function(t) {});
     if (parameters.length != 0)
     {
         var projectName = getParameterValue("name");
@@ -29,6 +28,13 @@ window.onload = function()
     {
         document.getElementById("formType").value = "CREATE";
     }
+    buildConfiguration.loadCreateNewBuildConfiguration(function(t)
+    {
+        if (document.getElementById("formType").value == "CREATE")
+        {
+            document.getElementById("addProjectToBuild").click();
+        }
+    });
 
     buildConfiguration.deleteNotUploadFile(document.getElementById("files_hidden_script")
         .value.split(';'), function(t) {});
@@ -377,6 +383,7 @@ function isValidForm()
     var pathArt = document.getElementsByName("pathToArtefacts");
     var pathVer = document.getElementsByName("versionFilesPath");
     var build = document.getElementsByName("projectToBuild");
+    var patBuild = document.getElementsByName("fileToBuild");
     if (projectName.value == "None")
     {
         document.getElementById("projectErrorText").innerHTML = " Please, enter your project name";
@@ -399,6 +406,8 @@ function isValidForm()
         document.getElementById("email").focus();
         return false;
     }
+    
+    validAllView();
     if (!checkingPath(pathUrl))
         return false;
     if (!checkingPath(pathFolder))
@@ -406,6 +415,8 @@ function isValidForm()
     if (!checkingPath(pathArt))
         return false;
     if (!checkingPath(pathVer))
+        return false;
+    if (!checkingPath(patBuild))
         return false;
     if (type == "edit")
         return true;
@@ -441,9 +452,8 @@ function checkingPath(path)
             path[i].focus();
             return false;
         }
-        else
-            return true;
     }
+    return true;
 }
 
 function rejectDiv()
@@ -578,7 +588,7 @@ function checkURL(id,add)
     var url = document.getElementById(id).value;
     var number = getElementNumber(id);
     var regURL = /^(?:(?:https?|ftp|telnet):\/\/(?:[a-z0-9_-]{1,32}(?::[a-z0-9_-]{1,32})?@)?)?(?:(?:[a-z0-9-]{1,128}\.)+(?:com|net|org|mil|edu|arpa|ru|gov|biz|info|aero|inc|name|[a-z]{2})|(?!0)(?:(?!0[^.]|255)[0-9]{1,3}\.){3}(?!0|255)[0-9]{1,3})(?:\/[a-z0-9.,_@%&?+=\~\/-]*)?(?:#[^ \'\"&<>]*)?$/i;
-    if(regURL.test(url) || url == "")
+    if(regURL.test(url))
     {
         document.getElementById("url_error_"+number+add).className = "error-none";
         document.getElementById(id).className = "textbox";
@@ -603,6 +613,23 @@ function checkPath(id)
     else
     {
         document.getElementById("path_error_"+number).className = "error-block";
+        document.getElementById(id).className= "textbox-error";
+    }
+}
+
+function checkPTB(id)
+{
+    var path = document.getElementById(id).value;
+    var number = getElementNumber(id);
+    var regPath = /^([a-zA-Z]:\\)?[^\x00-\x1F"<>\|:\*\?/]+\.[a-zA-Z]{3,5}$/i;
+    if(regPath.test(path))
+    {
+        document.getElementById("ptb_error_"+number).className = "error-none";
+        document.getElementById(id).className = "textbox";
+    }
+    else
+    {
+        document.getElementById("ptb_error_"+number).className = "error-block";
         document.getElementById(id).className= "textbox-error";
     }
 }
@@ -680,5 +707,19 @@ function checkName(id)
     {
         document.getElementById("name_error_"+number).className = "error-block";
         document.getElementById(id).className= "textbox-error";
+    }
+}
+
+function validAllView()
+{
+    var view = document.getElementsByClassName("div-add-project-to-build-view");
+    var textboxes;
+    for (var i=0; i<view.length; i++)
+    {
+        textboxes = view[i].getElementsByClassName("textbox");
+        for (var j=0; j<textboxes.length; j++)
+        {
+            textboxes[j].onblur();
+        }
     }
 }

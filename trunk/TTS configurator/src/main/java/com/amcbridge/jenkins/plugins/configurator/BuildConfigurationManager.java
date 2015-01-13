@@ -119,7 +119,10 @@ public class BuildConfigurationManager
 		}
 
 		String folderName = getFolderName(config.getProjectName());
-		FOLDER_MANAGER.add(config.getId(), folderName);
+		if (config.getState().equals(ConfigurationState.NEW))
+		{
+			FOLDER_MANAGER.add(config.getId(), folderName);
+		}
 
 		File checkFile = new File(getRootDirectory() + "\\" + folderName);
 		if (!checkFile.exists())
@@ -305,7 +308,8 @@ public class BuildConfigurationManager
 			result.setErrorMassage(CommitError.NONE_PROPERTY.toString());
 			return result;
 		}
-		return svn.doCommit(path, settings.getUrl(), settings.getLogin(), settings.getPassword());
+		return svn.doCommit(path, settings.getUrl(), settings.getLogin(),
+				settings.getPassword(), settings.getCommitMessage());
 	}
 
 	public static Boolean isNameUsing(String name)

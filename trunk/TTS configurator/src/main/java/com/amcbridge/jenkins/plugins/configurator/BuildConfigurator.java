@@ -127,7 +127,7 @@ public final class BuildConfigurator implements RootAction {
 
 		newConfig.setCurrentDate();
 		TTSManager ttsManager = (TTSManager) Stapler.getCurrentRequest().getSession().getAttribute(TTS_MANAGER);
-		newConfig.setId(ttsManager.getProjectId(newConfig.getProjectName()));
+		newConfig.setId(ttsManager.getProjectId(BuildConfigurationManager.getFolderName(newConfig.getProjectName())));
 
 		ConfigurationStatusMessage message = 
 				new ConfigurationStatusMessage(newConfig.getProjectName());
@@ -151,6 +151,7 @@ public final class BuildConfigurator implements RootAction {
 		case APPROVED:
 			newConfig.setState(ConfigurationState.APPROVED);
 			newConfig.setCreator(currentConfig.getCreator());
+			newConfig.setId(currentConfig.getId());
 			message.setDescription(MessageDescription.APPROVE.toString());
 			if (!BuildConfigurationManager.getUserMailAddress(newConfig.getCreator()).isEmpty())
 			{
@@ -161,6 +162,7 @@ public final class BuildConfigurator implements RootAction {
 		case REJECT:
 			newConfig = currentConfig;
 			newConfig.setState(ConfigurationState.REJECTED);
+			newConfig.setId(currentConfig.getId());
 			message.setDescription(MessageDescription.REJECT.toString() +
 					" " + formAttribute.get("rejectionReason").toString());
 			if (!BuildConfigurationManager.getUserMailAddress(newConfig.getCreator()).isEmpty())

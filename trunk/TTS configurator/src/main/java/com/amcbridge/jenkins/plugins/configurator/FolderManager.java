@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -16,7 +19,7 @@ public class FolderManager {
 	{
 		try {
 			load();
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -31,13 +34,13 @@ public class FolderManager {
 		return folders.getID(name);
 	}
 
-	public void remove(Integer id) throws FileNotFoundException
+	public void remove(Integer id) throws FileNotFoundException, UnsupportedEncodingException
 	{
 		folders.remove(id);
 		save();
 	}
 
-	private void load() throws FileNotFoundException
+	private void load() throws FileNotFoundException, UnsupportedEncodingException
 	{
 		folders = new FolderInfo();
 
@@ -55,14 +58,14 @@ public class FolderManager {
 		folders = (FolderInfo) xstream.fromXML(file);
 	}
 
-	public void add(Integer id, String name) throws FileNotFoundException
+	public void add(Integer id, String name) throws FileNotFoundException, UnsupportedEncodingException
 	{
 		name = BuildConfigurationManager.getFolderName(name);
 		folders.add(id, name);
 		save();
 	}
 
-	private void save() throws FileNotFoundException
+	private void save() throws FileNotFoundException, UnsupportedEncodingException
 	{
 		XStream xstream = new XStream();
 		xstream.processAnnotations(FolderInfo.class);
@@ -77,6 +80,7 @@ public class FolderManager {
 
 		OutputStream os = new FileOutputStream(BuildConfigurationManager
 				.getRootDirectory() + "\\" + FILE_NAME);
-		xstream.toXML(folders, os);
+		Writer writer = new OutputStreamWriter(os, BuildConfigurationManager.ENCODING);
+		xstream.toXML(folders, writer);
 	}
 }
