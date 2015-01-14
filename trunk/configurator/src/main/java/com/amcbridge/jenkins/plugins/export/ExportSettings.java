@@ -91,7 +91,7 @@ public class ExportSettings extends Builder
 		public boolean isSettingsSet()
 		{	
 			if(url == null || url.isEmpty() || login == null || commitMessage == null ||
-					login.isEmpty() || password == null || password.isEmpty() || commitMessage.isEmpty())
+					login.isEmpty() || password == null || password.isEmpty())
 			{
 				return false;
 			}
