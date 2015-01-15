@@ -13,6 +13,7 @@ import com.amcbridge.jenkins.plugins.configurator.ConfigurationState;
 public class BuildConfiguration
 {
 	private String projectName, email, creator, date, rejectionReason, scm;
+	private Boolean isJobUpdate;
 
 	private ConfigurationState state;
 
@@ -56,6 +57,16 @@ public class BuildConfiguration
 		return scm;
 	}
 
+	public Boolean IsJobUpdate()
+	{
+		return isJobUpdate;
+	}
+	
+	public void setJobUpdate(Boolean value)
+	{
+		isJobUpdate = value;
+	}
+	
 	public void setBuildMachineConfiguration (String[] value)
 	{
 		buildMachineConfiguration = value;

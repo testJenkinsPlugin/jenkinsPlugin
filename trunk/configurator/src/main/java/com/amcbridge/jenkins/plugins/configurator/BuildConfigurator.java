@@ -36,6 +36,7 @@ import org.xml.sax.SAXException;
 
 import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
 import com.amcbridge.jenkins.plugins.controls.*;
+import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.*;
 import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
@@ -114,6 +115,7 @@ public final class BuildConfigurator implements RootAction {
 					.getPath(formAttribute.get("build_machine_configuration").toString()));
 		}
 		newConfig.setCurrentDate();
+		newConfig.setJobUpdate(true);
 
 		ConfigurationStatusMessage message = 
 				new ConfigurationStatusMessage(newConfig.getProjectName());
@@ -137,6 +139,7 @@ public final class BuildConfigurator implements RootAction {
 		case APPROVED:
 			newConfig.setState(ConfigurationState.APPROVED);
 			newConfig.setCreator(currentConfig.getCreator());
+			newConfig.setJobUpdate(false);
 			message.setDescription(MessageDescription.APPROVE.toString());
 			if (!BuildConfigurationManager.getUserMailAddress(newConfig.getCreator()).isEmpty())
 			{
@@ -326,8 +329,14 @@ public final class BuildConfigurator implements RootAction {
 	@JavaScriptMethod
 	public void createJob(String name)
 			throws IOException, ParserConfigurationException,
-			SAXException, TransformerException
+			SAXException, TransformerException, JAXBException
 	{
 		BuildConfigurationManager.createJob(name);
+	}
+	
+	@JavaScriptMethod
+	public Boolean isJobCreated(String name)
+	{
+		return JobManagerGenerator.isJobExist(JobManagerGenerator.validJobName(name));
 	}
 }

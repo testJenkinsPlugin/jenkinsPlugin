@@ -44,7 +44,7 @@ public class JobManagerGenerator {
 	public static final String COMMA_SEPARATOR = ", ";
 
 	private static final String JOB_TEMPLATE_PATH = "\\plugins\\configurator\\job\\config.xml";
-	private static final int[] SPECIAL_SYMBOLS = {34, 45};
+	private static final int[] SPECIAL_SYMBOLS = {45, 95};
 
 	public static String convertToXML(Object obj)
 	{
@@ -76,7 +76,7 @@ public class JobManagerGenerator {
 		}
 	}
 
-	private static Boolean isJobExist(String name)
+	public static Boolean isJobExist(String name)
 	{
 		for(Item item : Jenkins.getInstance().getAllItems())
 		{
@@ -264,15 +264,14 @@ public class JobManagerGenerator {
 		return result;
 	}
 
-	private static String validJobName(String name)
+	public static String validJobName(String name)
 	{
 		for (char ch: name.toCharArray())
 		{
-			if (Character.isLetterOrDigit(ch) || ArrayUtils.indexOf(SPECIAL_SYMBOLS, ch) != -1)
+			if (!Character.isLetterOrDigit(ch) && !ArrayUtils.contains(SPECIAL_SYMBOLS, ch))
 			{
-				continue;
+				name = name.replace(ch, ' ');
 			}
-			name = name.replace(ch, ' ');
 		}
 		return name;
 	}
