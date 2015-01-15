@@ -25,6 +25,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import jenkins.model.Jenkins;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -43,7 +44,7 @@ public class JobManagerGenerator {
 	public static final String COMMA_SEPARATOR = ", ";
 
 	private static final String JOB_TEMPLATE_PATH = "\\plugins\\configurator\\job\\config.xml";
-	private static final Character[] ILLEGAL_CHARS = {'!', '@', '#', '$', '%', '^', '&', '*', ':', ';', '\\', '|', '/', '?', '.', '<', '>'};
+	private static final int[] SPECIAL_SYMBOLS = {45, 95};
 
 	public static String convertToXML(Object obj)
 	{
@@ -265,11 +266,11 @@ public class JobManagerGenerator {
 
 	private static String validJobName(String name)
 	{
-		for (Character character : ILLEGAL_CHARS)
+		for (char ch: name.toCharArray())
 		{
-			if (name.indexOf(character) != -1)
+			if (!Character.isLetterOrDigit(ch) && !ArrayUtils.contains(SPECIAL_SYMBOLS, ch))
 			{
-				name = name.replaceAll(character.toString(), " ");
+				name = name.replace(ch, ' ');
 			}
 		}
 		return name;

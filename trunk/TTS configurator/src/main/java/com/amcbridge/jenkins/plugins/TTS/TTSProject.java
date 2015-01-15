@@ -3,7 +3,7 @@ package com.amcbridge.jenkins.plugins.TTS;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("RoleRecord")
-public class TTSProject {
+public class TTSProject implements Cloneable {
 
 	@XStreamAlias("ID")
 	private int id;
@@ -26,6 +26,11 @@ public class TTSProject {
 		return name;
 	}
 
+	public void setName(String value)
+	{
+		name = value;
+	}
+
 	public String getRole()
 	{
 		return role;
@@ -34,5 +39,10 @@ public class TTSProject {
 	public Boolean isActual()
 	{
 		return actual;
+	}
+
+	public TTSProject clone() throws CloneNotSupportedException
+	{
+		return (TTSProject)super.clone();
 	}
 }

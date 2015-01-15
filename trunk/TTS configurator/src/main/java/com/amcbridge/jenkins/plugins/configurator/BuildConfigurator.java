@@ -86,16 +86,18 @@ public final class BuildConfigurator implements RootAction {
 	}
 
 	public List<BuildConfiguration> getAllConfigurations()
-			throws IOException, ServletException, JAXBException 
+			throws IOException, ServletException, JAXBException, ParserConfigurationException 
 			{
 		if (Stapler.getCurrentRequest().getSession().getAttribute(TTS_MANAGER) == null)
 		{
 			Stapler.getCurrentRequest().getSession().setAttribute(TTS_MANAGER, new TTSManager());
+			((TTSManager)Stapler.getCurrentRequest().getSession().getAttribute(TTS_MANAGER)).checkProjectName();
 		}
 		if(active)
-			return BuildConfigurationManager.getAllActiveConfigurations();
-		else
 			return BuildConfigurationManager.loadAllConfigurations();
+		else
+			return BuildConfigurationManager.getActiveConfigurations();
+			
 		}
 	
 	public void doCreateNewConfigurator(final StaplerRequest request,
@@ -127,7 +129,7 @@ public final class BuildConfigurator implements RootAction {
 
 		newConfig.setCurrentDate();
 		TTSManager ttsManager = (TTSManager) Stapler.getCurrentRequest().getSession().getAttribute(TTS_MANAGER);
-		newConfig.setId(ttsManager.getProjectId(BuildConfigurationManager.getFolderName(newConfig.getProjectName())));
+		newConfig.setId(ttsManager.getProjectId(newConfig.getProjectName()));
 
 		ConfigurationStatusMessage message = 
 				new ConfigurationStatusMessage(newConfig.getProjectName());

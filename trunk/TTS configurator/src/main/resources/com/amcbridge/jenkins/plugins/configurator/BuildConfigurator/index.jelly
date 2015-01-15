@@ -49,12 +49,14 @@
             <j:if test="${isAdmin}">
                 <a href="#" onclick="exportToXml();" id="xml" class="export-to-xml">Export to XML</a>
             </j:if> 
+
             <j:if test="${isActive}">
-                <a href="" id="active" class="active">All configurations</a>
+                <a href="" id="active" class="active">Active configurations</a>
             </j:if>
             <j:if test="${!isActive}">
-                <a href="#" onclick="ShowActiveConfigurations(); return false;" id="active" class="active">Active configurations</a>
+                <a href="#" onclick="ShowActiveConfigurations(); return false;" id="active" class="active">All configurations</a>
             </j:if>
+
             <table>
                 <thead>
                     <tr height="10">

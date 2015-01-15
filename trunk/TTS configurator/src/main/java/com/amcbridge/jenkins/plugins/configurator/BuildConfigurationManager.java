@@ -12,7 +12,6 @@ import hudson.tasks.Mailer.UserProperty;
 import hudson.util.Iterators;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,6 @@ import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Ancestor;
@@ -121,7 +119,7 @@ public class BuildConfigurationManager
 		String folderName = getFolderName(config.getProjectName());
 		if (config.getState().equals(ConfigurationState.NEW))
 		{
-			FOLDER_MANAGER.add(config.getId(), folderName);
+			FOLDER_MANAGER.add(config.getId(), getTTSProject(config.getId()));
 		}
 
 		File checkFile = new File(getRootDirectory() + "\\" + folderName);
@@ -218,38 +216,70 @@ public class BuildConfigurationManager
 	public static List<BuildConfiguration> loadAllConfigurations()
 			throws IOException, ServletException, JAXBException
 			{
+
 		List<BuildConfiguration> configs = new ArrayList<BuildConfiguration>();
-		File file = new File(getRootDirectory());
+		BuildConfiguration config;
 
-		if (!file.exists())
-			return null;
-
-		File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-		for (int i = 0; i < directories.length; i++)
+		if (isCurrentUserAdministrator())
 		{
-			if (!isCurrentUserAdministrator() &&
-					!isCurrentUserCreatorOfConfiguration(directories[i].getName()))
-				continue;
-			configs.add(load(directories[i].getName()));
+			for (String folder : FOLDER_MANAGER.getFoldersName())
+			{
+				config = load(folder);
+				if (config.getProjectName() == null)
+				{
+					continue;
+				}
+				configs.add(config);
+			}
+		}
+		else
+		{
+			TTSManager ttsManager =  (TTSManager) Stapler.getCurrentRequest().getSession().getAttribute(BuildConfigurator.TTS_MANAGER);
+			for (TTSProject project : ttsManager.getAllProjects())
+			{
+				config = load(project.getName());
+				if (config.getProjectName() == null)
+				{
+					continue;
+				}
+				configs.add(config);
+			}
 		}
 		return configs;
 			}
-	
-	public static List<BuildConfiguration> getAllActiveConfigurations()
+
+	public static List<BuildConfiguration> getActiveConfigurations()
 			throws IOException, ServletException, JAXBException
-			{	
-		List<BuildConfiguration> result = new ArrayList<BuildConfiguration>();
-		TTSManager ttsManager = (TTSManager) Stapler.getCurrentRequest().getSession().getAttribute(BuildConfigurator.TTS_MANAGER);
-		for (TTSProject project : ttsManager.getActiveProjects())
-		{
-			BuildConfiguration test = load(project.getName());
-			ConfigurationState state = test.getState();
-			if (state != null)
 			{
-				result.add(test);
+		List<BuildConfiguration> configs = new ArrayList<BuildConfiguration>();
+		BuildConfiguration config;
+
+		if (isCurrentUserAdministrator())
+		{
+			for (String folder : FOLDER_MANAGER.getFoldersName())
+			{
+				config = load(folder);
+				if (config.getProjectName() == null || !FOLDER_MANAGER.isActual(config.getId()))
+				{
+					continue;
+				}
+				configs.add(config);
 			}
 		}
-		return result;
+		else
+		{
+			TTSManager ttsManager =  (TTSManager) Stapler.getCurrentRequest().getSession().getAttribute(BuildConfigurator.TTS_MANAGER);
+			for (TTSProject project : ttsManager.getActiveProjects())
+			{
+				config = load(project.getName());
+				if (config.getProjectName() == null)
+				{
+					continue;
+				}
+				configs.add(config);
+			}
+		}
+		return configs;
 			}
 
 	public static void deleteFiles(String[] files, String pathFolder)
@@ -331,7 +361,7 @@ public class BuildConfigurationManager
 		if (checkFile.exists())
 			FileUtils.deleteDirectory(checkFile);
 
-		FOLDER_MANAGER.remove(FOLDER_MANAGER.getFolderId(folderName));
+		FOLDER_MANAGER.remove(config.getId());
 
 		ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName());
 		message.setSubject(config.getProjectName());
@@ -410,7 +440,7 @@ public class BuildConfigurationManager
 		}
 		return result;
 	}
-	
+
 	public static List<TTSProject> getProjectName() throws IOException
 	{
 		List<TTSProject> result = new ArrayList<TTSProject>();
@@ -488,8 +518,9 @@ public class BuildConfigurationManager
 			throws IOException, ParserConfigurationException, JAXBException
 	{
 		if (!FOLDER_MANAGER.getFolderName(project.getId()).equals(StringUtils.EMPTY) && 
-				!FOLDER_MANAGER.getFolderName(project.getId())
-				.equals(getFolderName(project.getName())))
+				(!FOLDER_MANAGER.getFolderName(project.getId())
+						.equals(getFolderName(project.getName())) || FOLDER_MANAGER.isActual(project.getId()) != project.isActual())
+				)
 		{
 			BuildConfiguration config = load(FOLDER_MANAGER.getFolderName(project.getId()));
 			config.setProjectName(project.getName());
@@ -500,7 +531,14 @@ public class BuildConfigurationManager
 			oldFolder.renameTo(newFolder);
 			save(config);
 			FOLDER_MANAGER.remove(project.getId());
-			FOLDER_MANAGER.add(project.getId(), getFolderName(project.getName()));
+			FOLDER_MANAGER.add(project.getId(), getTTSProject(project.getId()));
 		}
+	}
+
+	public static TTSProject getTTSProject(Integer id)
+	{
+		TTSManager tts = (TTSManager)Stapler.getCurrentRequest()
+				.getSession().getAttribute(BuildConfigurator.TTS_MANAGER);
+		return tts.getProject(id);
 	}
 }

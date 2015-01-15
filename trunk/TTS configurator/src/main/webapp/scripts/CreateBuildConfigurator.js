@@ -660,12 +660,12 @@ function СancelReject()
 
 function validateProject(project)
 {
-    var regPath = /[/ ? " : < >]$/i;
+    var regPath = /^[^\\\/\?\*\#\"\>\<\:\|]*$/i;
     var cl = document.getElementById("projectError").className;
     var classes = cl.split(" ");
     if((classes.length == 2)&&(project.value.length == 0))
         return;
-    if(!regPath.test(project.value) || (project.value.length == 0))
+    if(regPath.test(project.value) || (project.value.length == 0))
     {
         document.getElementById("projectError").className = "error-none";
         document.getElementById(project.id).className = "textbox";

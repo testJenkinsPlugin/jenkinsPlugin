@@ -7,7 +7,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.List;
 
+import com.amcbridge.jenkins.plugins.TTS.TTSProject;
 import com.thoughtworks.xstream.XStream;
 
 public class FolderManager {
@@ -29,9 +31,19 @@ public class FolderManager {
 		return folders.getName(id);
 	}
 
-	public Integer getFolderId(String name)
+	public List<String> getFoldersName()
 	{
-		return folders.getID(name);
+		return folders.getFoldersName();
+	}
+	
+	public TTSProject getProject(Integer id)
+	{
+		return folders.getProject(id);
+	}
+
+	public Boolean isActual(Integer id)
+	{
+		return folders.isActual(id);
 	}
 
 	public void remove(Integer id) throws FileNotFoundException, UnsupportedEncodingException
@@ -58,10 +70,10 @@ public class FolderManager {
 		folders = (FolderInfo) xstream.fromXML(file);
 	}
 
-	public void add(Integer id, String name) throws FileNotFoundException, UnsupportedEncodingException
+	public void add(Integer id, TTSProject project) throws FileNotFoundException, UnsupportedEncodingException
 	{
-		name = BuildConfigurationManager.getFolderName(name);
-		folders.add(id, name);
+		project.setName(BuildConfigurationManager.getFolderName(project.getName()));
+		folders.add(id, project);
 		save();
 	}
 

@@ -83,7 +83,7 @@ public class TTSManager {
 
 	public int getProjectId(String name)
 	{
-		int result = 0;
+		int result = -1;
 		for (TTSProject project : projects)
 		{
 			if (project.getName().equals(name))
@@ -96,13 +96,31 @@ public class TTSManager {
 		return result;
 	}
 
+	public TTSProject getProject(Integer id)
+	{
+		for (TTSProject pr : projects)
+		{
+			if (pr.getId() == id)
+			{
+				try
+				{
+					return pr.clone();
+				}
+				catch (CloneNotSupportedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+	
 	private void TTSConnection()
 	{
 		try
 		{
 			loadProjects();
 			loadEmail();
-			checkProjectName();
 		}
 		catch (Exception e)
 		{}
@@ -162,7 +180,7 @@ public class TTSManager {
 		return (new HexBinaryAdapter()).marshal(md.digest(value.getBytes()));
 	}
 	
-	private void checkProjectName() throws IOException, ParserConfigurationException, JAXBException
+	public void checkProjectName() throws IOException, ParserConfigurationException, JAXBException
 	{
 		for (TTSProject project : projects)
 		{
