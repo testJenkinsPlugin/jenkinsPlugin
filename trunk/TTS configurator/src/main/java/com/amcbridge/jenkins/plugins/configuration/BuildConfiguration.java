@@ -14,6 +14,8 @@ public class BuildConfiguration
 {
 	private String projectName, email, creator, date, rejectionReason, scm;
 	private int id;
+	private Boolean isJobUpdate;
+	
 	private ConfigurationState state;
 
 	private List<ProjectToBuild> projectToBuild;
@@ -64,6 +66,16 @@ public class BuildConfiguration
 	public int getId()
 	{
 		return id;
+	}
+	
+	public Boolean IsJobUpdate()
+	{
+		return isJobUpdate;
+	}
+	
+	public void setJobUpdate(Boolean value)
+	{
+		isJobUpdate = value;
 	}
 	
 	public void setBuildMachineConfiguration (String[] value)

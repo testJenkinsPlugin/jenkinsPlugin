@@ -76,7 +76,7 @@ public class JobManagerGenerator {
 		}
 	}
 
-	private static Boolean isJobExist(String name)
+	public static Boolean isJobExist(String name)
 	{
 		for(Item item : Jenkins.getInstance().getAllItems())
 		{
@@ -264,7 +264,7 @@ public class JobManagerGenerator {
 		return result;
 	}
 
-	private static String validJobName(String name)
+	public static String validJobName(String name)
 	{
 		for (char ch: name.toCharArray())
 		{

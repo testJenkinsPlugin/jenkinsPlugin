@@ -38,6 +38,7 @@ import com.amcbridge.jenkins.plugins.TTS.TTSManager;
 import com.amcbridge.jenkins.plugins.TTS.TTSProject;
 import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
 import com.amcbridge.jenkins.plugins.controls.*;
+import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.*;
 import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
@@ -128,6 +129,7 @@ public final class BuildConfigurator implements RootAction {
 		}
 
 		newConfig.setCurrentDate();
+		newConfig.setJobUpdate(true);
 		TTSManager ttsManager = (TTSManager) Stapler.getCurrentRequest().getSession().getAttribute(TTS_MANAGER);
 		newConfig.setId(ttsManager.getProjectId(newConfig.getProjectName()));
 
@@ -154,6 +156,7 @@ public final class BuildConfigurator implements RootAction {
 			newConfig.setState(ConfigurationState.APPROVED);
 			newConfig.setCreator(currentConfig.getCreator());
 			newConfig.setId(currentConfig.getId());
+			newConfig.setJobUpdate(false);
 			message.setDescription(MessageDescription.APPROVE.toString());
 			if (!BuildConfigurationManager.getUserMailAddress(newConfig.getCreator()).isEmpty())
 			{
@@ -364,8 +367,14 @@ public final class BuildConfigurator implements RootAction {
 	@JavaScriptMethod
 	public void createJob(String name)
 			throws IOException, ParserConfigurationException,
-			SAXException, TransformerException
+			SAXException, TransformerException, JAXBException
 	{
 		BuildConfigurationManager.createJob(name);
+	}
+	
+	@JavaScriptMethod
+	public Boolean isJobCreated(String name)
+	{
+		return JobManagerGenerator.isJobExist(JobManagerGenerator.validJobName(name));
 	}
 }

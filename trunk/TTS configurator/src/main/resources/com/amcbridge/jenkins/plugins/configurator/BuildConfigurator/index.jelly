@@ -98,8 +98,15 @@
                                     </j:if>
                                 </j:if>
 
-                                <j:if test="${configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
-                                    <a href="#" onclick="createJob(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Create Job</a>
+                                <j:if test="${configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER) &amp;&amp; !configs.IsJobUpdate()}">
+                                    <a href="#" onclick="createJob(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">
+                                        <j:if test="${!it.isJobCreated(configs.getProjectName())}">
+                                            Create Job
+                                        </j:if>
+                                        <j:if test="${it.isJobCreated(configs.getProjectName())}">
+                                            Update Job
+                                        </j:if>
+                                    </a>
                                 </j:if>
 
                                 <j:if test="${isCreator &amp;&amp; configs.getState().toString() != 'For Deletion'}">

@@ -496,11 +496,14 @@ public class BuildConfigurationManager
 
 	public static void createJob(String name)
 			throws IOException, ParserConfigurationException,
-			SAXException, TransformerException
+			SAXException, TransformerException, JAXBException
 	{
 		BuildConfiguration config = load(name);
 		JobManagerGenerator.createJob(config);
+		config.setJobUpdate(true);
+		save(config);
 	}
+
 
 	public static String getFolderName(String projectName)
 	{

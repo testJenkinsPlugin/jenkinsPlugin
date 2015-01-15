@@ -63,6 +63,7 @@ function OkReject()
             case("setDeletion"):{buildConfiguration.setForDeletion(mas[0], function(t){location.reload();}); break;}
             case("deletePermanently"):{buildConfiguration.deleteConfigurationPermanently(mas[0], function(t){location.reload();});break;}
             case("restore"):{buildConfiguration.restoreConfiguration(mas[0], function(t){location.reload();});break;}
+            case("createJob"):{buildConfiguration.createJob(mas[0], function(t){location.reload();}); break;}
         }
     }
 }
@@ -74,13 +75,18 @@ function СancelReject()
 
 function createJob(name)
 {
-    buildConfiguration.createJob(name, function(t)
+    document.getElementById("rejectDiv").className = "reject-div";
+    document.getElementById("overlay").className = "overlay";
+    document.getElementById("СancelReject").className = "div-none";
+    var message;
+    var s = document.getElementsByName(name)[0].innerHTML.trim();
+    switch(document.getElementsByName(name)[0].innerHTML.trim())
     {
-        document.getElementById("rejectDiv").className = "reject-div";
-        document.getElementById("overlay").className = "overlay";
-        document.getElementById("СancelReject").className = "div-none";
-        document.getElementById("helpReject").innerHTML = "Job was successfully created.";
-    });
+        case("Create Job"):{message = "Job was successfully created."; break;}
+        case("Update Job"):{message = "Job was successfully updated."; break;}
+    }
+    document.getElementById("helpReject").innerHTML = message;
+    nameAction = name+"?createJob"; 
 }
 
 function ShowActiveConfigurations()
