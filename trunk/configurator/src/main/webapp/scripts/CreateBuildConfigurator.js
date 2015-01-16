@@ -660,7 +660,7 @@ function СancelReject()
 
 function validateProject(project)
 {
-    var regPath = /^[^\\\/\?\*\#\"\>\<\:\|]*$/i;
+    var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|]*$/i;
     var cl = document.getElementById("projectError").className;
     var classes = cl.split(" ");
     if((classes.length == 2)&&(project.value.length == 0))

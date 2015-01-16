@@ -45,6 +45,7 @@
 {
     border: 1px solid #000;
     border-collapse: collapse;
+    width: 100%;
 }
 
 .project-name-column
@@ -67,13 +68,11 @@
 
 .action-column
 {
-    width:20%;
     text-align: center;
 }
 
 .user-name
 {
-    width:400px;
     text-align: center;
 }
 
@@ -81,7 +80,7 @@
 
 .edit-link { margin:0 0 0 10px;}
 
-.delete-link { margin:0 0 0 10px;}
+.delete-link { margin:0 10px 0 10px;}
 
 .export-to-xml
 {

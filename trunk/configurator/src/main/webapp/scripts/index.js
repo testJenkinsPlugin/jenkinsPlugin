@@ -59,6 +59,7 @@ function OkReject()
             case("deletePermanently"):{buildConfiguration.deleteConfigurationPermanently(mas[0], function(t){location.reload();});break;}
             case("restore"):{buildConfiguration.restoreConfiguration(mas[0], function(t){location.reload();});break;}
             case("createJob"):{buildConfiguration.createJob(mas[0], function(t){location.reload();}); break;}
+            case("deleteJob"):{buildConfiguration.deleteJob(mas[0], function(t){location.reload();}); break;}
         }
     }
 }
@@ -82,4 +83,13 @@ function createJob(name)
     }
     document.getElementById("helpReject").innerHTML = message;
     nameAction = name+"?createJob"; 
+}
+
+function deleteJob(name)
+{
+    name = name.replace("delete_", "");
+    document.getElementById("rejectDiv").className = "reject-div";
+    document.getElementById("overlay").className = "overlay";
+    document.getElementById("helpReject").innerHTML = "Are you sure you want delete '" + name + "' job?";
+    nameAction = name+"?deleteJob"; 
 }

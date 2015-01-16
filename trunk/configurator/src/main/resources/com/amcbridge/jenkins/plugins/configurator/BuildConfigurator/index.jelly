@@ -92,6 +92,10 @@
                                     </a>
                                 </j:if>
 
+                                <j:if test="${h.hasPermission(app.ADMINISTER) &amp;&amp; it.isJobCreated(configs.getProjectName())}">
+                                    <a href="#" onclick="deleteJob(this.name);" name="delete_${configs.getProjectName()}" class="edit-link">Delete Job</a>
+                                </j:if>
+
                                 <j:if test="${isCreator &amp;&amp; configs.getState().toString() != 'For Deletion'}">
                                     <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
                                     <a href="#" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
