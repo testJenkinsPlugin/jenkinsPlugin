@@ -434,7 +434,7 @@ function isValidForm()
         }
         else
         {
-            document.getElementById("fieldHelp").innerHTML = "Configuration with name '" + projectName.value + "' has already exists. Please select another name.";
+            document.getElementById("fieldHelp").innerHTML = "Configuration with name '" + projectName.value + "' already exists. Please select another name.";
             document.getElementById("fieldHelp").className = "field-help-error";
         }
     });
