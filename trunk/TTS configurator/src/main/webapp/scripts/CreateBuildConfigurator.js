@@ -434,7 +434,7 @@ function isValidForm()
         }
         else
         {
-            document.getElementById("fieldHelp").innerHTML = "Configuration with name '" + projectName.value + "' has already exists. Please select another name.";
+            document.getElementById("fieldHelp").innerHTML = "Configuration with name '" + projectName.value + "' already exists. Please select another name.";
             document.getElementById("fieldHelp").className = "field-help-error";
         }
     });
@@ -660,7 +660,7 @@ function СancelReject()
 
 function validateProject(project)
 {
-    var regPath = /^[^\\\/\?\*\#\"\>\<\:\|]*$/i;
+    var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|]*$/i;
     var cl = document.getElementById("projectError").className;
     var classes = cl.split(" ");
     if((classes.length == 2)&&(project.value.length == 0))

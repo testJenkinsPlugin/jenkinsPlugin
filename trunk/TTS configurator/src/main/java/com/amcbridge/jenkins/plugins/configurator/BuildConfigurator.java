@@ -377,4 +377,17 @@ public final class BuildConfigurator implements RootAction {
 	{
 		return JobManagerGenerator.isJobExist(JobManagerGenerator.validJobName(name));
 	}
+	
+	@JavaScriptMethod
+	public void deleteJob(String name)
+			throws IOException, InterruptedException, ParserConfigurationException, JAXBException
+	{
+		JobManagerGenerator.deleteJob(name);
+		BuildConfiguration config = BuildConfigurationManager.load(name);
+		if (config.getState().equals(ConfigurationState.APPROVED))
+		{
+			config.setJobUpdate(false);
+			BuildConfigurationManager.save(config);
+		}
+	}
 }

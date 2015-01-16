@@ -275,4 +275,17 @@ public class JobManagerGenerator {
 		}
 		return name;
 	}
+	
+	public static void deleteJob(String name) throws IOException, InterruptedException
+	{
+		name = validJobName(name);
+		for (Item job : Jenkins.getInstance().getAllItems())
+		{
+			if (job.getName().equals(name))
+			{
+				job.delete();
+				return;
+			}
+		}
+	}
 }
