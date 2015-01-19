@@ -1,2 +1,25 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<configurations/>
+<configurations>
+  <job name="erew">
+    <projects>
+      <project pathToFile="">
+        <repository type="None" url=""/>
+        <pathToArtefacts/>
+        <versionFiles versionFile="false"/>
+        <configs/>
+      </project>
+    </projects>
+    <scripts/>
+  </job>
+  <job name="user">
+    <projects>
+      <project pathToFile="">
+        <repository type="Subversion" url=""/>
+        <pathToArtefacts/>
+        <versionFiles versionFile="false"/>
+        <configs/>
+      </project>
+    </projects>
+    <scripts/>
+  </job>
+</configurations>
