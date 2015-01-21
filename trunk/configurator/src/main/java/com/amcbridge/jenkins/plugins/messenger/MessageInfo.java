@@ -7,4 +7,6 @@ public interface MessageInfo
 	public String getDestinationAddress();
 
 	public String getMassageText();
+	
+	public String getCC();
 }

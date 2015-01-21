@@ -243,7 +243,7 @@ public class BuildConfigurationManager
 		config.setCurrentDate();
 		save(config);
 		ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
-				getAdminEmail(), MessageDescription.MARKED_FOR_DELETION.toString(),
+				getAdminEmail(), StringUtils.EMPTY, MessageDescription.MARKED_FOR_DELETION.toString(),
 				config.getProjectName());
 		mail.sendMail(message);
 	}
@@ -256,7 +256,7 @@ public class BuildConfigurationManager
 		config.setCurrentDate();
 		save(config);
 		ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
-				getAdminEmail(), MessageDescription.RESTORE.toString(),
+				getAdminEmail(), getUserMailAddress(config), MessageDescription.RESTORE.toString(),
 				config.getProjectName());
 		mail.sendMail(message);
 
@@ -301,12 +301,7 @@ public class BuildConfigurationManager
 		message.setSubject(config.getProjectName());
 		message.setDescription(MessageDescription.DELETE_PERMANENTLY.toString());
 
-		if (!getUserMailAddress(config.getCreator()).isEmpty())
-		{
-			message.setDestinationAddress(getUserMailAddress(config.getCreator()));
-			mail.sendMail(message);
-		}
-
+		message.setCC(getUserMailAddress(config));
 		message.setDestinationAddress(getAdminEmail());
 		mail.sendMail(message);
 	}
@@ -399,15 +394,12 @@ public class BuildConfigurationManager
 		return result;
 	}
 
-	public static String getUserMailAddress(String userId)
+	public static String getUserMailAddress(BuildConfiguration config)
 	{
-		if (User.get(userId) != null)
+		if (config.getConfigEmail() != null)
 		{
-			UserProperty mail = User.get(userId).getProperty(Mailer.UserProperty.class);
-			if (mail.getAddress() != null)
-			{
-				return mail.getAddress();
-			}
+			String[] address = config.getConfigEmail().split(" ");
+			return StringUtils.join(address, ",");
 		}
 		return StringUtils.EMPTY;
 	}
