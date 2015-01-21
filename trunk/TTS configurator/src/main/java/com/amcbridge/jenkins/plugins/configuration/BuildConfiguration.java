@@ -12,7 +12,7 @@ import com.amcbridge.jenkins.plugins.configurator.ConfigurationState;
 
 public class BuildConfiguration
 {
-	private String projectName, email, creator, date, rejectionReason, scm;
+	private String projectName, email, creator, date, rejectionReason, scm, configEmail;
 	private int id;
 	private Boolean isJobUpdate;
 	
@@ -98,6 +98,16 @@ public class BuildConfiguration
 		return email;
 	}
 
+	public void setConfigEmail(String value)
+	{
+		configEmail = value;
+	}
+	
+	public String getConfigEmail()
+	{
+		return configEmail;
+	}
+	
 	public void setProjectToBuild (List<ProjectToBuild> value)
 	{
 		projectToBuild = value;
@@ -153,12 +163,12 @@ public class BuildConfiguration
 		return fullname;
 	}
 	
-	public void setReject(String reject)
+	public void setRejectionReason(String reject)
 	{
 		rejectionReason = reject;
 	}
 	
-	public String getrejectionReason()
+	public String getRejectionReason()
 	{
 		return rejectionReason;
 	}

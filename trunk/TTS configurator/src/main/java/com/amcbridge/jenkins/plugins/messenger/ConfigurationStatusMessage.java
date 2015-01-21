@@ -1,14 +1,17 @@
 package com.amcbridge.jenkins.plugins.messenger;
 
+import org.apache.commons.lang.StringUtils;
+
 public class ConfigurationStatusMessage implements MessageInfo
 {
-	private String subject, sendTo, description, projectName;
+	private String subject, sendTo, sendCC, description, projectName;
 
 	public ConfigurationStatusMessage (String subject,
-			String sendTo, String description, String projectName)
+			String sendTo, String sendCC, String description, String projectName)
 	{
 		this.subject = subject;
 		this.sendTo = sendTo;
+		this.sendCC = sendCC;
 		this.description = description;
 		this.projectName = projectName;
 	}
@@ -42,6 +45,23 @@ public class ConfigurationStatusMessage implements MessageInfo
 
 	public void setDestinationAddress(String value) {
 		sendTo = value;
+	}
+
+	public String getCC()
+	{
+		return sendCC; 
+	}
+
+	public void setCC(String value)
+	{
+		if (value.contains(" "))
+		{
+			sendCC = StringUtils.EMPTY;
+		}
+		else
+		{
+			sendCC = value;
+		}
 	}
 
 	public void setDescription(String value) {

@@ -59,7 +59,7 @@
 
             <div id="block_help_${sourceId[0]}build" class="help-view">
                 <lebel id="text_help_${sourceId[0]}build" class="helptext">
-                     Relative path
+                    Project file name (with extension)
                 </lebel>
             </div>
         </div>

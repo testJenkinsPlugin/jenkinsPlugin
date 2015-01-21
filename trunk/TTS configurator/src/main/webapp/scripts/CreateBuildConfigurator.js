@@ -45,9 +45,9 @@ function setContent(name)
 {
         buildConfiguration.getConfiguration(name, function(t){
         document.getElementById("projectName").add(new Option(t.responseObject().projectName));
-        document.getElementById("projectName").value = t.responseObject().projectName;
+        setDropDownValue(document.getElementById("projectName"), t.responseObject().projectName);
         document.getElementById("typeSCM").value = t.responseObject().scm;
-        
+
         if(t.responseObject().rejectionReason != "")
             document.getElementById("reasonLabel").innerHTML = "Reason of rejection:  "+t.responseObject().rejectionReason;
 
@@ -78,6 +78,7 @@ function setContent(name)
             document.getElementById('email').value = mail;
             document.getElementById('isEmail').checked = true;
         }
+        document.getElementById("configEmail").value = t.responseObject().configEmail;
 
         var scripts = t.responseObject().scripts;
         for (var i=0; i<scripts.length; i++)
@@ -91,6 +92,19 @@ function setContent(name)
             })
         }
     })
+}
+
+function setDropDownValue(dropDown, value)
+{
+    var options = dropDown.options;
+    for (var i=0; i<options.length; i++)
+    {
+        if (options[i].value == value)
+        {
+            dropDown.selectedIndex = i;
+            return;
+        }
+    }
 }
 
 document.addEventListener('keyup', function (e)
@@ -251,8 +265,8 @@ function textboxDisabled(checkBox, textboxId)
 {
     if (!checkBox.checked)
     {
-        document.getElementById("mailError").className = "error-none";
-        document.getElementById("email").className = "textbox";	
+        document.getElementById("email_Error").className = "error-none";
+        document.getElementById("email").className = "email-notification";
         document.getElementById(textboxId).disabled = true;
         document.getElementById(textboxId).value = "";
     }
@@ -401,9 +415,14 @@ function isValidForm()
         document.getElementById("label-add-view").className = "label-add-view";
         return false;
     }
-    if(document.getElementById("mailError").className == "error-block")
+    if(document.getElementById("email_Error").className == "error-block")
     {
         document.getElementById("email").focus();
+        return false;
+    }
+    if(document.getElementById("configEmail_Error").className == "error-block")
+    {
+        document.getElementById("configEmail").focus();
         return false;
     }
     
@@ -553,6 +572,7 @@ function imageHelp(id)
 
 function validateMail(mail)
 {
+    var name = mail.name;
     var mailValue = mail.value;
     var mails = mailValue.split(' ');
     var cheking = true;
@@ -564,13 +584,27 @@ function validateMail(mail)
     }
     if(cheking || mail.value=="")
     {
-        document.getElementById("mailError").className = "error-none";
-        document.getElementById("email").className = "textbox";
+        document.getElementById(name + "_Error").className = "error-none";
+        if (name == "email")
+        {
+            document.getElementById(name).className = "email-notification";
+        }
+        else
+        {
+            document.getElementById(name).className = "textbox";
+        }
     }
     else
     {
-        document.getElementById("mailError").className = "error-block";
-        document.getElementById("email").className = "textbox-error";
+        document.getElementById(name + "_Error").className = "error-block";
+        if (name == "email")
+        {
+            document.getElementById(name).className = "email-notification-error";
+        }
+        else
+        {
+            document.getElementById(name).className = "textbox-error";
+        }
     }
 }
 

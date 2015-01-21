@@ -165,7 +165,7 @@
 .div-radiogroup
 {
     width: 200px;
-    margin-left: 150px;
+    margin-left: 205px;
     margin-top: 15px;
     margin-bottom: 15px;
 }
@@ -306,7 +306,7 @@
 .div-project-name
 {
     float: left;
-    width: 143px;
+    width: 202px;
 }
 
 .div-confirm-button
@@ -386,7 +386,7 @@
 
 .block-help-view
 {
-    width:453px;
+    width:480px;
     margin-top: 7px;
     display: block;
     border: solid #bbb 1px;
@@ -587,4 +587,17 @@
 .conf-error
 {
     color: #CD5C5C;
+}
+
+.email-notification
+{
+    margin-left: 37px;
+    width: 330px;
+}
+
+.email-notification-error
+{
+    margin-left:37px;
+    width: 330px;
+    border: 1px solid red;
 }

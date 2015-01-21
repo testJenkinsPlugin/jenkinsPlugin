@@ -53,7 +53,7 @@
                     </div>
                 </div>
                 <div class="div-textinput">
-                    <div class="div-file-chooser-label">
+                    <div class="div-project-name">
                         <label>SCM:</label>
                     </div>
 
@@ -81,13 +81,39 @@
                 </j:if>
 
                 <div class="div-textinput">
-                    <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="emailCheckBoxChange(this)" title="E-mails notifications"/>
-                    <input type="text" field="email" onblur="validateMail(this)" name="email" disabled="false" id="email" class="textbox"/>
+                    <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="emailCheckBoxChange(this)" title="Job E-mails notifications"/>
+                    <input type="text" field="email" onblur="validateMail(this)" name="email" disabled="false" id="email" class="email-notification"/>
+                    <img id="image_url_-1" src="/static/c2e30787/images/16x16/help.png" onClick="imageHelp(id)" class="image"/>
                 </div>
-                <div id="mailError" class="error-none">
+                <div id="email_Error" class="error-none" style="margin-left: 205px;">
                     <img src="../images/16x16/error.png"/>
                     Not correct e-mail
                 </div>
+
+                <div id="block_help_-1" class="help-view">
+                <lebel id="text_help_-1" class="helptext">
+                     Whitespace-separated list of recipient addresses.
+                </lebel>
+                </div>
+
+                <div class="div-textinput">
+                    <div class="div-project-name">
+                        <label>Configuration E-mails notifications</label>
+                    </div>
+                    <input type="text" field="email" onblur="validateMail(this)" name="configEmail" id="configEmail" class="textbox"/>
+                    <img id="image_url_-2" src="/static/c2e30787/images/16x16/help.png" onClick="imageHelp(id)" class="image"/>
+                </div>
+                <div id="configEmail_Error" class="error-none" style="margin-left: 205px;">
+                    <img src="../images/16x16/error.png"/>
+                    Not correct e-mail
+                </div>
+
+                <div id="block_help_-2" class="help-view">
+                <lebel id="text_help_-2" class="helptext">
+                     Whitespace-separated list of recipient addresses.
+                </lebel>
+                </div> 
+
                 <div id="projectsToBuild" class="div-root-project">
                 </div>
 

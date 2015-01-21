@@ -44,7 +44,7 @@ public class JobManagerGenerator {
 	public static final String COMMA_SEPARATOR = ", ";
 
 	private static final String JOB_TEMPLATE_PATH = "\\plugins\\configurator\\job\\config.xml";
-	private static final int[] SPECIAL_SYMBOLS = {45, 95};
+	private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
 
 	public static String convertToXML(Object obj)
 	{
