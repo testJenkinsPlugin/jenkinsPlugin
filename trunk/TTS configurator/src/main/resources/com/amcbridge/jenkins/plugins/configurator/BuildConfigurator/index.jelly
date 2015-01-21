@@ -44,7 +44,7 @@
             </j:if>
             <j:if test="${projectSize == 0}">
                 <a href="#" class="CreateBuildConfigurator">Create new build configuration</a>
-                <label class="conf-error">   (No configurations to creat)</label>
+                <label class="conf-error">   (No configurations to create)  </label>
             </j:if>
             <j:if test="${isAdmin}">
                 <a href="#" onclick="exportToXml();" id="xml" class="export-to-xml">Export to XML</a>
