@@ -134,13 +134,24 @@ public class BuildConfigurationManager
 	public static void saveFile(BuildConfiguration config)
 	{
 		String folderName = getFolderName(config.getProjectName());
-		if (folderName.isEmpty() || config.getScripts().length == 0)
+		if (folderName.isEmpty())
 			return;
+
 		String pathFolder = getRootDirectory() + "\\" + folderName +
 				"\\" + SCRIPT_FOLDER;
 		String filePath;
 		File checkFolder = new File(pathFolder);
 		File checkFile;
+
+		if (config.getScripts().length == 0)
+		{
+			if (checkFolder.exists())
+			{
+				FileUtils.deleteQuietly(checkFolder);
+			}
+			return;
+		}
+
 		if (!checkFolder.exists())
 			checkFolder.mkdirs();
 
