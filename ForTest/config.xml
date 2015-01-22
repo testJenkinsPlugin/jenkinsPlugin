@@ -1,2 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<configurations/>
+<configurations>
+  <job name="12334">
+    <projects>
+      <project pathToFile="dfrdew.exe">
+        <repository type="None" url="https://scm.amcbridge.com/scm/svn/repo_build_automation_management_tool/trunk/TTS%20configurator/release"/>
+        <pathToArtefacts/>
+        <versionFiles versionFile="false"/>
+        <configs/>
+      </project>
+    </projects>
+    <scripts/>
+  </job>
+</configurations>
