@@ -11,4 +11,17 @@
     </projects>
     <scripts/>
   </job>
+  <job name="123413">
+    <projects>
+      <project pathToFile="sdfswre.exe">
+        <repository type="Subversion" url="http://ya.ru"/>
+        <pathToArtefacts/>
+        <versionFiles versionFile="false"/>
+        <configs>
+          <config builder="VS 2010" platform="x 64" configuration="Release"/>
+        </configs>
+      </project>
+    </projects>
+    <scripts/>
+  </job>
 </configurations>
