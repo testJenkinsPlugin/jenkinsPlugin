@@ -40,6 +40,11 @@ public class TTSRequireOrganizationMembershipACL extends ACL {
 
 		String authenticatedUserName = a.getName();
 
+		if (authenticatedUserName.equals(SYSTEM.getName()))
+		{
+			return true;
+		}
+		
 		if (authenticatedUserName.equals(Jenkins.ANONYMOUS.getName()))
 		{
 			return false;
