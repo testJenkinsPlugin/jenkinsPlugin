@@ -118,7 +118,7 @@
             </j:if>
             <div id="path_error_${sourceId[2]}" class="error-none">
             <img src="../images/16x16/error.png"/>
-                Not correct path
+                <label id="coincide_${sourceId[2]}"> Not correct path</label>
             </div>
             
             <j:if test="${view.IsVersionFiles()}">
