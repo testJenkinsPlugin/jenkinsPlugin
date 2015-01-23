@@ -141,7 +141,6 @@ public class BuildConfigurationManager
 			return;
 		}
 		
-		
 		if (!checkFolder.exists())
 			checkFolder.mkdirs();
 

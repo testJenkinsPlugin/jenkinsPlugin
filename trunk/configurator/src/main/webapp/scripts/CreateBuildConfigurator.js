@@ -523,23 +523,72 @@ function addPath(button)
         document.getElementById("coincide_" + number).innerHTML = " paths do not coincide";
         return;
     }
-    addToSelectionBox("files_" + number, path.substring(pathInput.length,path.length));
-    document.getElementById("path_input_" + number).value = "";
+
+    var newPath = path.substring(pathInput.length,path.length);
+    var selectionId = "files_" + number;
+    
+    if (checkPathRepeat(newPath, selectionId))
+    {
+        addToSelectionBox(selectionId, newPath);
+        document.getElementById("path_input_" + number).value = "";
+    }
+    else
+    {
+        document.getElementById("path_error_" + number).className = "error-block";
+        document.getElementById("coincide_" + number).innerHTML = " path has already added";
+        return;
+    }
 }
 
 function addPathFiles(button)
 {
     var number = getElementNumber(button.id);
     var path = document.getElementById("path_input_" + number).value;
-    
     var error = document.getElementById("path_error_" + number).className;
-    
+
     if((path.length <= 0)||(error == "error-block"))
     {
         return;
     }
-    addToSelectionBox("files_" + number, path);
-    document.getElementById("path_input_" + number).value = "";
+
+    var selectionId = "files_" + number;
+    if (checkPathRepeat(path, selectionId))
+    {
+        addToSelectionBox(selectionId, path);
+        document.getElementById("path_input_" + number).value = "";
+    }
+    else
+    {
+        document.getElementById("path_error_" + number).className = "error-block";
+        document.getElementById("coincide_" + number).innerHTML = " path has already added";
+        return;
+    }
+}
+
+function checkPathRepeat(path, selectionBoxId)
+{
+    var options = document.getElementById(selectionBoxId).options;
+    if (options == null)
+    {
+        return true;
+    }
+    for (var i=0; i<options.length; i++)
+    {
+        if (trimSlash(options[i].value) == trimSlash(path))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+function trimSlash(value)
+{
+    while (value[value.length-1] == "\\")
+    {
+        value = value.substr(0, value.length-1);
+    }
+    return value;
 }
 
 function imageHelp(id)
@@ -625,7 +674,17 @@ function checkPath(id)
 {
     var path = document.getElementById(id).value;
     var number = getElementNumber(id);
-    var regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?*]+)+\\?$/i;
+    
+    var regPath;
+    if (document.getElementById(id).name == "pathToArtefacts")
+    {
+        regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?]+)+\\?$/i;
+    }
+    else
+    {
+        regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?*]+)+\\?$/i;
+    }
+
     if(regPath.test(path+"s") || path == "")
     {
         document.getElementById("path_error_"+number).className = "error-none";
@@ -633,6 +692,10 @@ function checkPath(id)
     }
     else
     {
+        if (document.getElementById(id).name == "pathToArtefacts" || document.getElementById(id).name == "versionFilesPath")
+        {
+            document.getElementById("coincide_" + number).innerHTML = " Not correct path";
+        }
         document.getElementById("path_error_"+number).className = "error-block";
         document.getElementById(id).className= "textbox-error";
     }
