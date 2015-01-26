@@ -299,7 +299,7 @@ public final class BuildConfigurator implements RootAction {
 
 	@JavaScriptMethod
 	public void deleteConfigurationPermanently(String name)
-			throws AddressException, IOException, MessagingException, JAXBException
+			throws AddressException, IOException, MessagingException, JAXBException, InterruptedException, ParserConfigurationException
 	{
 		BuildConfigurationManager.deleteConfigurationPermanently(name);
 	}
@@ -380,12 +380,6 @@ public final class BuildConfigurator implements RootAction {
 	public void deleteJob(String name)
 			throws IOException, InterruptedException, ParserConfigurationException, JAXBException
 	{
-		JobManagerGenerator.deleteJob(name);
-		BuildConfiguration config = BuildConfigurationManager.load(name);
-		if (config.getState().equals(ConfigurationState.APPROVED))
-		{
-			config.setJobUpdate(false);
-			BuildConfigurationManager.save(config);
-		}
+		BuildConfigurationManager.deleteJob(name);
 	}
 }

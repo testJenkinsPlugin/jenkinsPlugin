@@ -31,6 +31,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.tmatesoft.svn.core.SVNException;
 import org.xml.sax.SAXException;
 
@@ -364,7 +365,7 @@ public class BuildConfigurationManager
 	}
 
 	public static void deleteConfigurationPermanently(String name) throws IOException,
-	AddressException, MessagingException, JAXBException
+	AddressException, MessagingException, JAXBException, InterruptedException, ParserConfigurationException
 	{
 		String folderName = getFolderName(name);
 		File checkFile = new File(getRootDirectory() + "\\" + folderName);
@@ -372,6 +373,7 @@ public class BuildConfigurationManager
 		if (checkFile.exists())
 			FileUtils.deleteDirectory(checkFile);
 
+		deleteJob(name);
 		FOLDER_MANAGER.remove(config.getId());
 
 		ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName());
@@ -546,5 +548,17 @@ public class BuildConfigurationManager
 		TTSManager tts = (TTSManager)Stapler.getCurrentRequest()
 				.getSession().getAttribute(BuildConfigurator.TTS_MANAGER);
 		return tts.getProject(id);
+	}
+	
+	public static void deleteJob(String name)
+			throws IOException, InterruptedException, ParserConfigurationException, JAXBException
+	{
+		JobManagerGenerator.deleteJob(name);
+		BuildConfiguration config = BuildConfigurationManager.load(name);
+		if (config.getState().equals(ConfigurationState.APPROVED))
+		{
+			config.setJobUpdate(false);
+			BuildConfigurationManager.save(config);
+		}
 	}
 }
