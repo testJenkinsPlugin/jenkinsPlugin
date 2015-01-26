@@ -301,13 +301,15 @@ public class BuildConfigurationManager
 	}
 
 	public static void deleteConfigurationPermanently(String name) throws IOException,
-	AddressException, MessagingException, JAXBException
+	AddressException, MessagingException, JAXBException, InterruptedException, ParserConfigurationException
 	{
 		File checkFile = new File(getRootDirectory() + "\\" + name);
 		BuildConfiguration config = load(name);
 		if (checkFile.exists())
 			FileUtils.deleteDirectory(checkFile);
 
+		deleteJob(name);
+		
 		ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName());
 		message.setSubject(config.getProjectName());
 		message.setDescription(MessageDescription.DELETE_PERMANENTLY.toString());
@@ -423,5 +425,17 @@ public class BuildConfigurationManager
 		JobManagerGenerator.createJob(config);
 		config.setJobUpdate(true);
 		save(config);
+	}
+	
+	public static void deleteJob(String name)
+			throws IOException, InterruptedException, ParserConfigurationException, JAXBException
+	{
+		JobManagerGenerator.deleteJob(name);
+		BuildConfiguration config = BuildConfigurationManager.load(name);
+		if (config.getState().equals(ConfigurationState.APPROVED))
+		{
+			config.setJobUpdate(false);
+			BuildConfigurationManager.save(config);
+		}
 	}
 }
