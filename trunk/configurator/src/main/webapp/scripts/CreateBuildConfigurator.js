@@ -98,6 +98,10 @@ document.addEventListener('keyup', function (e)
 {
     if(e.keyCode == 46)
     {
+        if (document.activeElement.tagName != "SELECT")
+        {
+            return;
+        }
         var selectionGroups = document.getElementsByTagName("select");
         var selectionValue;
         for (var i=0; i<selectionGroups.length; i++)
