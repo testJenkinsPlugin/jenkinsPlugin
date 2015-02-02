@@ -37,9 +37,17 @@
             </div>
             <h1>Configurations</h1>
             <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
+
             <j:if test="${isAdmin}">
-                <a href="#" onclick="exportToXml(); return false;" id="xml" class="export-to-xml">Export to XML</a>
+                <j:if test="${it.isCommited()}">
+                    <label class="synchronized">Configurations synchronized</label>
+                </j:if>
+                
+                <j:if test="${!it.isCommited()}">
+                    <label class="not-synchronized" onclick="exportToXml();">Need to synchronize configuration</label>
+                </j:if>
             </j:if>
+
             <table>
                 <thead>
                     <tr height="10">

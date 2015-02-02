@@ -6,8 +6,8 @@ import org.w3c.dom.Node;
 
 import hudson.tasks.ArtifactArchiver;
 
-import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
-import com.amcbridge.jenkins.plugins.configuration.ProjectToBuild;
+import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
 
 public class JobArtefacts implements JobElementDescription {
@@ -24,7 +24,7 @@ public class JobArtefacts implements JobElementDescription {
 		return PARENT_ELEMENT_TAG;
 	}
 
-	public String generateXML(BuildConfiguration config) {
+	public String generateXML(BuildConfigurationModel config) {
 		String artf = getArtifacts(config);
 		if (artf.isEmpty())
 		{
@@ -35,7 +35,7 @@ public class JobArtefacts implements JobElementDescription {
 		return JobManagerGenerator.convertToXML(artifact);
 	}
 
-	public void appendToXML(BuildConfiguration config, Document xml)
+	public void appendToXML(BuildConfigurationModel config, Document xml)
 	{
 		Node node = xml.getElementsByTagName(PATH_TAG).item(0);
 		String artf = getArtifacts(config);
@@ -57,7 +57,7 @@ public class JobArtefacts implements JobElementDescription {
 		node.setTextContent(artifacts);
 	}
 
-	private String getArtifacts(BuildConfiguration config)
+	private String getArtifacts(BuildConfigurationModel config)
 	{
 		String result = StringUtils.EMPTY;
 		String local;
@@ -66,7 +66,7 @@ public class JobArtefacts implements JobElementDescription {
 			return result;
 		}
 
-		for(ProjectToBuild artf : config.getProjectToBuild())
+		for(ProjectToBuildModel artf : config.getProjectToBuild())
 		{
 			local = StringUtils.join(artf.getArtefacts(), JobManagerGenerator.COMMA_SEPARATOR);
 			if (result.length() > 0 && local.length() > 0)

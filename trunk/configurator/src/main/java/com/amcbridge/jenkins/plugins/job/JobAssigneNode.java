@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
+import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescriptionCheckBox;
 
 public class JobAssigneNode implements JobElementDescriptionCheckBox {
@@ -25,7 +25,7 @@ public class JobAssigneNode implements JobElementDescriptionCheckBox {
 		return PARENT_ELEMENT_TAG;
 	}
 
-	public String generateXML(BuildConfiguration config) {
+	public String generateXML(BuildConfigurationModel config) {
 		DocumentBuilderFactory docFactory;
 		DocumentBuilder docBuilder;
 		Document doc;
@@ -52,7 +52,7 @@ public class JobAssigneNode implements JobElementDescriptionCheckBox {
 		return JobManagerGenerator.documentToXML(node);
 	}
 
-	public void appendToXML(BuildConfiguration config, Document xml) {
+	public void appendToXML(BuildConfigurationModel config, Document xml) {
 		Node node = xml.getElementsByTagName(ELEMENT_TAG).item(0);
 		String nodes = getNodes(config);
 		if (nodes.isEmpty())
@@ -71,7 +71,7 @@ public class JobAssigneNode implements JobElementDescriptionCheckBox {
 		node.setTextContent(nodes);
 	}
 
-	private String getNodes(BuildConfiguration config)
+	private String getNodes(BuildConfigurationModel config)
 	{
 		String result = StringUtils.EMPTY;
 		if (config.getBuildMachineConfiguration() == null ||

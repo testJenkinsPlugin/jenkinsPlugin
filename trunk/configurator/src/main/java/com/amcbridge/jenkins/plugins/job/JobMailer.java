@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
+import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
 
 public class JobMailer implements JobElementDescription {
@@ -23,7 +23,7 @@ public class JobMailer implements JobElementDescription {
 		return PARENT_ELEMENT_TAG;
 	}
 
-	public String generateXML(BuildConfiguration config) {
+	public String generateXML(BuildConfigurationModel config) {
 
 		if (config.getEmail().isEmpty())
 		{
@@ -36,7 +36,7 @@ public class JobMailer implements JobElementDescription {
 		return JobManagerGenerator.convertToXML(mailer);
 	}
 
-	public void appendToXML(BuildConfiguration config, Document xml) {
+	public void appendToXML(BuildConfigurationModel config, Document xml) {
 		Node node = xml.getElementsByTagName(RECIPIENT_TAG).item(0);
 		String mail;
 

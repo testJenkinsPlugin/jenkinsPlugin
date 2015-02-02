@@ -1,6 +1,7 @@
 package com.amcbridge.jenkins.plugins.vsc;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -68,8 +69,7 @@ public class SvnManager implements VersionControlSystem
 			SVNRepository repository = SVNRepositoryFactory.create(svnUrl);
 			ISVNAuthenticationManager authManager = SVNWCUtil
 					.createDefaultAuthenticationManager(login, password);
-			repository.setAuthenticationManager(authManager);
-
+			repository.setAuthenticationManager(authManager);			
 			byte[] fileBytesArray = Files.readAllBytes(Paths.get(filePath));
 			SVNNodeKind nodeKind = repository.checkPath("config.xml", repository.getLatestRevision());
 			ISVNEditor editor = repository.getCommitEditor(commitMessage , null );

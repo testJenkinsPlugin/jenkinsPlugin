@@ -6,8 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
-import com.amcbridge.jenkins.plugins.configuration.ProjectToBuild;
+import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
 
 public class JobVersionFile implements JobElementDescription {
@@ -25,7 +25,7 @@ public class JobVersionFile implements JobElementDescription {
 		return PARENT_ELEMENT_TAG;
 	}
 
-	public String generateXML(BuildConfiguration config) {
+	public String generateXML(BuildConfigurationModel config) {
 
 		if (!isVersionFileSet(config))
 		{
@@ -37,7 +37,7 @@ public class JobVersionFile implements JobElementDescription {
 		return JobManagerGenerator.convertToXML(dsp);
 	}
 
-	public void appendToXML(BuildConfiguration config, Document xml) {
+	public void appendToXML(BuildConfigurationModel config, Document xml) {
 
 		if (!isVersionFileSet(config))
 		{
@@ -56,14 +56,14 @@ public class JobVersionFile implements JobElementDescription {
 		}
 	}
 
-	private Boolean isVersionFileSet(BuildConfiguration config)
+	private Boolean isVersionFileSet(BuildConfigurationModel config)
 	{
 		if (config.getProjectToBuild() == null)
 		{
 			return false;
 		}
 
-		for (ProjectToBuild isVersionFile : config.getProjectToBuild())
+		for (ProjectToBuildModel isVersionFile : config.getProjectToBuild())
 		{
 			if (isVersionFile.IsVersionFiles())
 			{
