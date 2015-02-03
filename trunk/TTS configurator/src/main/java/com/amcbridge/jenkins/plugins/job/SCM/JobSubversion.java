@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
+import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.job.JobSCM;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
@@ -31,7 +31,7 @@ public class JobSubversion implements JobElementDescription {
 		return JobSCM.PARENT_ELEMENT_TAG;
 	}
 
-	public String generateXML(BuildConfiguration config) {
+	public String generateXML(BuildConfigurationModel config) {
 
 		if (config.getProjectToBuild() == null)
 		{
@@ -121,7 +121,7 @@ public class JobSubversion implements JobElementDescription {
 		return JobManagerGenerator.documentToXML(doc);
 	}
 
-	public void appendToXML(BuildConfiguration config, Document doc) {
+	public void appendToXML(BuildConfigurationModel config, Document doc) {
 		doc = JobSCM.removeSCM(doc);
 		doc = JobSCM.insertSCM(doc, generateXML(config));
 	}

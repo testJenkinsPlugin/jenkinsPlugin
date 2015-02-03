@@ -69,7 +69,7 @@ public class SvnManager implements VersionControlSystem
 			ISVNAuthenticationManager authManager = SVNWCUtil
 					.createDefaultAuthenticationManager(login, password);
 			repository.setAuthenticationManager(authManager);
-
+					
 			byte[] fileBytesArray = Files.readAllBytes(Paths.get(filePath));
 			SVNNodeKind nodeKind = repository.checkPath("config.xml", repository.getLatestRevision());
 			ISVNEditor editor = repository.getCommitEditor(commitMessage , null );

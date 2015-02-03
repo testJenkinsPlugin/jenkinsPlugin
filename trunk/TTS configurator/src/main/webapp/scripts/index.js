@@ -45,6 +45,10 @@ function exportToXml()
             document.getElementById("СancelReject").className = "div-none";
             document.getElementById("helpReject").innerHTML = t.responseObject().errorMassage;
         }
+        else
+        {
+            location.reload();
+        }
     });
 }
 

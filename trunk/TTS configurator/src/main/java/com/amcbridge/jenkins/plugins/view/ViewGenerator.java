@@ -12,10 +12,10 @@ import org.apache.commons.jelly.JellyContext;
 import org.apache.commons.jelly.JellyException;
 import org.apache.commons.jelly.XMLOutput;
 
-import com.amcbridge.jenkins.plugins.configuration.BilderConfig;
-import com.amcbridge.jenkins.plugins.configuration.ProjectToBuild;
+import com.amcbridge.jenkins.plugins.configurationModels.BuilderConfigModel;
+import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
-import com.amcbridge.jenkins.plugins.controls.*;
+import com.amcbridge.jenkins.plugins.enums.*;
 
 public class ViewGenerator {
 
@@ -59,7 +59,7 @@ public class ViewGenerator {
 		return setContextForBuilderView(new JellyContext());
 	}
 
-	public ProjectToBuildView getBuilderView(BilderConfig config)
+	public ProjectToBuildView getBuilderView(BuilderConfigModel config)
 			throws UnsupportedEncodingException, JellyException
 	{
 		JellyContext jcontext = new JellyContext();
@@ -96,7 +96,7 @@ public class ViewGenerator {
 		return result;
 	}
 
-	public ProjectToBuildView getProjectToBuildlView(List<ProjectToBuild> views)
+	public ProjectToBuildView getProjectToBuildlView(List<ProjectToBuildModel> views)
 			throws UnsupportedEncodingException, JellyException
 	{
 		ProjectToBuildView result = new ProjectToBuildView();

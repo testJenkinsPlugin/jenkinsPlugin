@@ -7,14 +7,13 @@ import hudson.scm.SCMDescriptor;
 import hudson.scm.SCM;
 import hudson.security.AccessControlled;
 import hudson.security.Permission;
-import hudson.tasks.Mailer;
-import hudson.tasks.Mailer.UserProperty;
 import hudson.util.Iterators;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -31,23 +30,23 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.tmatesoft.svn.core.SVNException;
 import org.xml.sax.SAXException;
 
 import com.amcbridge.jenkins.plugins.TTS.TTSManager;
 import com.amcbridge.jenkins.plugins.TTS.TTSProject;
-import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
-import com.amcbridge.jenkins.plugins.export.XmlExporter;
-import com.amcbridge.jenkins.plugins.export.ExportSettings.Settings;
+import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
+import com.amcbridge.jenkins.plugins.enums.MessageDescription;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
-import com.amcbridge.jenkins.plugins.messenger.MessageDescription;
 import com.amcbridge.jenkins.plugins.vsc.CommitError;
 import com.amcbridge.jenkins.plugins.vsc.SvnManager;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystem;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
+import com.amcbridge.jenkins.plugins.xmlSerialization.XmlExporter;
+import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
 
 public class BuildConfigurationManager
 {
@@ -58,6 +57,7 @@ public class BuildConfigurationManager
 	private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "\\plugins\\BuildConfiguration";
 	private static final String CONTENT_FOLDER = "userContent";
 	private static final String SCRIPT_FOLDER = "Scripts";
+	private static final String CHECK_CONFIG_FILE_NAME = "configCheck.xml";
 	private static final Integer MAX_FILE_SIZE = 1048576;//max file size which equal 1 mb in bytes
 	private static final String[] SCRIPTS_EXTENSIONS = { "bat", "nant", "powershell", "shell",
 		"ant", "maven" };
@@ -65,8 +65,10 @@ public class BuildConfigurationManager
 
 	public static final String STRING_EMPTY = "";
 
+	public static ApproveConfigurationManager acm = new ApproveConfigurationManager();
 	private static MailSender mail = new MailSender();
 	private static FolderManager FOLDER_MANAGER = new FolderManager();
+	private static ReentrantLock lock = new ReentrantLock();
 
 	public static String getCurrentUserID()
 	{
@@ -84,6 +86,11 @@ public class BuildConfigurationManager
 	public static File getFileToExportConfigurations()
 	{
 		return new File(getRootDir()+ "\\" + CONFIG_FILE_NAME);
+	}
+
+	public static File getFileForCheckVSC()
+	{
+		return new File(getRootDir()+ "\\" + CHECK_CONFIG_FILE_NAME);
 	}
 
 	public static File getFileToCreateJob()
@@ -108,7 +115,7 @@ public class BuildConfigurationManager
 		return Jenkins.getInstance().getRootDir() + "\\" + CONTENT_FOLDER;
 	}
 
-	public static void save(BuildConfiguration config) throws IOException,
+	public static void save(BuildConfigurationModel config) throws IOException,
 	ParserConfigurationException, JAXBException
 	{
 		if (config.getProjectName().isEmpty())
@@ -132,7 +139,7 @@ public class BuildConfigurationManager
 		saveFile(config);
 	}
 
-	public static void saveFile(BuildConfiguration config)
+	public static void saveFile(BuildConfigurationModel config)
 	{
 		String folderName = getFolderName(config.getProjectName());
 		if (folderName.isEmpty())
@@ -212,9 +219,9 @@ public class BuildConfigurationManager
 		return new XmlFile(Jenkins.XSTREAM,	getConfigFileFor("\\" + folderName));
 	}
 
-	public static BuildConfiguration load(String nameProject) throws IOException
+	public static BuildConfigurationModel load(String nameProject) throws IOException
 	{
-		BuildConfiguration result = new BuildConfiguration();
+		BuildConfigurationModel result = new BuildConfigurationModel();
 		String folderName = getFolderName(nameProject);
 		XmlFile config = getConfigFile(folderName);
 
@@ -225,12 +232,12 @@ public class BuildConfigurationManager
 		return result;
 	}
 
-	public static List<BuildConfiguration> loadAllConfigurations()
+	public static List<BuildConfigurationModel> loadAllConfigurations()
 			throws IOException, ServletException, JAXBException
 			{
 
-		List<BuildConfiguration> configs = new ArrayList<BuildConfiguration>();
-		BuildConfiguration config;
+		List<BuildConfigurationModel> configs = new ArrayList<BuildConfigurationModel>();
+		BuildConfigurationModel config;
 
 		if (isCurrentUserAdministrator())
 		{
@@ -260,11 +267,11 @@ public class BuildConfigurationManager
 		return configs;
 			}
 
-	public static List<BuildConfiguration> getActiveConfigurations()
+	public static List<BuildConfigurationModel> getActiveConfigurations()
 			throws IOException, ServletException, JAXBException
 			{
-		List<BuildConfiguration> configs = new ArrayList<BuildConfiguration>();
-		BuildConfiguration config;
+		List<BuildConfigurationModel> configs = new ArrayList<BuildConfigurationModel>();
+		BuildConfigurationModel config;
 
 		if (isCurrentUserAdministrator())
 		{
@@ -310,7 +317,7 @@ public class BuildConfigurationManager
 			throws IOException, ParserConfigurationException,
 			JAXBException, AddressException, MessagingException
 	{
-		BuildConfiguration config = load(name);
+		BuildConfigurationModel config = load(name);
 		if (config.getState() == ConfigurationState.FOR_DELETION)
 			return;
 		config.setState(ConfigurationState.FOR_DELETION);
@@ -325,7 +332,7 @@ public class BuildConfigurationManager
 	public static void restoreConfiguration(String name) throws IOException, ParserConfigurationException,
 	JAXBException, AddressException, MessagingException
 	{
-		BuildConfiguration config = load(name);
+		BuildConfigurationModel config = load(name);
 		config.setState(ConfigurationState.UPDATED);
 		config.setCurrentDate();
 		save(config);
@@ -339,19 +346,27 @@ public class BuildConfigurationManager
 	public static VersionControlSystemResult exportToXml()
 			throws SVNException, IOException, InterruptedException
 	{
-		XmlExporter xmlExporter = new XmlExporter();
-		String path = xmlExporter.exportToXml();
-		VersionControlSystem svn = new SvnManager();
-
-		Settings settings = new Settings();
-		if (!settings.isSettingsSet())
+		lock.lock();
+		try
 		{
-			VersionControlSystemResult result = new VersionControlSystemResult(false);
-			result.setErrorMassage(CommitError.NONE_PROPERTY.toString());
-			return result;
+			XmlExporter xmlExporter = new XmlExporter();
+			String path = xmlExporter.exportToXml(true);
+			VersionControlSystem svn = new SvnManager();
+			Settings settings = new Settings();
+
+			if (!settings.isSettingsSet())
+			{
+				VersionControlSystemResult result = new VersionControlSystemResult(false);
+				result.setErrorMassage(CommitError.NONE_PROPERTY.toString());
+				return result;
+			}
+			return svn.doCommit(path, settings.getUrl(), settings.getLogin(),
+					settings.getPassword(), settings.getCommitMessage());
 		}
-		return svn.doCommit(path, settings.getUrl(), settings.getLogin(),
-				settings.getPassword(), settings.getCommitMessage());
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public static Boolean isNameUsing(String name)
@@ -369,12 +384,13 @@ public class BuildConfigurationManager
 	{
 		String folderName = getFolderName(name);
 		File checkFile = new File(getRootDirectory() + "\\" + folderName);
-		BuildConfiguration config = load(name);
+		BuildConfigurationModel config = load(name);
 		if (checkFile.exists())
 			FileUtils.deleteDirectory(checkFile);
 
 		deleteJob(name);
 		FOLDER_MANAGER.remove(config.getId());
+		acm.remove(name);
 
 		ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName());
 		message.setSubject(config.getProjectName());
@@ -423,9 +439,9 @@ public class BuildConfigurationManager
 		}
 	}
 
-	public static BuildConfiguration getConfiguration(String name) throws IOException, JAXBException
+	public static BuildConfigurationModel getConfiguration(String name) throws IOException, JAXBException
 	{
-		BuildConfiguration currenConfig = load(name);
+		BuildConfigurationModel currenConfig = load(name);
 		if (!isCurrentUserAdministrator() && !isCurrentUserCreatorOfConfiguration(name))
 			return null;
 		return currenConfig;
@@ -455,7 +471,7 @@ public class BuildConfigurationManager
 		TTSManager ttsManager = (TTSManager) Stapler.getCurrentRequest().getSession().getAttribute(BuildConfigurator.TTS_MANAGER);
 		for (TTSProject project : ttsManager.getActiveProjects())
 		{
-			BuildConfiguration test = load(project.getName());
+			BuildConfigurationModel test = load(project.getName());
 			ConfigurationState state = test.getState();
 			if (state == null)
 			{
@@ -467,8 +483,8 @@ public class BuildConfigurationManager
 
 	private static Boolean isSupportedSCM(SCMDescriptor<?> scm)
 	{
-		for (com.amcbridge.jenkins.plugins.controls.SCM suportSCM :
-			com.amcbridge.jenkins.plugins.controls.SCM.values())
+		for (com.amcbridge.jenkins.plugins.enums.SCM suportSCM :
+			com.amcbridge.jenkins.plugins.enums.SCM.values())
 		{
 			if (suportSCM.toString().equals(scm.getDisplayName()))
 			{
@@ -489,7 +505,7 @@ public class BuildConfigurationManager
 		return result;
 	}
 
-	public static String getUserMailAddress(BuildConfiguration config)
+	public static String getUserMailAddress(BuildConfigurationModel config)
 	{
 		if (config.getConfigEmail() != null)
 		{
@@ -503,7 +519,7 @@ public class BuildConfigurationManager
 			throws IOException, ParserConfigurationException,
 			SAXException, TransformerException, JAXBException
 	{
-		BuildConfiguration config = load(name);
+		BuildConfigurationModel config = load(name);
 		JobManagerGenerator.createJob(config);
 		config.setJobUpdate(true);
 		save(config);
@@ -527,10 +543,9 @@ public class BuildConfigurationManager
 	{
 		if (!FOLDER_MANAGER.getFolderName(project.getId()).equals(StringUtils.EMPTY) && 
 				(!FOLDER_MANAGER.getFolderName(project.getId())
-						.equals(getFolderName(project.getName())) || FOLDER_MANAGER.isActual(project.getId()) != project.isActual())
-				)
+						.equals(getFolderName(project.getName())) || FOLDER_MANAGER.isActual(project.getId()) != project.isActual()))
 		{
-			BuildConfiguration config = load(FOLDER_MANAGER.getFolderName(project.getId()));
+			BuildConfigurationModel config = load(FOLDER_MANAGER.getFolderName(project.getId()));
 			config.setProjectName(project.getName());
 
 			File oldFolder = new File(getRootDirectory() + "\\"	+
@@ -554,11 +569,28 @@ public class BuildConfigurationManager
 			throws IOException, InterruptedException, ParserConfigurationException, JAXBException
 	{
 		JobManagerGenerator.deleteJob(name);
-		BuildConfiguration config = BuildConfigurationManager.load(name);
-		if (config.getState().equals(ConfigurationState.APPROVED))
+		BuildConfigurationModel config = BuildConfigurationManager.load(name);
+		if (config.getProjectName() != null)
 		{
-			config.setJobUpdate(false);
-			BuildConfigurationManager.save(config);
+			if (config.getState().equals(ConfigurationState.APPROVED))
+			{
+				config.setJobUpdate(false);
+				BuildConfigurationManager.save(config);
+			}
 		}
+	}
+
+	public static Boolean isCommited() throws IOException
+	{
+		if (!getFileToExportConfigurations().exists())
+		{
+			return !(XmlExporter.generateConfiguration().size() > 0);
+		}
+
+		File svnVersion = getFileToExportConfigurations();
+		XmlExporter xmlExporter = new XmlExporter();
+		String path = xmlExporter.exportToXml(false);
+		File currentVersion = new File(path);
+		return FileUtils.contentEquals(svnVersion, currentVersion);
 	}
 }

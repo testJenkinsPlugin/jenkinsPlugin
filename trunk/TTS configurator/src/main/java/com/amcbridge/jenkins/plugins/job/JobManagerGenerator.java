@@ -31,9 +31,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
+import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
-import com.amcbridge.jenkins.plugins.controls.SCM;
+import com.amcbridge.jenkins.plugins.enums.SCM;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescriptionCheckBox;
 import com.amcbridge.jenkins.plugins.job.SCM.JobNone;
@@ -52,7 +52,7 @@ public class JobManagerGenerator {
 		return xstream.toXML(obj);
 	}
 
-	public static void createJob(BuildConfiguration config)
+	public static void createJob(BuildConfigurationModel config)
 			throws FileNotFoundException, ParserConfigurationException,
 			SAXException, IOException, TransformerException
 	{
@@ -88,7 +88,7 @@ public class JobManagerGenerator {
 		return false;
 	}
 
-	private static File getJobXML(BuildConfiguration config)
+	private static File getJobXML(BuildConfigurationModel config)
 			throws ParserConfigurationException,
 			SAXException, IOException, TransformerException
 	{
@@ -126,7 +126,7 @@ public class JobManagerGenerator {
 		return file;
 	}
 
-	public static JobElementDescription getSCM(BuildConfiguration config)
+	public static JobElementDescription getSCM(BuildConfigurationModel config)
 	{
 		SCM scm = getSCM(config.getScm());
 		JobElementDescription jed;
@@ -159,7 +159,7 @@ public class JobManagerGenerator {
 		return null;
 	}
 
-	private static void setElement(JobElementDescription element, Document document, BuildConfiguration config)
+	private static void setElement(JobElementDescription element, Document document, BuildConfigurationModel config)
 			throws ParserConfigurationException, SAXException, IOException
 	{	
 		if (!isNodeExist(document, element.getElementTag()))

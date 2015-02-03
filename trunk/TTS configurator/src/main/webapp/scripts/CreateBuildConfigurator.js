@@ -111,6 +111,10 @@ document.addEventListener('keyup', function (e)
 {
     if(e.keyCode == 46)
     {
+        if (document.activeElement.tagName != "SELECT")
+        {
+            return;
+        }
         var selectionGroups = document.getElementsByTagName("select");
         var selectionValue;
         for (var i=0; i<selectionGroups.length; i++)
@@ -377,6 +381,8 @@ function versionFileCheckBoxChange(checkBox)
     
     if (!checkBox.checked)
     {
+        var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
+        document.getElementById(hiddenInput).value = "";
         var selectionGroupId = "files_" + getElementNumber(checkBox.id);
         cleacSelectionGroup(selectionGroupId);
         document.getElementById(pathInput).style.visibility = "hidden";

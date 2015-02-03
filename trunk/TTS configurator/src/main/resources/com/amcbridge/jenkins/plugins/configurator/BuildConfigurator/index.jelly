@@ -46,9 +46,16 @@
                 <a href="#" class="CreateBuildConfigurator">Create new build configuration</a>
                 <label class="conf-error">   (No configurations to create)  </label>
             </j:if>
+
             <j:if test="${isAdmin}">
-                <a href="#" onclick="exportToXml();" id="xml" class="export-to-xml">Export to XML</a>
-            </j:if> 
+                <j:if test="${it.isCommited()}">
+                    <label class="synchronized">Configurations synchronized</label>
+                </j:if>
+                
+                <j:if test="${!it.isCommited()}">
+                    <label class="not-synchronized" onclick="exportToXml();">Need to synchronize configuration</label>
+                </j:if>
+            </j:if>
 
             <j:if test="${isActive}">
                 <a href="" id="active" class="active">Active configurations</a>

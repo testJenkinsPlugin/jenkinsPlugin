@@ -36,13 +36,14 @@ import org.xml.sax.SAXException;
 
 import com.amcbridge.jenkins.plugins.TTS.TTSManager;
 import com.amcbridge.jenkins.plugins.TTS.TTSProject;
-import com.amcbridge.jenkins.plugins.configuration.BuildConfiguration;
-import com.amcbridge.jenkins.plugins.controls.*;
+import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.enums.*;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.*;
 import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
+import com.amcbridge.jenkins.plugins.xmlSerialization.Job;
 
 import hudson.Extension;
 import hudson.model.RootAction;
@@ -53,6 +54,7 @@ public final class BuildConfigurator implements RootAction {
 
 	private MailSender mail;
 	private Boolean active = false;
+	private static Boolean isCommited;
 
 	private static final String VIEW_GENERATOR = "viewGenerator";
 	private static final String PLUGIN_NAME = "Build Configurator";
@@ -63,6 +65,11 @@ public final class BuildConfigurator implements RootAction {
 	public BuildConfigurator()
 	{
 		mail = new MailSender();
+		try {
+			isCommited = BuildConfigurationManager.isCommited();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String getDisplayName()
@@ -86,7 +93,7 @@ public final class BuildConfigurator implements RootAction {
 		return DEFAULT_PAGE_URL;
 	}
 
-	public List<BuildConfiguration> getAllConfigurations()
+	public List<BuildConfigurationModel> getAllConfigurations()
 			throws IOException, ServletException, JAXBException, ParserConfigurationException 
 			{
 		if (Stapler.getCurrentRequest().getSession().getAttribute(TTS_MANAGER) == null)
@@ -116,7 +123,7 @@ public final class BuildConfigurator implements RootAction {
 			return;
 		}
 
-		BuildConfiguration newConfig = new BuildConfiguration();
+		BuildConfigurationModel newConfig = new BuildConfigurationModel();
 
 		request.bindJSON(newConfig, formAttribute);
 
@@ -139,7 +146,7 @@ public final class BuildConfigurator implements RootAction {
 
 		FormResult type = FormResult.valueOf(formAttribute.get("formType").toString());
 
-		BuildConfiguration currentConfig = BuildConfigurationManager
+		BuildConfigurationModel currentConfig = BuildConfigurationManager
 				.load(newConfig.getProjectName());
 
 		switch (type)
@@ -152,11 +159,21 @@ public final class BuildConfigurator implements RootAction {
 			newConfig.setState(ConfigurationState.UPDATED);
 			message.setDescription(MessageDescription.CHANGE.toString());
 			break;
-		case APPROVED:
+		case APPROVED:			
 			newConfig.setState(ConfigurationState.APPROVED);
 			newConfig.setCreator(currentConfig.getCreator());
 			newConfig.setId(currentConfig.getId());
 			newConfig.setJobUpdate(false);
+			BuildConfigurationManager.save(newConfig);
+			
+			Job newJob = new Job(newConfig);
+			Job currentJob = BuildConfigurationManager.acm.get(newConfig.getProjectName());
+			if (!newJob.equals(currentJob))
+			{
+				BuildConfigurationManager.acm.add(newJob);
+				isCommited = BuildConfigurationManager.isCommited();
+			}
+			
 			message.setDescription(MessageDescription.APPROVE.toString());
 			if (!BuildConfigurationManager.getUserMailAddress(newConfig).isEmpty())
 			{
@@ -232,7 +249,7 @@ public final class BuildConfigurator implements RootAction {
 	public ProjectToBuildView loadViews(String projectName)
 			throws JellyException, IOException, JAXBException
 	{
-		BuildConfiguration conf = BuildConfigurationManager.load(projectName);
+		BuildConfigurationModel conf = BuildConfigurationManager.load(projectName);
 		
 		if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null)
 		{
@@ -274,7 +291,20 @@ public final class BuildConfigurator implements RootAction {
 	public VersionControlSystemResult exportToXml()
 			throws SVNException, IOException, InterruptedException
 	{
-		return BuildConfigurationManager.exportToXml();
+		VersionControlSystemResult result = BuildConfigurationManager.exportToXml();
+		if (result.getSuccess())
+		{
+			isCommited = true;
+		}
+		else
+		{
+			File file = BuildConfigurationManager.getFileToExportConfigurations();
+			if (file.exists())
+			{
+				file.delete();
+			}
+		}
+		return result;
 	}
 
 	@JavaScriptMethod
@@ -302,6 +332,7 @@ public final class BuildConfigurator implements RootAction {
 			throws AddressException, IOException, MessagingException, JAXBException, InterruptedException, ParserConfigurationException
 	{
 		BuildConfigurationManager.deleteConfigurationPermanently(name);
+		isCommited = false;
 	}
 
 	@JavaScriptMethod
@@ -336,7 +367,7 @@ public final class BuildConfigurator implements RootAction {
 	}
 
 	@JavaScriptMethod
-	public BuildConfiguration getConfiguration(String name) throws IOException, JAXBException
+	public BuildConfigurationModel getConfiguration(String name) throws IOException, JAXBException
 	{
 		return BuildConfigurationManager.getConfiguration(name);
 	}
@@ -381,5 +412,10 @@ public final class BuildConfigurator implements RootAction {
 			throws IOException, InterruptedException, ParserConfigurationException, JAXBException
 	{
 		BuildConfigurationManager.deleteJob(name);
+	}
+	
+	public Boolean isCommited()
+	{
+		return isCommited;
 	}
 }
