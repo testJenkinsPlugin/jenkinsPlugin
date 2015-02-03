@@ -13,7 +13,6 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
-import com.amcbridge.jenkins.plugins.enums.Configuration;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -43,15 +42,7 @@ public class XmlExporter
 	public static List<Job> generateConfiguration() throws IOException
 	{
 		List<Job> jobs = new ArrayList<Job>();
-
 		Job job;
-		Repository repo;
-		Project project;
-		PathToArtefacts artefacts;
-		VersionFile versionFile;
-		Config conf;
-		List<Config> configs;
-		List<Project> projects;
 		BuildConfigurationModel config = null;
 
 		File file = new File(BuildConfigurationManager.getRootDirectory());
@@ -65,210 +56,26 @@ public class XmlExporter
 			config = BuildConfigurationManager.load(directories[i].getName());
 			if (config.getState().equals(ConfigurationState.APPROVED))
 			{
-				job = new Job(config.getProjectName());
-				job.setBuildMachineConfiguration(config.getBuildMachineConfiguration());
-				job.setScripts(config.getScripts());
-				if (config.getProjectToBuild() != null)
+				job = new Job(config);
+				jobs.add(job);
+				BuildConfigurationManager.acm.add(job);
+				continue;
+			}
+
+			if (!config.getState().equals(ConfigurationState.NEW))
+			{
+				job = BuildConfigurationManager.acm.get(config.getProjectName());
+				if (job != null)
 				{
-					projects = new ArrayList<Project>();
-					for (int j=0; j<config.getProjectToBuild().size(); j++)
-					{
-						repo = new Repository();
-						project = new Project();
-
-						repo.setType(config.getScm());
-						repo.setUrl(config.getProjectToBuild().get(j).getProjectUrl());
-
-						artefacts = new PathToArtefacts();
-						for (int k=0; k<config.getProjectToBuild().get(j)
-								.getArtefacts().length; k++)
-						{
-							artefacts.addFile(config.getProjectToBuild().get(j).getArtefacts()[k]);	
-						}
-
-						versionFile = new VersionFile();
-						if (versionFile != null)
-						{
-							for (int k=0; k<config.getProjectToBuild()
-									.get(j).getVersionFiles().length; k++)
-							{
-								versionFile.addFile(config.getProjectToBuild()
-										.get(j).getVersionFiles()[k]);
-							}
-							if (versionFile.getFiles().size()>0)
-							{
-								versionFile.setIsVersionFile(true);
-							}
-						}
-
-						configs = new ArrayList<Config>();
-						if (config.getProjectToBuild().get(j).getBuilders() != null)
-						{
-							for (int k=0; k<config.getProjectToBuild()
-									.get(j).getBuilders().length; k++)
-							{
-								if (config.getProjectToBuild()
-										.get(j).getBuilders()[k].getConfigs().size() <= 0)
-								{
-									conf = new Config();
-									conf.setBuilder(config.getProjectToBuild()
-											.get(j).getBuilders()[k].getBuilder());
-									conf.setPlatform(config.getProjectToBuild()
-											.get(j).getBuilders()[k].getPlatform());
-									configs.add(conf);
-									continue;
-								}
-								for (int l=0; l<config.getProjectToBuild().get(j)
-										.getBuilders()[k].getConfigs().size(); l++)
-								{
-
-									conf = new Config(config.getProjectToBuild().get(j)
-											.getBuilders()[k].getConfigs().get(l).toString(),
-											config.getProjectToBuild().get(j)
-											.getBuilders()[k].getBuilder(),
-											config.getProjectToBuild().get(j)
-											.getBuilders()[k].getPlatform());
-									if (config.getProjectToBuild().get(j)
-											.getBuilders()[k].getConfigs().get(l)
-											.equals(Configuration.OTHER))
-									{
-										conf.setUserConfig(config.getProjectToBuild().get(j)
-												.getBuilders()[k].getUserConfig());
-									}
-									configs.add(conf);
-								}
-							}
-						}
-
-						project.setRepository(repo);
-						project.setPathToFile(config.getProjectToBuild().get(j).getFileToBuild());
-						project.setPathToArtefacts(artefacts);
-						project.setVersionFiles(versionFile);
-						project.setConfigs(configs);
-
-						projects.add(project);
-					}
-					job.setProjects(projects);
 					jobs.add(job);
 				}
 			}
 		}
 		return jobs;
 	}
-	
+
 	public String exportToXml(Boolean forVSC) throws IOException
 	{
-//		List<Job> jobs = new ArrayList<Job>();
-//
-//		Job job;
-//		Repository repo;
-//		Project project;
-//		PathToArtefacts artefacts;
-//		VersionFile versionFile;
-//		Config conf;
-//		List<Config> configs;
-//		List<Project> projects;
-//		BuildConfiguration config = null;
-//
-//		File file = new File(BuildConfigurationManager.getRootDirectory());
-//
-//		if (!file.exists())
-//			return BuildConfigurationManager.STRING_EMPTY;
-//
-//		File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-//		for (int i = 0; i < directories.length; i++)
-//		{
-//			config = BuildConfigurationManager.load(directories[i].getName());
-//			if (config.getState().equals(ConfigurationState.APPROVED))
-//			{
-//				job = new Job(config.getProjectName());
-//				job.setBuildMachineConfiguration(config.getBuildMachineConfiguration());
-//				job.setScripts(config.getScripts());
-//				if (config.getProjectToBuild() != null)
-//				{
-//					projects = new ArrayList<Project>();
-//					for (int j=0; j<config.getProjectToBuild().size(); j++)
-//					{
-//						repo = new Repository();
-//						project = new Project();
-//
-//						repo.setType(config.getScm());
-//						repo.setUrl(config.getProjectToBuild().get(j).getProjectUrl());
-//
-//						artefacts = new PathToArtefacts();
-//						for (int k=0; k<config.getProjectToBuild().get(j)
-//								.getArtefacts().length; k++)
-//						{
-//							artefacts.addFile(config.getProjectToBuild().get(j).getArtefacts()[k]);	
-//						}
-//
-//						versionFile = new VersionFile();
-//						if (versionFile != null)
-//						{
-//							for (int k=0; k<config.getProjectToBuild()
-//									.get(j).getVersionFiles().length; k++)
-//							{
-//								versionFile.addFile(config.getProjectToBuild()
-//										.get(j).getVersionFiles()[k]);
-//							}
-//							if (versionFile.getFiles().size()>0)
-//							{
-//								versionFile.setIsVersionFile(true);
-//							}
-//						}
-//
-//						configs = new ArrayList<Config>();
-//						if (config.getProjectToBuild().get(j).getBuilders() != null)
-//						{
-//							for (int k=0; k<config.getProjectToBuild()
-//									.get(j).getBuilders().length; k++)
-//							{
-//								if (config.getProjectToBuild()
-//										.get(j).getBuilders()[k].getConfigs().size() <= 0)
-//								{
-//									conf = new Config();
-//									conf.setBuilder(config.getProjectToBuild()
-//											.get(j).getBuilders()[k].getBuilder());
-//									conf.setPlatform(config.getProjectToBuild()
-//											.get(j).getBuilders()[k].getPlatform());
-//									configs.add(conf);
-//									continue;
-//								}
-//								for (int l=0; l<config.getProjectToBuild().get(j)
-//										.getBuilders()[k].getConfigs().size(); l++)
-//								{
-//
-//									conf = new Config(config.getProjectToBuild().get(j)
-//											.getBuilders()[k].getConfigs().get(l).toString(),
-//											config.getProjectToBuild().get(j)
-//											.getBuilders()[k].getBuilder(),
-//											config.getProjectToBuild().get(j)
-//											.getBuilders()[k].getPlatform());
-//									if (config.getProjectToBuild().get(j)
-//											.getBuilders()[k].getConfigs().get(l)
-//											.equals(Configuration.OTHER))
-//									{
-//										conf.setUserConfig(config.getProjectToBuild().get(j)
-//												.getBuilders()[k].getUserConfig());
-//									}
-//									configs.add(conf);
-//								}
-//							}
-//						}
-//
-//						project.setRepository(repo);
-//						project.setPathToFile(config.getProjectToBuild().get(j).getFileToBuild());
-//						project.setPathToArtefacts(artefacts);
-//						project.setVersionFiles(versionFile);
-//						project.setConfigs(configs);
-//
-//						projects.add(project);
-//					}
-//					job.setProjects(projects);
-//					jobs.add(job);
-//				}
-//			}
-//		}
 		configurations = generateConfiguration();
 		return saveConfigurations(forVSC);
 	}
@@ -288,13 +95,13 @@ public class XmlExporter
 		{
 			outputFile = BuildConfigurationManager.getFileForCheckVSC();
 		}
-		
+
 		File rootDirectory = new File(BuildConfigurationManager.getRootDirectory());
 		if (!rootDirectory.exists())
 		{
 			rootDirectory.mkdirs();
 		}
-		
+
 		if (!outputFile.exists())
 		{
 			outputFile.createNewFile();
@@ -314,6 +121,4 @@ public class XmlExporter
 		}
 		return path;
 	}
-	
-
 }

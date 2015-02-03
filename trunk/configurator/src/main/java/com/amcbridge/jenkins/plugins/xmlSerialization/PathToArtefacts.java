@@ -29,4 +29,15 @@ public class PathToArtefacts
 	{
 		files.add(value);
 	}
+	
+	public boolean equals(Object obj)
+	{
+		if(this == obj)
+			return true;
+		if((obj == null) || !(obj instanceof PathToArtefacts))
+			return false;
+		PathToArtefacts other = (PathToArtefacts)obj;
+		return (this.files.containsAll(other.getFiles()) &&
+				other.getFiles().containsAll(this.files));
+	}
 }

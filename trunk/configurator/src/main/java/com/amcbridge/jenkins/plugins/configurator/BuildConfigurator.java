@@ -41,6 +41,7 @@ import com.amcbridge.jenkins.plugins.messenger.*;
 import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
+import com.amcbridge.jenkins.plugins.xmlSerialization.Job;
 
 import hudson.Extension;
 import hudson.model.RootAction;
@@ -142,11 +143,19 @@ public final class BuildConfigurator implements RootAction {
 			newConfig.setState(ConfigurationState.UPDATED);
 			message.setDescription(MessageDescription.CHANGE.toString());
 			break;
-		case APPROVED:
-			isCommited = false;
+		case APPROVED:			
 			newConfig.setState(ConfigurationState.APPROVED);
 			newConfig.setCreator(currentConfig.getCreator());
 			newConfig.setJobUpdate(false);
+			BuildConfigurationManager.save(newConfig);
+
+			Job newJob = new Job(newConfig);
+			Job currentJob = BuildConfigurationManager.acm.get(newConfig.getProjectName());
+			if (!newJob.equals(currentJob))
+			{
+				BuildConfigurationManager.acm.add(newJob);
+				isCommited = BuildConfigurationManager.isCommited();
+			}
 			message.setDescription(MessageDescription.APPROVE.toString());
 			if (!BuildConfigurationManager.getUserMailAddress(newConfig).isEmpty())
 			{
@@ -268,6 +277,14 @@ public final class BuildConfigurator implements RootAction {
 		{
 			isCommited = true;
 		}
+		else
+		{
+			File file = BuildConfigurationManager.getFileToExportConfigurations();
+			if (file.exists())
+			{
+				file.delete();
+			}
+		}
 		return result;
 	}
 
@@ -296,6 +313,7 @@ public final class BuildConfigurator implements RootAction {
 			throws AddressException, IOException, MessagingException, JAXBException, InterruptedException, ParserConfigurationException
 	{
 		BuildConfigurationManager.deleteConfigurationPermanently(name);
+		isCommited = false;
 	}
 
 	@JavaScriptMethod

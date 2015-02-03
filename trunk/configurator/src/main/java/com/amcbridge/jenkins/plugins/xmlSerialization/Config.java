@@ -24,9 +24,19 @@ public class Config
 		builder = value;
 	}
 	
+	public String getBuilder()
+	{
+		return builder;
+	}
+	
 	public void setConfigurator(String value)
 	{
 		configuration = value;
+	}
+	
+	public String getConfigurator()
+	{
+		return configuration;
 	}
 	
 	public void setPlatform(String value)
@@ -34,8 +44,33 @@ public class Config
 		platform = value;
 	}
 	
+	public String getPlatform()
+	{
+		return platform;
+	}
+	
 	public void setUserConfig(String value)
 	{
 		userConfig = value;
+	}
+	
+	public String getUserConfig()
+	{
+		return userConfig;
+	}
+	
+	public boolean equals(Object obj)
+	{
+		if(this == obj)
+			return true;
+		if((obj == null) || !(obj instanceof Config))
+			return false;
+		Config other = (Config)obj;
+		return (this.builder.equals(other.getBuilder()) &&
+				this.platform.equals(other.getPlatform()) &&
+				this.userConfig != null &&
+				other.getUserConfig() != null &&
+				this.userConfig.equals(other.getUserConfig()) &&
+				this.configuration.equals(other.configuration));
 	}
 }

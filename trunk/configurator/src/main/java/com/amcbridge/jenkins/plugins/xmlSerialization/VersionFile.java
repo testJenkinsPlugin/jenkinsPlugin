@@ -44,4 +44,16 @@ public class VersionFile
 	{
 		return versionFile;
 	}
+	
+	public boolean equals(Object obj)
+	{
+		if(this == obj)
+			return true;
+		if((obj == null) || !(obj instanceof VersionFile))
+			return false;
+		VersionFile other = (VersionFile)obj;
+		return (this.versionFile.equals(other.isVersionFile()) &&
+				this.files.containsAll(other.getFiles()) &&
+				other.getFiles().containsAll(this.files));
+	}
 }

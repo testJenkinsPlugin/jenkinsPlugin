@@ -62,7 +62,8 @@ public class BuildConfigurationManager
 		"ant", "maven" };
 
 	public static final String STRING_EMPTY = "";
-
+	
+	public static ApproveConfigurationManager acm = new ApproveConfigurationManager();
 	private static MailSender mail = new MailSender();
 	private static ReentrantLock lock = new ReentrantLock();
 
@@ -325,6 +326,7 @@ public class BuildConfigurationManager
 			FileUtils.deleteDirectory(checkFile);
 
 		deleteJob(name);
+		acm.remove(name);
 
 		ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName());
 		message.setSubject(config.getProjectName());
@@ -448,10 +450,13 @@ public class BuildConfigurationManager
 	{
 		JobManagerGenerator.deleteJob(name);
 		BuildConfigurationModel config = BuildConfigurationManager.load(name);
-		if (config.getState().equals(ConfigurationState.APPROVED))
+		if (config.getProjectName() != null)
 		{
-			config.setJobUpdate(false);
-			BuildConfigurationManager.save(config);
+			if (config.getState().equals(ConfigurationState.APPROVED))
+			{
+				config.setJobUpdate(false);
+				BuildConfigurationManager.save(config);
+			}
 		}
 	}
 
