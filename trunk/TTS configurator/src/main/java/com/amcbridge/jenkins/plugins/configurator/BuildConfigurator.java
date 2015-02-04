@@ -332,7 +332,7 @@ public final class BuildConfigurator implements RootAction {
 			throws AddressException, IOException, MessagingException, JAXBException, InterruptedException, ParserConfigurationException
 	{
 		BuildConfigurationManager.deleteConfigurationPermanently(name);
-		isCommited = false;
+		isCommited = BuildConfigurationManager.isCommited();
 	}
 
 	@JavaScriptMethod
@@ -361,6 +361,7 @@ public final class BuildConfigurator implements RootAction {
 		return BuildConfigurationManager.isCurrentUserCreatorOfConfiguration(name);
 	}
 
+	@JavaScriptMethod
 	public static Boolean isCurrentUserAdministrator()
 	{
 		return BuildConfigurationManager.isCurrentUserAdministrator();
@@ -414,6 +415,7 @@ public final class BuildConfigurator implements RootAction {
 		BuildConfigurationManager.deleteJob(name);
 	}
 	
+	@JavaScriptMethod
 	public Boolean isCommited()
 	{
 		return isCommited;

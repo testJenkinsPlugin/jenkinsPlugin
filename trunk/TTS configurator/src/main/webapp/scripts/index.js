@@ -1,9 +1,25 @@
 var nameAction;
+var isCommited;
+var isAdmin;
 
 window.onload = function()
 {
+    buildConfiguration.isCommited(function(t){
+        isCommited = t.responseObject();
+    });
+    buildConfiguration.isCurrentUserAdministrator(function(t){
+        isAdmin = t.responseObject();
+    });
     buildConfiguration.ActiveConfiguration(false, function(r){});
 }
+
+window.onbeforeunload = function (e) {
+    if (document.activeElement.href.indexOf("BuildConfigurator") == -1 && !isCommited && isAdmin)
+    {
+        return 'Are you sure you want leave this page when configurations it not synchronized with your svn repository?';
+    }
+}
+
 
 function setDeletion(name)
 {
