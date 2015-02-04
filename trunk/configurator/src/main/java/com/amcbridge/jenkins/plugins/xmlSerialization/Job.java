@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.enums.Configuration;
+import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
@@ -36,7 +37,7 @@ public class Job
 		List<Config> configs;
 		Config conf;
 
-		name = config.getProjectName();
+		name = JobManagerGenerator.validJobName(config.getProjectName());
 		buildMachineConfiguration = config.getBuildMachineConfiguration();
 		scripts = config.getScripts();
 		if (config.getProjectToBuild() != null)
