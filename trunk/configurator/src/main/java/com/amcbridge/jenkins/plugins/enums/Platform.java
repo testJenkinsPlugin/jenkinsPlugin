@@ -1,10 +1,10 @@
 package com.amcbridge.jenkins.plugins.enums;
 
 public enum Platform {
-	X86("x 86"),
-	X64("x 64"),
-	ANY_CPY("Any Cpu"),
-	WIN_32("Win 32");
+	X86("x86"),
+	X64("x64"),
+	ANY_CPY("Any CPU"),
+	WIN_32("Win32");
 
 	private String platformValue;
 
