@@ -1,8 +1,7 @@
 package com.amcbridge.jenkins.plugins.enums;
 
 public enum SCM {
-	SUBVERSION("Subversion"),
-	NONE("None");
+	SUBVERSION("Subversion");
 
 	private String scm;
 
