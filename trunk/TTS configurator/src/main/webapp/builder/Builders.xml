@@ -1,11 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
 <builders>
+  <builder key="Jar" value="Jar"/>
+  <builder key="JavaC" value="JavaC"/>
+  <builder key="msbuild_2.0" value="MSBuild 2.0"/>
+  <builder key="msbuild_3.5" value="MSBuild 3.5"/>
+  <builder key="msbuild_4.0" value="MSBuild 4.0"/>
   <builder key="VS_2005" value="VS 2005"/>
   <builder key="VS_2008" value="VS 2008"/>
   <builder key="VS_2010" value="VS 2010"/>
   <builder key="VS_2012" value="VS 2012"/>
   <builder key="VS_2013" value="VS 2013"/>
-  <builder key="XCODE_4_1" value="XCode 4.1"/>
-  <builder key="JAVA_8" value="Java 8"/>
+  <builder key="XCode" value="XCode"/>
 </builders>
