@@ -4,6 +4,8 @@ import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.BadCredentialsException;
+import org.acegisecurity.GrantedAuthority;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
@@ -14,7 +16,6 @@ import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.security.SecurityRealm;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 
@@ -47,17 +48,19 @@ public class TTSSecurityRealm extends SecurityRealm {
 					public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 						try {
 							if (TTSServiceConnection.checkUser(authentication.getName(), authentication.getCredentials().toString())) {
-								return authentication;
+								return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), 
+										new GrantedAuthority[]{SecurityRealm.AUTHENTICATED_AUTHORITY});
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 						throw new BadCredentialsException(LOGIN_EXCEPTION + authentication);
 					}
-				}, new UserDetailsService() {
+				}, 
+				new UserDetailsService() {
 					public UserDetails loadUserByUsername(String username)
 							throws UsernameNotFoundException, DataAccessException {
-						return TTSSecurityRealm.this.loadUserByUsername(username);
+						throw new UsernameNotFoundException(username);
 					}
 				}
 				);

@@ -26,12 +26,9 @@ public class TTSServletFilter implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		try
-		{
+		try {
 			this.defaultFilter.doFilter(request, response, chain);
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			((HttpServletResponse) response).sendRedirect(StringUtils.EMPTY);
 		}
 	}
