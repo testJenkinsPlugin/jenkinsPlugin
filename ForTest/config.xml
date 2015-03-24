@@ -1,5 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <configurations>
+  <job name="MyTestConfig">
+    <projects>
+      <project pathToFile="TestJenkinsConsoleApplication.sln">
+        <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/TestJenkinsProj/TestJenkinsConsoleApplication"/>
+        <pathToArtefacts/>
+        <versionFiles versionFile="false"/>
+        <configs>
+          <config builder="VS 2010" platform="x86" configuration="Release"/>
+        </configs>
+      </project>
+    </projects>
+    <scripts/>
+    <buildMachineConfiguration/>
+  </job>
   <job name="TestJenkinsProj">
     <projects>
       <project pathToFile="TestJenkinsConsoleApplication.sln">
