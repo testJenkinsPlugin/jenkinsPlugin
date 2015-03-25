@@ -1,5 +1,20 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <configurations>
+  <job name="Java Test Job">
+    <projects>
+      <project pathToFile="Jenkins_TEST_Java.java">
+        <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/TEST_Proj/Jenkins_TEST_Java"/>
+        <pathToArtefacts/>
+        <versionFiles versionFile="false"/>
+        <configs>
+          <config builder="JavaC" platform="x86"/>
+          <config builder="Jar" platform="x86"/>
+        </configs>
+      </project>
+    </projects>
+    <scripts/>
+    <buildMachineConfiguration/>
+  </job>
   <job name="MyTestConfig">
     <projects>
       <project pathToFile="TestJenkinsConsoleApplication.sln">
