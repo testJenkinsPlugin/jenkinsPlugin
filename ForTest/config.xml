@@ -1,5 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <configurations>
+  <job name="Java Test">
+    <projects>
+      <project pathToFile="build.xml">
+        <repository type="Subversion" url="https://scm.amcbridge.com/scm/svn/repo_build_automation_management_tool"/>
+        <pathToArtefacts/>
+        <versionFiles versionFile="false"/>
+        <configs>
+          <config builder="Java MAVEN" platform="x86"/>
+        </configs>
+      </project>
+    </projects>
+    <scripts/>
+    <buildMachineConfiguration/>
+  </job>
   <job name="Java Test Job">
     <projects>
       <project pathToFile="Jenkins_TEST_Java.java">
