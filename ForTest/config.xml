@@ -3,6 +3,7 @@
   <job name="Java Test">
     <projects>
       <project pathToFile="build.xml">
+        <baseProjectFolder>\trunk\configurator</baseProjectFolder>
         <repository type="Subversion" url="https://scm.amcbridge.com/scm/svn/repo_build_automation_management_tool"/>
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
@@ -17,6 +18,7 @@
   <job name="Java Test Job">
     <projects>
       <project pathToFile="Jenkins_TEST_Java.java">
+        <baseProjectFolder>\src\jenkins_test_java</baseProjectFolder>
         <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/TEST_Proj/Jenkins_TEST_Java"/>
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
