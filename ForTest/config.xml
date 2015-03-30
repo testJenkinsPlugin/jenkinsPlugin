@@ -10,16 +10,7 @@
           <config builder="Java MAVEN" platform="x86"/>
         </configs>
       </project>
-      <project pathToFile="TestJenkinsConsoleApplication.sln" baseProjectFolder="">
-        <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/TestJenkinsProj/TestJenkinsConsoleApplication"/>
-        <pathToArtefacts/>
-        <versionFiles versionFile="false"/>
-        <configs>
-          <config builder="VS 2010" platform="x86" configuration="Release"/>
-        </configs>
-      </project>
     </projects>
     <scripts/>
-    <buildMachineConfiguration/>
   </job>
 </configurations>
