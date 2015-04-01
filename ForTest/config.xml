@@ -2,8 +2,8 @@
 <configurations>
   <job name="TestJenkinsProj">
     <projects>
-      <project pathToFile="TestJenkinsConsoleApplication.sln" baseProjectFolder="\TestJenkinsConsoleApplication">
-        <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/TestJenkinsProj"/>
+      <project pathToFile="TestJenkinsConsoleApplication.sln" baseProjectFolder="">
+        <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/TestJenkinsProj/TestJenkinsConsoleApplication"/>
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
         <configs>
