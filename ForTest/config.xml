@@ -7,7 +7,7 @@
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
         <configs>
-          <config builder="VS 2010" platform="x86"/>
+          <config builder="MSBuild 4.0" platform="x86" userConfig="Configuration=Release;Platform=Win32" configuration="Other"/>
         </configs>
       </project>
     </projects>
