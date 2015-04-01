@@ -7,7 +7,7 @@
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
         <configs>
-          <config builder="VS 2010" platform="x86" configuration="Release"/>
+          <config builder="VS 2010" platform="x86"/>
         </configs>
       </project>
     </projects>
