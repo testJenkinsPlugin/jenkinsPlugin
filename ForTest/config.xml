@@ -2,12 +2,12 @@
 <configurations>
   <job name="TestJenkinsProj">
     <projects>
-      <project pathToFile="TestJenkinsConsoleApplication.sln" baseProjectFolder="">
+      <project pathToFile="TestJenkinsConsoleApplication.sln">
         <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/TestJenkinsProj/TestJenkinsConsoleApplication"/>
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
         <configs>
-          <config builder="VS 2010" platform="x86" userConfig="" configuration="Other"/>
+          <config builder="VS 2010" platform="x64" configuration="Release"/>
         </configs>
       </project>
     </projects>
