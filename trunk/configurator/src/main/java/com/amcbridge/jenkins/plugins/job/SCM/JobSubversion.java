@@ -104,16 +104,16 @@ public class JobSubversion implements JobElementDescription {
 
 		node = doc.getElementsByTagName(LOCATIONS_TAG).item(0);
 
-		if (config.getProjectToBuild().size() > 0)
+		/*if (config.getProjectToBuild().size() > 0)
 		{
 			module = setModuleValue(module, config.getProjectToBuild().get(0).getProjectUrl(), folder);
 			imported_node = doc.importNode(module.getChildNodes().item(0), true);
 			node.appendChild(imported_node);
-		}
+		}*/
 
-		for (int i=1; i<config.getProjectToBuild().size(); i++)
+		for (int i = 0; i<config.getProjectToBuild().size(); i++)   // Was from 1 without comments
 		{
-			module = setModuleValue(module, config.getProjectToBuild().get(i).getProjectUrl(), folder + i);
+			module = setModuleValue(module, config.getProjectToBuild().get(i).getProjectUrl(), (i > 0) ? (folder + i) : folder);
 			imported_node = doc.importNode(module.getChildNodes().item(0), true);
 			node.appendChild(imported_node);
 		}
