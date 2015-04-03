@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.configurationModels.BuilderConfigModel;
+import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.enums.Configuration;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -30,94 +32,64 @@ public class Job
 
 	public Job (BuildConfigurationModel config)
 	{
-		Repository repo;
-		Project project;
-		PathToArtefacts artefacts;
-		VersionFile versionFile;
-		List<Config> configs;
-		Config conf;
-
 		name = JobManagerGenerator.validJobName(config.getProjectName());
 		buildMachineConfiguration = config.getBuildMachineConfiguration();
 		scripts = config.getScripts();
-		if (config.getProjectToBuild() != null)
-		{
-			projects = new ArrayList<Project>();
-			for (int j=0; j<config.getProjectToBuild().size(); j++)
-			{
-				repo = new Repository();
-				project = new Project();
-
+		
+		if(config.getProjectToBuild() != null){
+			projects = new ArrayList<Project>(config.getProjectToBuild().size());
+			for(ProjectToBuildModel projectModel : config.getProjectToBuild()){
+				
+				Repository repo = new Repository();
 				repo.setType(config.getScm());
-				repo.setUrl(config.getProjectToBuild().get(j).getProjectUrl());
-
-				artefacts = new PathToArtefacts();
-				for (int k=0; k<config.getProjectToBuild().get(j)
-						.getArtefacts().length; k++)
-				{
-					artefacts.addFile(config.getProjectToBuild().get(j).getArtefacts()[k]);	
+				repo.setUrl(projectModel.getProjectUrl());
+				
+				PathToArtefacts artefacts = new PathToArtefacts();
+				for (String artefactPath : projectModel.getArtefacts()) {
+					artefacts.addFile(artefactPath);
 				}
-
-				versionFile = new VersionFile();
-				if (versionFile != null)
-				{
-					for (int k=0; k<config.getProjectToBuild()
-							.get(j).getVersionFiles().length; k++)
-					{
-						versionFile.addFile(config.getProjectToBuild()
-								.get(j).getVersionFiles()[k]);
+				
+				VersionFile versionFiles = new VersionFile();
+				if(versionFiles != null){
+					for (String versionFilePath : projectModel.getVersionFiles()) {
+						versionFiles.addFile(versionFilePath);
 					}
-					if (versionFile.getFiles().size()>0)
-					{
-						versionFile.setIsVersionFile(true);
-					}
+					if(!versionFiles.getFiles().isEmpty())
+						versionFiles.setIsVersionFile(true);
 				}
-
-				configs = new ArrayList<Config>();
-				if (config.getProjectToBuild().get(j).getBuilders() != null)
-				{
-					for (int k=0; k<config.getProjectToBuild()
-							.get(j).getBuilders().length; k++)
-					{
-						if (config.getProjectToBuild()
-								.get(j).getBuilders()[k].getConfigs().size() <= 0)
-						{
-							conf = new Config();
-							conf.setBuilder(config.getProjectToBuild()
-									.get(j).getBuilders()[k].getBuilder());
-							conf.setPlatform(config.getProjectToBuild()
-									.get(j).getBuilders()[k].getPlatform());
-							configs.add(conf);
-							continue;
-						}
-						for (int l=0; l<config.getProjectToBuild().get(j)
-								.getBuilders()[k].getConfigs().size(); l++)
-						{
-
-							conf = new Config(config.getProjectToBuild().get(j)
-									.getBuilders()[k].getConfigs().get(l).toString(),
-									config.getProjectToBuild().get(j)
-									.getBuilders()[k].getBuilder(),
-									config.getProjectToBuild().get(j)
-									.getBuilders()[k].getPlatform());
-							if (config.getProjectToBuild().get(j)
-									.getBuilders()[k].getConfigs().get(l)
-									.equals(Configuration.OTHER))
-							{
-								conf.setUserConfig(config.getProjectToBuild().get(j)
-										.getBuilders()[k].getUserConfig());
+				
+				List<Config> configurations = null;
+				if(projectModel.getBuilders() != null){
+					configurations = new ArrayList<Config>(projectModel.getBuilders().length);
+					for (BuilderConfigModel builderModel : projectModel.getBuilders()) {
+						Config newConfig = null;
+						if(builderModel.getConfigs().isEmpty()){
+							newConfig = new Config();
+							newConfig.setBuilder(builderModel.getBuilder());
+							newConfig.setPlatform(builderModel.getPlatform());
+						} else {
+							for (Configuration configEnum : builderModel.getConfigs()) {
+								newConfig = new Config(configEnum.toString(), builderModel.getBuilder(), 
+										builderModel.getPlatform());
+								if(configEnum.equals(Configuration.OTHER)){
+									newConfig.setUserConfig(builderModel.getUserConfig());
+								}
 							}
-							configs.add(conf);
 						}
+						configurations.add(newConfig);
 					}
 				}
-
-				project.setRepository(repo);
-				project.setPathToFile(config.getProjectToBuild().get(j).getFileToBuild());
-				project.setPathToArtefacts(artefacts);
-				project.setVersionFiles(versionFile);
-				project.setConfigs(configs);
-				projects.add(project);
+				
+				Project newProject = new Project();
+				newProject.setRepository(repo);
+				newProject.setPathToFile(projectModel.getFileToBuild());
+				newProject.setBaseProjectFolder(projectModel.getProjectFolderPath() == "" 
+						? null : projectModel.getProjectFolderPath());
+				newProject.setPathToArtefacts(artefacts);
+				newProject.setVersionFiles(versionFiles);
+				newProject.setConfigs(configurations);
+				projects.add(newProject);
+				
 			}
 		}
 	}
