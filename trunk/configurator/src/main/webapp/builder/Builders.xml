@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
 <builders>
-  <builder key="Jar" value="Jar"/>
-  <builder key="JavaC" value="JavaC"/>
+  <builder key="Java ANT" value="Java ANT"/>
+  <builder key="Java MAVEN" value="Java MAVEN"/>
   <builder key="msbuild_2.0" value="MSBuild 2.0"/>
   <builder key="msbuild_3.5" value="MSBuild 3.5"/>
   <builder key="msbuild_4.0" value="MSBuild 4.0"/>
