@@ -7,7 +7,7 @@
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
         <configs>
-          <config builder="Java MAVEN" platform="x86"/>
+          <config builder="Java MAVEN" platform="x64"/>
         </configs>
       </project>
     </projects>
