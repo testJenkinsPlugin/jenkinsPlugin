@@ -67,15 +67,17 @@
 
                 <j:if test ="${it.getNodesName().size() > 0}">
                     <div class="div-build-machine-config">
-                        <label>Build machine configuration:</label>
-                        <input type="hidden" id="build_machine_configuration" name="build_machine_configuration" value=""/>
-                    </div>
-
-                    <div class="div-radiogroup">
-                        <j:forEach items="${it.getNodesName()}" var="node">
-                            <f:checkbox name="node" id="${node}" value="${node}" title="${node}" onclick="bMCChange(this)"/>
-                            <br/>
-                        </j:forEach>
+                        <div style="float:left">
+                        	<label>Build machine configuration:</label>
+                        	<input type="hidden" id="build_machine_configuration" name="build_machine_configuration" value=""/>
+                        </div>
+                        
+                        <div class="div-radiogroup">
+                        	<j:forEach items="${it.getNodesName()}" var="node">
+                            	<f:checkbox name="node" id="${node}" value="${node}" title="${node}" onclick="bMCChange(this)"/>
+                            	<br/>
+                        	</j:forEach>
+                    	</div>
                     </div>
                 </j:if>
 
