@@ -23,7 +23,7 @@
   <builders>
     <hudson.tasks.BatchFile>
       <command>d:
-cd \Builder
+cd Builder
 java -jar buildserver.jar</command>
     </hudson.tasks.BatchFile>
   </builders>
