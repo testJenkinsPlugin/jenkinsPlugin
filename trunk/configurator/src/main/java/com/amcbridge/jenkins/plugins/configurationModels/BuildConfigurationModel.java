@@ -147,7 +147,7 @@ public class BuildConfigurationModel
 	
 	public String getFullNameCreator()
 	{
-		User user = User.current().get(creator);
+		User user = User.get(creator);
 		String fullname = user.getFullName();
 		return fullname;
 	}
