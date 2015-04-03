@@ -10,7 +10,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 public class Project
 {
 	@XStreamAsAttribute
-	private String pathToFile;
+	private String pathToFile, baseProjectFolder;
 
 	private Repository repository;
 
@@ -41,6 +41,14 @@ public class Project
 	public String getPathToFile()
 	{
 		return pathToFile;
+	}
+
+	public String getBaseProjectFolder() {
+		return baseProjectFolder;
+	}
+
+	public void setBaseProjectFolder(String value) {
+		baseProjectFolder = value;
 	}
 
 	public void setRepository(Repository value)
@@ -80,11 +88,18 @@ public class Project
 		if((obj == null) || !(obj instanceof Project))
 			return false;
 		Project other = (Project)obj;
+		if((this.baseProjectFolder == null && other.getBaseProjectFolder() != null) ||
+			(this.baseProjectFolder != null && other.getBaseProjectFolder() == null))
+			return false;
 		return (this.pathToFile.equals(other.getPathToFile()) &&
+				((this.baseProjectFolder == null && other.getBaseProjectFolder() == null) 
+					|| this.baseProjectFolder.equals(other.getBaseProjectFolder())) &&
 				this.repository.equals(other.getRepository()) &&
 				this.pathToArtefacts.equals(other.getPathToArtefacts()) &&
 				this.versionFiles.equals(other.getVersionFiles()) &&
 				this.configs.containsAll(other.getConfigs()) &&
 				other.getConfigs().containsAll(this.configs));
 	}
+	
+	
 }
