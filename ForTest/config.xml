@@ -20,7 +20,7 @@
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
         <configs>
-          <config builder="Java MAVEN" platform="x86"/>
+          <config builder="Java MAVEN" platform="x86" userConfig="smmth" configuration="Other"/>
         </configs>
       </project>
     </projects>
