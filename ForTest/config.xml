@@ -7,7 +7,7 @@
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
         <configs>
-          <config builder="Java MAVEN" platform="Any CPU"/>
+          <config builder="Java MAVEN" platform="Any CPU" configuration="Debug"/>
         </configs>
       </project>
       <project pathToFile="TestJenkinsConsoleApplication.sln" localDirectory="Development">
