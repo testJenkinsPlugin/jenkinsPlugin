@@ -7,6 +7,7 @@
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
         <configs>
+          <config builder="Java MAVEN" platform="x64" configuration="Release"/>
           <config builder="Java MAVEN" platform="x64" configuration="Debug"/>
         </configs>
       </project>
@@ -15,6 +16,7 @@
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
         <configs>
+          <config builder="VS 2010" platform="Any CPU" configuration="Release"/>
           <config builder="VS 2010" platform="Any CPU" configuration="Debug"/>
         </configs>
       </project>
