@@ -1,14 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <configurations>
-  <job name="TestJob">
+  <job name="SomeJob">
     <projects>
       <project pathToFile="pom.xml" localDirectory="Development">
         <repository type="Subversion" url="https://scm.amcbridge.com/scm/svn/repo_build_automation_management_tool/trunk/configuration"/>
         <pathToArtefacts/>
         <versionFiles versionFile="false"/>
         <configs>
-          <config builder="Java MAVEN" platform="x86" configuration="Release"/>
-          <config builder="Java MAVEN" platform="x86" configuration="Debug"/>
+          <config builder="VS 2010" platform="Any CPU" configuration="Release"/>
         </configs>
       </project>
       <project pathToFile="TestJenkinsConsoleApplication.sln" localDirectory="Development1">
