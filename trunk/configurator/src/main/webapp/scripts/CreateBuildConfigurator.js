@@ -2,6 +2,7 @@ var type;
 var scroll=0;
 var isCommited;
 var isAdmin;
+var projectNumber=0;
 
 window.onload = function()
 {
@@ -30,6 +31,7 @@ window.onload = function()
     else
     {
         document.getElementById("formType").value = "CREATE";
+        projectNumber = 0;
     }
     buildConfiguration.loadCreateNewBuildConfiguration(function(t)
     {
@@ -184,6 +186,10 @@ function addView()
         var iDiv = document.createElement("div");
         iDiv.innerHTML = t.responseObject().html;
         document.getElementById("projectsToBuild").appendChild(iDiv);
+        var currentDivId = iDiv.firstElementChild.id;
+        document.getElementById("localDirectoryPath_" + currentDivId).value = 
+        	"Development" + ((projectNumber > 0) ? projectNumber : "");
+        projectNumber++;
     });
 }
 
@@ -199,6 +205,7 @@ function loadViews(projectName)
         var iDiv = document.createElement("div");
         iDiv.innerHTML = t.responseObject().html;
         document.getElementById("projectsToBuild").appendChild(iDiv);
+        projectNumber = iDiv.childNodes.length;
     });
 }
 
@@ -400,7 +407,7 @@ function versionFileCheckBoxChange(checkBox)
 function isValidForm()
 {
     var projectName = document.getElementById("projectName");
-    var pathFolder = document.getElementsByName("projectFolderPath");
+    var pathFolder = document.getElementsByName("localDirectoryPath");
     var pathUrl = document.getElementsByName("projectUrl");
     var pathArt = document.getElementsByName("pathToArtefacts");
     var pathVer = document.getElementsByName("versionFilesPath");
@@ -526,7 +533,7 @@ function addPath(button)
 {
     var number = getElementNumber(button.id);
     var path = document.getElementById("path_input_" + number).value;
-    var pathInput = document.getElementById("projectFolderPath_" + (number-1)).value;
+    var pathInput = document.getElementById("localDirectoryPath_" + (number-1)).value;
     var error = document.getElementById("path_error_" + number).className;
     var errorInput = document.getElementById("path_error_" + (number-1)).className;
     if((pathInput.length <= 0)||(errorInput == "error-block")||(path.length <= 0)||(error == "error-block"))
@@ -701,12 +708,16 @@ function checkPath(id)
     {
         regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?]+)+\\?$/i;
     }
+    else if(document.getElementById(id).name == "localDirectoryPath")
+    {
+    	regPath = /^\.$|^(?:(?!\.)[^\\/:*?"<>|\r\n]+\/?)*$/;				// Match only one . or valid folder structure (zero-length - ok)
+    }
     else
     {
         regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?*]+)+\\?$/i;
     }
 
-    if(regPath.test(path+"s") || path == "")
+    if(regPath.test(path) || path == "")
     {
         document.getElementById("path_error_"+number).className = "error-none";
         document.getElementById(id).className = "textbox";
