@@ -89,7 +89,7 @@
                                     </j:if>
                                 </j:if>
 
-                                <j:if test="${configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER) &amp;&amp; !configs.IsJobUpdate()}">
+                                <j:if test="${configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER) &amp;&amp; !configs.getJobUpdate()}">
                                     <a href="#" onclick="createJob(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">
                                         <j:if test="${!it.isJobCreated(configs.getProjectName())}">
                                             Create Job

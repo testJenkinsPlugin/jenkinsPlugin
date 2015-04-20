@@ -10,7 +10,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 public class Project
 {
 	@XStreamAsAttribute
-	private String pathToFile, baseProjectFolder;
+	private String pathToFile, localDirectory;
 
 	private Repository repository;
 
@@ -43,12 +43,12 @@ public class Project
 		return pathToFile;
 	}
 
-	public String getBaseProjectFolder() {
-		return baseProjectFolder;
+	public String getLocalDirectory() {
+		return localDirectory;
 	}
 
-	public void setBaseProjectFolder(String value) {
-		baseProjectFolder = value;
+	public void setLocalDirectory(String value) {
+		localDirectory = value;
 	}
 
 	public void setRepository(Repository value)
@@ -88,12 +88,12 @@ public class Project
 		if((obj == null) || !(obj instanceof Project))
 			return false;
 		Project other = (Project)obj;
-		if((this.baseProjectFolder == null && other.getBaseProjectFolder() != null) ||
-			(this.baseProjectFolder != null && other.getBaseProjectFolder() == null))
+		if((this.localDirectory == null && other.getLocalDirectory() != null) ||
+			(this.localDirectory != null && other.getLocalDirectory() == null))
 			return false;
 		return (this.pathToFile.equals(other.getPathToFile()) &&
-				((this.baseProjectFolder == null && other.getBaseProjectFolder() == null) 
-					|| this.baseProjectFolder.equals(other.getBaseProjectFolder())) &&
+				((this.localDirectory == null && other.getLocalDirectory() == null) 
+					|| this.localDirectory.equals(other.getLocalDirectory())) &&
 				this.repository.equals(other.getRepository()) &&
 				this.pathToArtefacts.equals(other.getPathToArtefacts()) &&
 				this.versionFiles.equals(other.getVersionFiles()) &&

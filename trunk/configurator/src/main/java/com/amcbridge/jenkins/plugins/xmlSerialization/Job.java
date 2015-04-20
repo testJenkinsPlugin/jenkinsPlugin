@@ -67,6 +67,7 @@ public class Job
 							newConfig = new Config();
 							newConfig.setBuilder(builderModel.getBuilder());
 							newConfig.setPlatform(builderModel.getPlatform());
+							configurations.add(newConfig);
 						} else {
 							for (Configuration configEnum : builderModel.getConfigs()) {
 								newConfig = new Config(configEnum.toString(), builderModel.getBuilder(), 
@@ -74,17 +75,17 @@ public class Job
 								if(configEnum.equals(Configuration.OTHER)){
 									newConfig.setUserConfig(builderModel.getUserConfig());
 								}
+								configurations.add(newConfig);
 							}
 						}
-						configurations.add(newConfig);
 					}
 				}
 				
 				Project newProject = new Project();
 				newProject.setRepository(repo);
 				newProject.setPathToFile(projectModel.getFileToBuild());
-				newProject.setBaseProjectFolder(projectModel.getProjectFolderPath() == "" 
-						? null : projectModel.getProjectFolderPath());
+				newProject.setLocalDirectory(projectModel.getLocalDirectoryPath() == "" 
+						? null : projectModel.getLocalDirectoryPath());
 				newProject.setPathToArtefacts(artefacts);
 				newProject.setVersionFiles(versionFiles);
 				newProject.setConfigs(configurations);

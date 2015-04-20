@@ -57,7 +57,7 @@ public class BuildConfigurationModel
 		return scm;
 	}
 
-	public Boolean IsJobUpdate()
+	public Boolean getJobUpdate()
 	{
 		return isJobUpdate;
 	}
@@ -97,12 +97,12 @@ public class BuildConfigurationModel
 		return configEmail;
 	}
 	
-	public void setProjectToBuild (List<ProjectToBuildModel> value)
+	public void setProjectToBuild(List<ProjectToBuildModel> value)
 	{
 		projectToBuild = value;
 	}
 
-	public List<ProjectToBuildModel> getProjectToBuild ()
+	public List<ProjectToBuildModel> getProjectToBuild()
 	{
 		return projectToBuild;
 	}

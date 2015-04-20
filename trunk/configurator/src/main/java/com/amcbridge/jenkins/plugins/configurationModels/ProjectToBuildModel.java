@@ -6,7 +6,7 @@ import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 
 public class ProjectToBuildModel {
 
-	private String projectUrl, fileToBuild, projectFolderPath;
+	private String projectUrl, fileToBuild, localDirectoryPath;
 
 	private Boolean isVersionFiles;
 
@@ -38,14 +38,14 @@ public class ProjectToBuildModel {
 		return fileToBuild;
 	}
 
-	public void setProjectFolderPath(String value)
+	public void setLocalDirectoryPath(String value)
 	{
-		projectFolderPath = value;
+		localDirectoryPath = value;
 	}
 
-	public String getProjectFolderPath()
+	public String getLocalDirectoryPath()
 	{
-		return projectFolderPath;
+		return localDirectoryPath;
 	}
 
 	public void setBuilders (BuilderConfigModel[] value)
@@ -80,13 +80,13 @@ public class ProjectToBuildModel {
 
 	@DataBoundConstructor
 	public ProjectToBuildModel(String projectUrl, String fileToBuild,
-			String artefacts, String versionFiles, String projectFolderPath,
+			String artefacts, String versionFiles, String localDirectoryPath,
 			Boolean isVersionFiles, BuilderConfigModel[] builders)
 	{
 		this.projectUrl = projectUrl;
 		this.fileToBuild = fileToBuild;
 		this.isVersionFiles = isVersionFiles;
-		this.projectFolderPath = projectFolderPath;
+		this.localDirectoryPath = localDirectoryPath;
 		setArtefacts(BuildConfigurationManager.getPath(artefacts));
 		setVersionFiles(BuildConfigurationManager.getPath(versionFiles));
 		this.builders = builders;
