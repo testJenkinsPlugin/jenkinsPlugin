@@ -540,30 +540,18 @@ function addPath(button)
     {
         return;
     }
-    var sab = pathInput.substring(pathInput.length-1,pathInput.length);
-    if(sab != "\\")
-    {
-        pathInput= pathInput+'\\';
-    }
-    if(pathInput != path.substring(0,pathInput.length))
-    {
-        document.getElementById("path_error_" + number).className = "error-block";
-        document.getElementById("coincide_" + number).innerHTML = " paths do not coincide";
-        return;
-    }
-
-    var newPath = path.substring(pathInput.length,path.length);
+    
     var selectionId = "files_" + number;
     
-    if (checkPathRepeat(newPath, selectionId))
+    if (!checkPathRepeat(path, selectionId))
     {
-        addToSelectionBox(selectionId, newPath);
+        addToSelectionBox(selectionId, path);
         document.getElementById("path_input_" + number).value = "";
     }
     else
     {
         document.getElementById("path_error_" + number).className = "error-block";
-        document.getElementById("coincide_" + number).innerHTML = " path has already added";
+        document.getElementById("coincide_" + number).innerHTML = " such pass already exists";
         return;
     }
 }
@@ -580,7 +568,7 @@ function addPathFiles(button)
     }
 
     var selectionId = "files_" + number;
-    if (checkPathRepeat(path, selectionId))
+    if (!checkPathRepeat(path, selectionId))
     {
         addToSelectionBox(selectionId, path);
         document.getElementById("path_input_" + number).value = "";
@@ -598,16 +586,16 @@ function checkPathRepeat(path, selectionBoxId)
     var options = document.getElementById(selectionBoxId).options;
     if (options == null)
     {
-        return true;
+        return false;
     }
     for (var i=0; i<options.length; i++)
     {
-        if (trimSlash(options[i].value) == trimSlash(path))
+        if (options[i].value == path)
         {
-            return false;
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 function trimSlash(value)
@@ -706,7 +694,7 @@ function checkPath(id)
     var regPath;
     if (document.getElementById(id).name == "pathToArtefacts")
     {
-        regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?]+)+\\?$/i;
+        regPath = /^(?![*?])(?:[^\\/:"*?<>|\r\n]+?(?:\/?|\/+\*{0,2})*?)*?$/;// Allow Ant wildcards valid folder/file structure only
     }
     else if(document.getElementById(id).name == "localDirectoryPath")
     {
