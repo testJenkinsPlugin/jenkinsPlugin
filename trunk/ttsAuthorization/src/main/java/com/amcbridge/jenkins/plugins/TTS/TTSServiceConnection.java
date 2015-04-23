@@ -23,7 +23,7 @@ import com.thoughtworks.xstream.XStream;
 
 public class TTSServiceConnection {
 
-	private static final String AUTHENTICATE_URL = "http://ttstest.amcbridge.com/wsuserdatas.asmx/Authenticate";
+	private static final String AUTHENTICATE_URL = "https://tts.amcbridge.com/wsuserdatas.asmx/Authenticate";
 	private static final String LOGIN_PARAMETER = "login";
 	private static final String PASSWORD_PARAMETER = "password";
 	private static final String ENCODING = "UTF-8";

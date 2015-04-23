@@ -25,10 +25,10 @@
 
         <div class="div-textinput">
             <div class="div-file-chooser-label">
-                <label>Project folder path:</label>
+                <label>Local module directory (optional):</label>
             </div>
             <div class="left">
-                <input type="text" id="projectFolderPath_${sourceId[0]}" onblur="checkPath(id)" value="${view.getProjectFolderPath()}" name="projectFolderPath" class="textbox"/>
+                <input type="text" id="localDirectoryPath_${sourceId[0]}" onblur="checkPath(id)" value="${view.getLocalDirectoryPath()}" name="localDirectoryPath" class="textbox"/>
                 <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="imageHelp(id+'path')" class="image"/>
             </div>
         </div>
@@ -38,7 +38,7 @@
         </div>
         <div id="block_help_${sourceId[0]}path" class="help-view">
             <lebel id="text_help_${sourceId[0]}path" class="helptext">
-                 Base folder
+                 Specify a local directory (relative to the workspace root) where this module is checked out. If left empty, the last path component of the URL is used as the default, just like the svn CLI. A single period (.) may be used to check out the project directly into the workspace rather than into a subdirectory.
             </lebel>
         </div>
 

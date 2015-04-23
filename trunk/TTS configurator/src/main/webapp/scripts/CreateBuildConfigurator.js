@@ -1,6 +1,7 @@
 var type;
 var isCommited;
 var isAdmin;
+var projectNumber=0;
 
 window.onload = function()
 {
@@ -29,6 +30,7 @@ window.onload = function()
     else
     {
         document.getElementById("formType").value = "CREATE";
+        projectNumber = 0;
     }
     buildConfiguration.loadCreateNewBuildConfiguration(function(t)
     {
@@ -197,6 +199,10 @@ function addView()
         var iDiv = document.createElement("div");
         iDiv.innerHTML = t.responseObject().html;
         document.getElementById("projectsToBuild").appendChild(iDiv);
+        var currentDivId = iDiv.firstElementChild.id;
+        document.getElementById("localDirectoryPath_" + currentDivId).value = 
+        	"Development" + ((projectNumber > 0) ? projectNumber : "");
+        projectNumber++;
     });
 }
 
@@ -212,6 +218,7 @@ function loadViews(projectName)
         var iDiv = document.createElement("div");
         iDiv.innerHTML = t.responseObject().html;
         document.getElementById("projectsToBuild").appendChild(iDiv);
+        projectNumber = iDiv.childNodes.length;
     });
 }
 
@@ -413,13 +420,13 @@ function versionFileCheckBoxChange(checkBox)
 function isValidForm()
 {
     var projectName = document.getElementById("projectName");
-    var pathFolder = document.getElementsByName("projectFolderPath");
+    var pathFolder = document.getElementsByName("localDirectoryPath");
     var pathUrl = document.getElementsByName("projectUrl");
     var pathArt = document.getElementsByName("pathToArtefacts");
     var pathVer = document.getElementsByName("versionFilesPath");
     var build = document.getElementsByName("projectToBuild");
     var patBuild = document.getElementsByName("fileToBuild");
-    if (projectName.value == "None")
+    if (projectName.value == "")
     {
         document.getElementById("projectErrorText").innerHTML = " Please, enter your project name";
         document.getElementById("projectError").className = "error-block empty";
@@ -539,37 +546,25 @@ function addPath(button)
 {
     var number = getElementNumber(button.id);
     var path = document.getElementById("path_input_" + number).value;
-    var pathInput = document.getElementById("projectFolderPath_" + (number-1)).value;
+    var pathInput = document.getElementById("localDirectoryPath_" + (number-1)).value;
     var error = document.getElementById("path_error_" + number).className;
     var errorInput = document.getElementById("path_error_" + (number-1)).className;
     if((pathInput.length <= 0)||(errorInput == "error-block")||(path.length <= 0)||(error == "error-block"))
     {
         return;
     }
-    var sab = pathInput.substring(pathInput.length-1,pathInput.length);
-    if(sab != "\\")
-    {
-        pathInput= pathInput+'\\';
-    }
-    if(pathInput != path.substring(0,pathInput.length))
-    {
-        document.getElementById("path_error_" + number).className = "error-block";
-        document.getElementById("coincide_" + number).innerHTML = " paths do not coincide";
-        return;
-    }
-
-    var newPath = path.substring(pathInput.length,path.length);
+    
     var selectionId = "files_" + number;
     
-    if (checkPathRepeat(newPath, selectionId))
+    if (!checkPathRepeat(path, selectionId))
     {
-        addToSelectionBox(selectionId, newPath);
+        addToSelectionBox(selectionId, path);
         document.getElementById("path_input_" + number).value = "";
     }
     else
     {
         document.getElementById("path_error_" + number).className = "error-block";
-        document.getElementById("coincide_" + number).innerHTML = " path has already added";
+        document.getElementById("coincide_" + number).innerHTML = " such pass already exists";
         return;
     }
 }
@@ -587,7 +582,7 @@ function addPathFiles(button)
     }
 
     var selectionId = "files_" + number;
-    if (checkPathRepeat(path, selectionId))
+    if (!checkPathRepeat(path, selectionId))
     {
         addToSelectionBox(selectionId, path);
         document.getElementById("path_input_" + number).value = "";
@@ -605,16 +600,16 @@ function checkPathRepeat(path, selectionBoxId)
     var options = document.getElementById(selectionBoxId).options;
     if (options == null)
     {
-        return true;
+        return false;
     }
     for (var i=0; i<options.length; i++)
     {
-        if (trimSlash(options[i].value) == trimSlash(path))
+        if (options[i].value == path)
         {
-            return false;
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 function trimSlash(value)
@@ -709,18 +704,22 @@ function checkPath(id)
 {
     var path = document.getElementById(id).value;
     var number = getElementNumber(id);
-
+    
     var regPath;
     if (document.getElementById(id).name == "pathToArtefacts")
     {
-        regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?]+)+\\?$/i;
+        regPath = /^(?![*?])(?:[^\\/:"*?<>|\r\n]+?(?:\/?|\/+\*{0,2})*?)*?$/;// Allow Ant wildcards valid folder/file structure only
+    }
+    else if(document.getElementById(id).name == "localDirectoryPath")
+    {
+    	regPath = /^\.$|^(?:(?!\.)[^\\/:*?"<>|\r\n]+\/?)*$/;				// Match only one . or valid folder structure (zero-length - ok)
     }
     else
     {
         regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?*]+)+\\?$/i;
     }
 
-    if(regPath.test(path+"s") || path == "")
+    if(regPath.test(path) || path == "")
     {
         document.getElementById("path_error_"+number).className = "error-none";
         document.getElementById(id).className = "textbox";

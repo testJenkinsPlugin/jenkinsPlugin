@@ -43,7 +43,7 @@
                 <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
             </j:if>
             <j:if test="${projectSize == 0}">
-                <a href="#" class="CreateBuildConfigurator">Create new build configuration</a>
+                <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
                 <label class="conf-error">   (No configurations to create)  </label>
             </j:if>
 
@@ -105,7 +105,7 @@
                                     </j:if>
                                 </j:if>
 
-                                <j:if test="${configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER) &amp;&amp; !configs.IsJobUpdate()}">
+                                <j:if test="${configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER) &amp;&amp; !configs.getJobUpdate()}">
                                     <a href="#" onclick="createJob(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">
                                         <j:if test="${!it.isJobCreated(configs.getProjectName())}">
                                             Create Job

@@ -68,7 +68,7 @@ public class BuildConfigurationModel
 		return id;
 	}
 	
-	public Boolean IsJobUpdate()
+	public Boolean getJobUpdate()
 	{
 		return isJobUpdate;
 	}
@@ -108,12 +108,12 @@ public class BuildConfigurationModel
 		return configEmail;
 	}
 	
-	public void setProjectToBuild (List<ProjectToBuildModel> value)
+	public void setProjectToBuild(List<ProjectToBuildModel> value)
 	{
 		projectToBuild = value;
 	}
 
-	public List<ProjectToBuildModel> getProjectToBuild ()
+	public List<ProjectToBuildModel> getProjectToBuild()
 	{
 		return projectToBuild;
 	}
@@ -158,7 +158,7 @@ public class BuildConfigurationModel
 	
 	public String getFullNameCreator()
 	{
-		User user = User.current().get(creator);
+		User user = User.get(creator);
 		String fullname = user.getFullName();
 		return fullname;
 	}

@@ -32,8 +32,8 @@ public class TTSManager {
 	private List<TTSProject> projects;
 	private String email;
 
-	private static final String PROJECTS_URL = "http://ttstest.amcbridge.com/wsuserdatas.asmx/GetProjectsByUser";
-	private static final String EMAIL_URL = "http://ttstest.amcbridge.com/wsuserdatas.asmx/GetEmailByUser";
+	private static final String PROJECTS_URL = "https://tts.amcbridge.com/wsuserdatas.asmx/GetProjectsByUser";
+	private static final String EMAIL_URL = "https://tts.amcbridge.com/wsuserdatas.asmx/GetEmailByUser";
 	private static final String LOGIN_PARAMETER = "login";
 	private static final String PASSWORD_PARAMETER = "password";
 	private static final String ENCODING = "UTF-8";

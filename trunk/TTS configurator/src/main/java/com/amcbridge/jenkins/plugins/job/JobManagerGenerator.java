@@ -22,6 +22,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import jenkins.model.Jenkins;
 
@@ -60,12 +61,7 @@ public class JobManagerGenerator {
 		if (isJobExist(jobName))
 		{
 			AbstractItem item= (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder;
-			Document doc = null;
-			docBuilder = docFactory.newDocumentBuilder();
-			doc = docBuilder.parse(getJobXML(config));
-			Source streamSource = new DOMSource( doc );
+			Source streamSource = new StreamSource(getJobXML(config));
 			item.updateByXml(streamSource);
 			item.save();
 		}

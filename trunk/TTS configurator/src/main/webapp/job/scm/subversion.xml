@@ -4,7 +4,7 @@
     <hudson.scm.SubversionSCM_-ModuleLocation>
       <remote></remote>
       <credentialsId></credentialsId>
-      <local>Development</local>
+      <local></local>
       <depthOption>infinity</depthOption>
       <ignoreExternalsOption>false</ignoreExternalsOption>
     </hudson.scm.SubversionSCM_-ModuleLocation>
