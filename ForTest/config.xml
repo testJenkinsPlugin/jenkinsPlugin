@@ -1,17 +1,2 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<configurations>
-  <job name="TestJava">
-    <projects>
-      <project pathToFile="pom.xml" localDirectory="Development">
-        <repository type="Subversion" url="https://scm.amcbridge.com/scm/svn/repo_build_automation_management_tool/trunk/configurator"/>
-        <pathToArtefacts/>
-        <versionFiles versionFile="false"/>
-        <configs>
-          <config builder="Java MAVEN" platform="Any CPU" configuration="Release"/>
-          <config builder="Java MAVEN" platform="Any CPU" configuration="Debug"/>
-        </configs>
-      </project>
-    </projects>
-    <scripts/>
-  </job>
-</configurations>
+<configurations/>
