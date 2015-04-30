@@ -79,7 +79,9 @@
             </div>
             <div id="block_help_${sourceId[0]}art" class="help-view">
                 <lebel id="text_help_${sourceId[0]}art" class="helptext">
-                 Relative path
+                 You can use wildcards like 'module/dist/**/*.zip'. See 
+				 <a href="http://ant.apache.org/manual/Types/fileset.html">
+				 the includes attribute of Ant fileset</a> for the exact format. The base directory is the workspace. You can only archive files that are located in your workspace.
                 </lebel>
             </div>
             <div class="div-legend">

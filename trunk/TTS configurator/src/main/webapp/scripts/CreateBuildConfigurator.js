@@ -707,7 +707,7 @@ function checkPath(id)
     
     var regPath;
     if (document.getElementById(id).name == "pathToArtefacts")
-    {
+    {																		// Change also correctArtifactPaths at JobManagerGenerator
         regPath = /^(?![*?])(?:[^\\/:"*?<>|\r\n]+?(?:\/?|\/+\*{0,2})*?)*?$/;// Allow Ant wildcards valid folder/file structure only
     }
     else if(document.getElementById(id).name == "localDirectoryPath")
