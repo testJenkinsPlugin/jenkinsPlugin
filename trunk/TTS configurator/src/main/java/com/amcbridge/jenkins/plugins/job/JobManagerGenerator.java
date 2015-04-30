@@ -11,6 +11,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,6 +37,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.SCM;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
@@ -58,6 +63,13 @@ public class JobManagerGenerator {
 			SAXException, IOException, TransformerException
 	{
 		String jobName = validJobName(config.getProjectName());
+		
+		List<String[]> prevArtefacts = new ArrayList<String[]>(config.getProjectToBuild().size());
+		for(int i = 0; i < config.getProjectToBuild().size(); i++)
+			prevArtefacts.add(Arrays.copyOf(config.getProjectToBuild().get(i).getArtefacts(), 
+					config.getProjectToBuild().get(i).getArtefacts().length));
+		JobManagerGenerator.correctArtifactPaths(config.getProjectToBuild());
+		
 		if (isJobExist(jobName))
 		{
 			AbstractItem item= (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
@@ -69,6 +81,32 @@ public class JobManagerGenerator {
 		{
 			FileInputStream fis = new FileInputStream(getJobXML(config));
 			Jenkins.getInstance().createProjectFromXML(jobName, fis);
+		}
+		
+		for(int i = 0; i < config.getProjectToBuild().size(); i++)
+			config.getProjectToBuild().get(i).setArtefacts(prevArtefacts.get(i));
+	}
+	
+	private static void correctArtifactPaths(List<ProjectToBuildModel> projectModels){
+		String pathPrefix;
+		for(ProjectToBuildModel projectModel : projectModels){
+			pathPrefix = "";
+			if (projectModel.getLocalDirectoryPath() == null || projectModel.getLocalDirectoryPath().isEmpty())
+				pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/'));
+			else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath())){
+				if(!projectModel.getLocalDirectoryPath().equals("."))		// No need to add prefix for workspace direct checkout
+					pathPrefix = projectModel.getLocalDirectoryPath();
+			}
+			
+			if(pathPrefix != ""){
+				if(!pathPrefix.endsWith("/"))
+					pathPrefix += "/";
+				String[] newArtefactsPaths = new String[projectModel.getArtefacts().length];
+				int counter = 0;
+				for(String artefactPath : projectModel.getArtefacts())
+					newArtefactsPaths[counter++] = pathPrefix + artefactPath;
+				projectModel.setArtefacts(newArtefactsPaths);
+			}
 		}
 	}
 
