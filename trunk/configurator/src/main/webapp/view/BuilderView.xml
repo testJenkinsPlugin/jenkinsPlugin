@@ -16,7 +16,7 @@
 
         <div class="div-drop-down">
             <label>Builder:</label>
-            <select id="builder_${divID}" class="drop-down" name="builder">
+            <select id="builder_${divID}" name="builder">
                 
                 <j:forEach items="${builders}" var="build" indexVar="i">
                     <j:if test="${build.getValue() == view.getBuilder()}">
@@ -30,8 +30,8 @@
         </div>
 
         <div class="div-drop-down">
-            <label>Platforms:</label>
-            <select id="platform_${divID}" class="drop-down" name="platform">
+            <label>Platform:</label>
+            <select id="platform_${divID}" name="platform">
                 <j:forEach items="${platforms}" var="platform" indexVar="i">
                     <j:if test="${platform == view.getPlatform()}">
                         <option id="${platform.name()+'_'+divID}" name="${platform.name()+'_'+divID}" selected="selected" value="${platform}">${platform}</option>

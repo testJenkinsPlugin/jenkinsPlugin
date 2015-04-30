@@ -697,7 +697,7 @@ function checkPath(id)
         regPath = /^(?![*?])(?:[^\\/:"*?<>|\r\n]+?(?:\/?|\/+\*{0,2})*?)*?$/;// Allow Ant wildcards valid folder/file structure only
     }
     else if(document.getElementById(id).name == "localDirectoryPath")
-    {
+    {																		// Change also correctArtifactPaths at JobManagerGenerator
     	regPath = /^\.$|^(?:(?!\.)[^\\/:*?"<>|\r\n]+\/?)*$/;				// Match only one . or valid folder structure (zero-length - ok)
     }
     else
