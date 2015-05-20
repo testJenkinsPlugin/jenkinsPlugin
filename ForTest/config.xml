@@ -1,2 +1,18 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<configurations/>
+<configurations>
+  <job name="My New Configuration">
+    <projects>
+      <project pathToFile="TestJenkinsConsoleApplication.sln" localDirectory="Development">
+        <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/TestJenkinsProj/TestJenkinsConsoleApplication"/>
+        <pathToArtefacts>
+          <file>./**/TestJenkinsConsoleApplication.exe</file>
+        </pathToArtefacts>
+        <versionFiles versionFile="false"/>
+        <configs>
+          <config builder="MSBuild 4.0" platform="Any CPU" configuration="Release"/>
+        </configs>
+      </project>
+    </projects>
+    <scripts/>
+  </job>
+</configurations>
