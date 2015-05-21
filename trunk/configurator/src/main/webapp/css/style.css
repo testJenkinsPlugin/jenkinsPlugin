@@ -417,7 +417,7 @@
     font-weight: bold;
     min-height: 16px;
     line-height: 16px;
-    background-image: url("/jenkins/static/e45d7697/images/16x16/error.png");
+    background-image: url("/static/e45d7697/images/16x16/error.png");
     background-position: left center;
     background-repeat: no-repeat;
 }
