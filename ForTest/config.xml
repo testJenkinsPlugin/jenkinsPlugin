@@ -2,7 +2,7 @@
 <configurations>
   <job name="My New Configuration">
     <projects>
-      <project pathToFile="TestJenkinsConsoleApplication.sln">
+      <project pathToFile="TestJenkinsConsoleApplication.sln" localDirectory=".">
         <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/TestJenkinsProj/TestJenkinsConsoleApplication"/>
         <pathToArtefacts>
           <file>./**/bin/**/*.exe</file>
