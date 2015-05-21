@@ -11,9 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -34,6 +38,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
@@ -92,21 +97,19 @@ public class JobManagerGenerator {
 		for(ProjectToBuildModel projectModel : projectModels){
 			pathPrefix = "";
 			if (projectModel.getLocalDirectoryPath() == null || projectModel.getLocalDirectoryPath().isEmpty())
-				pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/'));
+				pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/') + 1);
 			else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath())){
 				if(!projectModel.getLocalDirectoryPath().equals("."))		// No need to add prefix for workspace direct checkout
 					pathPrefix = projectModel.getLocalDirectoryPath();
 			}
 			
-			if(pathPrefix != ""){
-				if(!pathPrefix.endsWith("/"))
-					pathPrefix += "/";
-				String[] newArtefactsPaths = new String[projectModel.getArtefacts().length];
-				int counter = 0;
-				for(String artefactPath : projectModel.getArtefacts())
-					newArtefactsPaths[counter++] = pathPrefix + artefactPath;
-				projectModel.setArtefacts(newArtefactsPaths);
-			}
+			if(!(pathPrefix.isEmpty() || pathPrefix.endsWith("/")))
+				pathPrefix += "/";
+			String[] newArtefactsPaths = new String[projectModel.getArtefacts().length];
+			int counter = 0;
+			for(String artefactPath : projectModel.getArtefacts())
+				newArtefactsPaths[counter++] = pathPrefix + artefactPath.replaceAll("\\./", "");
+			projectModel.setArtefacts(newArtefactsPaths);
 		}
 	}
 
@@ -148,6 +151,8 @@ public class JobManagerGenerator {
 
 		jed = getSCM(config);
 		setElement(jed, doc, config);
+		
+		changeLaunchCommands(doc);
 
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
@@ -158,6 +163,58 @@ public class JobManagerGenerator {
 		transformer.transform(source, result);
 
 		return file;
+	}
+	
+	private static void changeLaunchCommands(Document doc){
+		List<String> commandArgs = retrieveCommandArgs();
+		if(commandArgs == null)
+			return;
+		
+		NodeList commandList = doc.getElementsByTagName("command");
+		StringBuilder tagContent = new StringBuilder();
+		for(int i = 0; i < commandList.getLength(); i++){
+			Node commandNode = commandList.item(i);
+			tagContent = tagContent.append(commandNode.getTextContent().trim());	// Add current command
+			for(String command : commandArgs){
+				tagContent = tagContent.append(" ").append(command);				// Add all command args
+			}
+			commandNode.setTextContent(tagContent.toString());
+			tagContent.setLength(0);												// Reuse the same object
+		}
+	}
+	
+	private static List<String> retrieveCommandArgs(){
+		List<String> commandArgs = new ArrayList<String>(), settings = null;
+		String[] patternStrings = { 
+				"^<login>(.+)<\\/login>$", 
+				"^<password>(.+)<\\/password>$"
+				};
+		
+		File pluginSettingsFile = new File(Jenkins.getInstance().getRootDir(),
+				"com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.xml");
+		try {
+			settings = Files.readAllLines(pluginSettingsFile.toPath(), Charset.defaultCharset());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		outer_cycle:
+		for(String patternLine : patternStrings){
+			Pattern pattern = Pattern.compile(patternLine);
+			Matcher matcher = null;
+			for(String line : settings){
+				matcher = pattern.matcher(line.trim());
+				if(matcher.matches()){
+					commandArgs.add(matcher.group(1));
+					continue outer_cycle;
+				}
+			}
+		}
+		
+		if(commandArgs.size() != patternStrings.length)
+			return null;
+		else
+			return commandArgs;
 	}
 
 	public static JobElementDescription getSCM(BuildConfigurationModel config)
