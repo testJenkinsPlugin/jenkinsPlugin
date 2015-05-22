@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <configurations>
-  <job name="BAMT onfigurator">
+  <job name="BAMT Configurator">
     <projects>
-      <project pathToFile="pom.xml" localDirectory="Development">
+      <project pathToFile="build.xml" localDirectory="Development">
         <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/buildserver"/>
         <pathToArtefacts>
           <file>./**/buildserver.jar</file>
-          <file>./lib</file>
+          <file>./lib/</file>
         </pathToArtefacts>
         <versionFiles versionFile="false"/>
         <configs>
