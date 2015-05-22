@@ -151,8 +151,6 @@ public class JobManagerGenerator {
 
 		jed = getSCM(config);
 		setElement(jed, doc, config);
-		
-		changeLaunchCommands(doc);
 
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
@@ -163,58 +161,6 @@ public class JobManagerGenerator {
 		transformer.transform(source, result);
 
 		return file;
-	}
-	
-	private static void changeLaunchCommands(Document doc){
-		List<String> commandArgs = retrieveCommandArgs();
-		if(commandArgs == null)
-			return;
-		
-		NodeList commandList = doc.getElementsByTagName("command");
-		StringBuilder tagContent = new StringBuilder();
-		for(int i = 0; i < commandList.getLength(); i++){
-			Node commandNode = commandList.item(i);
-			tagContent = tagContent.append(commandNode.getTextContent().trim());	// Add current command
-			for(String command : commandArgs){
-				tagContent = tagContent.append(" ").append(command);				// Add all command args
-			}
-			commandNode.setTextContent(tagContent.toString());
-			tagContent.setLength(0);												// Reuse the same object
-		}
-	}
-	
-	private static List<String> retrieveCommandArgs(){
-		List<String> commandArgs = new ArrayList<String>(), settings = null;
-		String[] patternStrings = { 
-				"^<login>(.+)<\\/login>$", 
-				"^<password>(.+)<\\/password>$"
-				};
-		
-		File pluginSettingsFile = new File(Jenkins.getInstance().getRootDir(),
-				"com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.xml");
-		try {
-			settings = Files.readAllLines(pluginSettingsFile.toPath(), Charset.defaultCharset());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		outer_cycle:
-		for(String patternLine : patternStrings){
-			Pattern pattern = Pattern.compile(patternLine);
-			Matcher matcher = null;
-			for(String line : settings){
-				matcher = pattern.matcher(line.trim());
-				if(matcher.matches()){
-					commandArgs.add(matcher.group(1));
-					continue outer_cycle;
-				}
-			}
-		}
-		
-		if(commandArgs.size() != patternStrings.length)
-			return null;
-		else
-			return commandArgs;
 	}
 
 	public static JobElementDescription getSCM(BuildConfigurationModel config)
