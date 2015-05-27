@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <configurations>
-  <job name="BAMT Configurator">
+  <job name="BAMT configurator">
     <projects>
       <project pathToFile="build.xml" localDirectory="Development">
         <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/buildserver"/>
         <pathToArtefacts>
-          <file>./**/buildserver.jar</file>
           <file>./lib/</file>
+          <file>./**/buildserver.jar</file>
         </pathToArtefacts>
         <versionFiles versionFile="false"/>
         <configs>
@@ -16,17 +16,12 @@
     </projects>
     <scripts/>
   </job>
-  <job name="My New Configuration">
+  <job name="Configurations_retriever">
     <projects>
-      <project pathToFile="TestJenkinsConsoleApplication.sln" localDirectory=".">
-        <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/TestJenkinsProj/TestJenkinsConsoleApplication"/>
-        <pathToArtefacts>
-          <file>./**/bin/**/*.exe</file>
-        </pathToArtefacts>
+      <project pathToFile="config.xml" localDirectory="src">
+        <repository type="Subversion" url="https://scm.amcbridge.com/scm/svn/repo_build_automation_management_tool/ForTest"/>
+        <pathToArtefacts/>
         <versionFiles versionFile="false"/>
-        <configs>
-          <config builder="MSBuild 4.0" platform="Any CPU" configuration="Release"/>
-        </configs>
       </project>
     </projects>
     <scripts/>
