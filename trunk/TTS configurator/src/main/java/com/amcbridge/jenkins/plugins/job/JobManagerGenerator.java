@@ -44,6 +44,7 @@ import org.xml.sax.SAXException;
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
+import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.SCM;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescriptionCheckBox;
@@ -78,18 +79,20 @@ public class JobManagerGenerator {
 		if (isJobExist(jobName))
 		{
 			AbstractItem item= (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
-			Source streamSource = new StreamSource(getJobXML(config));
+			Source streamSource = new StreamSource(getJobXML(config, false));
 			item.updateByXml(streamSource);
 			item.save();
 		}
 		else
 		{
-			FileInputStream fis = new FileInputStream(getJobXML(config));
+			FileInputStream fis = new FileInputStream(getJobXML(config, false));
 			Jenkins.getInstance().createProjectFromXML(jobName, fis);
 		}
 		
 		for(int i = 0; i < config.getProjectToBuild().size(); i++)
 			config.getProjectToBuild().get(i).setArtefacts(prevArtefacts.get(i));
+		
+		createConfigUpdaterJob();
 	}
 	
 	private static void correctArtifactPaths(List<ProjectToBuildModel> projectModels){
@@ -112,6 +115,67 @@ public class JobManagerGenerator {
 			projectModel.setArtefacts(newArtefactsPaths);
 		}
 	}
+	
+	private static void createConfigUpdaterJob() throws FileNotFoundException, 
+		ParserConfigurationException, SAXException, IOException, TransformerException{
+		
+		final String jobName = "BAMT_DEFAULT_CONFIG_UPDATER";
+		if(isJobExist(jobName))
+			return;
+		
+		String url = "";
+		List<String> configValues = null;
+		if((configValues = retrieveCommandArgs()) != null)
+			url = configValues.get(0);
+		
+		BuildConfigurationModel defaultJobModel = new BuildConfigurationModel();
+		defaultJobModel.setProjectName(jobName);
+		defaultJobModel.setEmail("");
+		defaultJobModel.setCreator("");
+		defaultJobModel.setCurrentDate();
+		defaultJobModel.setJobUpdate(false);
+		defaultJobModel.setRejectionReason("");
+		defaultJobModel.setScm("Subversion");
+		defaultJobModel.setScripts(null);
+		defaultJobModel.setState(ConfigurationState.APPROVED);
+		ProjectToBuildModel projectModel = new ProjectToBuildModel(
+				url, "", "", "", ".", false, null);
+		defaultJobModel.setProjectToBuild(Arrays.asList(projectModel));
+		
+		FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
+		Jenkins.getInstance().createProjectFromXML(jobName, fis);
+	}
+	
+	private static List<String> retrieveCommandArgs(){
+		List<String> commandArgs = new ArrayList<String>(), settings = null;
+		String[] patternStrings = {"^<url>(.+)<\\/url>$"};
+		
+		File pluginSettingsFile = new File(Jenkins.getInstance().getRootDir(),
+				"com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.xml");
+		try {
+			settings = Files.readAllLines(pluginSettingsFile.toPath(), Charset.defaultCharset());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		outer_cycle:
+		for(String patternLine : patternStrings){
+			Pattern pattern = Pattern.compile(patternLine);
+			Matcher matcher = null;
+			for(String line : settings){
+				matcher = pattern.matcher(line.trim());
+				if(matcher.matches()){
+					commandArgs.add(matcher.group(1));
+					continue outer_cycle;
+				}
+			}
+		}
+		
+		if(commandArgs.size() != patternStrings.length)
+			return null;
+		else
+			return commandArgs;
+	}
 
 	public static Boolean isJobExist(String name)
 	{
@@ -125,7 +189,7 @@ public class JobManagerGenerator {
 		return false;
 	}
 
-	private static File getJobXML(BuildConfigurationModel config)
+	private static File getJobXML(BuildConfigurationModel config, boolean removeAllBuilders)
 			throws ParserConfigurationException,
 			SAXException, IOException, TransformerException
 	{
@@ -151,6 +215,16 @@ public class JobManagerGenerator {
 
 		jed = getSCM(config);
 		setElement(jed, doc, config);
+		
+		if(removeAllBuilders) {
+			Node projectTagNode = doc.getElementsByTagName("project").item(0);
+			for (int i = 0; i < projectTagNode.getChildNodes().getLength(); i++) {
+				if(projectTagNode.getChildNodes().item(i).getNodeName().equals("builders")){
+					projectTagNode.removeChild(projectTagNode.getChildNodes().item(i));
+					break;
+				}
+			}
+		}
 
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
