@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configurations>
+  <job name="BAMT Configurator">
+    <projects>
+      <project pathToFile="build.xml" localDirectory="Development">
+        <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/buildserver"/>
+        <pathToArtefacts>
+          <file>./**/buildserver.jar</file>
+          <file>./lib/</file>
+        </pathToArtefacts>
+        <versionFiles versionFile="false"/>
+        <configs>
+          <config builder="Java ANT" platform="x86"/>
+        </configs>
+      </project>
+    </projects>
+    <scripts/>
+  </job>
+  <job name="My New Configuration">
+    <projects>
+      <project pathToFile="TestJenkinsConsoleApplication.sln" localDirectory=".">
+        <repository type="Subversion" url="https://svn.amcbridge.com/builds_automation/TestJenkinsProj/TestJenkinsConsoleApplication"/>
+        <pathToArtefacts>
+          <file>./**/bin/**/*.exe</file>
+        </pathToArtefacts>
+        <versionFiles versionFile="false"/>
+        <configs>
+          <config builder="MSBuild 4.0" platform="Any CPU" configuration="Release"/>
+        </configs>
+      </project>
+    </projects>
+    <scripts/>
+  </job>
+</configurations>
