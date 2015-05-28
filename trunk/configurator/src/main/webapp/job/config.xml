@@ -27,7 +27,7 @@
         <label>${ENV,var=&quot;OS&quot;}</label>
       </condition>
       <buildStep class="hudson.tasks.BatchFile">
-        <command>java -jar %BUILDER_PATH%\buildserver.jar</command>
+        <command>java -jar "%BUILDER_PATH%\buildserver.jar"</command>
       </buildStep>
       <runner class="org.jenkins_ci.plugins.run_condition.BuildStepRunner$Fail" plugin="run-condition@1.0"/>
     </org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder>
@@ -39,7 +39,7 @@
         </condition>
       </condition>
       <buildStep class="hudson.tasks.Shell">
-        <command>java -jar $BUILDER_PATH/buildserver.jar</command>
+        <command>java -jar "$BUILDER_PATH/buildserver.jar"</command>
       </buildStep>
       <runner class="org.jenkins_ci.plugins.run_condition.BuildStepRunner$Fail" plugin="run-condition@1.0"/>
     </org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder>
