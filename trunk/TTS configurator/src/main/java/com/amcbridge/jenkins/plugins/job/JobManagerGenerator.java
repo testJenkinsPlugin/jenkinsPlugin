@@ -50,6 +50,7 @@ import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescriptio
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescriptionCheckBox;
 import com.amcbridge.jenkins.plugins.job.SCM.JobNone;
 import com.amcbridge.jenkins.plugins.job.SCM.JobSubversion;
+import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
 import com.thoughtworks.xstream.XStream;
 
 public class JobManagerGenerator {
@@ -124,9 +125,9 @@ public class JobManagerGenerator {
 			return;
 		
 		String url = "";
-		List<String> configValues = null;
-		if((configValues = retrieveCommandArgs()) != null)
-			url = configValues.get(0);
+		Settings configSettings = new Settings();
+		if(configSettings.isSettingsSet())
+			url = configSettings.getUrl();
 		
 		BuildConfigurationModel defaultJobModel = new BuildConfigurationModel();
 		defaultJobModel.setProjectName(jobName);
@@ -144,37 +145,6 @@ public class JobManagerGenerator {
 		
 		FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
 		Jenkins.getInstance().createProjectFromXML(jobName, fis);
-	}
-	
-	private static List<String> retrieveCommandArgs(){
-		List<String> commandArgs = new ArrayList<String>(), settings = null;
-		String[] patternStrings = {"^<url>(.+)<\\/url>$"};
-		
-		File pluginSettingsFile = new File(Jenkins.getInstance().getRootDir(),
-				"com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.xml");
-		try {
-			settings = Files.readAllLines(pluginSettingsFile.toPath(), Charset.defaultCharset());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		outer_cycle:
-		for(String patternLine : patternStrings){
-			Pattern pattern = Pattern.compile(patternLine);
-			Matcher matcher = null;
-			for(String line : settings){
-				matcher = pattern.matcher(line.trim());
-				if(matcher.matches()){
-					commandArgs.add(matcher.group(1));
-					continue outer_cycle;
-				}
-			}
-		}
-		
-		if(commandArgs.size() != patternStrings.length)
-			return null;
-		else
-			return commandArgs;
 	}
 
 	public static Boolean isJobExist(String name)
