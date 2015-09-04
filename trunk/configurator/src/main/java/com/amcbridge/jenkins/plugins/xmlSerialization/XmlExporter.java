@@ -18,107 +18,90 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("configurations")
-public class XmlExporter
-{
-	private static final String XML_TITLE = "<?xml version='1.0' encoding='UTF-8'?>\n";
+public class XmlExporter {
 
-	private List<Job> configurations;
+    private static final String XML_TITLE = "<?xml version='1.0' encoding='UTF-8'?>\n";
 
-	public List<Job> getConfigurations()
-	{
-		return configurations;
-	}
+    private List<Job> configurations;
 
-	public void setConfigurations(List<Job> value)
-	{
-		configurations = value;
-	}
+    public List<Job> getConfigurations() {
+        return configurations;
+    }
 
-	public XmlExporter()
-	{
-		configurations = new ArrayList<Job>();
-	}
+    public void setConfigurations(List<Job> value) {
+        configurations = value;
+    }
 
-	public static List<Job> generateConfiguration() throws IOException
-	{
-		List<Job> jobs = new ArrayList<Job>();
-		Job job;
-		BuildConfigurationModel config = null;
+    public XmlExporter() {
+        configurations = new ArrayList<Job>();
+    }
 
-		File file = new File(BuildConfigurationManager.getRootDirectory());
+    public static List<Job> generateConfiguration() throws IOException {
+        List<Job> jobs = new ArrayList<Job>();
+        Job job;
+        BuildConfigurationModel config = null;
 
-		if (!file.exists())
-			return jobs;
+        File file = new File(BuildConfigurationManager.getRootDirectory());
 
-		File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-		for (int i = 0; i < directories.length; i++)
-		{
-			config = BuildConfigurationManager.load(directories[i].getName());
-			if (config.getState().equals(ConfigurationState.APPROVED))
-			{
-				job = new Job(config);
-				jobs.add(job);
-				BuildConfigurationManager.acm.add(job);
-				continue;
-			}
+        if (!file.exists()) {
+            return jobs;
+        }
 
-			if (!config.getState().equals(ConfigurationState.NEW))
-			{
-				job = BuildConfigurationManager.acm.get(config.getProjectName());
-				if (job != null)
-				{
-					jobs.add(job);
-				}
-			}
-		}
-		return jobs;
-	}
+        File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
+        for (int i = 0; i < directories.length; i++) {
+            config = BuildConfigurationManager.load(directories[i].getName());
+            if (config.getState().equals(ConfigurationState.APPROVED)) {
+                job = new Job(config);
+                jobs.add(job);
+                BuildConfigurationManager.acm.add(job);
+                continue;
+            }
 
-	public String exportToXml(Boolean forVSC) throws IOException
-	{
-		configurations = generateConfiguration();
-		return saveConfigurations(forVSC);
-	}
+            if (!config.getState().equals(ConfigurationState.NEW)) {
+                job = BuildConfigurationManager.acm.get(config.getProjectName());
+                if (job != null) {
+                    jobs.add(job);
+                }
+            }
+        }
+        return jobs;
+    }
 
-	private String saveConfigurations(Boolean forVSC) throws IOException
-	{
-		String path;
-		XStream xstream = new XStream();
-		xstream.processAnnotations(XmlExporter.class);
-		xstream.addImplicitCollection(XmlExporter.class, "configurations");
-		File outputFile;
-		if (forVSC)
-		{
-			outputFile = BuildConfigurationManager.getFileToExportConfigurations();
-		}
-		else
-		{
-			outputFile = BuildConfigurationManager.getFileForCheckVSC();
-		}
+    public String exportToXml(Boolean forVSC) throws IOException {
+        configurations = generateConfiguration();
+        return saveConfigurations(forVSC);
+    }
 
-		File rootDirectory = new File(BuildConfigurationManager.getRootDirectory());
-		if (!rootDirectory.exists())
-		{
-			rootDirectory.mkdirs();
-		}
+    private String saveConfigurations(Boolean forVSC) throws IOException {
+        String path;
+        XStream xstream = new XStream();
+        xstream.processAnnotations(XmlExporter.class);
+        xstream.addImplicitCollection(XmlExporter.class, "configurations");
+        File outputFile;
+        if (forVSC) {
+            outputFile = BuildConfigurationManager.getFileToExportConfigurations();
+        } else {
+            outputFile = BuildConfigurationManager.getFileForCheckVSC();
+        }
 
-		if (!outputFile.exists())
-		{
-			outputFile.createNewFile();
-		}
-		path = outputFile.getPath();
-		FileOutputStream fos = new FileOutputStream(path);
-		Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING);
-		try
-		{
-			out.write(XML_TITLE);
-			out.write(xstream.toXML(this));
-		}
-		finally
-		{
-			out.close();
-			fos.close();
-		}
-		return path;
-	}
+        File rootDirectory = new File(BuildConfigurationManager.getRootDirectory());
+        if (!rootDirectory.exists()) {
+            rootDirectory.mkdirs();
+        }
+
+        if (!outputFile.exists()) {
+            outputFile.createNewFile();
+        }
+        path = outputFile.getPath();
+        FileOutputStream fos = new FileOutputStream(path);
+        Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING);
+        try {
+            out.write(XML_TITLE);
+            out.write(xstream.toXML(this));
+        } finally {
+            out.close();
+            fos.close();
+        }
+        return path;
+    }
 }
