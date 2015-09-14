@@ -8,7 +8,6 @@ import com.amcbridge.jenkins.plugins.enums.SCMLoader;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.*;
 import com.amcbridge.jenkins.plugins.vsc.CommitError;
-import com.amcbridge.jenkins.plugins.vsc.GitManager;
 import com.amcbridge.jenkins.plugins.vsc.SvnManager;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystem;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
@@ -60,16 +59,19 @@ public class BuildConfigurationManager {
     private static final Integer MAX_FILE_SIZE = 1048576;//max file size which equal 1 mb in bytes
     private static final String[] SCRIPTS_EXTENSIONS = {"bat", "nant", "powershell", "shell",
         "ant", "maven"};
+    
+   
 
+    
     public static final String STRING_EMPTY = "";
 
     public static ApproveConfigurationManager acm = new ApproveConfigurationManager();
     private static MailSender mail = new MailSender();
     private static ReentrantLock lock = new ReentrantLock();
     private static String currentScm = "None";
-
+    
     private static Logger log = LoggerFactory.getLogger(BuildConfigurationManager.class);
-
+    
     private static SCMLoader scmLoader = new SCMLoader();
 
     public static String getCurrentUserID() {
@@ -274,16 +276,12 @@ public class BuildConfigurationManager {
             XmlExporter xmlExporter = new XmlExporter();
             String path = xmlExporter.exportToXml(true);
 
+            
             BuildConfigurationModel config = load(editedProjectName);
             currentScm = config.getScm();
-
-            VersionControlSystem svn = null;
-            if (currentScm.equalsIgnoreCase("Subversion")) {
-                svn = new SvnManager();
-            } else if (currentScm.equalsIgnoreCase("Git")) {
-                svn = new GitManager();
-            }
-
+           
+            VersionControlSystem vcs =  new SvnManager();
+           
             Settings settings = new Settings();
 
             if (!settings.isSettingsSet()) {
@@ -291,7 +289,8 @@ public class BuildConfigurationManager {
                 result.setErrorMassage(CommitError.NONE_PROPERTY.toString());
                 return result;
             }
-            return svn.doCommit(path, settings.getUrl(), settings.getLogin(),
+        
+            return vcs.doCommit(path, settings.getUrl(), settings.getLogin(),
                     settings.getPassword(), settings.getCommitMessage());
         } finally {
             lock.unlock();
@@ -373,29 +372,21 @@ public class BuildConfigurationManager {
 
     public static List<String> getSCM() {
         List<String> result = new ArrayList<String>();
-        boolean isGitCatch = false;
         boolean isSubversionCatch = false;
         for (SCMDescriptor<?> scm : SCM.all()) {
             if (isSupportedSCM(scm)) {
                 result.add(scm.getDisplayName());
-                if (scm.getDisplayName().equalsIgnoreCase("git")) {
-                    isGitCatch = true;
-                } else if (scm.getDisplayName().equalsIgnoreCase("subversion")) {
+                if (scm.getDisplayName().equalsIgnoreCase("subversion")) {
                     isSubversionCatch = true;
-                }
+                }  
             }
-        }
-        if (isGitCatch) {
-            log.info("+++++ git: plugin was plugged");
-        } else {
-            log.info("----- git: plugin wasn't plugged");
         }
         if (isSubversionCatch) {
             log.info("+++++ subversion: plugin was plugged");
         } else {
             log.info("----- subversion: plugin wasn't plugged");
         }
-
+        
         return result;
     }
 

@@ -21,7 +21,7 @@ public class ExportSettings extends Builder
 	@Extension
 	public static final class Settings extends BuildStepDescriptor<Builder>
 	{
-		private String url, login, password, commitMessage;
+		private String url, login, password, commitMessage, localRepository;
 
 		public Settings()
 		{
@@ -68,6 +68,16 @@ public class ExportSettings extends Builder
 			password = value;
 		}
 
+		public String getLocalRepository()
+		{
+			return localRepository;
+		}
+
+		public void setLocalRepository(String value)
+		{
+			localRepository = value;
+		}                
+                
 		@Override
 		public boolean isApplicable(Class<? extends AbstractProject> aClass)
 		{

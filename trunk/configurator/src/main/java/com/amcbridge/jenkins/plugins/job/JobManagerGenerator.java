@@ -209,9 +209,9 @@ public class JobManagerGenerator {
             jed = new JobNone();
             return jed;
         }
-        if (scm.equalsIgnoreCase("subversion")) {
+        if (scm.equalsIgnoreCase("subversion")){
             jed = new JobSubversion();
-        } else if (scm.equalsIgnoreCase("git")) {
+        } else if (scm.equalsIgnoreCase("git")){
             jed = new JobGit();
         } else {
             jed = new JobNone();
@@ -219,16 +219,17 @@ public class JobManagerGenerator {
         return jed;
     }
 
-    /*    
-     private static SCM getSCM(String scmName) {
-     for (SCM scm : SCM.values()) {
-     if (scm.toString().equals(scmName)) {
-     return scm;
-     }
-     }
-     return null;
-     }
-     */
+/*    
+    private static SCM getSCM(String scmName) {
+        for (SCM scm : SCM.values()) {
+            if (scm.toString().equals(scmName)) {
+                return scm;
+            }
+        }
+        return null;
+    }
+*/
+    
     private static void setElement(JobElementDescription element, Document document, BuildConfigurationModel config)
             throws ParserConfigurationException, SAXException, IOException {
         if (!isNodeExist(document, element.getElementTag())) {

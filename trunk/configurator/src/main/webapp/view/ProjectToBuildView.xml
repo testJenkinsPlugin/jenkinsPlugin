@@ -22,7 +22,6 @@
                 Not correct url
             </div>
         </div>
-
         <div class="div-textinput">
             <div class="div-file-chooser-label">
                 <label>Local module directory (optional):</label>
