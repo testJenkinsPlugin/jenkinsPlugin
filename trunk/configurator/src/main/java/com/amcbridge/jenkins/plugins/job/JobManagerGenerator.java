@@ -88,6 +88,7 @@ public class JobManagerGenerator {
         }
 
         createConfigUpdaterJob();
+        createConfigUpdaterJobOnSlaveNodes();
     }
 
     private static void correctArtifactPaths(List<ProjectToBuildModel> projectModels) {
@@ -114,7 +115,7 @@ public class JobManagerGenerator {
             projectModel.setArtefacts(newArtefactsPaths);
         }
     }
-
+    
     private static void createConfigUpdaterJob() throws FileNotFoundException,
             ParserConfigurationException, SAXException, IOException, TransformerException {
 
@@ -129,8 +130,43 @@ public class JobManagerGenerator {
             url = configSettings.getUrl();
         }
 
-        BuildConfigurationModel defaultJobModel = new BuildConfigurationModel();
+        BuildConfigurationModel defaultJobModel = createBCModel(url);
         defaultJobModel.setProjectName(jobName);
+
+        FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
+        Jenkins.getInstance().createProjectFromXML(jobName, fis);
+        
+    }
+
+    private static void createConfigUpdaterJobOnSlaveNodes() throws FileNotFoundException,
+            ParserConfigurationException, SAXException, IOException, TransformerException {
+
+        final String jobName = "BAMT_DEFAULT_CONFIG_UPDATER";
+
+        String url = "";
+        Settings configSettings = new Settings();
+        if (configSettings.isSettingsSet()) {
+            url = configSettings.getUrl();
+        }
+
+        BuildConfigurationModel defaultJobModel = createBCModel(url);
+        
+        List<hudson.model.Node> slaveNodes = Jenkins.getInstance().getNodes();
+//        String[] nodeArray = new String[slaveNodes.size()];
+        String[] nodeArray = new String[1];
+        for(int i = 0; i<slaveNodes.size(); i++){
+//            nodeArray[i] = ((hudson.model.Node)slaveNodes.get(i)).getDisplayName();
+            String newJobName = jobName+ "_" + ((hudson.model.Node)slaveNodes.get(i)).getDisplayName();
+            defaultJobModel.setProjectName(newJobName);
+            nodeArray[0] = ((hudson.model.Node)slaveNodes.get(i)).getDisplayName();
+            defaultJobModel.setBuildMachineConfiguration(nodeArray);
+            FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
+            Jenkins.getInstance().createProjectFromXML(newJobName, fis);
+        }
+    }
+
+    private static BuildConfigurationModel createBCModel(String url){
+        BuildConfigurationModel defaultJobModel = new BuildConfigurationModel();
         defaultJobModel.setEmail("");
         defaultJobModel.setCreator("");
         defaultJobModel.setCurrentDate();
@@ -141,10 +177,8 @@ public class JobManagerGenerator {
         defaultJobModel.setState(ConfigurationState.APPROVED);
         ProjectToBuildModel projectModel = new ProjectToBuildModel(
                 url, "", "", "", ".", false, null);
-        defaultJobModel.setProjectToBuild(Arrays.asList(projectModel));
-
-        FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
-        Jenkins.getInstance().createProjectFromXML(jobName, fis);
+        defaultJobModel.setProjectToBuild(Arrays.asList(projectModel));   
+        return defaultJobModel;
     }
 
     public static Boolean isJobExist(String name) {
