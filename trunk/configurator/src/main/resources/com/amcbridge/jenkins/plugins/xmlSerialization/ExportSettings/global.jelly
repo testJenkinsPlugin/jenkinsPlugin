@@ -1,7 +1,33 @@
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" 
+         xmlns:d="jelly:define" xmlns:l="/lib/layout" 
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
+    <j:set var="getSCM" value="${descriptor.getSCM()}" />
+    <j:set var="getSelectedSCM" value="${descriptor.getTypeSCM4Config()}" />
+   
     <f:section title="Build automation management tool settings">
-        <f:entry title="SVN repository" field="url">
+        
+        <f:entry title="SCM type" field="typeSCM4Config" >
+            <div class="div-url-type">
+                <select name="typeSCM4Config" id="typeSCM4Config"> 
+
+                    <j:forEach items="${getSCM}" var="sct">
+                        <j:if test ="${sct == getSelectedSCM}">
+                            <option value="${sct}" selected="true">${sct}</option>
+                        </j:if>
+                        <j:if test ="${sct != getSelectedSCM}">
+                            <option value="${sct}">${sct}</option>
+                        </j:if>
+                    </j:forEach>
+   
+                </select>   
+            </div>    
+        </f:entry>
+        
+        <f:entry title="Remote repository" field="url">
+            <f:textbox />
+        </f:entry>
+        <f:entry title="Local repo path (for Git only)" field="localGitRepoPath">
             <f:textbox />
         </f:entry>
         <f:entry title="Login" field="login">
@@ -12,7 +38,8 @@
         </f:entry>
         <f:entry title="Default commit message" field="commitMessage">
             <f:textbox />
-        </f:entry>  
+        </f:entry>
+        
     </f:section>
 
 </j:jelly>

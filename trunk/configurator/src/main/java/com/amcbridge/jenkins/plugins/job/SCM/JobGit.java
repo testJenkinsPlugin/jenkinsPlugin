@@ -14,13 +14,19 @@ import org.w3c.dom.Node;
 
 
 public class JobGit implements JobElementDescription {
-    private static final String URL_TAG = "remote";
+    private static final String URL_TAG = "url";
     private static final String LOCAL_TAG = "local";
-    private static final String MODULE_TAG = "hudson.scm.GitSCM_-ModuleLocation";
+    private static final String MODULE_TAG = "hudson.plugins.git.UserRemoteConfig";
     private static final String DEFAULT_LOCAL = "Development";
-    private static final String LOCATIONS_TAG = "locations";
+    private static final String LOCATIONS_TAG = "userRemoteConfigs";
+    private String remoteUrl;
 
     private static final String TEMPLATE_PATH = "\\plugins\\configurator\\job\\scm\\git.xml";
+
+    public JobGit(String remoteUrl){
+        this.remoteUrl = remoteUrl;
+    }
+
 
     public String getElementTag() {
 		return JobSCM.ELEMENT_TAG;
@@ -86,7 +92,8 @@ public class JobGit implements JobElementDescription {
 		if (module.getElementsByTagName(URL_TAG).getLength() == 0)
 		{
 			node = module.getElementsByTagName(MODULE_TAG).item(0);
-			node.appendChild(module.createElement(URL_TAG));
+			Node urlTag = node.appendChild(module.createElement(URL_TAG));
+                        urlTag.setNodeValue(remoteUrl);
 		}
 
 		if (module.getElementsByTagName(LOCAL_TAG).getLength() == 0)

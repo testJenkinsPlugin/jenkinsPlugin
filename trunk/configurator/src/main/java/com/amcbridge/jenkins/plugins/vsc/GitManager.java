@@ -1,7 +1,12 @@
 package com.amcbridge.jenkins.plugins.vsc;
 
+import com.amcbridge.jenkins.plugins.utils.Tools;
+import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
+import hudson.Util;
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
@@ -15,6 +20,7 @@ import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.PushResult;
@@ -23,8 +29,8 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 public class GitManager implements VersionControlSystem {
 
     private static final Logger log = Logger.getLogger(GitManager.class);
-    private String localPath; // "/home/me/repos/mytest";
-    private String remotePath; // "git@github.com:me/mytestrepo.git";
+    private String localPath;
+    private String remotePath;
 
     private Repository localRepo = null;
     private Repository remoteRepo = null;
@@ -39,6 +45,7 @@ public class GitManager implements VersionControlSystem {
 
         CredentialsProvider cp = new UsernamePasswordCredentialsProvider(login, password);
 
+        
         String justFilePath = "";
         String realFilePath = "";
         String fileName = "";
@@ -46,8 +53,13 @@ public class GitManager implements VersionControlSystem {
             justFilePath = filePath.substring(0, filePath.lastIndexOf("\\"));
             fileName = filePath.substring(filePath.lastIndexOf("\\") + 1, filePath.length());
         }
-        realFilePath = justFilePath + "\\" + projectName + "\\" + fileName;
-
+//        realFilePath = justFilePath + "\\" + projectName + "\\" + fileName;
+        realFilePath = justFilePath + "\\" + fileName;
+        Settings configSettings = new Settings();
+        String destFilePath = configSettings.getLocalGitRepoPath().substring(0, configSettings.getLocalGitRepoPath().length() - 5);
+        Tools.copyConfig2LocalRepoPath(fileName, realFilePath, destFilePath);
+       
+        Tools.copyConfig2allPaths(filePath);
         try {
             // Open an existing repository        
             localRepo = new FileRepositoryBuilder()
@@ -60,8 +72,7 @@ public class GitManager implements VersionControlSystem {
 
         try {
             AddCommand ac = git.add();
-            ac.setUpdate(false)
-                .addFilepattern(changeFilePath2Relative(realFilePath));
+            ac.setUpdate(false).addFilepattern(Tools.getJustFileName(filePath));
             try {
                 ac.call();
             } catch (NoFilepatternException e) {
@@ -69,7 +80,7 @@ public class GitManager implements VersionControlSystem {
             } catch (Exception e) {
                 System.out.println(e.getLocalizedMessage());
             }
-
+            
             CommitCommand commit = git.commit();
             commit.setMessage(commitMessage);
             try {
@@ -108,6 +119,11 @@ public class GitManager implements VersionControlSystem {
         return commitResult;
     }
 
+  
+    
+  
+   
+    
     public String getLocalPath() {
         return localPath;
     }
@@ -171,7 +187,7 @@ public class GitManager implements VersionControlSystem {
     }
 
     public void setLocalRepoPath(String localRepoPath) {
-       localRepositoryPath = localRepoPath;
+        localRepositoryPath = localRepoPath;
     }
 
 }

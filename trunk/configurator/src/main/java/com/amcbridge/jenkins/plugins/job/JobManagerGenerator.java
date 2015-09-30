@@ -4,7 +4,6 @@ import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel
 import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
-import com.amcbridge.jenkins.plugins.enums.SCMLoader;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescriptionCheckBox;
 import com.amcbridge.jenkins.plugins.job.SCM.JobGit;
@@ -14,6 +13,7 @@ import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
 import com.thoughtworks.xstream.XStream;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
+import hudson.model.TopLevelItem;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,13 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -46,7 +42,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class JobManagerGenerator {
@@ -87,8 +82,10 @@ public class JobManagerGenerator {
             config.getProjectToBuild().get(i).setArtefacts(prevArtefacts.get(i));
         }
 
+                
         createConfigUpdaterJob();
         createConfigUpdaterJobOnSlaveNodes();
+
     }
 
     private static void correctArtifactPaths(List<ProjectToBuildModel> projectModels) {
@@ -115,7 +112,7 @@ public class JobManagerGenerator {
             projectModel.setArtefacts(newArtefactsPaths);
         }
     }
-    
+
     private static void createConfigUpdaterJob() throws FileNotFoundException,
             ParserConfigurationException, SAXException, IOException, TransformerException {
 
@@ -135,6 +132,7 @@ public class JobManagerGenerator {
 
         FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
         Jenkins.getInstance().createProjectFromXML(jobName, fis);
+        
         
     }
 
@@ -172,7 +170,8 @@ public class JobManagerGenerator {
         defaultJobModel.setCurrentDate();
         defaultJobModel.setJobUpdate(false);
         defaultJobModel.setRejectionReason("");
-        defaultJobModel.setScm("Subversion");
+        Settings settings = new Settings();
+        defaultJobModel.setScm(settings.getTypeSCM4Config()); 
         defaultJobModel.setScripts(null);
         defaultJobModel.setState(ConfigurationState.APPROVED);
         ProjectToBuildModel projectModel = new ProjectToBuildModel(
@@ -180,7 +179,9 @@ public class JobManagerGenerator {
         defaultJobModel.setProjectToBuild(Arrays.asList(projectModel));   
         return defaultJobModel;
     }
-
+    
+    
+    
     public static Boolean isJobExist(String name) {
         for (Item item : Jenkins.getInstance().getAllItems()) {
             if (item.getName().equals(name)) {
@@ -214,6 +215,9 @@ public class JobManagerGenerator {
 
         jed = getSCM(config);
         setElement(jed, doc, config);
+        
+//        jed = new JobGitRemoteUrl();
+//        setElement(jed, doc, config);
 
         if (removeAllBuilders) {
             Node projectTagNode = doc.getElementsByTagName("project").item(0);
@@ -246,7 +250,7 @@ public class JobManagerGenerator {
         if (scm.equalsIgnoreCase("subversion")){
             jed = new JobSubversion();
         } else if (scm.equalsIgnoreCase("git")){
-            jed = new JobGit();
+            jed = new JobGit(config.getProjectRemoteUrl());
         } else {
             jed = new JobNone();
         }

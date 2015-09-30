@@ -1,111 +1,109 @@
 package com.amcbridge.jenkins.plugins.xmlSerialization;
 
+import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import java.util.List;
 import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.StaplerRequest;
 
-import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
+public class ExportSettings extends Builder {
 
-public class ExportSettings extends Builder
-{
-	@Override
-	public Settings getDescriptor()
-	{
-		return (Settings)super.getDescriptor();
-	}
+    
+    @Override
+    public Settings getDescriptor() {
+        return (Settings) super.getDescriptor();
+    }
 
-	@Extension
-	public static final class Settings extends BuildStepDescriptor<Builder>
-	{
-		private String url, login, password, commitMessage, localRepository;
+    @Extension
+    public static final class Settings extends BuildStepDescriptor<Builder> {
 
-		public Settings()
-		{
-			load();
-		}
+        private String typeSCM4Config, url, login, password, commitMessage, localGitRepoPath;
 
-		public String getCommitMessage()
-		{
-			return commitMessage;
-		}
-		
-		public  void setCommitMessage(String value)
-		{
-			commitMessage = value;
-		}
+        public Settings() {
+            load();
+        }
 
-		public String getUrl()
-		{
-			return url;
-		}
+        public String getCommitMessage() {
+            return commitMessage;
+        }
 
-		public void setUrl(String value)
-		{
-			url = value;
-		}
+        public void setCommitMessage(String value) {
+            commitMessage = value;
+        }
 
-		public String getLogin()
-		{
-			return login;
-		}
+        public String getTypeSCM4Config() {
+            return typeSCM4Config;
+        }
 
-		public void setLogin(String value)
-		{
-			login = value;
-		}
+        public void setTypeSCM4Config(String value) {
+            typeSCM4Config = value;
+        }
 
-		public String getPassword()
-		{
-			return password;
-		}
+        public String getUrl() {
+            return url;
+        }
 
-		public void setPassword(String value)
-		{
-			password = value;
-		}
+        public void setUrl(String value) {
+            url = value;
+        }
 
-		public String getLocalRepository()
-		{
-			return localRepository;
-		}
+        public String getLogin() {
+            return login;
+        }
 
-		public void setLocalRepository(String value)
-		{
-			localRepository = value;
-		}                
-                
-		@Override
-		public boolean isApplicable(Class<? extends AbstractProject> aClass)
-		{
-			return true;
-		}
+        public void setLogin(String value) {
+            login = value;
+        }
 
-		@Override
-		public String getDisplayName()
-		{
-			return BuildConfigurationManager.STRING_EMPTY;
-		}
+        public String getPassword() {
+            return password;
+        }
 
-		@Override
-		public boolean configure(StaplerRequest req, JSONObject formData) throws FormException
-		{
-			req.bindJSON(this, formData);
-			save();
-			return super.configure(req,formData);
-		}
+        public void setPassword(String value) {
+            password = value;
+        }
 
-		public boolean isSettingsSet()
-		{	
-			if(url == null || url.isEmpty() || login == null || commitMessage == null ||
-					login.isEmpty() || password == null || password.isEmpty())
-			{
-				return false;
-			}
-			return true;
-		}
-	}
+        public String getLocalGitRepoPath() {
+            return localGitRepoPath;
+        }
+
+        public void setLocalGitRepoPath(String value) {
+            localGitRepoPath = value;
+        }
+
+        @Override
+        public boolean isApplicable(Class<? extends AbstractProject> aClass) {
+            return true;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return BuildConfigurationManager.STRING_EMPTY;
+        }
+
+        @Override
+        public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
+            req.bindJSON(this, formData);
+            save();
+            return super.configure(req, formData);
+        }
+
+        public boolean isSettingsSet() {
+            if (url == null || url.isEmpty() || login == null || commitMessage == null
+                    || login.isEmpty() || password == null || password.isEmpty()) {
+                return false;
+            }
+            return true;
+        }
+
+        public List<String> getSCM() {
+            return BuildConfigurationManager.getSCM();
+        }
+
+
+
+    }
 }

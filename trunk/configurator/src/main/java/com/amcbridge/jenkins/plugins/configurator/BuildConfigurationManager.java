@@ -8,6 +8,7 @@ import com.amcbridge.jenkins.plugins.enums.SCMLoader;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.*;
 import com.amcbridge.jenkins.plugins.vsc.CommitError;
+import com.amcbridge.jenkins.plugins.vsc.GitManager;
 import com.amcbridge.jenkins.plugins.vsc.SvnManager;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystem;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
@@ -69,6 +70,7 @@ public class BuildConfigurationManager {
     private static MailSender mail = new MailSender();
     private static ReentrantLock lock = new ReentrantLock();
     private static String currentScm = "None";
+    private static String currentScm4Config = "None";
     
     private static Logger log = LoggerFactory.getLogger(BuildConfigurationManager.class);
     
@@ -281,15 +283,29 @@ public class BuildConfigurationManager {
             currentScm = config.getScm();
            
             VersionControlSystem vcs =  new SvnManager();
-           
+            
             Settings settings = new Settings();
 
+            currentScm4Config = settings.getTypeSCM4Config();
+            
+            if (currentScm4Config.equalsIgnoreCase("Subversion")){
+            	vcs = new SvnManager();
+            } else if (currentScm4Config.equalsIgnoreCase("Git")){
+            	vcs = new GitManager();
+            }
+
+                    
             if (!settings.isSettingsSet()) {
                 VersionControlSystemResult result = new VersionControlSystemResult(false);
                 result.setErrorMassage(CommitError.NONE_PROPERTY.toString());
                 return result;
             }
-        
+ 
+            if (currentScm4Config.equalsIgnoreCase("Git")){
+                ((GitManager) vcs).setLocalRepoPath(settings.getLocalGitRepoPath());
+            	((GitManager) vcs).setProjectName(editedProjectName);
+            }
+           
             return vcs.doCommit(path, settings.getUrl(), settings.getLogin(),
                     settings.getPassword(), settings.getCommitMessage());
         } finally {
@@ -372,14 +388,23 @@ public class BuildConfigurationManager {
 
     public static List<String> getSCM() {
         List<String> result = new ArrayList<String>();
+        boolean isGitCatch = false;
         boolean isSubversionCatch = false;
         for (SCMDescriptor<?> scm : SCM.all()) {
             if (isSupportedSCM(scm)) {
                 result.add(scm.getDisplayName());
+                if (scm.getDisplayName().equalsIgnoreCase("git")) {
+                    isGitCatch = true;
+                } else 
                 if (scm.getDisplayName().equalsIgnoreCase("subversion")) {
                     isSubversionCatch = true;
                 }  
             }
+        }
+        if (isGitCatch) {
+            log.info("+++++ git: plugin was plugged");
+        } else {
+            log.info("----- git: plugin wasn't plugged");
         }
         if (isSubversionCatch) {
             log.info("+++++ subversion: plugin was plugged");
