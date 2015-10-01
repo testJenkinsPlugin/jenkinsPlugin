@@ -118,6 +118,17 @@ public class BuildConfigurationModel
 		return projectToBuild;
 	}
 
+	public String getProjectRemoteUrl()
+	{
+            String projectUrl = null;
+            for (ProjectToBuildModel item : projectToBuild) {
+                projectUrl = item.getProjectUrl();
+                
+            }
+	    return projectUrl;
+	}
+        
+        
 	public void setScripts (String[] value)
 	{
 		scripts = value;

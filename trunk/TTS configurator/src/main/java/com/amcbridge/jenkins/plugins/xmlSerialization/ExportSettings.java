@@ -4,6 +4,7 @@ import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import java.util.List;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.StaplerRequest;
@@ -18,10 +19,10 @@ public class ExportSettings extends Builder
 		return (Settings)super.getDescriptor();
 	}
 
-	@Extension
-	public static final class Settings extends BuildStepDescriptor<Builder>
-	{
-		private String url, login, password, commitMessage;
+    @Extension
+    public static final class Settings extends BuildStepDescriptor<Builder> {
+
+        private String typeSCM4Config, url, login, password, commitMessage, localGitRepoPath;
 
 		public Settings()
 		{
@@ -38,10 +39,17 @@ public class ExportSettings extends Builder
 			commitMessage = value;
 		}
 
-		public String getUrl()
-		{
-			return url;
-		}
+        public String getTypeSCM4Config() {
+            return typeSCM4Config;
+        }
+
+        public void setTypeSCM4Config(String value) {
+            typeSCM4Config = value;
+        }
+
+        public String getUrl() {
+            return url;
+        }
 
 		public void setUrl(String value)
 		{
@@ -68,11 +76,18 @@ public class ExportSettings extends Builder
 			password = value;
 		}
 
-		@Override
-		public boolean isApplicable(Class<? extends AbstractProject> aClass)
-		{
-			return true;
-		}
+        public String getLocalGitRepoPath() {
+            return localGitRepoPath;
+        }
+
+        public void setLocalGitRepoPath(String value) {
+            localGitRepoPath = value;
+        }
+
+        @Override
+        public boolean isApplicable(Class<? extends AbstractProject> aClass) {
+            return true;
+        }
 
 		@Override
 		public String getDisplayName()
@@ -88,14 +103,19 @@ public class ExportSettings extends Builder
 			return super.configure(req,formData);
 		}
 
-		public boolean isSettingsSet()
-		{	
-			if(url == null || url.isEmpty() || login == null || commitMessage == null ||
-					login.isEmpty() || password == null || password.isEmpty())
-			{
-				return false;
-			}
-			return true;
-		}
-	}
+        public boolean isSettingsSet() {
+            if (url == null || url.isEmpty() || login == null || commitMessage == null
+                    || login.isEmpty() || password == null || password.isEmpty()) {
+                return false;
+            }
+            return true;
+        }
+
+        public List<String> getSCM() {
+            return BuildConfigurationManager.getSCM();
+        }
+
+
+
+    }
 }

@@ -60,6 +60,7 @@ public final class BuildConfigurator implements RootAction {
 	private static final String PLUGIN_NAME = "Build Configurator";
 	private static final String ICON_PATH = "/plugin/configurator/icons/system_config_services.png";
 	private static final String DEFAULT_PAGE_URL = "BuildConfigurator";
+	private String editedProjectName = "";
 	public static final String TTS_MANAGER = "ttsManager";
 
 	public BuildConfigurator()
@@ -195,7 +196,7 @@ public final class BuildConfigurator implements RootAction {
 		default:
 			break;
 		}
-
+                editedProjectName = newConfig.getProjectName();
 		BuildConfigurationManager.save(newConfig);
 		message.setDestinationAddress(getAdminEmails());
 		mail.sendMail(message);
@@ -291,7 +292,7 @@ public final class BuildConfigurator implements RootAction {
 	public VersionControlSystemResult exportToXml()
 			throws SVNException, IOException, InterruptedException
 	{
-		VersionControlSystemResult result = BuildConfigurationManager.exportToXml();
+		VersionControlSystemResult result = BuildConfigurationManager.exportToXml(editedProjectName);
 		if (result.getSuccess())
 		{
 			isCommited = true;

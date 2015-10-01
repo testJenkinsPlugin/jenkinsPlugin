@@ -17,6 +17,7 @@ import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
+import com.amcbridge.jenkins.plugins.utils.Tools;
 
 public class SvnManager implements VersionControlSystem
 {
@@ -54,43 +55,39 @@ public class SvnManager implements VersionControlSystem
 		return editor.closeEdit();
 	}
 
-	@SuppressWarnings("finally")
-	public VersionControlSystemResult doCommit(String filePath, String url, String login,
-			String password, String commitMessage)
-	{
-		SVNCommitInfo commitInfo = new SVNCommitInfo(0, login, null);
-		VersionControlSystemResult commitResult = new VersionControlSystemResult(false);
-		try
-		{
-			SVNRepositoryFactoryImpl.setup();
+    @SuppressWarnings("finally")
+    public VersionControlSystemResult doCommit(String filePath, String url, String login,
+            String password, String commitMessage) {
+        SVNCommitInfo commitInfo = new SVNCommitInfo(0, login, null);
+        VersionControlSystemResult commitResult = new VersionControlSystemResult(false);
+        try {
+            
+            Tools.copyConfig2allPaths(filePath);
+            
+            SVNRepositoryFactoryImpl.setup();
 
-			SVNURL svnUrl = SVNURL.parseURIEncoded(url);
-			SVNRepository repository = SVNRepositoryFactory.create(svnUrl);
-			ISVNAuthenticationManager authManager = SVNWCUtil
-					.createDefaultAuthenticationManager(login, password);
-			repository.setAuthenticationManager(authManager);
-					
-			byte[] fileBytesArray = Files.readAllBytes(Paths.get(filePath));
-			SVNNodeKind nodeKind = repository.checkPath("config.xml", repository.getLatestRevision());
-			ISVNEditor editor = repository.getCommitEditor(commitMessage , null );
-			commitInfo = coomitFile(nodeKind, editor,
-					BuildConfigurationManager.CONFIG_FILE_NAME, fileBytesArray);
-			repository.closeSession();
-			commitResult.setSuccess(true);
-		}
-		catch(Exception ex)
-		{
-			commitResult.setErrorMassage(ex.getMessage());
-		}
-		finally 
-		{
-			commitResult.setNumberOfRevision(commitInfo.getNewRevision());
-			if(commitInfo.getDate() == null)
-			{
-				commitResult.setSuccess(false);
-				commitResult.setErrorMassage(CommitError.FAIL.toString());
-			}
-			return commitResult;
-		}
-	}
+            SVNURL svnUrl = SVNURL.parseURIEncoded(url);
+            SVNRepository repository = SVNRepositoryFactory.create(svnUrl);
+            ISVNAuthenticationManager authManager = SVNWCUtil
+                    .createDefaultAuthenticationManager(login, password);
+            repository.setAuthenticationManager(authManager);
+
+            byte[] fileBytesArray = Files.readAllBytes(Paths.get(filePath));
+            SVNNodeKind nodeKind = repository.checkPath("config.xml", repository.getLatestRevision());
+            ISVNEditor editor = repository.getCommitEditor(commitMessage, null);
+            commitInfo = coomitFile(nodeKind, editor,
+                    BuildConfigurationManager.CONFIG_FILE_NAME, fileBytesArray);
+            repository.closeSession();
+            commitResult.setSuccess(true);
+        } catch (Exception ex) {
+            commitResult.setErrorMassage(ex.getMessage());
+        } finally {
+            commitResult.setNumberOfRevision(commitInfo.getNewRevision());
+            if (commitInfo.getDate() == null) {
+                commitResult.setSuccess(false);
+                commitResult.setErrorMassage(CommitError.FAIL.toString());
+            }
+            return commitResult;
+        }
+    }
 }

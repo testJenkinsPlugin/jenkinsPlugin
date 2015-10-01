@@ -45,9 +45,9 @@ import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel
 import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
-import com.amcbridge.jenkins.plugins.enums.SCM;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescriptionCheckBox;
+import com.amcbridge.jenkins.plugins.job.SCM.JobGit;
 import com.amcbridge.jenkins.plugins.job.SCM.JobNone;
 import com.amcbridge.jenkins.plugins.job.SCM.JobSubversion;
 import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
@@ -65,99 +65,140 @@ public class JobManagerGenerator {
 		return xstream.toXML(obj);
 	}
 
-	public static void createJob(BuildConfigurationModel config)
-			throws FileNotFoundException, ParserConfigurationException,
-			SAXException, IOException, TransformerException
-	{
-		String jobName = validJobName(config.getProjectName());
-		
-		List<String[]> prevArtefacts = new ArrayList<String[]>(config.getProjectToBuild().size());
-		for(int i = 0; i < config.getProjectToBuild().size(); i++)
-			prevArtefacts.add(Arrays.copyOf(config.getProjectToBuild().get(i).getArtefacts(), 
-					config.getProjectToBuild().get(i).getArtefacts().length));
-		JobManagerGenerator.correctArtifactPaths(config.getProjectToBuild());
-		
-		if (isJobExist(jobName))
-		{
-			AbstractItem item= (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
-			Source streamSource = new StreamSource(getJobXML(config, false));
-			item.updateByXml(streamSource);
-			item.save();
-		}
-		else
-		{
-			FileInputStream fis = new FileInputStream(getJobXML(config, false));
-			Jenkins.getInstance().createProjectFromXML(jobName, fis);
-		}
-		
-		for(int i = 0; i < config.getProjectToBuild().size(); i++)
-			config.getProjectToBuild().get(i).setArtefacts(prevArtefacts.get(i));
-		
-		createConfigUpdaterJob();
-	}
-	
-	private static void correctArtifactPaths(List<ProjectToBuildModel> projectModels){
-		String pathPrefix;
-		for(ProjectToBuildModel projectModel : projectModels){
-			pathPrefix = "";
-			if (projectModel.getLocalDirectoryPath() == null || projectModel.getLocalDirectoryPath().isEmpty())
-				pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/') + 1);
-			else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath())){
-				if(!projectModel.getLocalDirectoryPath().equals("."))		// No need to add prefix for workspace direct checkout
-					pathPrefix = projectModel.getLocalDirectoryPath();
-			}
-			
-			if(!(pathPrefix.isEmpty() || pathPrefix.endsWith("/")))
-				pathPrefix += "/";
-			String[] newArtefactsPaths = new String[projectModel.getArtefacts().length];
-			int counter = 0;
-			for(String artefactPath : projectModel.getArtefacts())
-				newArtefactsPaths[counter++] = pathPrefix + artefactPath.replaceAll("\\./", "");
-			projectModel.setArtefacts(newArtefactsPaths);
-		}
-	}
-	
-	private static void createConfigUpdaterJob() throws FileNotFoundException, 
-		ParserConfigurationException, SAXException, IOException, TransformerException{
-		
-		final String jobName = "BAMT_DEFAULT_CONFIG_UPDATER";
-		if(isJobExist(jobName))
-			return;
-		
-		String url = "";
-		Settings configSettings = new Settings();
-		if(configSettings.isSettingsSet())
-			url = configSettings.getUrl();
-		
-		BuildConfigurationModel defaultJobModel = new BuildConfigurationModel();
-		defaultJobModel.setProjectName(jobName);
-		defaultJobModel.setEmail("");
-		defaultJobModel.setCreator("");
-		defaultJobModel.setCurrentDate();
-		defaultJobModel.setJobUpdate(false);
-		defaultJobModel.setRejectionReason("");
-		defaultJobModel.setScm("Subversion");
-		defaultJobModel.setScripts(null);
-		defaultJobModel.setState(ConfigurationState.APPROVED);
-		ProjectToBuildModel projectModel = new ProjectToBuildModel(
-				url, "", "", "", ".", false, null);
-		defaultJobModel.setProjectToBuild(Arrays.asList(projectModel));
-		
-		FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
-		Jenkins.getInstance().createProjectFromXML(jobName, fis);
-	}
+    public static void createJob(BuildConfigurationModel config)
+            throws FileNotFoundException, ParserConfigurationException,
+            SAXException, IOException, TransformerException {
+        String jobName = validJobName(config.getProjectName());
 
-	public static Boolean isJobExist(String name)
-	{
-		for(Item item : Jenkins.getInstance().getAllItems())
-		{
-			if (item.getName().equals(name))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+        List<String[]> prevArtefacts = new ArrayList<String[]>(config.getProjectToBuild().size());
+        for (int i = 0; i < config.getProjectToBuild().size(); i++) {
+            prevArtefacts.add(Arrays.copyOf(config.getProjectToBuild().get(i).getArtefacts(),
+                    config.getProjectToBuild().get(i).getArtefacts().length));
+        }
+        JobManagerGenerator.correctArtifactPaths(config.getProjectToBuild());
+
+        if (isJobExist(jobName)) {
+            AbstractItem item = (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
+            Source streamSource = new StreamSource(getJobXML(config, false));
+            item.updateByXml(streamSource);
+            item.save();
+        } else {
+            FileInputStream fis = new FileInputStream(getJobXML(config, false));
+            Jenkins.getInstance().createProjectFromXML(jobName, fis);
+        }
+
+        for (int i = 0; i < config.getProjectToBuild().size(); i++) {
+            config.getProjectToBuild().get(i).setArtefacts(prevArtefacts.get(i));
+        }
+
+                
+        createConfigUpdaterJob();
+        createConfigUpdaterJobOnSlaveNodes();
+
+    }
+
+    private static void correctArtifactPaths(List<ProjectToBuildModel> projectModels) {
+        String pathPrefix;
+        for (ProjectToBuildModel projectModel : projectModels) {
+            pathPrefix = "";
+            if (projectModel.getLocalDirectoryPath() == null || projectModel.getLocalDirectoryPath().isEmpty()) {
+                pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/') + 1);
+            } else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath())) {
+                if (!projectModel.getLocalDirectoryPath().equals(".")) // No need to add prefix for workspace direct checkout
+                {
+                    pathPrefix = projectModel.getLocalDirectoryPath();
+                }
+            }
+
+            if (!(pathPrefix.isEmpty() || pathPrefix.endsWith("/"))) {
+                pathPrefix += "/";
+            }
+            String[] newArtefactsPaths = new String[projectModel.getArtefacts().length];
+            int counter = 0;
+            for (String artefactPath : projectModel.getArtefacts()) {
+                newArtefactsPaths[counter++] = pathPrefix + artefactPath.replaceAll("\\./", "");
+            }
+            projectModel.setArtefacts(newArtefactsPaths);
+        }
+    }
+
+    private static void createConfigUpdaterJob() throws FileNotFoundException,
+            ParserConfigurationException, SAXException, IOException, TransformerException {
+
+        final String jobName = "BAMT_DEFAULT_CONFIG_UPDATER";
+        if (isJobExist(jobName)) {
+            return;
+        }
+
+        String url = "";
+        Settings configSettings = new Settings();
+        if (configSettings.isSettingsSet()) {
+            url = configSettings.getUrl();
+        }
+
+        BuildConfigurationModel defaultJobModel = createBCModel(url);
+        defaultJobModel.setProjectName(jobName);
+
+        FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
+        Jenkins.getInstance().createProjectFromXML(jobName, fis);
+        
+        
+    }
+
+    private static void createConfigUpdaterJobOnSlaveNodes() throws FileNotFoundException,
+            ParserConfigurationException, SAXException, IOException, TransformerException {
+
+        final String jobName = "BAMT_DEFAULT_CONFIG_UPDATER";
+
+        String url = "";
+        Settings configSettings = new Settings();
+        if (configSettings.isSettingsSet()) {
+            url = configSettings.getUrl();
+        }
+
+        BuildConfigurationModel defaultJobModel = createBCModel(url);
+        
+        List<hudson.model.Node> slaveNodes = Jenkins.getInstance().getNodes();
+//        String[] nodeArray = new String[slaveNodes.size()];
+        String[] nodeArray = new String[1];
+        for(int i = 0; i<slaveNodes.size(); i++){
+//            nodeArray[i] = ((hudson.model.Node)slaveNodes.get(i)).getDisplayName();
+            String newJobName = jobName+ "_" + ((hudson.model.Node)slaveNodes.get(i)).getDisplayName();
+            defaultJobModel.setProjectName(newJobName);
+            nodeArray[0] = ((hudson.model.Node)slaveNodes.get(i)).getDisplayName();
+            defaultJobModel.setBuildMachineConfiguration(nodeArray);
+            FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
+            Jenkins.getInstance().createProjectFromXML(newJobName, fis);
+        }
+    }
+
+    private static BuildConfigurationModel createBCModel(String url){
+        BuildConfigurationModel defaultJobModel = new BuildConfigurationModel();
+        defaultJobModel.setEmail("");
+        defaultJobModel.setCreator("");
+        defaultJobModel.setCurrentDate();
+        defaultJobModel.setJobUpdate(false);
+        defaultJobModel.setRejectionReason("");
+        Settings settings = new Settings();
+        defaultJobModel.setScm(settings.getTypeSCM4Config()); 
+        defaultJobModel.setScripts(null);
+        defaultJobModel.setState(ConfigurationState.APPROVED);
+        ProjectToBuildModel projectModel = new ProjectToBuildModel(
+                url, "", "", "", ".", false, null);
+        defaultJobModel.setProjectToBuild(Arrays.asList(projectModel));   
+        return defaultJobModel;
+    }
+    
+    
+    
+    public static Boolean isJobExist(String name) {
+        for (Item item : Jenkins.getInstance().getAllItems()) {
+            if (item.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 	private static File getJobXML(BuildConfigurationModel config, boolean removeAllBuilders)
 			throws ParserConfigurationException,
@@ -207,38 +248,24 @@ public class JobManagerGenerator {
 		return file;
 	}
 
-	public static JobElementDescription getSCM(BuildConfigurationModel config)
-	{
-		SCM scm = getSCM(config.getScm());
-		JobElementDescription jed;
-		if (scm == null)
-		{
-			jed = new JobNone();
-			return jed;
-		}
-		switch(scm)
-		{
-		case SUBVERSION:
-			jed = new JobSubversion();
-			break;
-		default:
-			jed = new JobNone();
-			break;
-		}
-		return jed;
-	}
+    public static JobElementDescription getSCM(BuildConfigurationModel config) {
+        String scm = config.getScm();
+        JobElementDescription jed;
+        if (scm == null) {
+            jed = new JobNone();
+            return jed;
+        }
+        if (scm.equalsIgnoreCase("subversion")){
+            jed = new JobSubversion();
+        } else if (scm.equalsIgnoreCase("git")){
+            jed = new JobGit(config.getProjectRemoteUrl());
+        } else {
+            jed = new JobNone();
+        }
+        return jed;
+    }
 
-	private static SCM getSCM(String scmName)
-	{
-		for(SCM scm : SCM.values())
-		{
-			if (scm.toString().equals(scmName))
-			{
-				return scm;
-			}
-		}
-		return null;
-	}
+
 
 	private static void setElement(JobElementDescription element, Document document, BuildConfigurationModel config)
 			throws ParserConfigurationException, SAXException, IOException

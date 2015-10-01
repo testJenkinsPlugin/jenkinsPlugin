@@ -10,6 +10,7 @@ import hudson.security.Permission;
 import hudson.util.Iterators;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +27,13 @@ import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tmatesoft.svn.core.SVNException;
 import org.xml.sax.SAXException;
 
@@ -38,10 +42,13 @@ import com.amcbridge.jenkins.plugins.TTS.TTSProject;
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
+import com.amcbridge.jenkins.plugins.enums.SCMElement;
+import com.amcbridge.jenkins.plugins.enums.SCMLoader;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
 import com.amcbridge.jenkins.plugins.vsc.CommitError;
+import com.amcbridge.jenkins.plugins.vsc.GitManager;
 import com.amcbridge.jenkins.plugins.vsc.SvnManager;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystem;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
@@ -65,10 +72,16 @@ public class BuildConfigurationManager
 
 	public static final String STRING_EMPTY = "";
 
-	public static ApproveConfigurationManager acm = new ApproveConfigurationManager();
-	private static MailSender mail = new MailSender();
-	private static FolderManager FOLDER_MANAGER = new FolderManager();
-	private static ReentrantLock lock = new ReentrantLock();
+    public static ApproveConfigurationManager acm = new ApproveConfigurationManager();
+    private static MailSender mail = new MailSender();
+    private static ReentrantLock lock = new ReentrantLock();
+    private static FolderManager FOLDER_MANAGER = new FolderManager();
+    private static String currentScm = "None";
+    private static String currentScm4Config = "None";
+    
+    private static Logger log = LoggerFactory.getLogger(BuildConfigurationManager.class);
+    
+    private static SCMLoader scmLoader = new SCMLoader();
 
 	public static String getCurrentUserID()
 	{
@@ -329,45 +342,60 @@ public class BuildConfigurationManager
 		mail.sendMail(message);
 	}
 
-	public static void restoreConfiguration(String name) throws IOException, ParserConfigurationException,
-	JAXBException, AddressException, MessagingException
-	{
-		BuildConfigurationModel config = load(name);
-		config.setState(ConfigurationState.UPDATED);
-		config.setCurrentDate();
-		save(config);
-		ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
-				getAdminEmail(), getUserMailAddress(config), MessageDescription.RESTORE.toString(),
-				config.getProjectName());
-		mail.sendMail(message);
+    public static void restoreConfiguration(String name) throws IOException, ParserConfigurationException,
+            JAXBException, AddressException, MessagingException {
+        BuildConfigurationModel config = load(name);
+        config.setState(ConfigurationState.UPDATED);
+        currentScm = config.getScm();
+        save(config);
+        ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
+                getAdminEmail(), getUserMailAddress(config), MessageDescription.RESTORE.toString(),
+                config.getProjectName());
+        mail.sendMail(message);
 
 	}
 
-	public static VersionControlSystemResult exportToXml()
-			throws SVNException, IOException, InterruptedException
-	{
-		lock.lock();
-		try
-		{
-			XmlExporter xmlExporter = new XmlExporter();
-			String path = xmlExporter.exportToXml(true);
-			VersionControlSystem svn = new SvnManager();
-			Settings settings = new Settings();
+    public static VersionControlSystemResult exportToXml(String editedProjectName)
+            throws SVNException, IOException, InterruptedException {
+        lock.lock();
+        try {
+            XmlExporter xmlExporter = new XmlExporter();
+            String path = xmlExporter.exportToXml(true);
 
-			if (!settings.isSettingsSet())
-			{
-				VersionControlSystemResult result = new VersionControlSystemResult(false);
-				result.setErrorMassage(CommitError.NONE_PROPERTY.toString());
-				return result;
-			}
-			return svn.doCommit(path, settings.getUrl(), settings.getLogin(),
-					settings.getPassword(), settings.getCommitMessage());
-		}
-		finally
-		{
-			lock.unlock();
-		}
-	}
+            
+            BuildConfigurationModel config = load(editedProjectName);
+            currentScm = config.getScm();
+           
+            VersionControlSystem vcs =  new SvnManager();
+            
+            Settings settings = new Settings();
+
+            currentScm4Config = settings.getTypeSCM4Config();
+            
+            if (currentScm4Config.equalsIgnoreCase("Subversion")){
+            	vcs = new SvnManager();
+            } else if (currentScm4Config.equalsIgnoreCase("Git")){
+            	vcs = new GitManager();
+            }
+
+                    
+            if (!settings.isSettingsSet()) {
+                VersionControlSystemResult result = new VersionControlSystemResult(false);
+                result.setErrorMassage(CommitError.NONE_PROPERTY.toString());
+                return result;
+            }
+ 
+            if (currentScm4Config.equalsIgnoreCase("Git")){
+                ((GitManager) vcs).setLocalRepoPath(settings.getLocalGitRepoPath());
+            	((GitManager) vcs).setProjectName(editedProjectName);
+            }
+           
+            return vcs.doCommit(path, settings.getUrl(), settings.getLogin(),
+                    settings.getPassword(), settings.getCommitMessage());
+        } finally {
+            lock.unlock();
+        }
+    }
 
 	public static Boolean isNameUsing(String name)
 	{
@@ -452,19 +480,39 @@ public class BuildConfigurationManager
 		return JenkinsLocationConfiguration.get().getAdminAddress();
 	}
 
-	public static List<String> getSCM()
-	{
-		List<String> result = new ArrayList<String>();
-		for (SCMDescriptor<?> scm : SCM.all())
-		{
-			if (isSupportedSCM(scm))
-			{
-				result.add(scm.getDisplayName());
-			}
-		}
-		return result;
-	}
+	public static List<String> getSCM() {
+            List<String> result = new ArrayList<String>();
+            boolean isGitCatch = false;
+            boolean isSubversionCatch = false;
+            for (SCMDescriptor<?> scm : SCM.all()) {
+                if (isSupportedSCM(scm)) {
+                    result.add(scm.getDisplayName());
+                    if (scm.getDisplayName().equalsIgnoreCase("git")) {
+                        isGitCatch = true;
+                    } else 
+                    if (scm.getDisplayName().equalsIgnoreCase("subversion")) {
+                        isSubversionCatch = true;
+                    }  
+                }
+            }
+            if (isGitCatch) {
+              log.info("+++++ git: plugin was plugged");
+            } else {
+             log.info("----- git: plugin wasn't plugged");
+            }
+            if (isSubversionCatch) {
+               log.info("+++++ subversion: plugin was plugged");
+            } else {
+               log.info("----- subversion: plugin wasn't plugged");
+            }
+            
+            return result;
+        }
 
+	
+	
+	
+	
 	public static List<TTSProject> getProjectName() throws IOException
 	{
 		List<TTSProject> result = new ArrayList<TTSProject>();
@@ -481,18 +529,14 @@ public class BuildConfigurationManager
 		return result;
 	}
 
-	private static Boolean isSupportedSCM(SCMDescriptor<?> scm)
-	{
-		for (com.amcbridge.jenkins.plugins.enums.SCM suportSCM :
-			com.amcbridge.jenkins.plugins.enums.SCM.values())
-		{
-			if (suportSCM.toString().equals(scm.getDisplayName()))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+    private static Boolean isSupportedSCM(SCMDescriptor<?> scm) {
+        for (SCMElement suportSCM : scmLoader.getSCMs()) {
+            if (suportSCM.getKey().equalsIgnoreCase(scm.getDisplayName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 	public static List<String> getNodesName()
 	{
