@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <j:jelly xmlns:j="jelly:core"
-   xmlns:st="jelly:stapler"
-   xmlns:d="jelly:define"
-   xmlns:l="/lib/layout"
-   xmlns:t="/lib/hudson"
-   xmlns:f="/lib/form"
-   xmlns:i="jelly:fmt"
-   xmlns:p="/lib/hudson/project"
-   >
+         xmlns:st="jelly:stapler"
+         xmlns:d="jelly:define"
+         xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson"
+         xmlns:f="/lib/form"
+         xmlns:i="jelly:fmt"
+         xmlns:p="/lib/hudson/project"
+>
     <div id="${divID}" name="projectToBuild" class="div-add-project-to-build-view">
         <label id="close_${divID}" onclick="closeButtonClick(this)" class="close-project-to-build">X</label>
         <div class="div-folder-chooser">
@@ -18,8 +18,16 @@
                 <input type="text" id="project_Url_${sourceId[0]}" name="projectUrl" onblur="checkURL(id,'url')" value="${view.getProjectUrl()}" class="textbox"/>        
             </div>
             <div id="url_error_${sourceId[0]}url" class="error-none">
-            <img src="../images/16x16/error.png"/>
+                <img src="../images/16x16/error.png"/>
                 Not correct url
+            </div>
+        </div>
+        <div class="div-textinput">
+            <div class="div-file-chooser-label">
+                <label>Branch name:</label>
+            </div>
+            <div>        
+                <input type="text" id="branch_Name_${sourceId[0]}" name="branchName"  onblur="checkBranchName(id)" value="${view.getBranchName()}" class="textbox"/>        
             </div>
         </div>
         <div class="div-textinput">
@@ -32,12 +40,12 @@
             </div>
         </div>
         <div id="path_error_${sourceId[0]}" class="error-none">
-        <img src="../images/16x16/error.png"/>
-                Not correct path
+            <img src="../images/16x16/error.png"/>
+            Not correct path
         </div>
         <div id="block_help_${sourceId[0]}path" class="help-view">
             <lebel id="text_help_${sourceId[0]}path" class="helptext">
-                 Specify a local directory (relative to the workspace root) where this module is checked out. If left empty, the last path component of the URL is used as the default, just like the svn CLI. A single period (.) may be used to check out the project directly into the workspace rather than into a subdirectory.
+                Specify a local directory (relative to the workspace root) where this module is checked out. If left empty, the last path component of the URL is used as the default, just like the svn CLI. A single period (.) may be used to check out the project directly into the workspace rather than into a subdirectory.
             </lebel>
         </div>
 
@@ -73,14 +81,14 @@
                 <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="imageHelp(id+'art')" class="image"/>
             </div>
             <div id="path_error_${sourceId[1]}" class="error-none">
-            <img src="../images/16x16/error.png"/>
+                <img src="../images/16x16/error.png"/>
                 <label id="coincide_${sourceId[1]}"> Not correct path</label>
             </div>
             <div id="block_help_${sourceId[0]}art" class="help-view">
                 <lebel id="text_help_${sourceId[0]}art" class="helptext">
-                 You can use wildcards like 'module/dist/**/*.zip'. See 
-				 <a href="http://ant.apache.org/manual/Types/fileset.html">
-				 the includes attribute of Ant fileset </a>for the exact format. The base directory is the workspace. You can only archive files that are located in your workspace.
+                    You can use wildcards like 'module/dist/**/*.zip'. See 
+                    <a href="http://ant.apache.org/manual/Types/fileset.html">
+                        the includes attribute of Ant fileset </a>for the exact format. The base directory is the workspace. You can only archive files that are located in your workspace.
                 </lebel>
             </div>
             <div class="div-legend">
@@ -118,39 +126,39 @@
                 <input type="button" onclick="addPathFiles(this)" class="div-plus-button-hidden" id="add_button_${sourceId[2]}" value="+"/>
             </j:if>
             <div id="path_error_${sourceId[2]}" class="error-none">
-            <img src="../images/16x16/error.png"/>
+                <img src="../images/16x16/error.png"/>
                 <label id="coincide_${sourceId[2]}"> Not correct path</label>
             </div>
             
             <j:if test="${view.IsVersionFiles()}">
-            <div id = "div-fieldset_${sourceId[2]}" class="div-legend">
-                <fieldset>
-                    <legend>Version Files</legend>
-                    <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select" onchange="selectionBoxIndexChange(this)" size="3">
-                        <j:set var="forHidden" value=""/>
-                        <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
-                            <option value="${vf}">${vf}</option>
-                            <j:set var="forHidden" value="${forHidden+vf+';'}"/>
-                        </j:forEach>
-                    </select>
-                </fieldset>
-                <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
-            </div>
+                <div id = "div-fieldset_${sourceId[2]}" class="div-legend">
+                    <fieldset>
+                        <legend>Version Files</legend>
+                        <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select" onchange="selectionBoxIndexChange(this)" size="3">
+                            <j:set var="forHidden" value=""/>
+                            <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
+                                <option value="${vf}">${vf}</option>
+                                <j:set var="forHidden" value="${forHidden+vf+';'}"/>
+                            </j:forEach>
+                        </select>
+                    </fieldset>
+                    <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
+                </div>
             </j:if>
             <j:if test="${!view.IsVersionFiles()}">
-            <div id = "div-fieldset_${sourceId[2]}" class="div-legend-hidden">
-                <fieldset>
-                    <legend>Version Files</legend>
-                    <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select-hidden" onchange="selectionBoxIndexChange(this)" size="3">
-                        <j:set var="forHidden" value=""/>
-                        <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
-                            <option value="${vf}">${vf}</option>
-                            <j:set var="forHidden" value="${forHidden+vf+';'}"/>
-                        </j:forEach>
-                    </select>
-                </fieldset>
-                <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
-            </div>
+                <div id = "div-fieldset_${sourceId[2]}" class="div-legend-hidden">
+                    <fieldset>
+                        <legend>Version Files</legend>
+                        <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select-hidden" onchange="selectionBoxIndexChange(this)" size="3">
+                            <j:set var="forHidden" value=""/>
+                            <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
+                                <option value="${vf}">${vf}</option>
+                                <j:set var="forHidden" value="${forHidden+vf+';'}"/>
+                            </j:forEach>
+                        </select>
+                    </fieldset>
+                    <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
+                </div>
             </j:if>
         </div>
 
@@ -164,6 +172,9 @@
         <div id="addView_${divID}" class="div-add-view">
             <input type="button" onClick="addBuilder(this)" id="addBuilders_${divID}" value="Add Builder"/>
         </div>
+        
+             
+        
     </div>
     <j:forEach items="s" var="config" indexVar="i">
     </j:forEach>

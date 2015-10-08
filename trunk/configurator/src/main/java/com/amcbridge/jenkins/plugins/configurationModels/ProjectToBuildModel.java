@@ -6,7 +6,8 @@ import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 
 public class ProjectToBuildModel {
 
-	private String projectUrl, fileToBuild, localDirectoryPath;
+	private String projectUrl, fileToBuild, localDirectoryPath, branchName;
+	private String preScript, postScript;
 
 	private Boolean isVersionFiles;
 
@@ -22,7 +23,40 @@ public class ProjectToBuildModel {
 	{
 		return projectUrl;
 	}
+        
 
+	public void setBranchName (String value)
+	{
+		branchName = value;
+	}
+
+	public String getBranchName ()
+	{
+		return branchName;
+	}                
+        
+
+	public void setPreScript (String value)
+	{
+		preScript = value;
+	}
+
+	public String getPreScript ()
+	{
+		return preScript;
+	}            
+        
+	public void setPostScript (String value)
+	{
+		postScript = value;
+	}
+
+	public String getPostScript ()
+	{
+		return postScript;
+	}            
+        
+                
 	public Boolean IsVersionFiles()
 	{
 		return isVersionFiles;
@@ -79,11 +113,12 @@ public class ProjectToBuildModel {
 	}
 
 	@DataBoundConstructor
-	public ProjectToBuildModel(String projectUrl, String fileToBuild,
+	public ProjectToBuildModel(String projectUrl, String branchName, String fileToBuild,
 			String artefacts, String versionFiles, String localDirectoryPath,
 			Boolean isVersionFiles, BuilderConfigModel[] builders)
 	{
 		this.projectUrl = projectUrl;
+                this.branchName = branchName;
 		this.fileToBuild = fileToBuild;
 		this.isVersionFiles = isVersionFiles;
 		this.localDirectoryPath = localDirectoryPath;

@@ -304,6 +304,7 @@ public class BuildConfigurationManager {
             if (currentScm4Config.equalsIgnoreCase("Git")){
                 ((GitManager) vcs).setLocalRepoPath(settings.getLocalGitRepoPath());
             	((GitManager) vcs).setProjectName(editedProjectName);
+            	((GitManager) vcs).setBranch(settings.getBranch());
             }
            
             return vcs.doCommit(path, settings.getUrl(), settings.getLogin(),

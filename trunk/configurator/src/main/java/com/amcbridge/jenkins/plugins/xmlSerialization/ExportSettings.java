@@ -20,7 +20,8 @@ public class ExportSettings extends Builder {
     @Extension
     public static final class Settings extends BuildStepDescriptor<Builder> {
 
-        private String typeSCM4Config, url, login, password, commitMessage, localGitRepoPath;
+        private String typeSCM4Config, url, login, password, commitMessage, 
+                localGitRepoPath, branch;
 
         public Settings() {
             load();
@@ -50,6 +51,14 @@ public class ExportSettings extends Builder {
             url = value;
         }
 
+        public String getBranch() {
+            return branch;
+        }
+
+        public void setBranch(String value) {
+            branch = value;
+        }
+        
         public String getLogin() {
             return login;
         }

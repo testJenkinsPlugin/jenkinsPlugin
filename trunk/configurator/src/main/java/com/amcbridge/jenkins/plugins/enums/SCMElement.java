@@ -9,10 +9,7 @@ package com.amcbridge.jenkins.plugins.enums;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-/**
- *
- * @author Roma
- */
+
 @XStreamAlias("scm")
 public class SCMElement {
     @XStreamAsAttribute

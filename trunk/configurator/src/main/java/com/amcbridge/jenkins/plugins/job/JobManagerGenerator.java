@@ -13,7 +13,6 @@ import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
 import com.thoughtworks.xstream.XStream;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
-import hudson.model.TopLevelItem;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -74,8 +73,12 @@ public class JobManagerGenerator {
             item.updateByXml(streamSource);
             item.save();
         } else {
-            FileInputStream fis = new FileInputStream(getJobXML(config, false));
-            Jenkins.getInstance().createProjectFromXML(jobName, fis);
+            try {
+                FileInputStream fis = new FileInputStream(getJobXML(config, false));
+                Jenkins.getInstance().createProjectFromXML(jobName, fis);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
         }
 
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
@@ -132,6 +135,11 @@ public class JobManagerGenerator {
 
         FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
         Jenkins.getInstance().createProjectFromXML(jobName, fis);
+        try{
+            Jenkins.getInstance().createProjectFromXML(jobName, fis);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
         
         
     }
@@ -175,7 +183,7 @@ public class JobManagerGenerator {
         defaultJobModel.setScripts(null);
         defaultJobModel.setState(ConfigurationState.APPROVED);
         ProjectToBuildModel projectModel = new ProjectToBuildModel(
-                url, "", "", "", ".", false, null);
+                url, "","", "", "", ".", false, null);
         defaultJobModel.setProjectToBuild(Arrays.asList(projectModel));   
         return defaultJobModel;
     }
@@ -229,6 +237,43 @@ public class JobManagerGenerator {
             }
         }
 
+//        String preScript = "";
+//        String postScript = "";
+        
+        Node buildersTagNode = doc.getElementsByTagName("builders").item(0);
+        for (int i = 0; i < buildersTagNode.getChildNodes().getLength(); i++) {
+            if (buildersTagNode.getChildNodes().item(i).getNodeName().equals("buildStep")) {
+                Node buildStepTagNode = buildersTagNode.getChildNodes().item(i);
+
+                for (int j = 0; j < buildStepTagNode.getChildNodes().getLength(); j++) {
+                    if (buildStepTagNode.getChildNodes().item(j).getNodeName().equals("command")) {
+                        Node commandPreOrPost = buildStepTagNode.getChildNodes().item(j);
+                        if (commandPreOrPost.getAttributes().getNamedItem("id") != null) {
+                            String id = commandPreOrPost.getAttributes().getNamedItem("id").getNodeValue();
+                            if (id.equalsIgnoreCase("preScript")){
+//                                preScript = commandPreOrPost.getTextContent();
+                                if (config.getPreScript() != null) {
+                                    commandPreOrPost.setTextContent(config.getPreScript());
+                                } else {
+                                    commandPreOrPost.setTextContent("pre empty");
+                                }
+                            } else if (id.equalsIgnoreCase("postScript")){
+//                                postScript = commandPreOrPost.getTextContent();
+                                if (config.getPostScript()!= null) {
+                                    commandPreOrPost.setTextContent(config.getPostScript());
+                                } else {
+                                    commandPreOrPost.setTextContent("post empty");
+                                }
+                                
+                            }
+                            
+                        }
+                    }
+                }
+
+            }
+        }
+
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         DOMSource source = new DOMSource(doc);
@@ -250,7 +295,7 @@ public class JobManagerGenerator {
         if (scm.equalsIgnoreCase("subversion")){
             jed = new JobSubversion();
         } else if (scm.equalsIgnoreCase("git")){
-            jed = new JobGit(config.getProjectRemoteUrl());
+            jed = new JobGit(config.getProjectRemoteUrl(),config.getBranchName());
         } else {
             jed = new JobNone();
         }

@@ -103,13 +103,6 @@ public final class BuildConfigurator implements RootAction {
 	{
 
 		JSONObject formAttribute = request.getSubmittedForm();
-		if (formAttribute.get("formResultHidden") != null && formAttribute
-				.get("formResultHidden").equals(FormResult.CANCEL.toString()))
-		{
-			deleteNotUploadFile(formAttribute.get("scripts").toString().split(";"));
-			response.sendRedirect("../" + DEFAULT_PAGE_URL);
-			return;
-		}
 
 		BuildConfigurationModel newConfig = new BuildConfigurationModel();
 

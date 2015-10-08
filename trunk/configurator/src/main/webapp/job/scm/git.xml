@@ -3,13 +3,13 @@
     <configVersion>2</configVersion> 
     <userRemoteConfigs>
         <hudson.plugins.git.UserRemoteConfig>
-            <name /> 
             <refspec /> 
-             <url>https://github.com/MelnykRoman/TestLog4jProject.git</url> 
+            <url>https://github.com/MelnykRoman/TestLog4jProject.git</url> 
             <globalConfigName></globalConfigName>
             <globalConfigEmail></globalConfigEmail>
         </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
+   
     <branches>
         <hudson.plugins.git.BranchSpec>
             <name>**</name> 

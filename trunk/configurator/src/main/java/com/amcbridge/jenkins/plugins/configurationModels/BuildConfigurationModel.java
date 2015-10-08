@@ -13,6 +13,7 @@ import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 public class BuildConfigurationModel
 {
 	private String projectName, email, creator, date, rejectionReason, scm, configEmail;
+	private String preScript, postScript;
 	private Boolean isJobUpdate;
 	
 	private ConfigurationState state;
@@ -117,6 +118,51 @@ public class BuildConfigurationModel
 	    return projectUrl;
 	}
         
+        
+	public String getPreScript()
+	{
+            if (preScript != null) {
+                return preScript;
+            } else {
+                for (ProjectToBuildModel item : projectToBuild) {
+                    preScript = item.getPreScript();
+                }
+                return preScript;                
+            }
+	}          
+        
+        public void setPreScript(String value){
+            preScript = value;
+        }
+        
+
+	public String getPostScript()
+	{
+            if (postScript != null) {
+                return postScript;
+            } else {
+                for (ProjectToBuildModel item : projectToBuild) {
+                    postScript = item.getPostScript();
+                }
+                return postScript;                
+            }
+	}        
+
+        public void setPostScript(String value){
+            postScript = value;
+        }
+        
+        
+
+	public String getBranchName()
+	{
+            String branchName = null;
+            for (ProjectToBuildModel item : projectToBuild) {
+                branchName = item.getBranchName();
+                
+            }
+	    return branchName;
+	}        
         
 	public void setScripts (String[] value)
 	{

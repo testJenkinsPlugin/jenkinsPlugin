@@ -2,11 +2,8 @@ package com.amcbridge.jenkins.plugins.vsc;
 
 import com.amcbridge.jenkins.plugins.utils.Tools;
 import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
-import hudson.Util;
 import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
@@ -20,7 +17,6 @@ import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.PushResult;
@@ -37,6 +33,7 @@ public class GitManager implements VersionControlSystem {
     private Git git;
     private String projectName;
     private String localRepositoryPath = "";
+    private String branch = "origin/HEAD";
 
     public VersionControlSystemResult doCommit(String filePath, String url,
             String login, String password, String commitMessage) {
@@ -119,11 +116,6 @@ public class GitManager implements VersionControlSystem {
         return commitResult;
     }
 
-  
-    
-  
-   
-    
     public String getLocalPath() {
         return localPath;
     }
@@ -190,4 +182,7 @@ public class GitManager implements VersionControlSystem {
         localRepositoryPath = localRepoPath;
     }
 
+    public void setBranch(String value) {
+        branch = value;
+    }    
 }

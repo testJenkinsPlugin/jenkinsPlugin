@@ -30,6 +30,9 @@
         <f:entry title="Local repo path (for Git only)" field="localGitRepoPath">
             <f:textbox />
         </f:entry>
+        <f:entry title="Branch name" field="branch">
+            <f:textbox />
+        </f:entry>        
         <f:entry title="Login" field="login">
             <f:textbox />
         </f:entry>

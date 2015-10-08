@@ -64,6 +64,8 @@ function setContent(name)
         buildConfiguration.getConfiguration(name, function(t){
         document.getElementById("projectName").value = t.responseObject().projectName;
         document.getElementById("typeSCM").value = t.responseObject().scm;
+        document.getElementById("preScript").value = t.responseObject().preScript;
+        document.getElementById("postScript").value = t.responseObject().postScript;
 
         if(t.responseObject().rejectionReason != "")
             document.getElementById("reasonLabel").innerHTML = "Reason of rejection:  "+t.responseObject().rejectionReason;
@@ -289,6 +291,43 @@ function textboxDisabled(checkBox, textboxId)
     }
 }
 
+function uploadPrebuildScript()
+{
+    var file = document.getElementById("scriptsButtonPrebuild").files[0];
+    if (file.size > 1048576)
+    {
+        document.getElementById("scriptErrorPrebuildText").innerHTML = " You can't upload file which size is more than 1MB";
+        document.getElementById("scriptErrorPrebuild").className = "error-block script-error";
+        document.getElementById("scriptsButtonPrebuild").value = "";
+        return;
+    }
+    if (!validateExtension(file.name))
+    {
+        document.getElementById("scriptErrorPrebuildText").innerHTML = " You can't upload file with this extension. Please choose file with '.bat, .nant, .powershell, .shell, .ant, .maven' extension only.";
+        document.getElementById("scriptErrorPrebuild").className = "error-block script-error";
+        document.getElementById("scriptsButtonPrebuild").value = "";
+        return;
+    }
+    document.getElementById("scriptErrorPrebuild").className = "div-none";
+    document.getElementById("scriptsButtonPrebuild").disabled = true;
+    var formdata = new FormData();
+    formdata.append("sampleFile", file);
+    var xhr = new XMLHttpRequest();   
+    xhr.open("post", "uploadFile", true);
+    xhr.send(formdata);
+    xhr.onload = function(e)
+    {
+        if (this.status == 200)
+        {
+            addToSelectionBox("files_script_prebuild", this.responseText);
+        }
+        document.getElementById("scriptsButtonPrebuild").disabled = false;
+        document.getElementById("scriptsButtonPrebuild").value = "";
+    };
+}
+
+
+
 function upload()
 {
     var file = document.getElementById("scriptsButton").files[0];
@@ -301,7 +340,7 @@ function upload()
     }
     if (!validateExtension(file.name))
     {
-        document.getElementById("scriptErrorText").innerHTML = " You can't upload file with this extension. Please choose file with '.bat, .nant, .powershell, .shell, .ant, .maven' extension only.";
+        document.getElementById("scriptErrorText").innerHTML = " You can't upload file with this extension. Please choose file with '.bat, .nant, .powershell, .shell, .ant, .maven, .python' extension only.";
         document.getElementById("scriptError").className = "error-block script-error";
         document.getElementById("scriptsButton").value = "";
         return;
@@ -359,7 +398,7 @@ function addToHidden(hiddenInputId, value)
 function validateExtension(filename)
 {
     var ext = filename.substring(filename.lastIndexOf('.')+1);
-    var extensions = new Array ("bat","nant","powershell","shell","ant","maven");
+    var extensions = new Array ("bat","nant","powershell","shell","ant","maven","python");
     for (var extension in extensions)
     {
         if (extensions[extension] == ext)
@@ -669,6 +708,22 @@ function checkMail(mailp)
         return false;
 }
 
+function validatePrebuildScript(id){
+   var preScriptText = document.getElementById(id).value;
+   var number = getElementNumber(id);
+   document.getElementById("ptb_error_"+number).className = "error-none";
+   document.getElementById(id).className = "textbox";    
+}
+
+
+function validatePostbuildScript(script){
+   var postScriptText = document.getElementById(id).value;
+   var number = getElementNumber(id);
+   document.getElementById("ptb_error_"+number).className = "error-none";
+   document.getElementById(id).className = "textbox";    
+}
+
+
 function checkURL(id,add)
 {
     var url = document.getElementById(id).value;
@@ -684,6 +739,14 @@ function checkURL(id,add)
         document.getElementById("url_error_"+number+add).className = "error-block";
         document.getElementById(id).className= "textbox-error";
     }
+}
+
+function checkBranchName(id)
+{
+   var branchName = document.getElementById(id).value;
+   var number = getElementNumber(id);
+   document.getElementById("ptb_error_"+number).className = "error-none";
+   document.getElementById(id).className = "textbox";
 }
 
 function checkPath(id)

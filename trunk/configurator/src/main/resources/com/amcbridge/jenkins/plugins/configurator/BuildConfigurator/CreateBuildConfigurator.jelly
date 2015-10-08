@@ -123,21 +123,18 @@
                     <label id="label-add-view" class="label-add-view-hidden">You should create one project to build</label>
                 </div>
 
+              
+                <div>
+                    <label class="div-label">Prebuild scripts:</label>
+                    <textarea rows="10" cols="60" id="preScript" name="preScript" onblur="validatePrebuildScript(id)">
+                    </textarea>   
+                    <input type="hidden" name="scripts" id="files_hidden_script"/>
+                </div>
+                <br/>
                 <div>
                     <label class="div-label">Postbuild scripts:</label>
-                    <input type="file" id="scriptsButton" class="input-file" onchange="upload()" value="Add File"/>
-                    <div id="scriptError" class="error-none">
-                        <img src="../images/16x16/error.png"/>
-                        <label id="scriptErrorText"></label>
-                    </div>
-                    <div class="div-legend">
-                        <fieldset>
-                            <legend>Scripts</legend>
-                            <select id="files_script" name="files_script" class="select" onchange="selectionBoxIndexChange(this)" size="3">
-                            </select>
-                        </fieldset>
-                        <input type="hidden" name="scripts" id="files_hidden_script"/>
-                    </div>
+                    <textarea rows="10" cols="60" id="postScript" name="postScript" onblur="validatePostbuildScript(id)">
+                    </textarea>
                 </div>
 
                 <div class="div-confirm-button">
