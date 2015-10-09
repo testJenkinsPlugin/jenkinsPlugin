@@ -66,6 +66,7 @@ public class JobManagerGenerator {
                     config.getProjectToBuild().get(i).getArtefacts().length));
         }
         JobManagerGenerator.correctArtifactPaths(config.getProjectToBuild());
+        JobManagerGenerator.correctVersionFilePaths(config.getProjectToBuild());
 
         if (isJobExist(jobName)) {
             AbstractItem item = (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
@@ -113,6 +114,31 @@ public class JobManagerGenerator {
                 newArtefactsPaths[counter++] = pathPrefix + artefactPath.replaceAll("\\./", "");
             }
             projectModel.setArtefacts(newArtefactsPaths);
+        }
+    }
+    
+    private static void correctVersionFilePaths(List<ProjectToBuildModel> projectModels) {
+        String pathPrefix;
+        for (ProjectToBuildModel projectModel : projectModels) {
+            pathPrefix = "";
+            if (projectModel.getLocalDirectoryPath() == null || projectModel.getLocalDirectoryPath().isEmpty()) {
+                pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/') + 1);
+            } else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath())) {
+                if (!projectModel.getLocalDirectoryPath().equals(".")) // No need to add prefix for workspace direct checkout
+                {
+                    pathPrefix = projectModel.getLocalDirectoryPath();
+                }
+            }
+
+            if (!(pathPrefix.isEmpty() || pathPrefix.endsWith("/"))) {
+                pathPrefix += "/";
+            }
+            String[] newVersionFilePath = new String[projectModel.getVersionFiles().length];
+            int counter = 0;
+            for (String versionFilePath : projectModel.getVersionFiles()) {
+                newVersionFilePath[counter++] = pathPrefix + versionFilePath.replaceAll("\\./", "");
+            }
+            projectModel.setVersionFiles(newVersionFilePath);
         }
     }
 
@@ -223,9 +249,7 @@ public class JobManagerGenerator {
 
         jed = getSCM(config);
         setElement(jed, doc, config);
-        
-//        jed = new JobGitRemoteUrl();
-//        setElement(jed, doc, config);
+
 
         if (removeAllBuilders) {
             Node projectTagNode = doc.getElementsByTagName("project").item(0);
@@ -237,8 +261,6 @@ public class JobManagerGenerator {
             }
         }
 
-//        String preScript = "";
-//        String postScript = "";
         
         Node buildersTagNode = doc.getElementsByTagName("builders").item(0);
         for (int i = 0; i < buildersTagNode.getChildNodes().getLength(); i++) {
@@ -251,14 +273,12 @@ public class JobManagerGenerator {
                         if (commandPreOrPost.getAttributes().getNamedItem("id") != null) {
                             String id = commandPreOrPost.getAttributes().getNamedItem("id").getNodeValue();
                             if (id.equalsIgnoreCase("preScript")){
-//                                preScript = commandPreOrPost.getTextContent();
                                 if (config.getPreScript() != null) {
                                     commandPreOrPost.setTextContent(config.getPreScript());
                                 } else {
                                     commandPreOrPost.setTextContent("pre empty");
                                 }
                             } else if (id.equalsIgnoreCase("postScript")){
-//                                postScript = commandPreOrPost.getTextContent();
                                 if (config.getPostScript()!= null) {
                                     commandPreOrPost.setTextContent(config.getPostScript());
                                 } else {
@@ -302,17 +322,6 @@ public class JobManagerGenerator {
         return jed;
     }
 
-/*    
-    private static SCM getSCM(String scmName) {
-        for (SCM scm : SCM.values()) {
-            if (scm.toString().equals(scmName)) {
-                return scm;
-            }
-        }
-        return null;
-    }
-*/
-    
     private static void setElement(JobElementDescription element, Document document, BuildConfigurationModel config)
             throws ParserConfigurationException, SAXException, IOException {
         if (!isNodeExist(document, element.getElementTag())) {

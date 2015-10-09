@@ -7,7 +7,6 @@ import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 public class ProjectToBuildModel {
 
 	private String projectUrl, fileToBuild, localDirectoryPath, branchName;
-	private String preScript, postScript;
 
 	private Boolean isVersionFiles;
 
@@ -34,27 +33,6 @@ public class ProjectToBuildModel {
 	{
 		return branchName;
 	}                
-        
-
-	public void setPreScript (String value)
-	{
-		preScript = value;
-	}
-
-	public String getPreScript ()
-	{
-		return preScript;
-	}            
-        
-	public void setPostScript (String value)
-	{
-		postScript = value;
-	}
-
-	public String getPostScript ()
-	{
-		return postScript;
-	}            
         
                 
 	public Boolean IsVersionFiles()

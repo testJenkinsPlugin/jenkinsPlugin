@@ -113,22 +113,14 @@ public class BuildConfigurationModel
             String projectUrl = null;
             for (ProjectToBuildModel item : projectToBuild) {
                 projectUrl = item.getProjectUrl();
-                
             }
 	    return projectUrl;
 	}
         
         
 	public String getPreScript()
-	{
-            if (preScript != null) {
-                return preScript;
-            } else {
-                for (ProjectToBuildModel item : projectToBuild) {
-                    preScript = item.getPreScript();
-                }
+	{            
                 return preScript;                
-            }
 	}          
         
         public void setPreScript(String value){
@@ -136,16 +128,8 @@ public class BuildConfigurationModel
         }
         
 
-	public String getPostScript()
-	{
-            if (postScript != null) {
-                return postScript;
-            } else {
-                for (ProjectToBuildModel item : projectToBuild) {
-                    postScript = item.getPostScript();
-                }
-                return postScript;                
-            }
+	public String getPostScript(){
+                return postScript;             
 	}        
 
         public void setPostScript(String value){
