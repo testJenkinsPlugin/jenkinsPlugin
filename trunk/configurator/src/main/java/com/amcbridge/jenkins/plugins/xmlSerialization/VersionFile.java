@@ -2,58 +2,52 @@ package com.amcbridge.jenkins.plugins.xmlSerialization;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
-public class VersionFile
-{
-	@XStreamImplicit(itemFieldName="file")
-	private List<String> files;
+public class VersionFile {
 
-	@XStreamAsAttribute
-	private Boolean versionFile;
+    @XStreamImplicit(itemFieldName = "file")
+    private List<String> files;
 
-	public VersionFile()
-	{
-		files = new ArrayList<String>();
-		versionFile = false;
-	}
+    @XStreamAsAttribute
+    private Boolean versionFile;
 
-	public void setFiles(List<String> value)
-	{
-		files = value;
-	}
+    public VersionFile() {
+        files = new ArrayList<String>();
+        versionFile = false;
+    }
 
-	public List<String> getFiles()
-	{
-		return files;
-	}
+    public void setFiles(List<String> value) {
+        files = value;
+    }
 
-	public void addFile(String value)
-	{
-		files.add(value);
-	}
+    public List<String> getFiles() {
+        return files;
+    }
 
-	public void setIsVersionFile(Boolean value)
-	{
-		versionFile = value;
-	}
+    public void addFile(String value) {
+        files.add(value);
+    }
 
-	public Boolean isVersionFile()
-	{
-		return versionFile;
-	}
-	
-	public boolean equals(Object obj)
-	{
-		if(this == obj)
-			return true;
-		if((obj == null) || !(obj instanceof VersionFile))
-			return false;
-		VersionFile other = (VersionFile)obj;
-		return (this.versionFile.equals(other.isVersionFile()) &&
-				this.files.containsAll(other.getFiles()) &&
-				other.getFiles().containsAll(this.files));
-	}
+    public void setIsVersionFile(Boolean value) {
+        versionFile = value;
+    }
+
+    public Boolean isVersionFile() {
+        return versionFile;
+    }
+
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || !(obj instanceof VersionFile)) {
+            return false;
+        }
+        VersionFile other = (VersionFile) obj;
+        return (this.versionFile.equals(other.isVersionFile())
+                && this.files.containsAll(other.getFiles())
+                && other.getFiles().containsAll(this.files));
+    }
 }

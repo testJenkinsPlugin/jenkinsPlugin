@@ -11,7 +11,6 @@ import org.kohsuke.stapler.StaplerRequest;
 
 public class ExportSettings extends Builder {
 
-    
     @Override
     public Settings getDescriptor() {
         return (Settings) super.getDescriptor();
@@ -20,7 +19,7 @@ public class ExportSettings extends Builder {
     @Extension
     public static final class Settings extends BuildStepDescriptor<Builder> {
 
-        private String typeSCM4Config, url, login, password, commitMessage, 
+        private String typeSCM4Config, url, login, password, commitMessage,
                 localGitRepoPath, branch;
 
         public Settings() {
@@ -58,7 +57,7 @@ public class ExportSettings extends Builder {
         public void setBranch(String value) {
             branch = value;
         }
-        
+
         public String getLogin() {
             return login;
         }
@@ -111,8 +110,6 @@ public class ExportSettings extends Builder {
         public List<String> getSCM() {
             return BuildConfigurationManager.getSCM();
         }
-
-
 
     }
 }

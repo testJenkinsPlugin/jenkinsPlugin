@@ -60,22 +60,15 @@ public class BuildConfigurationManager {
     private static final Integer MAX_FILE_SIZE = 1048576;//max file size which equal 1 mb in bytes
     private static final String[] SCRIPTS_EXTENSIONS = {"bat", "nant", "powershell", "shell",
         "ant", "maven"};
-    
-   
-
-    
     public static final String STRING_EMPTY = "";
-
     public static ApproveConfigurationManager acm = new ApproveConfigurationManager();
-    private static MailSender mail = new MailSender();
-    private static ReentrantLock lock = new ReentrantLock();
+    private static final MailSender mail = new MailSender();
+    private static final ReentrantLock lock = new ReentrantLock();
     private static String currentScm = "None";
     private static String currentScm4Config = "None";
+    private static final Logger log = LoggerFactory.getLogger(BuildConfigurationManager.class);
+    private static final SCMLoader scmLoader = new SCMLoader();
     
-    private static Logger log = LoggerFactory.getLogger(BuildConfigurationManager.class);
-    
-    private static SCMLoader scmLoader = new SCMLoader();
-
     public static String getCurrentUserID() {
         if (User.current() != null) {
             return User.current().getId();
@@ -180,17 +173,17 @@ public class BuildConfigurationManager {
         checkFile = new File(pathFolder);
         File[] listOfFiles = checkFile.listFiles();
 
-        for (int i = 0; i < listOfFiles.length; i++) {
-            if (ArrayUtils.indexOf(scripts, listOfFiles[i].getName()) == -1) {
-                listOfFiles[i].delete();
+        for (File listOfFile : listOfFiles) {
+            if (ArrayUtils.indexOf(scripts, listOfFile.getName()) == -1) {
+                listOfFile.delete();
             }
         }
     }
 
     private static Boolean checkExtension(String fileName) {
         String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
-        for (int i = 0; i < SCRIPTS_EXTENSIONS.length; i++) {
-            if (SCRIPTS_EXTENSIONS[i].equals(extension)) {
+        for (String SCRIPTS_EXTENSIONS1 : SCRIPTS_EXTENSIONS) {
+            if (SCRIPTS_EXTENSIONS1.equals(extension)) {
                 return true;
             }
         }
@@ -221,23 +214,22 @@ public class BuildConfigurationManager {
         }
 
         File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-        for (int i = 0; i < directories.length; i++) {
-            if (!isCurrentUserAdministrator()
-                    && !isCurrentUserCreatorOfConfiguration(directories[i].getName())) {
+        for (File directorie : directories) {
+            if (!isCurrentUserAdministrator() && !isCurrentUserCreatorOfConfiguration(directorie.getName())) {
                 continue;
             }
-            configs.add(load(directories[i].getName()));
+            configs.add(load(directorie.getName()));
         }
         return configs;
     }
 
     public static void deleteFiles(String[] files, String pathFolder) {
         File file;
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isEmpty()) {
+        for (String file1 : files) {
+            if (file1.isEmpty()) {
                 continue;
             }
-            file = new File(pathFolder + "\\" + files[i]);
+            file = new File(pathFolder + "\\" + file1);
             file.delete();
         }
     }
@@ -278,35 +270,33 @@ public class BuildConfigurationManager {
             XmlExporter xmlExporter = new XmlExporter();
             String path = xmlExporter.exportToXml(true);
 
-            
             BuildConfigurationModel config = load(editedProjectName);
             currentScm = config.getScm();
-           
-            VersionControlSystem vcs =  new SvnManager();
-            
+
+            VersionControlSystem vcs = new SvnManager();
+
             Settings settings = new Settings();
 
             currentScm4Config = settings.getTypeSCM4Config();
-            
-            if (currentScm4Config.equalsIgnoreCase("Subversion")){
-            	vcs = new SvnManager();
-            } else if (currentScm4Config.equalsIgnoreCase("Git")){
-            	vcs = new GitManager();
+
+            if (currentScm4Config.equalsIgnoreCase("Subversion")) {
+                vcs = new SvnManager();
+            } else if (currentScm4Config.equalsIgnoreCase("Git")) {
+                vcs = new GitManager();
             }
 
-                    
             if (!settings.isSettingsSet()) {
                 VersionControlSystemResult result = new VersionControlSystemResult(false);
                 result.setErrorMassage(CommitError.NONE_PROPERTY.toString());
                 return result;
             }
- 
-            if (currentScm4Config.equalsIgnoreCase("Git")){
+
+            if (currentScm4Config.equalsIgnoreCase("Git")) {
                 ((GitManager) vcs).setLocalRepoPath(settings.getLocalGitRepoPath());
-            	((GitManager) vcs).setProjectName(editedProjectName);
-            	((GitManager) vcs).setBranch(settings.getBranch());
+                ((GitManager) vcs).setProjectName(editedProjectName);
+                ((GitManager) vcs).setBranch(settings.getBranch());
             }
-           
+
             return vcs.doCommit(path, settings.getUrl(), settings.getLogin(),
                     settings.getPassword(), settings.getCommitMessage());
         } finally {
@@ -316,11 +306,7 @@ public class BuildConfigurationManager {
 
     public static Boolean isNameUsing(String name) {
         File checkName = new File(getRootDirectory() + "\\" + name);
-        if (checkName.exists()) {
-            return true;
-        } else {
-            return false;
-        }
+        return checkName.exists();
     }
 
     public static void deleteConfigurationPermanently(String name) throws IOException,
@@ -396,10 +382,9 @@ public class BuildConfigurationManager {
                 result.add(scm.getDisplayName());
                 if (scm.getDisplayName().equalsIgnoreCase("git")) {
                     isGitCatch = true;
-                } else 
-                if (scm.getDisplayName().equalsIgnoreCase("subversion")) {
+                } else if (scm.getDisplayName().equalsIgnoreCase("subversion")) {
                     isSubversionCatch = true;
-                }  
+                }
             }
         }
         if (isGitCatch) {
@@ -412,7 +397,7 @@ public class BuildConfigurationManager {
         } else {
             log.info("----- subversion: plugin wasn't plugged");
         }
-        
+
         return result;
     }
 

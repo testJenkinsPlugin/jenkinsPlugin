@@ -27,9 +27,7 @@ public class GitManager implements VersionControlSystem {
     private static final Logger log = Logger.getLogger(GitManager.class);
     private String localPath;
     private String remotePath;
-
     private Repository localRepo = null;
-    private Repository remoteRepo = null;
     private Git git;
     private String projectName;
     private String localRepositoryPath = "";
@@ -42,7 +40,6 @@ public class GitManager implements VersionControlSystem {
 
         CredentialsProvider cp = new UsernamePasswordCredentialsProvider(login, password);
 
-        
         String justFilePath = "";
         String realFilePath = "";
         String fileName = "";
@@ -50,15 +47,13 @@ public class GitManager implements VersionControlSystem {
             justFilePath = filePath.substring(0, filePath.lastIndexOf("\\"));
             fileName = filePath.substring(filePath.lastIndexOf("\\") + 1, filePath.length());
         }
-//        realFilePath = justFilePath + "\\" + projectName + "\\" + fileName;
         realFilePath = justFilePath + "\\" + fileName;
         Settings configSettings = new Settings();
         String destFilePath = configSettings.getLocalGitRepoPath().substring(0, configSettings.getLocalGitRepoPath().length() - 5);
         Tools.copyConfig2LocalRepoPath(fileName, realFilePath, destFilePath);
-       
+
         Tools.copyConfig2allPaths(filePath);
-        try {
-            // Open an existing repository        
+        try {     
             localRepo = new FileRepositoryBuilder()
                     .setGitDir(new File(localRepositoryPath))
                     .build();
@@ -77,7 +72,7 @@ public class GitManager implements VersionControlSystem {
             } catch (Exception e) {
                 System.out.println(e.getLocalizedMessage());
             }
-            
+
             CommitCommand commit = git.commit();
             commit.setMessage(commitMessage);
             try {
@@ -132,48 +127,6 @@ public class GitManager implements VersionControlSystem {
         this.remotePath = remotePath;
     }
 
-    private String changeFilePath(String filePath) {
-        String realFilePath = "";
-        if (filePath != null) {
-            filePath = filePath.replace("\\", "/");
-            for (int i = 0; i < filePath.length(); i++) {
-                if (filePath.charAt(i) != '.') {
-                    realFilePath += filePath.charAt(i);
-                } else {
-                    if (i < filePath.length() - 5) {
-                        i++;
-                    } else {
-                        realFilePath += filePath.charAt(i);
-                    }
-                }
-            }
-        }
-        return realFilePath;
-    }
-
-    private String changeFilePath2Relative(String filePath) {
-        String realFilePath = "";
-        Boolean isStartPointCatch = false;
-        if (filePath != null) {
-            filePath = filePath.replace("\\", "/");
-            for (int i = 0; i < filePath.length(); i++) {
-                if (filePath.charAt(i) != '.') {
-                    if (isStartPointCatch) {
-                        realFilePath += filePath.charAt(i);
-                    }
-                } else {
-                    if (i < filePath.length() - 5) {
-                        isStartPointCatch = true;
-                        i++;
-                    } else {
-                        realFilePath += filePath.charAt(i);
-                    }
-                }
-            }
-        }
-        return realFilePath;
-    }
-
     public void setProjectName(String editedProjectName) {
         this.projectName = editedProjectName;
     }
@@ -184,5 +137,5 @@ public class GitManager implements VersionControlSystem {
 
     public void setBranch(String value) {
         branch = value;
-    }    
+    }
 }

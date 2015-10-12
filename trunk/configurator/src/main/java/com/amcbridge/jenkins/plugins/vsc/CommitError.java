@@ -1,20 +1,18 @@
 package com.amcbridge.jenkins.plugins.vsc;
 
-public enum CommitError
-{
-	NONE_PROPERTY("Please set all information in Build automation management tool settings."),
-	FAIL("Cannot connect with SVN repository. Please check your settings in manage Jenkins.");
+public enum CommitError {
 
-	private String bmcValue;
+    NONE_PROPERTY("Please set all information in Build automation management tool settings."),
+    FAIL("Cannot connect with repository. Please check your settings in manage Jenkins.");
 
-	private CommitError(String value)
-	{ 
-		this.bmcValue = value; 
-	}
+    private String bmcValue;
 
-	@Override 
-	public String toString()
-	{ 
-		return bmcValue; 
-	} 
+    private CommitError(String value) {
+        this.bmcValue = value;
+    }
+
+    @Override
+    public String toString() {
+        return bmcValue;
+    }
 }

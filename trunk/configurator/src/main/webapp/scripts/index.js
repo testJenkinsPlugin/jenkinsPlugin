@@ -15,7 +15,7 @@ window.onload = function()
 window.onbeforeunload = function (e) {
     if (document.activeElement.href.indexOf("BuildConfigurator") == -1 && !isCommited && isAdmin)
     {
-        return 'Are you sure you want leave this page when configurations it not synchronized with your svn repository?';
+        return 'Are you sure you want leave this page when configurations it not synchronized with your repository?';
     }
 }
 

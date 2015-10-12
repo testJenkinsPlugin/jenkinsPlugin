@@ -1,29 +1,27 @@
 package com.amcbridge.jenkins.plugins.enums;
 
 public enum ConfigurationState {
-	NEW("New", "new"),
-	UPDATED("Updated", "updated"),
-	APPROVED("Approved", "approved"),
-	REJECTED("Rejected", "rejected"),
-	FOR_DELETION("For Deletion", "for-deletion");
 
-	private String Value;
-	private String CSSClassName;
+    NEW("New", "new"),
+    UPDATED("Updated", "updated"),
+    APPROVED("Approved", "approved"),
+    REJECTED("Rejected", "rejected"),
+    FOR_DELETION("For Deletion", "for-deletion");
 
-	private ConfigurationState(String value, String cssClass)
-	{ 
-		this.Value = value; 
-		this.CSSClassName = cssClass;
-	}
+    private final String Value;
+    private final String CSSClassName;
 
-	@Override 
-	public String toString()
-	{ 
-		return Value; 
-	}
+    private ConfigurationState(String value, String cssClass) {
+        this.Value = value;
+        this.CSSClassName = cssClass;
+    }
 
-	public String getCSSClassName()
-	{
-		return CSSClassName;
-	}
+    @Override
+    public String toString() {
+        return Value;
+    }
+
+    public String getCSSClassName() {
+        return CSSClassName;
+    }
 }

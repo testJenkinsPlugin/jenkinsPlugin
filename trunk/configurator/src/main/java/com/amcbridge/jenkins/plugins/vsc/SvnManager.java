@@ -3,7 +3,6 @@ package com.amcbridge.jenkins.plugins.vsc;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
@@ -15,7 +14,6 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.utils.Tools;
 
@@ -53,9 +51,9 @@ public class SvnManager implements VersionControlSystem {
         SVNCommitInfo commitInfo = new SVNCommitInfo(0, login, null);
         VersionControlSystemResult commitResult = new VersionControlSystemResult(false);
         try {
-            
+
             Tools.copyConfig2allPaths(filePath);
-            
+
             SVNRepositoryFactoryImpl.setup();
 
             SVNURL svnUrl = SVNURL.parseURIEncoded(url);

@@ -13,6 +13,7 @@ import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
 import com.thoughtworks.xstream.XStream;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
+import hudson.model.TopLevelItem;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +47,6 @@ import org.xml.sax.SAXException;
 public class JobManagerGenerator {
 
     public static final String COMMA_SEPARATOR = ", ";
-
     private static final String JOB_TEMPLATE_PATH = "\\plugins\\configurator\\job\\config.xml";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
 
@@ -66,7 +66,6 @@ public class JobManagerGenerator {
                     config.getProjectToBuild().get(i).getArtefacts().length));
         }
         JobManagerGenerator.correctArtifactPaths(config.getProjectToBuild());
-        JobManagerGenerator.correctVersionFilePaths(config.getProjectToBuild());
 
         if (isJobExist(jobName)) {
             AbstractItem item = (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
@@ -86,7 +85,6 @@ public class JobManagerGenerator {
             config.getProjectToBuild().get(i).setArtefacts(prevArtefacts.get(i));
         }
 
-                
         createConfigUpdaterJob();
         createConfigUpdaterJobOnSlaveNodes();
 
@@ -116,31 +114,6 @@ public class JobManagerGenerator {
             projectModel.setArtefacts(newArtefactsPaths);
         }
     }
-    
-    private static void correctVersionFilePaths(List<ProjectToBuildModel> projectModels) {
-        String pathPrefix;
-        for (ProjectToBuildModel projectModel : projectModels) {
-            pathPrefix = "";
-            if (projectModel.getLocalDirectoryPath() == null || projectModel.getLocalDirectoryPath().isEmpty()) {
-                pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/') + 1);
-            } else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath())) {
-                if (!projectModel.getLocalDirectoryPath().equals(".")) // No need to add prefix for workspace direct checkout
-                {
-                    pathPrefix = projectModel.getLocalDirectoryPath();
-                }
-            }
-
-            if (!(pathPrefix.isEmpty() || pathPrefix.endsWith("/"))) {
-                pathPrefix += "/";
-            }
-            String[] newVersionFilePath = new String[projectModel.getVersionFiles().length];
-            int counter = 0;
-            for (String versionFilePath : projectModel.getVersionFiles()) {
-                newVersionFilePath[counter++] = pathPrefix + versionFilePath.replaceAll("\\./", "");
-            }
-            projectModel.setVersionFiles(newVersionFilePath);
-        }
-    }
 
     private static void createConfigUpdaterJob() throws FileNotFoundException,
             ParserConfigurationException, SAXException, IOException, TransformerException {
@@ -161,13 +134,7 @@ public class JobManagerGenerator {
 
         FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
         Jenkins.getInstance().createProjectFromXML(jobName, fis);
-        try{
-            Jenkins.getInstance().createProjectFromXML(jobName, fis);
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-        
-        
+
     }
 
     private static void createConfigUpdaterJobOnSlaveNodes() throws FileNotFoundException,
@@ -182,22 +149,20 @@ public class JobManagerGenerator {
         }
 
         BuildConfigurationModel defaultJobModel = createBCModel(url);
-        
+
         List<hudson.model.Node> slaveNodes = Jenkins.getInstance().getNodes();
-//        String[] nodeArray = new String[slaveNodes.size()];
         String[] nodeArray = new String[1];
-        for(int i = 0; i<slaveNodes.size(); i++){
-//            nodeArray[i] = ((hudson.model.Node)slaveNodes.get(i)).getDisplayName();
-            String newJobName = jobName+ "_" + ((hudson.model.Node)slaveNodes.get(i)).getDisplayName();
+        for (int i = 0; i < slaveNodes.size(); i++) {
+            String newJobName = jobName + "_" + ((hudson.model.Node) slaveNodes.get(i)).getDisplayName();
             defaultJobModel.setProjectName(newJobName);
-            nodeArray[0] = ((hudson.model.Node)slaveNodes.get(i)).getDisplayName();
+            nodeArray[0] = ((hudson.model.Node) slaveNodes.get(i)).getDisplayName();
             defaultJobModel.setBuildMachineConfiguration(nodeArray);
             FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
             Jenkins.getInstance().createProjectFromXML(newJobName, fis);
         }
     }
 
-    private static BuildConfigurationModel createBCModel(String url){
+    private static BuildConfigurationModel createBCModel(String url) {
         BuildConfigurationModel defaultJobModel = new BuildConfigurationModel();
         defaultJobModel.setEmail("");
         defaultJobModel.setCreator("");
@@ -205,17 +170,15 @@ public class JobManagerGenerator {
         defaultJobModel.setJobUpdate(false);
         defaultJobModel.setRejectionReason("");
         Settings settings = new Settings();
-        defaultJobModel.setScm(settings.getTypeSCM4Config()); 
+        defaultJobModel.setScm(settings.getTypeSCM4Config());
         defaultJobModel.setScripts(null);
         defaultJobModel.setState(ConfigurationState.APPROVED);
         ProjectToBuildModel projectModel = new ProjectToBuildModel(
-                url, "","", "", "", ".", false, null);
-        defaultJobModel.setProjectToBuild(Arrays.asList(projectModel));   
+                url, "", "", "", "", ".", false, null);
+        defaultJobModel.setProjectToBuild(Arrays.asList(projectModel));
         return defaultJobModel;
     }
-    
-    
-    
+
     public static Boolean isJobExist(String name) {
         for (Item item : Jenkins.getInstance().getAllItems()) {
             if (item.getName().equals(name)) {
@@ -250,7 +213,6 @@ public class JobManagerGenerator {
         jed = getSCM(config);
         setElement(jed, doc, config);
 
-
         if (removeAllBuilders) {
             Node projectTagNode = doc.getElementsByTagName("project").item(0);
             for (int i = 0; i < projectTagNode.getChildNodes().getLength(); i++) {
@@ -261,7 +223,6 @@ public class JobManagerGenerator {
             }
         }
 
-        
         Node buildersTagNode = doc.getElementsByTagName("builders").item(0);
         for (int i = 0; i < buildersTagNode.getChildNodes().getLength(); i++) {
             if (buildersTagNode.getChildNodes().item(i).getNodeName().equals("buildStep")) {
@@ -272,21 +233,21 @@ public class JobManagerGenerator {
                         Node commandPreOrPost = buildStepTagNode.getChildNodes().item(j);
                         if (commandPreOrPost.getAttributes().getNamedItem("id") != null) {
                             String id = commandPreOrPost.getAttributes().getNamedItem("id").getNodeValue();
-                            if (id.equalsIgnoreCase("preScript")){
+                            if (id.equalsIgnoreCase("preScript")) {
                                 if (config.getPreScript() != null) {
                                     commandPreOrPost.setTextContent(config.getPreScript());
                                 } else {
                                     commandPreOrPost.setTextContent("pre empty");
                                 }
-                            } else if (id.equalsIgnoreCase("postScript")){
-                                if (config.getPostScript()!= null) {
+                            } else if (id.equalsIgnoreCase("postScript")) {
+                                if (config.getPostScript() != null) {
                                     commandPreOrPost.setTextContent(config.getPostScript());
                                 } else {
                                     commandPreOrPost.setTextContent("post empty");
                                 }
-                                
+
                             }
-                            
+
                         }
                     }
                 }
@@ -312,10 +273,10 @@ public class JobManagerGenerator {
             jed = new JobNone();
             return jed;
         }
-        if (scm.equalsIgnoreCase("subversion")){
+        if (scm.equalsIgnoreCase("subversion")) {
             jed = new JobSubversion();
-        } else if (scm.equalsIgnoreCase("git")){
-            jed = new JobGit(config.getProjectRemoteUrl(),config.getBranchName());
+        } else if (scm.equalsIgnoreCase("git")) {
+            jed = new JobGit();
         } else {
             jed = new JobNone();
         }

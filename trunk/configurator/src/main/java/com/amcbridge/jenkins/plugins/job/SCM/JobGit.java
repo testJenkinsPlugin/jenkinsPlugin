@@ -7,76 +7,179 @@ import com.amcbridge.jenkins.plugins.job.JobSCM;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class JobGit implements JobElementDescription {
+
     private static final String URL_TAG = "url";
     private static final String PLUGINS_GIT_URC_TAG = "hudson.plugins.git.UserRemoteConfig";
     private static final String USER_REMOTE_CONFIGS_TAG = "userRemoteConfigs";
     private static final String BRANCHES_TAG = "branches";
     private static final String PLUGINS_GIT_BRANCH_SPEC_TAG = "hudson.plugins.git.BranchSpec";
     private static final String BRANCH_NAME_TAG = "name";
-    private String remoteUrl;
-    private String branchName = "origin/";
-
+    private static final String MODULE_TAG = "hudson.plugins.git.GitSCM";
+    private final String branchName = "origin/";
     private static final String TEMPLATE_PATH = "\\plugins\\configurator\\job\\scm\\git.xml";
-
-    public JobGit(String remoteUrl, String branchName){
-        this.remoteUrl = remoteUrl;
-        this.branchName = branchName;
-    }
-
+    private static final Logger log = Logger.getLogger(JobGit.class);
 
     public String getElementTag() {
-		return JobSCM.ELEMENT_TAG;
-	}
+        return JobSCM.ELEMENT_TAG;
+    }
 
-	public String getParentElementTag() {
-		return JobSCM.PARENT_ELEMENT_TAG;
-	}
+    public String getParentElementTag() {
+        return JobSCM.PARENT_ELEMENT_TAG;
+    }
 
-	public String generateXML(BuildConfigurationModel config) {
+    public String generateXML(BuildConfigurationModel config) {
 
         if (config.getProjectToBuild() == null) {
             return StringUtils.EMPTY;
         }
 
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = null;
+        try {
+            docBuilder = docFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+
         Document doc = JobManagerGenerator.loadTemplate(TEMPLATE_PATH);
-        Node userRemoteConfigs = doc.getElementsByTagName(USER_REMOTE_CONFIGS_TAG).item(0);
-        for (int k = 0; k < userRemoteConfigs.getChildNodes().getLength(); k++) {
-            if (userRemoteConfigs.getChildNodes().item(k).getNodeName().equals(PLUGINS_GIT_URC_TAG)) {
-                Node branchTagNode = userRemoteConfigs.getChildNodes().item(k);
-                for (int j = 0; j < branchTagNode.getChildNodes().getLength(); j++) {
-                    if (branchTagNode.getChildNodes().item(j).getNodeName().equals(URL_TAG)) {
-                        branchTagNode.getChildNodes().item(j).setTextContent(remoteUrl);
-                        break;
-                    }
+        Node node = null;
+
+        deleteDefaultUserRemoteConfig(node, doc);
+        makeUserRemoteConfigsPart(docBuilder, doc, config);
+
+        deleteDefaultBranches(node, doc);
+        makeBranchesPart(docBuilder, doc, config);
+
+        return JobManagerGenerator.documentToXML(doc);
+    }
+
+    private void deleteDefaultUserRemoteConfig(Node node, Document doc) {
+        Node userRemoteConfigs;
+        if (doc.getElementsByTagName(USER_REMOTE_CONFIGS_TAG).getLength() > 0) {
+            userRemoteConfigs = doc.getElementsByTagName(USER_REMOTE_CONFIGS_TAG).item(0);
+            try {
+                if (userRemoteConfigs.getChildNodes().getLength() >= 2) {
+                    userRemoteConfigs.removeChild(userRemoteConfigs.getChildNodes().item(1));
                 }
+            } catch (DOMException e) {
+                log.error(e.getLocalizedMessage());
             }
+        } else {
+            node = doc.getFirstChild();
+            node.appendChild(doc.createElement(USER_REMOTE_CONFIGS_TAG));
+        }
+    }
+
+    private void makeUserRemoteConfigsPart(DocumentBuilder docBuilder, Document doc, BuildConfigurationModel config) {
+        Node node = null;
+        Node imported_node = null;
+        Document module = docBuilder.newDocument();
+
+        if (doc.getElementsByTagName(PLUGINS_GIT_URC_TAG).getLength() > 0) {
+            module.appendChild(module.importNode(doc.getElementsByTagName(PLUGINS_GIT_URC_TAG).item(0), true));
         }
 
-        Node branches = doc.getElementsByTagName(BRANCHES_TAG).item(0);
-        for (int k = 0; k < branches.getChildNodes().getLength(); k++) {
-            if (branches.getChildNodes().item(k).getNodeName().equals(PLUGINS_GIT_BRANCH_SPEC_TAG)) {
-                Node branchTagNode = branches.getChildNodes().item(k);
-                for (int j = 0; j < branchTagNode.getChildNodes().getLength(); j++) {
-                    if (branchTagNode.getChildNodes().item(j).getNodeName().equals(BRANCH_NAME_TAG)) {
-                        branchTagNode.getChildNodes().item(j).setTextContent(branchName);
-                        break;
-                    }
-                }
-            }
+        if (module.getChildNodes().getLength() == 0) {
+            node = module.createElement(PLUGINS_GIT_URC_TAG);
+            module.appendChild(node);
         }
 
-		return JobManagerGenerator.documentToXML(doc);
-	}
+        if (module.getElementsByTagName(URL_TAG).getLength() == 0) {
+            node = module.getElementsByTagName(PLUGINS_GIT_URC_TAG).item(0);
+            node.appendChild(module.createElement(URL_TAG));
+        }
 
-	public void appendToXML(BuildConfigurationModel config, Document doc) {
-		doc = JobSCM.removeSCM(doc);
-		doc = JobSCM.insertSCM(doc, generateXML(config));
-	}
+        if (module.getElementsByTagName("globalConfigName").getLength() == 0) {
+            node = module.getElementsByTagName(PLUGINS_GIT_URC_TAG).item(0);
+            node.appendChild(module.createElement("globalConfigName"));
+        }
 
+        if (module.getElementsByTagName("globalConfigEmail").getLength() == 0) {
+            node = module.getElementsByTagName(PLUGINS_GIT_URC_TAG).item(0);
+            node.appendChild(module.createElement("globalConfigEmail"));
+        }
+
+        if (module.getElementsByTagName("refspec").getLength() == 0) {
+            node = module.getElementsByTagName(PLUGINS_GIT_URC_TAG).item(0);
+            node.appendChild(module.createElement("refspec"));
+        }
+
+        node = doc.getElementsByTagName(USER_REMOTE_CONFIGS_TAG).item(0);
+
+        for (int i = 0; i < config.getProjectToBuild().size(); i++) {
+            module = setModuleUrlValue(module, config.getProjectToBuild().get(i).getProjectUrl());
+            imported_node = doc.importNode(module.getChildNodes().item(0), true);
+            node.appendChild(imported_node);
+        }
+    }
+
+    private void deleteDefaultBranches(Node node, Document doc) {
+        Node branches;
+        if (doc.getElementsByTagName(BRANCHES_TAG).getLength() > 0) {
+            branches = doc.getElementsByTagName(BRANCHES_TAG).item(0);
+            try {
+                if (branches.getChildNodes().getLength() >= 2) {
+                    branches.removeChild(branches.getChildNodes().item(1));
+                }
+            } catch (DOMException e) {
+                log.error(e.getLocalizedMessage());
+            }
+        } else {
+            node = doc.getFirstChild();
+            node.appendChild(doc.createElement(BRANCHES_TAG));
+        }
+    }
+
+    private void makeBranchesPart(DocumentBuilder docBuilder, Document doc, BuildConfigurationModel config) {
+        Node node = null;
+        Node imported_node = null;
+        Document module = docBuilder.newDocument();
+
+        if (doc.getElementsByTagName(PLUGINS_GIT_BRANCH_SPEC_TAG).getLength() > 0) {
+            module.appendChild(module.importNode(doc.getElementsByTagName(PLUGINS_GIT_BRANCH_SPEC_TAG).item(0), true));
+        }
+
+        if (module.getChildNodes().getLength() == 0) {
+            node = module.createElement(PLUGINS_GIT_BRANCH_SPEC_TAG);
+            module.appendChild(node);
+        }
+
+        if (module.getElementsByTagName(BRANCH_NAME_TAG).getLength() == 0) {
+            node = module.getElementsByTagName(PLUGINS_GIT_BRANCH_SPEC_TAG).item(0);
+            node.appendChild(module.createElement(BRANCH_NAME_TAG));
+        }
+
+        node = doc.getElementsByTagName(BRANCHES_TAG).item(0);
+
+        for (int i = 0; i < config.getProjectToBuild().size(); i++) {
+            module = setModuleBranchValue(module, config.getProjectToBuild().get(i).getBranchName());
+            imported_node = doc.importNode(module.getChildNodes().item(0), true);
+            node.appendChild(imported_node);
+
+        }
+    }
+
+    public void appendToXML(BuildConfigurationModel config, Document doc) {
+        doc = JobSCM.removeSCM(doc);
+        doc = JobSCM.insertSCM(doc, generateXML(config));
+    }
+
+    private Document setModuleUrlValue(Document module, String url) {
+        Node node = module.getElementsByTagName(URL_TAG).item(0);
+        node.setTextContent(url);
+        return module;
+    }
+
+    private Document setModuleBranchValue(Document module, String branch) {
+        Node node = module.getElementsByTagName(BRANCH_NAME_TAG).item(0);
+        node.setTextContent(branch);
+        return module;
+    }
 }

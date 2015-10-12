@@ -1,22 +1,21 @@
 package com.amcbridge.jenkins.plugins.enums;
 
 public enum FormResult {
-	CREATE("create"),
-	EDIT("edit"),
-	APPROVED("approved"),
-	REJECT("reject"),
-	CANCEL("cancel");
 
-	private String resultValue;
+    CREATE("create"),
+    EDIT("edit"),
+    APPROVED("approved"),
+    REJECT("reject"),
+    CANCEL("cancel");
 
-	private FormResult(String value)
-	{ 
-		this.resultValue = value; 
-	}
+    private final String resultValue;
 
-	@Override 
-	public String toString()
-	{ 
-		return resultValue; 
-	} 
+    private FormResult(String value) {
+        this.resultValue = value;
+    }
+
+    @Override
+    public String toString() {
+        return resultValue;
+    }
 }

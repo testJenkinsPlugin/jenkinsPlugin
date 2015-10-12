@@ -1,12 +1,12 @@
 package com.amcbridge.jenkins.plugins.messenger;
 
-public interface MessageInfo
-{
-	public String getSubject();
+public interface MessageInfo {
 
-	public String getDestinationAddress();
+    public String getSubject();
 
-	public String getMassageText();
-	
-	public String getCC();
+    public String getDestinationAddress();
+
+    public String getMassageText();
+
+    public String getCC();
 }

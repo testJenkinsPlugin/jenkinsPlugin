@@ -8,9 +8,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
-
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
@@ -48,15 +46,14 @@ public class XmlExporter {
         }
 
         File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-        for (int i = 0; i < directories.length; i++) {
-            config = BuildConfigurationManager.load(directories[i].getName());
+        for (File directorie : directories) {
+            config = BuildConfigurationManager.load(directorie.getName());
             if (config.getState().equals(ConfigurationState.APPROVED)) {
                 job = new Job(config);
                 jobs.add(job);
                 BuildConfigurationManager.acm.add(job);
                 continue;
             }
-
             if (!config.getState().equals(ConfigurationState.NEW)) {
                 job = BuildConfigurationManager.acm.get(config.getProjectName());
                 if (job != null) {
