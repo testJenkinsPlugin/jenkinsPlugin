@@ -223,35 +223,34 @@ public class JobManagerGenerator {
             }
         }
 
-        Node buildersTagNode = doc.getElementsByTagName("builders").item(0);
-        for (int i = 0; i < buildersTagNode.getChildNodes().getLength(); i++) {
-            if (buildersTagNode.getChildNodes().item(i).getNodeName().equals("buildStep")) {
-                Node buildStepTagNode = buildersTagNode.getChildNodes().item(i);
+        if (doc.getElementsByTagName("builders").item(0) != null) {
+            Node buildersTagNode = doc.getElementsByTagName("builders").item(0);
+            for (int i = 0; i < buildersTagNode.getChildNodes().getLength(); i++) {
+                if (buildersTagNode.getChildNodes().item(i).getNodeName().equals("buildStep")) {
+                    Node buildStepTagNode = buildersTagNode.getChildNodes().item(i);
 
-                for (int j = 0; j < buildStepTagNode.getChildNodes().getLength(); j++) {
-                    if (buildStepTagNode.getChildNodes().item(j).getNodeName().equals("command")) {
-                        Node commandPreOrPost = buildStepTagNode.getChildNodes().item(j);
-                        if (commandPreOrPost.getAttributes().getNamedItem("id") != null) {
-                            String id = commandPreOrPost.getAttributes().getNamedItem("id").getNodeValue();
-                            if (id.equalsIgnoreCase("preScript")) {
-                                if (config.getPreScript() != null) {
-                                    commandPreOrPost.setTextContent(config.getPreScript());
-                                } else {
-                                    commandPreOrPost.setTextContent("pre empty");
+                    for (int j = 0; j < buildStepTagNode.getChildNodes().getLength(); j++) {
+                        if (buildStepTagNode.getChildNodes().item(j).getNodeName().equals("command")) {
+                            Node commandPreOrPost = buildStepTagNode.getChildNodes().item(j);
+                            if (commandPreOrPost.getAttributes().getNamedItem("id") != null) {
+                                String id = commandPreOrPost.getAttributes().getNamedItem("id").getNodeValue();
+                                if (id.equalsIgnoreCase("preScript")) {
+                                    if (config.getPreScript() != null) {
+                                        commandPreOrPost.setTextContent(config.getPreScript());
+                                    } else {
+                                        commandPreOrPost.setTextContent("pre empty");
+                                    }
+                                } else if (id.equalsIgnoreCase("postScript")) {
+                                    if (config.getPostScript() != null) {
+                                        commandPreOrPost.setTextContent(config.getPostScript());
+                                    } else {
+                                        commandPreOrPost.setTextContent("post empty");
+                                    }
                                 }
-                            } else if (id.equalsIgnoreCase("postScript")) {
-                                if (config.getPostScript() != null) {
-                                    commandPreOrPost.setTextContent(config.getPostScript());
-                                } else {
-                                    commandPreOrPost.setTextContent("post empty");
-                                }
-
                             }
-
                         }
                     }
                 }
-
             }
         }
 
