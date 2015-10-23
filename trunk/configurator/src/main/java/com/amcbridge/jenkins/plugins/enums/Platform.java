@@ -10,7 +10,7 @@ public enum Platform {
     i386("i386"),
     ppc("ppc");
 
-    private final String platformValue;
+    private String platformValue;
 
     private Platform(String value) {
         this.platformValue = value;

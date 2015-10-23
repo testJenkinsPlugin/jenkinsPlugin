@@ -82,6 +82,8 @@ public class ViewGenerator {
         jcontext.setVariable("builders", builder.getBuilders());
         jcontext.setVariable("platforms", Platform.values());
         jcontext.setVariable("configuration", Configuration.values());
+        jcontext.setVariable("credentialsList", ProjectToBuildModel.getCredentialsList());
+        jcontext.setVariable("view", new ProjectToBuildModel());
 
         result.setHtml(launchScript(jcontext, viewTemplatePath));
         return result;
@@ -90,7 +92,7 @@ public class ViewGenerator {
     public ProjectToBuildView getProjectToBuildlView(List<ProjectToBuildModel> views)
             throws UnsupportedEncodingException, JellyException {
         ProjectToBuildView result = new ProjectToBuildView();
-        if (views.isEmpty()) {
+        if (views.size() == 0) {
             result.setHtml(BuildConfigurationManager.STRING_EMPTY);
             result.setViewId(0);
             return result;
@@ -107,15 +109,17 @@ public class ViewGenerator {
         jcontext.setVariable("builders", builder.getBuilders());
         jcontext.setVariable("platforms", Platform.values());
         jcontext.setVariable("configuration", Configuration.values());
-
-        for (ProjectToBuildModel view : views) {
+        jcontext.setVariable("credentialsList", ProjectToBuildModel.getCredentialsList());
+        for (int i = 0; i < views.size(); i++) {
             sourceId = new Vector<Integer>();
+
             jcontext.setVariable("divID", id);
+
             for (Configuration conf : Configuration.values()) {
                 sourceId.add(id);
                 id++;
             }
-            jcontext.setVariable("view", view);
+            jcontext.setVariable("view", views.get(i));
             jcontext.setVariable("sourceId", sourceId);
             html += launchScript(jcontext, viewTemplatePath);
         }

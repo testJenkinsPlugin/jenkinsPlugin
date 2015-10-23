@@ -135,7 +135,7 @@
                     <label class="div-label">Postbuild scripts:</label>
                     <textarea rows="10" cols="60" id="postScript" name="postScript" onblur="validatePostbuildScript(id)">
                     </textarea>
-                </div>
+                </div>                
 
                 <div class="div-confirm-button">
                     <input type="submit" onclick="return isValidForm();" class="confirm-button" name="save" id="save" value="Save"/>

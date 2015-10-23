@@ -18,6 +18,7 @@ public class JobSubversion implements JobElementDescription {
     private static final String MODULE_TAG = "hudson.scm.SubversionSCM_-ModuleLocation";
     private static final String DEFAULT_LOCAL = "Development";
     private static final String LOCATIONS_TAG = "locations";
+    private static final String CREDENTIAL_ID_TAG = "credentialsId";
 
     private static final String TEMPLATE_PATH = "\\plugins\\configurator\\job\\scm\\subversion.xml";
 
@@ -80,6 +81,11 @@ public class JobSubversion implements JobElementDescription {
             node.appendChild(module.createElement(LOCAL_TAG));
         }
 
+        if (module.getElementsByTagName(CREDENTIAL_ID_TAG).getLength() == 0) {
+            node = module.getElementsByTagName(MODULE_TAG).item(0);
+            node.appendChild(module.createElement(CREDENTIAL_ID_TAG));
+        }
+
         folder = module.getElementsByTagName(LOCAL_TAG).item(0).getTextContent();
         if (folder.isEmpty()) {
             folder = DEFAULT_LOCAL;
@@ -88,13 +94,24 @@ public class JobSubversion implements JobElementDescription {
         node = doc.getElementsByTagName(LOCATIONS_TAG).item(0);
 
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
+            String credentialsId = config.getProjectToBuild().get(i).getCredentials();
             module = setModuleValue(module, config.getProjectToBuild().get(i).getProjectUrl(),
                     config.getProjectToBuild().get(i).getLocalDirectoryPath());
+            module = setModuleCredentialsValue(module, credentialsId);
             imported_node = doc.importNode(module.getChildNodes().item(0), true);
             node.appendChild(imported_node);
         }
 
         return JobManagerGenerator.documentToXML(doc);
+    }
+
+    private String getCredentialsId(String credentialsItem) {
+        String res = "";
+        String[] credentialsItemArray = credentialsItem.split(";");
+        if (credentialsItemArray.length > 1) {
+            res = credentialsItemArray[1].trim();
+        }
+        return res;
     }
 
     public void appendToXML(BuildConfigurationModel config, Document doc) {
@@ -107,6 +124,12 @@ public class JobSubversion implements JobElementDescription {
         node.setTextContent(url);
         node = module.getElementsByTagName(LOCAL_TAG).item(0);
         node.setTextContent(folder);
+        return module;
+    }
+
+    private Document setModuleCredentialsValue(Document module, String credentialsId) {
+        Node node = module.getElementsByTagName(CREDENTIAL_ID_TAG).item(0);
+        node.setTextContent(credentialsId);
         return module;
     }
 }

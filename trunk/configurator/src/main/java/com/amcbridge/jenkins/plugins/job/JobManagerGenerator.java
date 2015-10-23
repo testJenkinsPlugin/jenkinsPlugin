@@ -13,7 +13,6 @@ import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
 import com.thoughtworks.xstream.XStream;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
-import hudson.model.TopLevelItem;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -174,7 +173,7 @@ public class JobManagerGenerator {
         defaultJobModel.setScripts(null);
         defaultJobModel.setState(ConfigurationState.APPROVED);
         ProjectToBuildModel projectModel = new ProjectToBuildModel(
-                url, "", "", "", "", ".", false, null);
+                url, "", "", "", "", "", ".", false, null);
         defaultJobModel.setProjectToBuild(Arrays.asList(projectModel));
         return defaultJobModel;
     }

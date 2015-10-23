@@ -9,19 +9,43 @@
          xmlns:p="/lib/hudson/project"
 >
     <div id="${divID}" name="projectToBuild" class="div-add-project-to-build-view">
+
         <label id="close_${divID}" onclick="closeButtonClick(this)" class="close-project-to-build">X</label>
-        <div class="div-folder-chooser">
-            <div class="div-file-chooser-label">
-                <label>Project url:</label>
-            </div>
-            <div>        
-                <input type="text" id="project_Url_${sourceId[0]}" name="projectUrl" onblur="checkURL(id,'url')" value="${view.getProjectUrl()}" class="textbox"/>        
-            </div>
-            <div id="url_error_${sourceId[0]}url" class="error-none">
-                <img src="../images/16x16/error.png"/>
-                Not correct url
+        
+        <div>		
+            <div class="div-folder-chooser">
+                <div class="div-file-chooser-label">
+                    <label>Project url:</label>
+                </div>
+                <div>        
+                    <input type="text" id="project_Url_${sourceId[0]}" name="projectUrl" onblur="checkURL(id,'url')" value="${view.getProjectUrl()}" class="textbox"/>        
+                </div>
+                <div id="url_error_${sourceId[0]}url" class="error-none">
+                    <img src="../images/16x16/error.png"/>
+                    Not correct url
+                </div>
             </div>
         </div>
+        <div class="div-textinput">
+            <div class="div-file-chooser-label">
+                <label>Credentials:</label>
+            </div>
+            <div>
+                <select id="credentials_${sourceId[0]}" name="credentials" 
+                    value="${view.getCredentials()}" 
+                    onblur="checkCredentials(id)" class="textbox">
+                    <option value="not selected" >not selected</option>
+                    <j:forEach items="${credentialsList}" var="sct">
+                        <j:if test="${view.isCredentialSelected(view.getCredentials(),view.getCredentialId(sct))}">
+                            <option value="${view.getCredentialId(sct)}" selected='true'>${view.getCredentialName(sct)}</option>
+                        </j:if>
+                        <j:if test="${!view.isCredentialSelected(view.getCredentials(),view.getCredentialId(sct))}">
+                            <option value="${view.getCredentialId(sct)}" >${view.getCredentialName(sct)}</option>
+                        </j:if>  
+                    </j:forEach>          
+                </select>
+            </div>
+        </div>	
         <div class="div-textinput">
             <div class="div-file-chooser-label">
                 <label>Branch name:</label>
@@ -173,9 +197,8 @@
             <input type="button" onClick="addBuilder(this)" id="addBuilders_${divID}" value="Add Builder"/>
         </div>
         
-             
-        
-    </div>
+    </div>         
+
     <j:forEach items="s" var="config" indexVar="i">
     </j:forEach>
 </j:jelly>

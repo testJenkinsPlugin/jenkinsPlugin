@@ -104,6 +104,7 @@ function setContent(name)
         {
             addToSelectionBox("files_script", scripts[i])
         }
+        
         if(t.responseObject().creator != null)
         {
             buildConfiguration.getFullNameCreator(t.responseObject().creator, function(t){
@@ -381,6 +382,7 @@ function addToSelectionBox(selectionBoxId, path)
     var hiddenInputId = "files_hidden_" + getElementNumber(selectionBoxId);
     addToHidden(hiddenInputId, path);
 }
+
 
 function addToHidden(hiddenInputId, value)
 {
@@ -749,6 +751,14 @@ function checkBranchName(id)
    document.getElementById(id).className = "textbox";
 }
 
+function checkCredentials(id)
+{
+   var credentials = document.getElementById(id).value;
+   var number = getElementNumber(id);
+   document.getElementById("ptb_error_"+number).className = "error-none";
+   document.getElementById(id).className = "textbox";
+}
+
 function checkPath(id)
 {
     var path = document.getElementById(id).value;
@@ -890,3 +900,6 @@ function validAllView()
         }
     }
 }
+
+
+

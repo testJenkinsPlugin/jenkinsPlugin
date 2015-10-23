@@ -8,8 +8,8 @@ public enum ConfigurationState {
     REJECTED("Rejected", "rejected"),
     FOR_DELETION("For Deletion", "for-deletion");
 
-    private final String Value;
-    private final String CSSClassName;
+    private String Value;
+    private String CSSClassName;
 
     private ConfigurationState(String value, String cssClass) {
         this.Value = value;

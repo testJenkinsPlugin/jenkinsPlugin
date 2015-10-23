@@ -46,8 +46,8 @@ public class XmlExporter {
         }
 
         File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-        for (File directorie : directories) {
-            config = BuildConfigurationManager.load(directorie.getName());
+        for (int i = 0; i < directories.length; i++) {
+            config = BuildConfigurationManager.load(directories[i].getName());
             if (config.getState().equals(ConfigurationState.APPROVED)) {
                 job = new Job(config);
                 jobs.add(job);

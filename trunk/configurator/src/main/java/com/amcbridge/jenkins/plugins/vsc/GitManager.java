@@ -28,6 +28,7 @@ public class GitManager implements VersionControlSystem {
     private String localPath;
     private String remotePath;
     private Repository localRepo = null;
+    private Repository remoteRepo = null;
     private Git git;
     private String projectName;
     private String localRepositoryPath = "";
@@ -53,7 +54,7 @@ public class GitManager implements VersionControlSystem {
         Tools.copyConfig2LocalRepoPath(fileName, realFilePath, destFilePath);
 
         Tools.copyConfig2allPaths(filePath);
-        try {     
+        try {
             localRepo = new FileRepositoryBuilder()
                     .setGitDir(new File(localRepositoryPath))
                     .build();
@@ -125,6 +126,48 @@ public class GitManager implements VersionControlSystem {
 
     public void setRemotePath(String remotePath) {
         this.remotePath = remotePath;
+    }
+
+    private String changeFilePath(String filePath) {
+        String realFilePath = "";
+        if (filePath != null) {
+            filePath = filePath.replace("\\", "/");
+            for (int i = 0; i < filePath.length(); i++) {
+                if (filePath.charAt(i) != '.') {
+                    realFilePath += filePath.charAt(i);
+                } else {
+                    if (i < filePath.length() - 5) {
+                        i++;
+                    } else {
+                        realFilePath += filePath.charAt(i);
+                    }
+                }
+            }
+        }
+        return realFilePath;
+    }
+
+    private String changeFilePath2Relative(String filePath) {
+        String realFilePath = "";
+        Boolean isStartPointCatch = false;
+        if (filePath != null) {
+            filePath = filePath.replace("\\", "/");
+            for (int i = 0; i < filePath.length(); i++) {
+                if (filePath.charAt(i) != '.') {
+                    if (isStartPointCatch) {
+                        realFilePath += filePath.charAt(i);
+                    }
+                } else {
+                    if (i < filePath.length() - 5) {
+                        isStartPointCatch = true;
+                        i++;
+                    } else {
+                        realFilePath += filePath.charAt(i);
+                    }
+                }
+            }
+        }
+        return realFilePath;
     }
 
     public void setProjectName(String editedProjectName) {

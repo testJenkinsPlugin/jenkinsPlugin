@@ -22,7 +22,12 @@ public class JobGit implements JobElementDescription {
     private static final String PLUGINS_GIT_BRANCH_SPEC_TAG = "hudson.plugins.git.BranchSpec";
     private static final String BRANCH_NAME_TAG = "name";
     private static final String MODULE_TAG = "hudson.plugins.git.GitSCM";
-    private final String branchName = "origin/";
+    private static final String CREDENTIAL_ID_TAG = "credentialsId";
+    private static final String GLOBAL_CONFIG_NAME_TAG = "globalConfigName";
+    private static final String GLOBAL_CONFIG_MAIL_TAG = "globalConfigEmail";
+
+    private String branchName = "origin/";
+
     private static final String TEMPLATE_PATH = "\\plugins\\configurator\\job\\scm\\git.xml";
     private static final Logger log = Logger.getLogger(JobGit.class);
 
@@ -96,28 +101,39 @@ public class JobGit implements JobElementDescription {
             node.appendChild(module.createElement(URL_TAG));
         }
 
-        if (module.getElementsByTagName("globalConfigName").getLength() == 0) {
+        if (module.getElementsByTagName(GLOBAL_CONFIG_NAME_TAG).getLength() == 0) {
             node = module.getElementsByTagName(PLUGINS_GIT_URC_TAG).item(0);
-            node.appendChild(module.createElement("globalConfigName"));
+            node.appendChild(module.createElement(GLOBAL_CONFIG_NAME_TAG));
         }
 
-        if (module.getElementsByTagName("globalConfigEmail").getLength() == 0) {
+        if (module.getElementsByTagName(GLOBAL_CONFIG_MAIL_TAG).getLength() == 0) {
             node = module.getElementsByTagName(PLUGINS_GIT_URC_TAG).item(0);
-            node.appendChild(module.createElement("globalConfigEmail"));
+            node.appendChild(module.createElement(GLOBAL_CONFIG_MAIL_TAG));
         }
 
-        if (module.getElementsByTagName("refspec").getLength() == 0) {
+        if (module.getElementsByTagName(CREDENTIAL_ID_TAG).getLength() == 0) {
             node = module.getElementsByTagName(PLUGINS_GIT_URC_TAG).item(0);
-            node.appendChild(module.createElement("refspec"));
+            node.appendChild(module.createElement(CREDENTIAL_ID_TAG));
         }
 
         node = doc.getElementsByTagName(USER_REMOTE_CONFIGS_TAG).item(0);
 
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
+            String credentialsId = config.getProjectToBuild().get(i).getCredentials();
             module = setModuleUrlValue(module, config.getProjectToBuild().get(i).getProjectUrl());
+            module = setModuleCredentialsValue(module, credentialsId);
             imported_node = doc.importNode(module.getChildNodes().item(0), true);
             node.appendChild(imported_node);
         }
+    }
+
+    private String getCredentialsId(String credentialsItem) {
+        String res = "";
+        String[] credentialsItemArray = credentialsItem.split(";");
+        if (credentialsItemArray.length > 1) {
+            res = credentialsItemArray[1].trim();
+        }
+        return res;
     }
 
     private void deleteDefaultBranches(Node node, Document doc) {
@@ -174,6 +190,12 @@ public class JobGit implements JobElementDescription {
     private Document setModuleUrlValue(Document module, String url) {
         Node node = module.getElementsByTagName(URL_TAG).item(0);
         node.setTextContent(url);
+        return module;
+    }
+
+    private Document setModuleCredentialsValue(Document module, String credentialsId) {
+        Node node = module.getElementsByTagName(CREDENTIAL_ID_TAG).item(0);
+        node.setTextContent(credentialsId);
         return module;
     }
 

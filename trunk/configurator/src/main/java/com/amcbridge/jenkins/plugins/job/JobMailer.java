@@ -46,7 +46,7 @@ public class JobMailer implements JobElementDescription {
         } else {
             mail = config.getEmail();
         }
-        
+
         node.setTextContent(mail);
     }
 

@@ -1,17 +1,17 @@
 package com.amcbridge.jenkins.plugins.configurationModels;
 
+import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
+import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import hudson.model.User;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
-import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 
 public class BuildConfigurationModel {
 
-    private String projectName, email, creator, date, rejectionReason, scm, configEmail,
-            preScript, postScript;
+    private String projectName, email, creator, date, rejectionReason, scm, configEmail;
+    private String preScript, postScript;
     private Boolean isJobUpdate;
     private ConfigurationState state;
     private List<ProjectToBuildModel> projectToBuild;

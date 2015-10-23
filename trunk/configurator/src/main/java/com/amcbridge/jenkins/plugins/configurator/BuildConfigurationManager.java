@@ -1,6 +1,7 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.xmlSerialization.CredentialItem;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
 import com.amcbridge.jenkins.plugins.enums.SCMElement;
@@ -32,6 +33,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.servlet.ServletException;
 import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import jenkins.model.Jenkins;
@@ -45,6 +48,9 @@ import org.kohsuke.stapler.Stapler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tmatesoft.svn.core.SVNException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class BuildConfigurationManager {
@@ -68,7 +74,7 @@ public class BuildConfigurationManager {
     private static String currentScm4Config = "None";
     private static final Logger log = LoggerFactory.getLogger(BuildConfigurationManager.class);
     private static final SCMLoader scmLoader = new SCMLoader();
-    
+
     public static String getCurrentUserID() {
         if (User.current() != null) {
             return User.current().getId();
@@ -182,8 +188,8 @@ public class BuildConfigurationManager {
 
     private static Boolean checkExtension(String fileName) {
         String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
-        for (String SCRIPTS_EXTENSIONS1 : SCRIPTS_EXTENSIONS) {
-            if (SCRIPTS_EXTENSIONS1.equals(extension)) {
+        for (String script : SCRIPTS_EXTENSIONS) {
+            if (script.equals(extension)) {
                 return true;
             }
         }
@@ -214,22 +220,22 @@ public class BuildConfigurationManager {
         }
 
         File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-        for (File directorie : directories) {
-            if (!isCurrentUserAdministrator() && !isCurrentUserCreatorOfConfiguration(directorie.getName())) {
+        for (File directory : directories) {
+            if (!isCurrentUserAdministrator() && !isCurrentUserCreatorOfConfiguration(directory.getName())) {
                 continue;
             }
-            configs.add(load(directorie.getName()));
+            configs.add(load(directory.getName()));
         }
         return configs;
     }
 
     public static void deleteFiles(String[] files, String pathFolder) {
         File file;
-        for (String file1 : files) {
-            if (file1.isEmpty()) {
+        for (String strFile : files) {
+            if (strFile.isEmpty()) {
                 continue;
             }
-            file = new File(pathFolder + "\\" + file1);
+            file = new File(pathFolder + "\\" + strFile);
             file.delete();
         }
     }
@@ -459,4 +465,88 @@ public class BuildConfigurationManager {
         File currentVersion = new File(path);
         return FileUtils.contentEquals(svnVersion, currentVersion);
     }
+
+    public static List<CredentialItem> openCredentials() throws IOException {
+        String jenkinsHomePath = Jenkins.getInstance().getRootDir().getPath();
+        if (jenkinsHomePath == null) {
+            return new ArrayList();
+        }
+        List<CredentialItem> credentialItemList = new ArrayList<CredentialItem>();
+
+        String fileName = changeFilePath(jenkinsHomePath) + "/credentials.xml";
+        try {
+
+            File fXmlFile = new File(fileName);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(fXmlFile);
+
+            doc.getDocumentElement().normalize();
+            NodeList nList = doc.getElementsByTagName("java.util.concurrent.CopyOnWriteArrayList");
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+                org.w3c.dom.Node nNode = nList.item(temp);
+                System.out.println("\nCurrent Element :" + nNode.getNodeName());
+                if (nNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+                    NodeList nodeList = eElement.getChildNodes();
+                    for (int i = 0; i < nodeList.getLength(); i++) {
+                        org.w3c.dom.Node curNode = nodeList.item(i);
+                        if (curNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                            System.out.println("\nCurrent Element :" + curNode.getNodeName());
+                            Element curElement = (Element) curNode;
+                            CredentialItem crItem = new CredentialItem();
+                            if (curElement.getElementsByTagName("scope").item(0) != null) {
+                                if (curElement.getElementsByTagName("scope").item(0).getTextContent() != null) {
+                                    crItem.setScope(curElement.getElementsByTagName("scope").item(0).getTextContent());
+                                    System.out.println("scope : " + curElement.getElementsByTagName("scope").item(0).getTextContent());
+                                }
+                            }
+                            if (curElement.getElementsByTagName("id").item(0) != null) {
+                                if (curElement.getElementsByTagName("id").item(0).getTextContent() != null) {
+                                    crItem.setId(curElement.getElementsByTagName("id").item(0).getTextContent());
+                                    System.out.println("id : " + curElement.getElementsByTagName("id").item(0).getTextContent());
+                                }
+                            }
+                            if (curElement.getElementsByTagName("username").item(0) != null) {
+                                if (curElement.getElementsByTagName("username").item(0).getTextContent() != null) {
+                                    crItem.setUsername(curElement.getElementsByTagName("username").item(0).getTextContent());
+                                    System.out.println("username : " + curElement.getElementsByTagName("username").item(0).getTextContent());
+                                }
+                            }
+                            if (curElement.getElementsByTagName("description").item(0) != null) {
+                                if (curElement.getElementsByTagName("description").item(0).getTextContent() != null) {
+                                    crItem.setDescription(curElement.getElementsByTagName("description").item(0).getTextContent());
+                                    System.out.println("description : " + curElement.getElementsByTagName("description").item(0).getTextContent());
+                                }
+                            }
+                            credentialItemList.add(crItem);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return credentialItemList;
+    }
+
+    public static String changeFilePath(String filePath) {
+        String realFilePath = "";
+        if (filePath != null) {
+            filePath = filePath.replace("\\", "/");
+            for (int i = 0; i < filePath.length(); i++) {
+                if (filePath.charAt(i) != '.') {
+                    realFilePath += filePath.charAt(i);
+                } else {
+                    if (i < filePath.length() - 5) {
+                        i++;
+                    } else {
+                        realFilePath += filePath.charAt(i);
+                    }
+                }
+            }
+        }
+        return realFilePath;
+    }
+
 }
