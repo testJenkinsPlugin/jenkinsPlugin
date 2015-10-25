@@ -65,6 +65,7 @@ public class JobManagerGenerator {
                     config.getProjectToBuild().get(i).getArtefacts().length));
         }
         JobManagerGenerator.correctArtifactPaths(config.getProjectToBuild());
+        JobManagerGenerator.correctVersionFilesPaths(config.getProjectToBuild());
 
         if (isJobExist(jobName)) {
             AbstractItem item = (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
@@ -92,19 +93,7 @@ public class JobManagerGenerator {
     private static void correctArtifactPaths(List<ProjectToBuildModel> projectModels) {
         String pathPrefix;
         for (ProjectToBuildModel projectModel : projectModels) {
-            pathPrefix = "";
-            if (projectModel.getLocalDirectoryPath() == null || projectModel.getLocalDirectoryPath().isEmpty()) {
-                pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/') + 1);
-            } else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath())) {
-                if (!projectModel.getLocalDirectoryPath().equals(".")) // No need to add prefix for workspace direct checkout
-                {
-                    pathPrefix = projectModel.getLocalDirectoryPath();
-                }
-            }
-
-            if (!(pathPrefix.isEmpty() || pathPrefix.endsWith("/"))) {
-                pathPrefix += "/";
-            }
+            pathPrefix = createPathPrefix(projectModel);
             String[] newArtefactsPaths = new String[projectModel.getArtefacts().length];
             int counter = 0;
             for (String artefactPath : projectModel.getArtefacts()) {
@@ -112,6 +101,35 @@ public class JobManagerGenerator {
             }
             projectModel.setArtefacts(newArtefactsPaths);
         }
+    }
+    
+    private static void correctVersionFilesPaths(List<ProjectToBuildModel> projectModels) {
+        String pathPrefix;
+        for (ProjectToBuildModel projectModel : projectModels) {
+            pathPrefix = createPathPrefix(projectModel);
+            String[] newVersionFilesPaths = new String[projectModel.getVersionFiles().length];
+            int counter = 0;
+            for (String artefactPath : projectModel.getArtefacts()) {
+                newVersionFilesPaths[counter++] = pathPrefix + artefactPath.replaceAll("\\./", "");
+            }
+            projectModel.setVersionFiles(newVersionFilesPaths);
+        }
+    }    
+
+    private static String createPathPrefix(ProjectToBuildModel projectModel) {
+        String pathPrefix = "";
+        if (projectModel.getLocalDirectoryPath() == null || projectModel.getLocalDirectoryPath().isEmpty()) {
+            pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/') + 1);
+        } else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath())) {
+            if (!projectModel.getLocalDirectoryPath().equals(".")) // No need to add prefix for workspace direct checkout
+            {
+                pathPrefix = projectModel.getLocalDirectoryPath();
+            }
+        }
+        if (!(pathPrefix.isEmpty() || pathPrefix.endsWith("/"))) {
+            pathPrefix += "/";
+        }
+        return pathPrefix;
     }
 
     private static void createConfigUpdaterJob() throws FileNotFoundException,
@@ -249,7 +267,7 @@ public class JobManagerGenerator {
                                             commandPreOrPost.setTextContent(config.getPostScript());
                                         } else {
                                             buildersTagNode.removeChild(buildStepTagNode);
-                                        }    
+                                        }
                                     } else {
                                         buildersTagNode.removeChild(buildStepTagNode);
                                     }
