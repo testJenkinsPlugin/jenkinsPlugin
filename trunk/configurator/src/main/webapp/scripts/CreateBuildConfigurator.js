@@ -710,22 +710,6 @@ function checkMail(mailp)
         return false;
 }
 
-function validatePrebuildScript(id){
-   var preScriptText = document.getElementById(id).value;
-   var number = getElementNumber(id);
-   document.getElementById("ptb_error_"+number).className = "error-none";
-   document.getElementById(id).className = "textbox";    
-}
-
-
-function validatePostbuildScript(script){
-   var postScriptText = document.getElementById(id).value;
-   var number = getElementNumber(id);
-   document.getElementById("ptb_error_"+number).className = "error-none";
-   document.getElementById(id).className = "textbox";    
-}
-
-
 function checkURL(id,add)
 {
     var url = document.getElementById(id).value;
@@ -741,22 +725,6 @@ function checkURL(id,add)
         document.getElementById("url_error_"+number+add).className = "error-block";
         document.getElementById(id).className= "textbox-error";
     }
-}
-
-function checkBranchName(id)
-{
-   var branchName = document.getElementById(id).value;
-   var number = getElementNumber(id);
-   document.getElementById("ptb_error_"+number).className = "error-none";
-   document.getElementById(id).className = "textbox";
-}
-
-function checkCredentials(id)
-{
-   var credentials = document.getElementById(id).value;
-   var number = getElementNumber(id);
-   document.getElementById("ptb_error_"+number).className = "error-none";
-   document.getElementById(id).className = "textbox";
 }
 
 function checkPath(id)
@@ -897,7 +865,11 @@ function validAllView()
         textboxes = view[i].getElementsByClassName("textbox");
         for (var j=0; j<textboxes.length; j++)
         {
-            textboxes[j].onblur();
+            if ((textboxes[j].name != "credentials")&&(textboxes[j].name != "branchName")&&
+                (textboxes[j].name != "preScript")&&(textboxes[j].name != "postScript")){
+               textboxes[j].onblur();
+            }    
+            
         }
     }
 }
