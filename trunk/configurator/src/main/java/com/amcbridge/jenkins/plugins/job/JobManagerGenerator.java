@@ -235,15 +235,23 @@ public class JobManagerGenerator {
                                 String id = commandPreOrPost.getAttributes().getNamedItem("id").getNodeValue();
                                 if (id.equalsIgnoreCase("preScript")) {
                                     if (config.getPreScript() != null) {
-                                        commandPreOrPost.setTextContent(config.getPreScript());
+                                        if (!config.getPreScript().isEmpty()) {
+                                            commandPreOrPost.setTextContent(config.getPreScript());
+                                        } else {
+                                            buildersTagNode.removeChild(buildStepTagNode);
+                                        }
                                     } else {
-                                        commandPreOrPost.setTextContent("pre empty");
+                                        buildersTagNode.removeChild(buildStepTagNode);
                                     }
                                 } else if (id.equalsIgnoreCase("postScript")) {
                                     if (config.getPostScript() != null) {
-                                        commandPreOrPost.setTextContent(config.getPostScript());
+                                        if (!config.getPostScript().isEmpty()) {
+                                            commandPreOrPost.setTextContent(config.getPostScript());
+                                        } else {
+                                            buildersTagNode.removeChild(buildStepTagNode);
+                                        }    
                                     } else {
-                                        commandPreOrPost.setTextContent("post empty");
+                                        buildersTagNode.removeChild(buildStepTagNode);
                                     }
                                 }
                             }
