@@ -1,16 +1,13 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-import com.amcbridge.jenkins.plugins.xmlSerialization.Job;
+import com.amcbridge.jenkins.plugins.serialization.Job;
 import com.amcbridge.jenkins.plugins.xmlSerialization.XmlExporter;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApproveConfigurationManager {
 

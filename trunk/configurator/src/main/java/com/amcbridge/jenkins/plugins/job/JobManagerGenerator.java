@@ -1,47 +1,41 @@
 package com.amcbridge.jenkins.plugins.job;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.configurationModels.BuilderConfigModel;
 import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
+import com.amcbridge.jenkins.plugins.enums.Configuration;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescriptionCheckBox;
 import com.amcbridge.jenkins.plugins.job.SCM.JobGit;
 import com.amcbridge.jenkins.plugins.job.SCM.JobNone;
 import com.amcbridge.jenkins.plugins.job.SCM.JobSubversion;
+import com.amcbridge.jenkins.plugins.serialization.*;
 import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
+import com.google.common.collect.Lists;
 import com.thoughtworks.xstream.XStream;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class JobManagerGenerator {
 
@@ -54,6 +48,7 @@ public class JobManagerGenerator {
         return xstream.toXML(obj);
     }
 
+    //TODO: refactor
     public static void createJob(BuildConfigurationModel config)
             throws FileNotFoundException, ParserConfigurationException,
             SAXException, IOException, TransformerException {
@@ -78,6 +73,7 @@ public class JobManagerGenerator {
                 Jenkins.getInstance().createProjectFromXML(jobName, fis);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
+                throw new IOException("Job not created!", ex);
             }
         }
 
@@ -94,27 +90,26 @@ public class JobManagerGenerator {
         String pathPrefix;
         for (ProjectToBuildModel projectModel : projectModels) {
             pathPrefix = createPathPrefix(projectModel);
-            String[] newArtefactsPaths = new String[projectModel.getArtefacts().length];
-            int counter = 0;
-            for (String artefactPath : projectModel.getArtefacts()) {
-                newArtefactsPaths[counter++] = pathPrefix + artefactPath.replaceAll("\\./", "");
+            String[] paths = new String[projectModel.getArtefacts().length];
+            for (int i = 0; i < paths.length; i++) {
+                String newPath = pathPrefix + projectModel.getArtefacts()[i].replaceAll("\\./", "");
+                paths[i] = newPath;
             }
-            projectModel.setArtefacts(newArtefactsPaths);
+            projectModel.setArtefacts(paths);
         }
     }
-    
+
     private static void correctVersionFilesPaths(List<ProjectToBuildModel> projectModels) {
-        String pathPrefix;
         for (ProjectToBuildModel projectModel : projectModels) {
-            pathPrefix = createPathPrefix(projectModel);
-            String[] newVersionFilesPaths = new String[projectModel.getVersionFiles().length];
-            int counter = 0;
-            for (String artefactPath : projectModel.getArtefacts()) {
-                newVersionFilesPaths[counter++] = pathPrefix + artefactPath.replaceAll("\\./", "");
+            String pathPrefix = createPathPrefix(projectModel);
+            String[] paths = new String[projectModel.getVersionFiles().length];
+            for (int i = 0; i < paths.length; i++) {
+                String newPath = pathPrefix + projectModel.getVersionFiles()[i].replaceAll("\\./", "");
+                paths[i] = newPath;
             }
-            projectModel.setVersionFiles(newVersionFilesPaths);
+            projectModel.setVersionFiles(paths);
         }
-    }    
+    }
 
     private static String createPathPrefix(ProjectToBuildModel projectModel) {
         String pathPrefix = "";
@@ -132,6 +127,7 @@ public class JobManagerGenerator {
         return pathPrefix;
     }
 
+    //TODO: bug!
     private static void createConfigUpdaterJob() throws FileNotFoundException,
             ParserConfigurationException, SAXException, IOException, TransformerException {
 
@@ -389,6 +385,7 @@ public class JobManagerGenerator {
         return result;
     }
 
+    //TODO: StringUtils
     public static String validJobName(String name) {
         for (char ch : name.toCharArray()) {
             if (!Character.isLetterOrDigit(ch) && !ArrayUtils.contains(SPECIAL_SYMBOLS, ch)) {
@@ -406,5 +403,73 @@ public class JobManagerGenerator {
                 return;
             }
         }
+    }
+
+    //TODO: refactor
+    public static Job buildJob(BuildConfigurationModel config) {
+        Job job = new Job();
+
+        job.setName(JobManagerGenerator.validJobName(config.getProjectName()));
+        job.setBuildMachineConfiguration(config.getBuildMachineConfiguration());
+        job.setScripts(config.getScripts());
+
+        if (config.getProjectToBuild() != null) {
+            job.setProjects(new ArrayList<Project>(config.getProjectToBuild().size()));
+            for (ProjectToBuildModel projectModel : config.getProjectToBuild()) {
+
+                Repository repo = new Repository();
+                repo.setType(config.getScm());
+                repo.setUrl(projectModel.getProjectUrl());
+
+                PathToArtefacts artefacts = new PathToArtefacts();
+                for (String artefactPath : projectModel.getArtefacts()) {
+                    artefacts.addFile(artefactPath);
+                }
+
+                VersionFile versionFiles = new VersionFile();
+                if (versionFiles != null) {
+                    for (String versionFilePath : projectModel.getVersionFiles()) {
+                        versionFiles.addFile(versionFilePath);
+                    }
+                    if (!versionFiles.getFiles().isEmpty()) {
+                        versionFiles.setIsVersionFile(true);
+                    }
+                }
+
+                List<Config> configurations = null;
+                if (projectModel.getBuilders() != null) {
+                    configurations = new ArrayList<Config>(projectModel.getBuilders().length);
+                    for (BuilderConfigModel builderModel : projectModel.getBuilders()) {
+                        Config newConfig = null;
+                        if (builderModel.getConfigs().isEmpty()) {
+                            newConfig = new Config();
+                            newConfig.setBuilder(builderModel.getBuilder());
+                            newConfig.setPlatform(builderModel.getPlatform());
+                            configurations.add(newConfig);
+                        } else {
+                            for (Configuration configEnum : builderModel.getConfigs()) {
+                                newConfig = new Config(configEnum.toString(), builderModel.getBuilder(),
+                                        builderModel.getPlatform());
+                                if (configEnum.equals(Configuration.OTHER)) {
+                                    newConfig.setUserConfig(builderModel.getUserConfig());
+                                }
+                                configurations.add(newConfig);
+                            }
+                        }
+                    }
+                }
+
+                Project newProject = new Project();
+                newProject.setRepository(repo);
+                newProject.setPathToFile(projectModel.getFileToBuild());
+                newProject.setLocalDirectory(projectModel.getLocalDirectoryPath() == ""
+                        ? null : projectModel.getLocalDirectoryPath());
+                newProject.setPathToArtefacts(artefacts);
+                newProject.setVersionFiles(versionFiles);
+                newProject.setConfigs(configurations);
+                job.getProjects().add(newProject);
+            }
+        }
+        return job;
     }
 }

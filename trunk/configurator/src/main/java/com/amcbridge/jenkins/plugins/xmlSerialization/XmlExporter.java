@@ -1,24 +1,22 @@
 package com.amcbridge.jenkins.plugins.xmlSerialization;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
+import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
+import com.amcbridge.jenkins.plugins.serialization.Job;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @XStreamAlias("configurations")
 public class XmlExporter {
 
-    private static final String XML_TITLE = "<?xml version='1.0' encoding='UTF-8'?>\n";
+    private static final String XML_TITLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
     private List<Job> configurations;
 
@@ -49,7 +47,7 @@ public class XmlExporter {
         for (int i = 0; i < directories.length; i++) {
             config = BuildConfigurationManager.load(directories[i].getName());
             if (config.getState().equals(ConfigurationState.APPROVED)) {
-                job = new Job(config);
+                job = JobManagerGenerator.buildJob(config);
                 jobs.add(job);
                 BuildConfigurationManager.acm.add(job);
                 continue;

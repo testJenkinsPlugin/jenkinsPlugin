@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
 import net.sf.json.JSONObject;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -37,7 +38,7 @@ import com.amcbridge.jenkins.plugins.messenger.*;
 import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
 import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
-import com.amcbridge.jenkins.plugins.xmlSerialization.Job;
+import com.amcbridge.jenkins.plugins.serialization.Job;
 import hudson.Extension;
 import hudson.model.RootAction;
 import hudson.model.User;
@@ -90,7 +91,7 @@ public final class BuildConfigurator implements RootAction {
     }
 
     public void doCreateNewConfigurator(final StaplerRequest request,
-            final StaplerResponse response) throws
+                                        final StaplerResponse response) throws
             IOException, ServletException, ParserConfigurationException, JAXBException,
             AddressException, MessagingException {
 
@@ -133,7 +134,7 @@ public final class BuildConfigurator implements RootAction {
                 newConfig.setJobUpdate(false);
                 BuildConfigurationManager.save(newConfig);
 
-                Job newJob = new Job(newConfig);
+                Job newJob = JobManagerGenerator.buildJob(newConfig);
                 Job currentJob = BuildConfigurationManager.acm.get(newConfig.getProjectName());
                 if (!newJob.equals(currentJob)) {
                     BuildConfigurationManager.acm.add(newJob);
@@ -165,7 +166,7 @@ public final class BuildConfigurator implements RootAction {
     }
 
     public String doUploadFile(final HttpServletRequest request,
-            final HttpServletResponse response) throws FileUploadException, IOException {
+                               final HttpServletResponse response) throws FileUploadException, IOException {
         DiskFileItemFactory factory = new DiskFileItemFactory();
         ServletFileUpload upload = new ServletFileUpload(factory);
         List items = upload.parseRequest(request);

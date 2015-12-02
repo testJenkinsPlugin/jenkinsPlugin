@@ -1,12 +1,11 @@
 package com.amcbridge.jenkins.plugins.xmlSerialization;
 
-import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
-import java.util.List;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 
 public class ExportSettings extends Builder {
@@ -89,7 +88,7 @@ public class ExportSettings extends Builder {
 
         @Override
         public String getDisplayName() {
-            return BuildConfigurationManager.STRING_EMPTY;
+            return StringUtils.EMPTY;
         }
 
         @Override
@@ -106,10 +105,5 @@ public class ExportSettings extends Builder {
             }
             return true;
         }
-
-        public List<String> getSCM() {
-            return BuildConfigurationManager.getSCM();
-        }
-
     }
 }

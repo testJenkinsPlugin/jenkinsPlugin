@@ -1,7 +1,7 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.xmlSerialization.CredentialItem;
+import com.amcbridge.jenkins.plugins.serialization.CredentialItem;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
 import com.amcbridge.jenkins.plugins.enums.SCMElement;

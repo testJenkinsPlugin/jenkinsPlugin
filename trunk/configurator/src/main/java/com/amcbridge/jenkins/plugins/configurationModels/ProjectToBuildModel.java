@@ -1,6 +1,6 @@
 package com.amcbridge.jenkins.plugins.configurationModels;
 
-import com.amcbridge.jenkins.plugins.xmlSerialization.CredentialItem;
+import com.amcbridge.jenkins.plugins.serialization.CredentialItem;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import java.io.IOException;
 import java.util.ArrayList;

@@ -2,8 +2,10 @@ package com.amcbridge.jenkins.plugins.utils;
 
 import com.amcbridge.jenkins.plugins.vsc.GitManager;
 import hudson.Util;
+
 import java.io.File;
 import java.io.IOException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
@@ -37,9 +39,10 @@ public class Tools {
     public static void copyConfig2LocalRepoPath(String fileName, String realFilePath, String destFilePath) {
         File source = new File(realFilePath);
         File dest = new File(destFilePath);
-        if (org.codehaus.plexus.util.FileUtils.fileExists(destFilePath + "/" + fileName)) {
+        File file = new File(destFilePath + "/" + fileName);
+        if (file.exists()) {
             try {
-                Util.deleteFile(new File(destFilePath + "/" + fileName));
+                Util.deleteFile(file);
                 FileUtils.copyFileToDirectory(source, dest);
             } catch (IOException ex) {
                 log.error(ex.getLocalizedMessage());
@@ -55,9 +58,10 @@ public class Tools {
         }
         String builderPath = System.getenv(envVar);
         File dest = new File(builderPath);
-        if (org.codehaus.plexus.util.FileUtils.fileExists(builderPath + "/" + fileName)) {
+        File file = new File(builderPath + "/" + fileName);
+        if (file.exists()) {
             try {
-                Util.deleteFile(new File(builderPath + "/" + fileName));
+                Util.deleteFile(file);
                 FileUtils.copyFileToDirectory(source, dest);
             } catch (IOException ex) {
                 log.error(ex.getLocalizedMessage());
