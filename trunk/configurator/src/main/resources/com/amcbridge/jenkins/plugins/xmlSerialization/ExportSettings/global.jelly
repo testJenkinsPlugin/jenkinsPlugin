@@ -44,6 +44,5 @@
         </f:entry>
         
     </f:section>
-    <j:forEach items="s" var="config" indexVar="i">
-    </j:forEach>
+
 </j:jelly>
