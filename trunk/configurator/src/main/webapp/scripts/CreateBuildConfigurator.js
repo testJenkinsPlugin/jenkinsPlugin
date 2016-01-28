@@ -190,8 +190,25 @@ function addView()
         iDiv.innerHTML = t.responseObject().html;
         document.getElementById("projectsToBuild").appendChild(iDiv);
         var currentDivId = iDiv.firstElementChild.id;
-        document.getElementById("localDirectoryPath_" + currentDivId).value = 
-        	"Development" + ((projectNumber > 0) ? projectNumber : "");
+
+        var scm = document.getElementById("typeSCM");
+        var scmValue = scm.options[scm.selectedIndex].value;
+
+        var defaultLocalPath;
+        switch (scmValue){
+            case 'Git':
+                defaultLocalPath = ".";
+            break;
+            case 'Subversion':
+                defaultLocalPath = "Development";
+            break;
+            default:
+                defaultLocalPath = "";
+            break;
+        }
+         defaultLocalPath =  defaultLocalPath + ((projectNumber > 0) ? projectNumber : "");
+
+        document.getElementById("localDirectoryPath_" + currentDivId).value = defaultLocalPath;
         projectNumber++;
     });
 }
