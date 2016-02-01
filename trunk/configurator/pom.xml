@@ -25,6 +25,15 @@
       <url>http://repo.jenkins-ci.org/public/</url>
     </repository>
 
+
+      <repository>
+      <id>repo.amc.test</id>
+      <url>https://scm.amcbridge.com/scm/svn/repo_build_automation_management_tool/</url>
+    </repository>
+
+
+
+
   </repositories>
 
   <pluginRepositories>
@@ -102,12 +111,12 @@
           <artifactId>xstream</artifactId>
           <version>1.4.7</version>
       </dependency>
-<!--
+
       <dependency>
           <groupId>com.amcbridge.jenkins.plugins</groupId>
           <artifactId>amcbridge-jenkins-plugins-lib</artifactId>
           <version>1.0</version>
-      </dependency>-->
+      </dependency>
 
       <dependency>
           <groupId>org.kohsuke</groupId>
