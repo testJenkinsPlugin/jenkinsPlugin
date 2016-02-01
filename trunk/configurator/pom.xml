@@ -24,6 +24,16 @@
       <id>repo.jenkins-ci.org</id>
       <url>http://repo.jenkins-ci.org/public/</url>
     </repository>
+
+
+      <repository>
+      <id>repo.amc.test</id>
+      <url>https://scm.amcbridge.com/scm/svn/repo_build_automation_management_tool/</url>
+    </repository>
+
+
+
+
   </repositories>
 
   <pluginRepositories>
