@@ -210,8 +210,13 @@ function addView()
 
         document.getElementById("localDirectoryPath_" + currentDivId).value = defaultLocalPath;
         projectNumber++;
+        addBuilderOnDefault(currentDivId);
+
     });
 }
+
+
+
 
 function loadViews(projectName)
 {
@@ -226,6 +231,17 @@ function loadViews(projectName)
         iDiv.innerHTML = t.responseObject().html;
         document.getElementById("projectsToBuild").appendChild(iDiv);
         projectNumber = iDiv.childNodes.length;
+    });
+}
+
+function addBuilderOnDefault(parentId)
+{
+    buildConfiguration.getBuilderView(
+    function(t)
+    {
+        var iDiv = document.createElement("div");
+        iDiv.innerHTML = t.responseObject().html;
+        document.getElementById("builders_" + parentId).appendChild(iDiv);
     });
 }
 
