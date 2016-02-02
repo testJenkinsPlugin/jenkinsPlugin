@@ -147,12 +147,15 @@
       </plugins>
   </build>
 
-    <profiles>
+
+    <!--don't remove-->
+
+<!--    <profiles>
         <profile>
             <id>jenkins_debug</id>
             <build>
                 <directory>work/plugins</directory>
             </build>
         </profile>
-    </profiles>
+    </profiles>-->
 </project>
