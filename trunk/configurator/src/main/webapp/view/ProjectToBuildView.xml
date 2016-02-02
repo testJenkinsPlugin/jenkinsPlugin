@@ -31,18 +31,30 @@
                 <label>Credentials:</label>
             </div>
             <div>
-                <select id="credentials_${sourceId[0]}" name="credentials" 
-                    value="${view.getCredentials()}" 
-                    onblur="checkCredentials(id)" class="textbox">
-                    <option value="not selected" >not selected</option>
+                <select id="credentials_${sourceId[0]}" name="credentials"
+                        value="${view.getCredentials()}"
+                        onblur="checkCredentials(id)" class="textbox">
+                    <option value="not selected">not selected</option>
                     <j:forEach items="${credentialsList}" var="sct">
-                        <j:if test="${view.isCredentialSelected(view.getCredentials(),view.getCredentialId(sct))}">
-                            <option value="${view.getCredentialId(sct)}" selected='true'>${view.getCredentialName(sct)}</option>
-                        </j:if>
-                        <j:if test="${!view.isCredentialSelected(view.getCredentials(),view.getCredentialId(sct))}">
-                            <option value="${view.getCredentialId(sct)}" >${view.getCredentialName(sct)}</option>
-                        </j:if>  
-                    </j:forEach>          
+
+                        <j:choose>
+                            <j:when test="${((view.getCredentials()==null) and (sct.startsWith(view.DEFAULT_CREDENTIAL_NAME)))}">
+                                <option value="${view.getCredentialId(sct)}" selected='true'>
+                                    ${view.getCredentialName(sct)}
+                                </option>
+                            </j:when>
+
+                            <j:when test="${view.isCredentialSelected(view.getCredentials(),view.getCredentialId(sct))}">
+                                <option value="${view.getCredentialId(sct)}" selected='true'>
+                                    ${view.getCredentialName(sct)}
+                                </option>
+                            </j:when>
+
+                            <j:otherwise>
+                                <option value="${view.getCredentialId(sct)}">${view.getCredentialName(sct)}</option>
+                            </j:otherwise>
+                        </j:choose>
+                    </j:forEach>
                 </select>
             </div>
         </div>	

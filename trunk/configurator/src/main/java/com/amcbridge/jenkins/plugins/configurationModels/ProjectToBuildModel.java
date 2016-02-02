@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 public class ProjectToBuildModel {
-
+    public static final String DEFAULT_CREDENTIAL_NAME = "builduser/";
     private String projectUrl, fileToBuild, localDirectoryPath, branchName, credentials;
 
     private Boolean isVersionFiles;
@@ -147,7 +147,8 @@ public class ProjectToBuildModel {
         }
         String[] arr = curCredentials.split(";");
         if (arr.length > 1) {
-            return arr[0].trim();
+            res = arr[0].trim();
+            return res;
         } else {
             return res;
         }
