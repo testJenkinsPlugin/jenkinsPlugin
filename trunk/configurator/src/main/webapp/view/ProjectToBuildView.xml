@@ -109,7 +109,7 @@
         
         <div class="div-project-to-build">
             <div class="project-to-build-label">
-                <label class="div-file-chooser-label">Path to artefacts:</label>
+                <label class="div-file-chooser-label">Path to artifacts:</label>
             </div>
             <div>
                 <input type="text" id="path_input_${sourceId[1]}" name="pathToArtefacts" onblur="checkPath(id)" class="textbox"/>
@@ -129,7 +129,7 @@
             </div>
             <div class="div-legend">
                 <fieldset>
-                    <legend>Artefacts</legend>
+                    <legend>Artifacts</legend>
                     <select id="files_${sourceId[1]}" name="artefacts_group" class="select" onchange="selectionBoxIndexChange(this)" size="3">
                         <j:set var="forHidden" value=""/>
                         <j:forEach items="${view.getArtefacts()}" var="art" indexVar="i">
