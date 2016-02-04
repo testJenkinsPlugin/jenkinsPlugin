@@ -1,5 +1,6 @@
 package com.amcbridge.jenkins.plugins.configurationModels;
 
+import com.amcbridge.jenkins.plugins.enums.UserLoader;
 import com.amcbridge.jenkins.plugins.serialization.CredentialItem;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import java.io.IOException;
@@ -152,6 +153,14 @@ public class ProjectToBuildModel {
         } else {
             return res;
         }
+    }
+
+
+    public static String getUserDefaultCredentials() {
+        UserLoader loader = new UserLoader();
+        return loader.getUserDefaultCredentials();
+
+
     }
 
 }

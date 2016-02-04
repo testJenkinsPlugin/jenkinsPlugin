@@ -38,12 +38,11 @@
                     <j:forEach items="${credentialsList}" var="sct">
 
                         <j:choose>
-                            <j:when test="${((view.getCredentials()==null) and (sct.startsWith(view.DEFAULT_CREDENTIAL_NAME)))}">
-                                <option value="${view.getCredentialId(sct)}" selected='true'>
+                            <j:when test="${((view.getCredentials()==null) and view.getUserDefaultCredentials()!=null and sct.endsWith(view.getUserDefaultCredentials()))}">
+                                <option value="${view.getCredentialId(view.getUserDefaultCredentials())}" selected='true'>
                                     ${view.getCredentialName(sct)}
                                 </option>
                             </j:when>
-
                             <j:when test="${view.isCredentialSelected(view.getCredentials(),view.getCredentialId(sct))}">
                                 <option value="${view.getCredentialId(sct)}" selected='true'>
                                     ${view.getCredentialName(sct)}
@@ -56,6 +55,7 @@
                         </j:choose>
                     </j:forEach>
                 </select>
+                <input type="button" id="def_cred_button" onclick="setDefaultCredentials(${sourceId[0]})" value="Set as default"/>
             </div>
         </div>	
         <div class="div-textinput">

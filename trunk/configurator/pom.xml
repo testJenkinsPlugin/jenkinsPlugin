@@ -150,7 +150,7 @@
 
     <!--don't remove-->
 
-   <!-- <profiles>
+<!--    <profiles>
         <profile>
             <id>jenkins_debug</id>
             <build>

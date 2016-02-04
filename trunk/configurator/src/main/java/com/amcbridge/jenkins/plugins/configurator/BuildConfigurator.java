@@ -97,6 +97,9 @@ public final class BuildConfigurator implements RootAction {
 
         JSONObject formAttribute = request.getSubmittedForm();
 
+        String newDefaultCredentials = formAttribute.get("default_credentials")!=null?formAttribute.get("default_credentials").toString():null ;
+        UserLoader userLoader = new UserLoader();
+        userLoader.updateUserDefaultCredentials(newDefaultCredentials);
         BuildConfigurationModel newConfig = new BuildConfigurationModel();
 
         request.bindJSON(newConfig, formAttribute);

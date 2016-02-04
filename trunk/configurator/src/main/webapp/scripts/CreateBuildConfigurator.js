@@ -215,7 +215,11 @@ function addView()
     });
 }
 
-
+function setDefaultCredentials(credentials_select_id){
+    var credentials_select = document.getElementById("credentials_"+credentials_select_id);
+    var def_cred_value = credentials_select.options[credentials_select.selectedIndex].value;
+    document.getElementById("def_cred").value = def_cred_value;
+}
 
 
 function loadViews(projectName)
