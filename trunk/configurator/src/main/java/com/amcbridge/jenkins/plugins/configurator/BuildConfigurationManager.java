@@ -376,7 +376,8 @@ public class BuildConfigurationManager {
     }
 
     public static String getAdminEmail() {
-        return JenkinsLocationConfiguration.get().getAdminAddress();
+        String adminMail = JenkinsLocationConfiguration.get().getAdminAddress();
+        return adminMail;
     }
 
     public static List<String> getSCM() {

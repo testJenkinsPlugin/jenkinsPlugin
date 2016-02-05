@@ -46,6 +46,9 @@
                 <j:if test="${!it.isCommited()}">
                     <label class="not-synchronized" onclick="exportToXml();">Need to synchronize configuration</label>
                 </j:if>
+                <j:if test="${!it.isJenkinsEmailConfigOK()}">
+                                    <label class="not-synchronized">Please, set correct Jenkins email address</label>
+                                </j:if>
             </j:if>
 
             <table>

@@ -35,7 +35,11 @@ public class MailSender implements Runnable {
             port = Integer.parseInt(prop.getProperty("port"));
         } catch (IOException ex) {
             ex.printStackTrace();
-        } finally {
+        }
+        catch(NumberFormatException e){
+            e.printStackTrace();
+        }
+        finally {
             if (input != null) {
                 try {
                     input.close();
@@ -88,5 +92,8 @@ public class MailSender implements Runnable {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+    public static String getMailPropertiesFileName(){
+        return MAIL_PROPERTIES_FILE_NAME;
     }
 }

@@ -1,15 +1,12 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.servlet.ServletException;
@@ -344,6 +341,36 @@ public final class BuildConfigurator implements RootAction {
     public String getDefaultUserCredentials(){
         String credentialsId = ProjectToBuildModel.getUserDefaultCredentials();
         return credentialsId==null?"":credentialsId;
+    }
+    @JavaScriptMethod
+    public boolean isJenkinsEmailConfigOK() {
+        Properties prop = new Properties();
+        InputStream inputStream = null;
+        boolean isEmailPropertiesOK = false;
+        boolean isPortOk = false;
+        try {
+            inputStream = MailSender.class.getResourceAsStream(MailSender.getMailPropertiesFileName());
+            prop.load(inputStream);
+
+            isEmailPropertiesOK = (prop.getProperty("host") != null) && (prop.getProperty("from") != null) && (prop.getProperty("pass") != null);
+            String strPort = prop.getProperty("port");
+            isPortOk = (strPort != null) && (strPort.matches("[0-9]+"));
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return isEmailPropertiesOK && isPortOk;
+        }
+
+
     }
 
 }
