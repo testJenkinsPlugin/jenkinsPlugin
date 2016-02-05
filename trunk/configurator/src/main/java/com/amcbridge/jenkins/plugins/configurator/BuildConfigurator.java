@@ -19,6 +19,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import net.sf.json.JSONObject;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -338,4 +339,12 @@ public final class BuildConfigurator implements RootAction {
     public Boolean isCommited() {
         return isCommited;
     }
+
+    @JavaScriptMethod
+    public String getDefaultUserCredentials(){
+        String credentialsId = ProjectToBuildModel.getUserDefaultCredentials();
+        return credentialsId==null?"":credentialsId;
+    }
+
 }
+

@@ -84,6 +84,7 @@ public class ViewGenerator {
         jcontext.setVariable("configuration", Configuration.values());
         jcontext.setVariable("credentialsList", ProjectToBuildModel.getCredentialsList());
         jcontext.setVariable("view", new ProjectToBuildModel());
+        jcontext.setVariable("userDefaultCredentials", ProjectToBuildModel.getUserDefaultCredentials());
 
         result.setHtml(launchScript(jcontext, viewTemplatePath));
         return result;

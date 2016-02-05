@@ -147,7 +147,7 @@
                     <input type="hidden" name="formResultHidden" id="formResultHidden"/>
                     <input type="hidden" name="formType" id="formType"/>
                     <input type="hidden" id="rejectionReason" name="rejectionReason" value=""/>
-                    <input type="hidden" id="def_cred" name="default_credentials" value=""/>
+                    <input type="hidden" id="def_cred" name="default_credentials" value="${it.getDefaultUserCredentials()}"/>
                 </div>
             </f:form>
         </l:main-panel>

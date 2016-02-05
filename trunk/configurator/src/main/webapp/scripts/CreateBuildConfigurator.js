@@ -206,16 +206,36 @@ function addView()
                 defaultLocalPath = "";
             break;
         }
-         defaultLocalPath =  defaultLocalPath + ((projectNumber > 0) ? projectNumber : "");
-
+        // setting default local path
+        defaultLocalPath =  defaultLocalPath + ((projectNumber > 0) ? projectNumber : "");
         document.getElementById("localDirectoryPath_" + currentDivId).value = defaultLocalPath;
         projectNumber++;
         addBuilderOnDefault(currentDivId);
 
+
+
+
+        // setting default credentials on view creating
+        var cred_select = document.getElementById("credentials_"+currentDivId);
+        var default_cred_value = document.getElementById("def_cred").value;
+        for(var i = 0; i< cred_select.options.length; i++) {
+            if(cred_select.options[i].value === default_cred_value) {
+            cred_select.selectedIndex = i;
+            cred_select.options[i].selected = 'selected';
+            break;
+        }
+    }
+
+
+
+
+
+
     });
 }
 
-function setDefaultCredentials(credentials_select_id){
+
+function setCurrentCredentialsAsDefault(credentials_select_id){
     var credentials_select = document.getElementById("credentials_"+credentials_select_id);
     var def_cred_value = credentials_select.options[credentials_select.selectedIndex].value;
     document.getElementById("def_cred").value = def_cred_value;
