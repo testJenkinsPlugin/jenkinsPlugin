@@ -352,12 +352,14 @@ public final class BuildConfigurator implements RootAction {
             inputStream = MailSender.class.getResourceAsStream(MailSender.getMailPropertiesFileName());
             prop.load(inputStream);
 
-            isEmailPropertiesOK = (prop.getProperty("host") != null) && (prop.getProperty("from") != null) && (prop.getProperty("pass") != null);
+            String host = prop.getProperty("host");
+            String from = prop.getProperty("from");
+            String pass = prop.getProperty("pass");
+            isEmailPropertiesOK = (host != null && host!="") && (from != null && from!="") && (pass != null); //password can be empty?
             String strPort = prop.getProperty("port");
             isPortOk = (strPort != null) && (strPort.matches("[0-9]+"));
 
-
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             if (inputStream != null) {

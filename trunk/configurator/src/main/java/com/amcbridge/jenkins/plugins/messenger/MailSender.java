@@ -33,12 +33,10 @@ public class MailSender implements Runnable {
             from = prop.getProperty("from");
             pass = prop.getProperty("pass");
             port = Integer.parseInt(prop.getProperty("port"));
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        catch(NumberFormatException e){
-            e.printStackTrace();
-        }
+
         finally {
             if (input != null) {
                 try {
