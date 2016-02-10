@@ -242,42 +242,43 @@ public class JobManagerGenerator {
 
         //creating pre and post builds scripts
 
-        String scriptType = config.getScriptType().equals(BATCH_SCRIPT_TYPE) ? BATCH_SCRIPT_CLASS : SHELL_SCRIPT_CLASS;
+        if(config.getScriptType() != null) {
+            String scriptType = config.getScriptType().equals(BATCH_SCRIPT_TYPE) ? BATCH_SCRIPT_CLASS : SHELL_SCRIPT_CLASS;
 
 
-        NodeList buildStepNodeList = null;
-        Element buildStepNode = null;
-        Element commandNode = null;
-        Text scriptBody = null;
+            NodeList buildStepNodeList = null;
+            Element buildStepNode = null;
+            Element commandNode = null;
+            Text scriptBody = null;
 
-        //preScript
-        if (config.getPreScript() != null && config.getPreScript() != "") {
-            buildStepNodeList = doc.getElementsByTagName("builders");
+            //preScript
+            if (config.getPreScript() != null && config.getPreScript() != "") {
+                buildStepNodeList = doc.getElementsByTagName("builders");
 
-            buildStepNode = doc.createElement("buildStep");
-            buildStepNode.setAttribute("class", scriptType);
-            commandNode = doc.createElement("command");
-            commandNode.setAttribute("id", PREBUILD_SCRIPT_ID);
+                buildStepNode = doc.createElement("buildStep");
+                buildStepNode.setAttribute("class", scriptType);
+                commandNode = doc.createElement("command");
+                commandNode.setAttribute("id", PREBUILD_SCRIPT_ID);
 
-            scriptBody = doc.createTextNode(config.getPreScript());
-            commandNode.appendChild(scriptBody);
-            buildStepNode.appendChild(commandNode);
-            buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getFirstChild());
+                scriptBody = doc.createTextNode(config.getPreScript());
+                commandNode.appendChild(scriptBody);
+                buildStepNode.appendChild(commandNode);
+                buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getFirstChild());
+            }
+            //postScript
+            if (config.getPostScript() != null && config.getPostScript() != "") {
+                buildStepNodeList = doc.getElementsByTagName("builders");
+                buildStepNode = doc.createElement("buildStep");
+                buildStepNode.setAttribute("class", scriptType);
+                commandNode = doc.createElement("command");
+                commandNode.setAttribute("id", POSTBUILD_SCRIPT_ID);
+
+                scriptBody = doc.createTextNode(config.getPostScript());
+                commandNode.appendChild(scriptBody);
+                buildStepNode.appendChild(commandNode);
+                buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getLastChild());
+            }
         }
-        //postScript
-        if (config.getPostScript() != null && config.getPostScript() != "") {
-            buildStepNodeList = doc.getElementsByTagName("builders");
-            buildStepNode = doc.createElement("buildStep");
-            buildStepNode.setAttribute("class", scriptType);
-            commandNode = doc.createElement("command");
-            commandNode.setAttribute("id", POSTBUILD_SCRIPT_ID);
-
-            scriptBody = doc.createTextNode(config.getPostScript());
-            commandNode.appendChild(scriptBody);
-            buildStepNode.appendChild(commandNode);
-            buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getLastChild());
-        }
-
         // saving job config.xml
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
