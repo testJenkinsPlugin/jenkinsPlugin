@@ -622,19 +622,11 @@
     float: right;
 }
 
-.wrong-jenkins-email {
-    background-color:#FF0000;
-    -moz-border-radius:39px;
-    -webkit-border-radius:39px;
-    border-radius:39px;
-    display:inline-block;
-    cursor:pointer;
-    color:#ffffff;
-    font-size:12px;
-    padding:4px 30px;
-    text-decoration:none;
-    text-shadow:0px 0px 0px #44c767;
-    float: right;
+.wrong-email
+{
+    font-family: Verdana, Helvetica, sans serif;
+    font-size: 12px;
+    color: #CC0000;
 }
 
 .not-synchronized:active {

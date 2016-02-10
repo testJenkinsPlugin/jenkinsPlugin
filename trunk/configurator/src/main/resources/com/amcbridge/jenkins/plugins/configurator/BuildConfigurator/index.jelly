@@ -36,6 +36,12 @@
                 </div>
             </div>
             <h1>Configurations</h1>
+            <j:if test="${isAdmin}">
+            <j:if test="${!it.isJenkinsEmailConfigOK()}">
+                                                <label class="wrong-email">Please, set correct email properties to receive email notifications from Jenkins</label>
+                                         <br/>   </j:if>
+                                            </j:if>
+
             <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
 
             <j:if test="${isAdmin}">
@@ -46,9 +52,6 @@
                 <j:if test="${!it.isCommited()}">
                     <label class="not-synchronized" onclick="exportToXml();">Need to synchronize configuration</label>
                 </j:if>
-                <j:if test="${!it.isJenkinsEmailConfigOK()}">
-                                    <label class="wrong-jenkins-email">Please, set correct Jenkins email address</label>
-                                </j:if>
             </j:if>
 
             <table>
