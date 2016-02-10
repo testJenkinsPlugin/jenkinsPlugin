@@ -355,7 +355,7 @@ public final class BuildConfigurator implements RootAction {
             String host = prop.getProperty("host");
             String from = prop.getProperty("from");
             String pass = prop.getProperty("pass");
-            isEmailPropertiesOK = (host != null && host!="") && (from != null && from!="") && (pass != null); //password can be empty?
+            isEmailPropertiesOK = (host != null && !host.equals("")) && (from != null && !from.equals("")) && (pass != null && !pass.equals(""));
             String strPort = prop.getProperty("port");
             isPortOk = (strPort != null) && (strPort.matches("[0-9]+"));
 
