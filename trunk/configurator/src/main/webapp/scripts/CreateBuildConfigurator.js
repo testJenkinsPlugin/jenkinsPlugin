@@ -66,6 +66,7 @@ function setContent(name)
         document.getElementById("typeSCM").value = t.responseObject().scm;
         document.getElementById("preScript").value = t.responseObject().preScript;
         document.getElementById("postScript").value = t.responseObject().postScript;
+        setScriptTypeSelect(t.responseObject().scriptType);
 
         if(t.responseObject().rejectionReason != "")
             document.getElementById("reasonLabel").innerHTML = "Reason of rejection:  "+t.responseObject().rejectionReason;
@@ -234,6 +235,18 @@ function addView()
     });
 }
 
+function setScriptTypeSelect(scriptTypeSelected){
+
+        var script_select = document.getElementById("scriptTypeSelect");
+        for(var i = 0; i< script_select.options.length; i++) {
+            if(script_select.options[i].value === scriptTypeSelected) {
+            script_select.selectedIndex = i;
+            script_select.options[i].selected = 'selected';
+            break;
+        }
+    }
+
+}
 
 function setCurrentCredentialsAsDefault(credentials_select_id){
     var credentials_select = document.getElementById("credentials_"+credentials_select_id);

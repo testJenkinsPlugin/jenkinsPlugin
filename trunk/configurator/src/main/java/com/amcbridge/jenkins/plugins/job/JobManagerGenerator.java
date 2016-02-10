@@ -13,15 +13,13 @@ import com.amcbridge.jenkins.plugins.job.SCM.JobNone;
 import com.amcbridge.jenkins.plugins.job.SCM.JobSubversion;
 import com.amcbridge.jenkins.plugins.serialization.*;
 import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
-import com.google.common.collect.Lists;
 import com.thoughtworks.xstream.XStream;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -39,6 +37,12 @@ import java.util.regex.Pattern;
 
 public class JobManagerGenerator {
 
+    private static final String SHELL_SCRIPT_CLASS = "hudson.tasks.Shell";
+    private static final String BATCH_SCRIPT_CLASS = "hudson.tasks.BatchFile";
+    public static final String BATCH_SCRIPT_TYPE = "batch_type";
+    public static final String SHELL_SCRIPT_TYPE = "shell_type";
+    private static final String PREBUILD_SCRIPT_ID =  "preScript";
+    private static final String POSTBUILD_SCRIPT_ID =  "postScript";
     public static final String COMMA_SEPARATOR = ", ";
     private static final String JOB_TEMPLATE_PATH = "\\plugins\\configurator\\job\\config.xml";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
@@ -236,45 +240,45 @@ public class JobManagerGenerator {
             }
         }
 
-        if (doc.getElementsByTagName("builders").item(0) != null) {
-            Node buildersTagNode = doc.getElementsByTagName("builders").item(0);
-            for (int i = 0; i < buildersTagNode.getChildNodes().getLength(); i++) {
-                if (buildersTagNode.getChildNodes().item(i).getNodeName().equals("buildStep")) {
-                    Node buildStepTagNode = buildersTagNode.getChildNodes().item(i);
+        //creating pre and post builds scripts
 
-                    for (int j = 0; j < buildStepTagNode.getChildNodes().getLength(); j++) {
-                        if (buildStepTagNode.getChildNodes().item(j).getNodeName().equals("command")) {
-                            Node commandPreOrPost = buildStepTagNode.getChildNodes().item(j);
-                            if (commandPreOrPost.getAttributes().getNamedItem("id") != null) {
-                                String id = commandPreOrPost.getAttributes().getNamedItem("id").getNodeValue();
-                                if (id.equalsIgnoreCase("preScript")) {
-                                    if (config.getPreScript() != null) {
-                                        if (!config.getPreScript().isEmpty()) {
-                                            commandPreOrPost.setTextContent(config.getPreScript());
-                                        } else {
-                                            buildersTagNode.removeChild(buildStepTagNode);
-                                        }
-                                    } else {
-                                        buildersTagNode.removeChild(buildStepTagNode);
-                                    }
-                                } else if (id.equalsIgnoreCase("postScript")) {
-                                    if (config.getPostScript() != null) {
-                                        if (!config.getPostScript().isEmpty()) {
-                                            commandPreOrPost.setTextContent(config.getPostScript());
-                                        } else {
-                                            buildersTagNode.removeChild(buildStepTagNode);
-                                        }
-                                    } else {
-                                        buildersTagNode.removeChild(buildStepTagNode);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        String scriptType = config.getScriptType().equals(BATCH_SCRIPT_TYPE) ? BATCH_SCRIPT_CLASS : SHELL_SCRIPT_CLASS;
+
+
+        NodeList buildStepNodeList = null;
+        Element buildStepNode = null;
+        Element commandNode = null;
+        Text scriptBody = null;
+
+        //preScript
+        if (config.getPreScript() != null && config.getPreScript() != "") {
+            buildStepNodeList = doc.getElementsByTagName("builders");
+
+            buildStepNode = doc.createElement("buildStep");
+            buildStepNode.setAttribute("class", scriptType);
+            commandNode = doc.createElement("command");
+            commandNode.setAttribute("id", PREBUILD_SCRIPT_ID);
+
+            scriptBody = doc.createTextNode(config.getPreScript());
+            commandNode.appendChild(scriptBody);
+            buildStepNode.appendChild(commandNode);
+            buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getFirstChild());
+        }
+        //postScript
+        if (config.getPostScript() != null && config.getPostScript() != "") {
+            buildStepNodeList = doc.getElementsByTagName("builders");
+            buildStepNode = doc.createElement("buildStep");
+            buildStepNode.setAttribute("class", scriptType);
+            commandNode = doc.createElement("command");
+            commandNode.setAttribute("id", POSTBUILD_SCRIPT_ID);
+
+            scriptBody = doc.createTextNode(config.getPostScript());
+            commandNode.appendChild(scriptBody);
+            buildStepNode.appendChild(commandNode);
+            buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getLastChild());
         }
 
+        // saving job config.xml
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         DOMSource source = new DOMSource(doc);
@@ -285,6 +289,7 @@ public class JobManagerGenerator {
 
         return file;
     }
+
 
     public static JobElementDescription getSCM(BuildConfigurationModel config) {
         String scm = config.getScm();

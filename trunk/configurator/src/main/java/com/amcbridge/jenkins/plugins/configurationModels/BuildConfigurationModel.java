@@ -11,6 +11,7 @@ import java.util.List;
 public class BuildConfigurationModel {
 
     private String projectName, email, creator, date, rejectionReason, scm, configEmail;
+    private String scriptType;
     private String preScript, postScript;
     private Boolean isJobUpdate;
     private ConfigurationState state;
@@ -147,5 +148,13 @@ public class BuildConfigurationModel {
 
     public String getRejectionReason() {
         return rejectionReason;
+    }
+
+    public String getScriptType() {
+        return scriptType;
+    }
+
+    public void setScriptType(String scriptType) {
+        this.scriptType = scriptType;
     }
 }

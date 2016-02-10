@@ -123,9 +123,22 @@
                     <label id="label-add-view" class="label-add-view-hidden">You should create one project to build</label>
                 </div>
 
-              
+                    <div>
+                    <label class="div-label">Script type</label>
+
+
+                                  <select name="scriptType" id="scriptTypeSelect">
+                                      <option value="batch_type">Windows batch</option>
+                                      <option value="shell_type">Unix shell</option>
+                                 </select>
+
+                        <br/>
+                        <br/>
+                    </div>
                 <div>
                     <label class="div-label">Prebuild scripts:</label>
+
+
                     <textarea rows="10" cols="60" id="preScript" name="preScript" onblur="validatePrebuildScript(id)">
                     </textarea>   
                     <input type="hidden" name="scripts" id="files_hidden_script"/>
@@ -138,6 +151,7 @@
                 </div>                
 
                 <div class="div-confirm-button">
+
                     <input type="submit" onclick="return isValidForm();" class="confirm-button" name="save" id="save" value="Save"/>
                     <span class="span"></span>
                     <input type="button" onclick="rejectDiv();" class="reject-button" name="reject" id="reject" value="Reject"/>
