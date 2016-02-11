@@ -37,12 +37,12 @@ import java.util.regex.Pattern;
 
 public class JobManagerGenerator {
 
-    private static final String SHELL_SCRIPT_CLASS = "hudson.tasks.Shell";
-    private static final String BATCH_SCRIPT_CLASS = "hudson.tasks.BatchFile";
-    public static final String BATCH_SCRIPT_TYPE = "batch_type";
-    public static final String SHELL_SCRIPT_TYPE = "shell_type";
-    private static final String PREBUILD_SCRIPT_ID =  "preScript";
-    private static final String POSTBUILD_SCRIPT_ID =  "postScript";
+    private static final String BUILDSTEP_SHELL_SCRIPT_CLASS = "hudson.tasks.Shell";
+    private static final String BUILDSTEP_BATCH_SCRIPT_CLASS = "hudson.tasks.BatchFile";
+    public static final String CONFIG_BATCH_TYPE = "batch_type";
+    public static final String CONFIG_SHELL_TYPE = "shell_type";
+    private static final String COMMAND_PREBUILD_SCRIPT_POSITION =  "preScript";
+    private static final String COMMAND_POSTBUILD_SCRIPT_POSITION =  "postScript";
     public static final String COMMA_SEPARATOR = ", ";
     private static final String JOB_TEMPLATE_PATH = "\\plugins\\configurator\\job\\config.xml";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
@@ -243,13 +243,19 @@ public class JobManagerGenerator {
         //creating pre and post builds scripts
 
         if (config.getScriptType() != null) {
-            String scriptType = config.getScriptType().equals(BATCH_SCRIPT_TYPE) ? BATCH_SCRIPT_CLASS : SHELL_SCRIPT_CLASS;
+            String buildStepScriptClass = config.getScriptType().equals(CONFIG_BATCH_TYPE) ? BUILDSTEP_BATCH_SCRIPT_CLASS : BUILDSTEP_SHELL_SCRIPT_CLASS;
             NodeList buildStepNodeList = doc.getElementsByTagName("builders");
-            if (config.getPreScript() != null && config.getPreScript() != "") {
-                createScriptNode(config, buildStepNodeList, doc, scriptType, PREBUILD_SCRIPT_ID);
+            Element buildStepNode = null;
+
+            if (config.getPreScript() != null && !config.getPreScript().equals("")) {
+                buildStepNode = doc.createElement("buildStep");
+                createScriptNode(doc, buildStepNode, COMMAND_PREBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPreScript());
+                buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getFirstChild());
             }
-            if (config.getPostScript() != null && config.getPostScript() != "") {
-                createScriptNode(config, buildStepNodeList, doc, scriptType, POSTBUILD_SCRIPT_ID);
+            if (config.getPostScript() != null && !config.getPostScript().equals("")) {
+                buildStepNode = doc.createElement("buildStep");
+                createScriptNode(doc, buildStepNode, COMMAND_POSTBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPostScript());
+                buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getLastChild());
             }
         }
 
@@ -264,29 +270,17 @@ public class JobManagerGenerator {
         return file;
     }
 
-    private static void createScriptNode(BuildConfigurationModel config, NodeList buildStepNodeList, Document doc, String scriptType, String scriptPosition) {
+    private static void createScriptNode(Document doc, Element buildStepNode, String commandIdPosition, String buildStepScriptClass, String scriptBody) {
 
-        String stringScriptBody = "";
 
-        String commandId = scriptType.equals(BATCH_SCRIPT_TYPE) ? BATCH_SCRIPT_CLASS : SHELL_SCRIPT_CLASS;
-
-        Element buildStepNode = doc.createElement("buildStep");
-        buildStepNode.setAttribute("class", scriptType);
+        buildStepNode.setAttribute("class", buildStepScriptClass);
         Element commandNode = doc.createElement("command");
-        commandNode.setAttribute("id", commandId);
-        if (scriptPosition.equals(PREBUILD_SCRIPT_ID)) {
-            stringScriptBody = config.getPreScript();
-        } else {
-            stringScriptBody = config.getPostScript();
-        }
-        Text scriptBody = doc.createTextNode(stringScriptBody);
-        commandNode.appendChild(scriptBody);
+        commandNode.setAttribute("id", commandIdPosition);
+
+        Text scriptBodyNode = doc.createTextNode(scriptBody);
+        commandNode.appendChild(scriptBodyNode);
         buildStepNode.appendChild(commandNode);
-        if (scriptPosition.equals(PREBUILD_SCRIPT_ID)) {
-            buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getFirstChild());
-        } else {
-            buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getLastChild());
-        }
+
     }
 
     public static JobElementDescription getSCM(BuildConfigurationModel config) {
