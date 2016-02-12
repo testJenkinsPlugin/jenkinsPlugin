@@ -40,14 +40,17 @@ public class Tools {
         File source = new File(realFilePath);
         File dest = new File(destFilePath);
         File file = new File(destFilePath + "/" + fileName);
-        if (file.exists()) {
-            try {
+        try {
+            if (file.exists()) {
                 Util.deleteFile(file);
-                FileUtils.copyFileToDirectory(source, dest);
-            } catch (IOException ex) {
-                log.error(ex.getLocalizedMessage());
             }
+            FileUtils.copyFileToDirectory(source, dest);
+
+        } catch (IOException ex) {
+            log.error(ex.getLocalizedMessage());
         }
+
+
     }
 
     public static void copyConfig2BuildServerPath(String fileName, String realFilePath, String envVar) {
