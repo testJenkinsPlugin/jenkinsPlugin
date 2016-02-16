@@ -269,15 +269,15 @@ public class BuildConfigurationManager {
 
     }
 
-    public static VersionControlSystemResult exportToXml(String editedProjectName)
+    public static VersionControlSystemResult exportToXml(/*String editedProjectName*/)
             throws SVNException, IOException, InterruptedException {
         lock.lock();
         try {
             XmlExporter xmlExporter = new XmlExporter();
             String path = xmlExporter.exportToXml(true);
 
-            BuildConfigurationModel config = load(editedProjectName);
-            currentScm = config.getScm();
+//            BuildConfigurationModel config = load(editedProjectName);
+//            currentScm = config.getScm();
 
             VersionControlSystem vcs = new SvnManager();
 
@@ -299,7 +299,7 @@ public class BuildConfigurationManager {
 
             if (currentScm4Config.equalsIgnoreCase("Git")) {
                 ((GitManager) vcs).setLocalRepoPath(settings.getLocalGitRepoPath());
-                ((GitManager) vcs).setProjectName(editedProjectName);
+//                ((GitManager) vcs).setProjectName(editedProjectName);
                 ((GitManager) vcs).setBranch(settings.getBranch());
             }
 

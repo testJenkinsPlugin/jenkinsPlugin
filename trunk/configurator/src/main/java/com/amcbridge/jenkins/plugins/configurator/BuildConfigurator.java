@@ -159,7 +159,7 @@ public final class BuildConfigurator implements RootAction {
             default:
                 break;
         }
-        editedProjectName = newConfig.getProjectName();
+//        editedProjectName = newConfig.getProjectName();
         BuildConfigurationManager.save(newConfig);
         message.setDestinationAddress(getAdminEmails());
         mail.sendMail(message);
@@ -246,7 +246,7 @@ public final class BuildConfigurator implements RootAction {
     @JavaScriptMethod
     public VersionControlSystemResult exportToXml()
             throws SVNException, IOException, InterruptedException {
-        VersionControlSystemResult result = BuildConfigurationManager.exportToXml(editedProjectName);
+        VersionControlSystemResult result = BuildConfigurationManager.exportToXml(/*editedProjectName*/);
         if (result.getSuccess()) {
             isCommited = true;
         } else {

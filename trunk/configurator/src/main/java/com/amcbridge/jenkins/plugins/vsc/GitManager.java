@@ -30,7 +30,7 @@ public class GitManager implements VersionControlSystem {
     private Repository localRepo = null;
     private Repository remoteRepo = null;
     private Git git;
-    private String projectName;
+//    private String projectName;
     private String localRepositoryPath = "";
     private String branch = "origin/HEAD";
 
@@ -170,9 +170,9 @@ public class GitManager implements VersionControlSystem {
         return realFilePath;
     }
 
-    public void setProjectName(String editedProjectName) {
+/*    public void setProjectName(String editedProjectName) {
         this.projectName = editedProjectName;
-    }
+    }*/
 
     public void setLocalRepoPath(String localRepoPath) {
         localRepositoryPath = localRepoPath;
