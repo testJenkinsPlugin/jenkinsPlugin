@@ -12,14 +12,16 @@ import com.amcbridge.jenkins.plugins.job.SCM.JobGit;
 import com.amcbridge.jenkins.plugins.job.SCM.JobNone;
 import com.amcbridge.jenkins.plugins.job.SCM.JobSubversion;
 import com.amcbridge.jenkins.plugins.serialization.*;
+import com.amcbridge.jenkins.plugins.serialization.Job;
+import com.amcbridge.jenkins.plugins.serialization.Project;
 import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
 import com.thoughtworks.xstream.XStream;
-import hudson.model.AbstractItem;
-import hudson.model.Item;
+import hudson.model.*;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.*;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,9 +32,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class JobManagerGenerator {
@@ -41,10 +41,11 @@ public class JobManagerGenerator {
     private static final String BUILDSTEP_BATCH_SCRIPT_CLASS = "hudson.tasks.BatchFile";
     public static final String CONFIG_BATCH_TYPE = "batch_type";
     public static final String CONFIG_SHELL_TYPE = "shell_type";
-    private static final String COMMAND_PREBUILD_SCRIPT_POSITION =  "preScript";
-    private static final String COMMAND_POSTBUILD_SCRIPT_POSITION =  "postScript";
+    private static final String PREBUILD_SCRIPT_POSITION =  "preScript";
+    private static final String POSTBUILD_SCRIPT_POSITION =  "postScript";
     public static final String COMMA_SEPARATOR = ", ";
     private static final String JOB_TEMPLATE_PATH = "\\plugins\\configurator\\job\\config.xml";
+    private static final String JOB_FOLDER_PATH = "\\jobs\\";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
 
     public static String convertToXML(Object obj) {
@@ -67,10 +68,7 @@ public class JobManagerGenerator {
         JobManagerGenerator.correctVersionFilesPaths(config.getProjectToBuild());
 
         if (isJobExist(jobName)) {
-            AbstractItem item = (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
-            Source streamSource = new StreamSource(getJobXML(config, false));
-            item.updateByXml(streamSource);
-            item.save();
+            updateJobXML(jobName, config);
         } else {
             try {
                 FileInputStream fis = new FileInputStream(getJobXML(config, false));
@@ -89,6 +87,9 @@ public class JobManagerGenerator {
         createConfigUpdaterJobOnSlaveNodes();
 
     }
+
+
+
 
     private static void correctArtifactPaths(List<ProjectToBuildModel> projectModels) {
         String pathPrefix;
@@ -210,7 +211,7 @@ public class JobManagerGenerator {
             SAXException, IOException, TransformerException {
         Document doc = loadTemplate(JOB_TEMPLATE_PATH);
         if (doc == null) {
-            return null;
+            throw new FileNotFoundException(JOB_TEMPLATE_PATH + " file not found");
         }
 
         JobElementDescription jed;
@@ -231,32 +232,12 @@ public class JobManagerGenerator {
         setElement(jed, doc, config);
 
         if (removeAllBuilders) {
-            Node projectTagNode = doc.getElementsByTagName("project").item(0);
-            for (int i = 0; i < projectTagNode.getChildNodes().getLength(); i++) {
-                if (projectTagNode.getChildNodes().item(i).getNodeName().equals("builders")) {
-                    projectTagNode.removeChild(projectTagNode.getChildNodes().item(i));
-                    break;
-                }
-            }
-        }
+            // for BAMT_DEFAULT_CONFIG_UPDATER job
+            removeAllBuilders(doc);
+        } else
 
-        //creating pre and post builds scripts
-
-        if (config.getScriptType() != null) {
-            String buildStepScriptClass = config.getScriptType().equals(CONFIG_BATCH_TYPE) ? BUILDSTEP_BATCH_SCRIPT_CLASS : BUILDSTEP_SHELL_SCRIPT_CLASS;
-            NodeList buildStepNodeList = doc.getElementsByTagName("builders");
-            Element buildStepNode = null;
-
-            if (config.getPreScript() != null && !config.getPreScript().equals("")) {
-                buildStepNode = doc.createElement("buildStep");
-                createScriptNode(doc, buildStepNode, COMMAND_PREBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPreScript());
-                buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getFirstChild());
-            }
-            if (config.getPostScript() != null && !config.getPostScript().equals("")) {
-                buildStepNode = doc.createElement("buildStep");
-                createScriptNode(doc, buildStepNode, COMMAND_POSTBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPostScript());
-                buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getLastChild());
-            }
+        {
+            createPreAndPostScriptsNodes(config, doc);
         }
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -269,6 +250,126 @@ public class JobManagerGenerator {
 
         return file;
     }
+
+
+    private static void updateJobXML(String jobName, BuildConfigurationModel config) throws IOException, TransformerException, SAXException, ParserConfigurationException {
+
+        AbstractItem item = (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
+        Document doc = loadTemplate(JOB_TEMPLATE_PATH);
+        if (doc == null) {
+            throw new FileNotFoundException(JOB_TEMPLATE_PATH + " file not found");
+        }
+
+        JobElementDescription jed;
+
+        jed = new JobArtefacts();
+        setElement(jed, doc, config);
+
+        jed = new JobMailer();
+        setElement(jed, doc, config);
+
+        jed = new JobVersionFile();
+        setElement(jed, doc, config);
+
+        jed = new JobAssigneNode();
+        setElement(jed, doc, config);
+
+        jed = getSCM(config);
+        setElement(jed, doc, config);
+
+
+        removeAllBuilders(doc);
+
+        String jobPath = JOB_FOLDER_PATH + jobName + "\\config.xml";
+        Document docJob = loadTemplate(jobPath);
+        if (docJob == null) {
+            throw new FileNotFoundException(jobPath + " file not found");
+        }
+
+
+        //removing pre and post scripts (first and last child nodes in <builders> node)
+        Node buildStepNodeJ = docJob.getElementsByTagName("builders").item(0);
+        Node scriptNode = buildStepNodeJ.getFirstChild();
+        removePreOrPostScriptNode(buildStepNodeJ, PREBUILD_SCRIPT_POSITION, scriptNode);
+        scriptNode = buildStepNodeJ.getLastChild();
+        removePreOrPostScriptNode(buildStepNodeJ, POSTBUILD_SCRIPT_POSITION, scriptNode);
+
+        //importing <builders> node from job old job config to updated job
+        Node noteToImport = docJob.getElementsByTagName("builders").item(0);
+        Node importedNode = doc.importNode(noteToImport, true);
+        doc.getElementsByTagName("project").item(0).appendChild(importedNode);
+
+        createPreAndPostScriptsNodes(config, doc);
+
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        DOMSource source = new DOMSource(doc);
+
+        File file = BuildConfigurationManager.getFileToCreateJob();
+        StreamResult result = new StreamResult(file);
+        transformer.transform(source, result);
+
+
+        Source streamSource = new StreamSource(file);
+        item.updateByXml(streamSource);
+        item.save();
+
+    }
+
+    private static void createPreAndPostScriptsNodes(BuildConfigurationModel config, Document doc) {
+        if (config.getScriptType() == null) {
+            config.setScriptType(CONFIG_BATCH_TYPE);
+        }
+
+        String buildStepScriptClass = config.getScriptType().equals(CONFIG_BATCH_TYPE) ? BUILDSTEP_BATCH_SCRIPT_CLASS : BUILDSTEP_SHELL_SCRIPT_CLASS;
+        NodeList buildStepNodeList = doc.getElementsByTagName("builders");
+        Element buildStepNode = null;
+        //creating empty pre and post build scripts for correct job update
+        if (config.getPreScript() == null) {
+            config.setPreScript("");
+        }
+        buildStepNode = doc.createElement("buildStep");
+        createScriptNode(doc, buildStepNode, PREBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPreScript());
+        buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getFirstChild());
+
+        if (config.getPostScript() == null) {
+            config.setPostScript("");
+        }
+        buildStepNode = doc.createElement("buildStep");
+        createScriptNode(doc, buildStepNode, POSTBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPostScript());
+        buildStepNodeList.item(0).insertBefore(buildStepNode, null /*buildStepNodeList.item(0).getLastChild()*/);
+
+    }
+
+    private static void removeAllBuilders(Document doc) {
+        Node projectTagNode = doc.getElementsByTagName("project").item(0);
+        for (int i = 0; i < projectTagNode.getChildNodes().getLength(); i++) {
+            if (projectTagNode.getChildNodes().item(i).getNodeName().equals("builders")) {
+                projectTagNode.removeChild(projectTagNode.getChildNodes().item(i));
+                break;
+            }
+        }
+    }
+
+    private static void removePreOrPostScriptNode(Node scriptNodeParent, String nodeType, Node scriptNode) {
+
+        while (scriptNode != null && scriptNode.getNodeType() != Node.ELEMENT_NODE) {
+            scriptNode.getParentNode().removeChild(scriptNode);
+            if (nodeType.equals(PREBUILD_SCRIPT_POSITION)) {
+                scriptNode = scriptNodeParent.getFirstChild();
+            } else {
+                scriptNode = scriptNodeParent.getLastChild();
+            }
+
+        }
+
+        if (scriptNode != null) {
+            scriptNode.getParentNode().removeChild(scriptNode);
+        }
+
+
+    }
+
 
     private static void createScriptNode(Document doc, Element buildStepNode, String commandIdPosition, String buildStepScriptClass, String scriptBody) {
 
