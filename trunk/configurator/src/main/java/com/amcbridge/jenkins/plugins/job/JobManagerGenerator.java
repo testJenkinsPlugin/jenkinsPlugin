@@ -31,6 +31,10 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -214,22 +218,7 @@ public class JobManagerGenerator {
             throw new FileNotFoundException(JOB_TEMPLATE_PATH + " file not found");
         }
 
-        JobElementDescription jed;
-
-        jed = new JobArtefacts();
-        setElement(jed, doc, config);
-
-        jed = new JobMailer();
-        setElement(jed, doc, config);
-
-        jed = new JobVersionFile();
-        setElement(jed, doc, config);
-
-        jed = new JobAssigneNode();
-        setElement(jed, doc, config);
-
-        jed = getSCM(config);
-        setElement(jed, doc, config);
+        createJobConfigNodes(doc, config);
 
         if (removeAllBuilders) {
             // for BAMT_DEFAULT_CONFIG_UPDATER job
@@ -260,24 +249,7 @@ public class JobManagerGenerator {
             throw new FileNotFoundException(JOB_TEMPLATE_PATH + " file not found");
         }
 
-        JobElementDescription jed;
-
-        jed = new JobArtefacts();
-        setElement(jed, doc, config);
-
-        jed = new JobMailer();
-        setElement(jed, doc, config);
-
-        jed = new JobVersionFile();
-        setElement(jed, doc, config);
-
-        jed = new JobAssigneNode();
-        setElement(jed, doc, config);
-
-        jed = getSCM(config);
-        setElement(jed, doc, config);
-
-
+        createJobConfigNodes(doc, config);
         removeAllBuilders(doc);
 
         String jobPath = JOB_FOLDER_PATH + jobName + "\\config.xml";
@@ -286,15 +258,22 @@ public class JobManagerGenerator {
             throw new FileNotFoundException(jobPath + " file not found");
         }
 
+        removeJunkElements(docJob);
 
         //removing pre and post scripts (first and last child nodes in <builders> node)
+
         Node buildStepNodeJ = docJob.getElementsByTagName("builders").item(0);
         Node scriptNode = buildStepNodeJ.getFirstChild();
-        removePreOrPostScriptNode(buildStepNodeJ, PREBUILD_SCRIPT_POSITION, scriptNode);
+        Node scriptChildNode = scriptNode.getFirstChild();
+        if (config.getPreScript() != null && !config.getPreScript().equals("")) {
+            removeScriptNode(scriptNode, scriptChildNode);
+        }
         scriptNode = buildStepNodeJ.getLastChild();
-        removePreOrPostScriptNode(buildStepNodeJ, POSTBUILD_SCRIPT_POSITION, scriptNode);
-
-        //importing <builders> node from job old job config to updated job
+        scriptChildNode = scriptNode.getLastChild();
+        if (config.getPostScript() != null && !config.getPostScript().equals("")) {
+            removeScriptNode(scriptNode, scriptChildNode);
+        }
+        //importing <builders> node from old job doc to new updated job doc
         Node noteToImport = docJob.getElementsByTagName("builders").item(0);
         Node importedNode = doc.importNode(noteToImport, true);
         doc.getElementsByTagName("project").item(0).appendChild(importedNode);
@@ -316,29 +295,50 @@ public class JobManagerGenerator {
 
     }
 
+    private static void createJobConfigNodes(Document doc, BuildConfigurationModel config) throws IOException, SAXException, ParserConfigurationException {
+        JobElementDescription jed;
+
+        jed = new JobArtefacts();
+        setElement(jed, doc, config);
+
+        jed = new JobMailer();
+        setElement(jed, doc, config);
+
+        jed = new JobVersionFile();
+        setElement(jed, doc, config);
+
+        jed = new JobAssigneNode();
+        setElement(jed, doc, config);
+
+        jed = getSCM(config);
+        setElement(jed, doc, config);
+
+    }
+
     private static void createPreAndPostScriptsNodes(BuildConfigurationModel config, Document doc) {
         if (config.getScriptType() == null) {
             config.setScriptType(CONFIG_BATCH_TYPE);
         }
 
         String buildStepScriptClass = config.getScriptType().equals(CONFIG_BATCH_TYPE) ? BUILDSTEP_BATCH_SCRIPT_CLASS : BUILDSTEP_SHELL_SCRIPT_CLASS;
+
         NodeList buildStepNodeList = doc.getElementsByTagName("builders");
         Element buildStepNode = null;
-        //creating empty pre and post build scripts for correct job update
-        if (config.getPreScript() == null) {
-            config.setPreScript("");
-        }
-        buildStepNode = doc.createElement("buildStep");
-        createScriptNode(doc, buildStepNode, PREBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPreScript());
-        buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getFirstChild());
+        if (config.getPreScript() != null && !config.getPreScript().equals("")) {
 
-        if (config.getPostScript() == null) {
-            config.setPostScript("");
-        }
-        buildStepNode = doc.createElement("buildStep");
-        createScriptNode(doc, buildStepNode, POSTBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPostScript());
-        buildStepNodeList.item(0).insertBefore(buildStepNode, null /*buildStepNodeList.item(0).getLastChild()*/);
 
+            buildStepNode = doc.createElement(buildStepScriptClass /*"buildStep"*/);
+            createScriptNode(doc, buildStepNode, PREBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPreScript());
+            buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getFirstChild());
+
+        }
+
+        if (config.getPostScript() != null && !config.getPostScript().equals("")) {
+
+            buildStepNode = doc.createElement(buildStepScriptClass /*"buildStep"*/);
+            createScriptNode(doc, buildStepNode, POSTBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPostScript());
+            buildStepNodeList.item(0).insertBefore(buildStepNode, null);
+        }
     }
 
     private static void removeAllBuilders(Document doc) {
@@ -351,32 +351,23 @@ public class JobManagerGenerator {
         }
     }
 
-    private static void removePreOrPostScriptNode(Node scriptNodeParent, String nodeType, Node scriptNode) {
+    private static void removeScriptNode(Node scriptNode, Node scriptChildNode) {
 
-        while (scriptNode != null && scriptNode.getNodeType() != Node.ELEMENT_NODE) {
-            scriptNode.getParentNode().removeChild(scriptNode);
-            if (nodeType.equals(PREBUILD_SCRIPT_POSITION)) {
-                scriptNode = scriptNodeParent.getFirstChild();
-            } else {
-                scriptNode = scriptNodeParent.getLastChild();
+        if (scriptNode != null && scriptNode.getNodeName().equals(BUILDSTEP_BATCH_SCRIPT_CLASS) || scriptNode.getNodeName().equals(BUILDSTEP_SHELL_SCRIPT_CLASS)) {
+            if (scriptChildNode != null && scriptChildNode.getNodeName().equals("command")) {
+                scriptNode.getParentNode().removeChild(scriptNode);
             }
 
         }
-
-        if (scriptNode != null) {
-            scriptNode.getParentNode().removeChild(scriptNode);
-        }
-
-
     }
 
 
     private static void createScriptNode(Document doc, Element buildStepNode, String commandIdPosition, String buildStepScriptClass, String scriptBody) {
+        //Script  node changed for use same node name before and after update
 
-
-        buildStepNode.setAttribute("class", buildStepScriptClass);
+//        buildStepNode.setAttribute("class", buildStepScriptClass);
         Element commandNode = doc.createElement("command");
-        commandNode.setAttribute("id", commandIdPosition);
+//        commandNode.setAttribute("id", commandIdPosition);
 
         Text scriptBodyNode = doc.createTextNode(scriptBody);
         commandNode.appendChild(scriptBodyNode);
@@ -400,6 +391,28 @@ public class JobManagerGenerator {
         }
         return jed;
     }
+
+
+    private static void removeJunkElements(Document doc) {
+    //removing empty text nodes like whitespaces, new line symbols etc
+        XPathFactory xpathFactory = XPathFactory.newInstance();
+        XPathExpression xpathExp = null;
+        try {
+            xpathExp = xpathFactory.newXPath().compile("//text()[normalize-space(.) = '']");
+            NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc, XPathConstants.NODESET);
+
+            for (int i = 0; i < emptyTextNodes.getLength(); i++) {
+                Node emptyTextNode = emptyTextNodes.item(i);
+                emptyTextNode.getParentNode().removeChild(emptyTextNode);
+            }
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
 
     private static void setElement(JobElementDescription element, Document document, BuildConfigurationModel config)
             throws ParserConfigurationException, SAXException, IOException {
