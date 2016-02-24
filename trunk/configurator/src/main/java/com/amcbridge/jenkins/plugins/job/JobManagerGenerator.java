@@ -258,11 +258,10 @@ public class JobManagerGenerator {
             throw new FileNotFoundException(jobPath + " file not found");
         }
 
-        removeJunkElements(docJob);
-
         //removing pre and post scripts (first and last child nodes in <builders> node)
 
         Node buildStepNodeJ = docJob.getElementsByTagName("builders").item(0);
+        removeJunkElements(buildStepNodeJ.getChildNodes());
         Node scriptNode = buildStepNodeJ.getFirstChild();
         Node scriptChildNode = scriptNode.getFirstChild();
         if (config.getPreScript() != null && !config.getPreScript().equals("")) {
@@ -393,22 +392,24 @@ public class JobManagerGenerator {
     }
 
 
-    private static void removeJunkElements(Document doc) {
-    //removing empty text nodes like whitespaces, new line symbols etc
-        XPathFactory xpathFactory = XPathFactory.newInstance();
-        XPathExpression xpathExp = null;
-        try {
-            xpathExp = xpathFactory.newXPath().compile("//text()[normalize-space(.) = '']");
-            NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc, XPathConstants.NODESET);
-
-            for (int i = 0; i < emptyTextNodes.getLength(); i++) {
-                Node emptyTextNode = emptyTextNodes.item(i);
-                emptyTextNode.getParentNode().removeChild(emptyTextNode);
-            }
-        } catch (XPathExpressionException e) {
-            e.printStackTrace();
+    private static void removeJunkElements(/*Document doc*/ NodeList builderList) {
+        //removing empty text nodes like whitespaces, new line symbols etc.
+        //going deep with recursion
+        for (int i = 0; i < builderList.getLength(); i++) {
+            removeJunkElements(builderList.item(i).getChildNodes());
         }
 
+        List<Node> nodesToRemoveList = new LinkedList<Node>();
+        for (int i = 0; i < builderList.getLength(); i++) {
+            Node node =builderList.item(i);
+            if (node.getNodeType() != Node.ELEMENT_NODE && node.getNodeValue().trim().equals("")) {
+                nodesToRemoveList.add(builderList.item(i));
+            }
+        }
+
+        for (Node nodeToRemove : nodesToRemoveList) {
+            nodeToRemove.getParentNode().removeChild(nodeToRemove);
+        }
 
     }
 
