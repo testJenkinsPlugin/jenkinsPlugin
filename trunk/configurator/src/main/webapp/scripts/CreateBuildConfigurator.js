@@ -810,7 +810,7 @@ function checkPath(id)
     }
     else if(document.getElementById(id).name == "localDirectoryPath")
     {																		// Change also correctArtifactPaths at JobManagerGenerator
-    	regPath = /^\.$|^(?:(?!\.)[^\\/:*?"<>|\r\n]+\/?)*$/;				// Match only one . or valid folder structure (zero-length - ok)
+    	regPath = /(^\.[A-Za-z0-9]*$)|^(?:(?!\.)[^\\/:*?"<>|\r\n]+\/?)*$/;				// Match only one . or valid folder structure (zero-length - ok)
     }
     else
     {
