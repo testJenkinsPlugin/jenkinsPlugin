@@ -16,7 +16,7 @@ import java.util.List;
 @XStreamAlias("configurations")
 public class XmlExporter {
 
-    private static final String XML_TITLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    public static final String XML_TITLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
     private List<Job> configurations;
 

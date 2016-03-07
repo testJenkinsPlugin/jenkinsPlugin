@@ -27,7 +27,7 @@
                 <label>${ENV,var=&quot;OS&quot;}</label>
             </condition>
             <buildStep class="hudson.tasks.BatchFile">
-                <command>java -jar "%BUILDER_PATH%\buildserver.jar"</command>
+                <command>java -jar "%BUILDER_PATH%\buildserver.jar" -nodeName "%NODE_NAME%" -jobName "%JOB_NAME%" -workspace "%WORKSPACE%" -jenkinsHome "%JENKINS_HOME%"</command>
             </buildStep>
             <runner class="org.jenkins_ci.plugins.run_condition.BuildStepRunner$Fail" plugin="run-condition@1.0"/>
         </org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder>
@@ -39,10 +39,19 @@
                 </condition>
             </condition>
             <buildStep class="hudson.tasks.Shell">
-                <command>java -jar "$BUILDER_PATH/buildserver.jar"</command>
+                <command>java -jar "$BUILDER_PATH/buildserver.jar" -nodeName "$NODE_NAME" -jobName "$JOB_NAME" -workspace "$WORKSPACE" -jenkinsHome $JENKINS_HOME</command>
             </buildStep>
             <runner class="org.jenkins_ci.plugins.run_condition.BuildStepRunner$Fail" plugin="run-condition@1.0"/>
         </org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder>
     </builders>
-    <buildWrappers/>  
+    <buildWrappers>
+        <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.4">
+            <includes>File Name</includes>
+            <excludes></excludes>
+            <flatten>false</flatten>
+            <includeAntExcludes>false</includeAntExcludes>
+            <hudsonHomeRelative>false</hudsonHomeRelative>
+            <relativeTo>userContent</relativeTo>
+        </com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper>
+    </buildWrappers>
 </project> 

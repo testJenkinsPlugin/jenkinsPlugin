@@ -15,6 +15,7 @@ import com.amcbridge.jenkins.plugins.serialization.*;
 import com.amcbridge.jenkins.plugins.serialization.Job;
 import com.amcbridge.jenkins.plugins.serialization.Project;
 import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
+import com.amcbridge.jenkins.plugins.xmlSerialization.XmlExporter;
 import com.thoughtworks.xstream.XStream;
 import hudson.model.*;
 import jenkins.model.Jenkins;
@@ -31,10 +32,7 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -51,6 +49,8 @@ public class JobManagerGenerator {
     private static final String JOB_TEMPLATE_PATH = "\\plugins\\configurator\\job\\config.xml";
     private static final String JOB_FOLDER_PATH = "\\jobs\\";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
+    private static final String XPATH_FILE_TO_COPY = "/project/buildWrappers/com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper/includes/text()";
+
 
     public static String convertToXML(Object obj) {
         XStream xstream = new XStream();
@@ -224,9 +224,10 @@ public class JobManagerGenerator {
             // for BAMT_DEFAULT_CONFIG_UPDATER job
             removeAllBuilders(doc);
         } else
-
         {
             createPreAndPostScriptsNodes(config, doc);
+            setJobConfigFileName(doc, config.getProjectName());
+            writeJobConfigForBuildServer(config);
         }
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -293,6 +294,50 @@ public class JobManagerGenerator {
         item.save();
 
     }
+
+
+    private static void setJobConfigFileName(Document doc, String jobName) {
+
+        Node fileNameNode = null;
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        XPathExpression exp = null;
+        try {
+            exp = xPath.compile(XPATH_FILE_TO_COPY);
+            fileNameNode = (Node) exp.evaluate(doc, XPathConstants.NODE);
+            fileNameNode.getTextContent();
+            fileNameNode.getNodeValue();
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
+        if (jobName != null) {
+            fileNameNode.setTextContent(jobName+".xml");
+        }
+
+    }
+
+
+    private static void writeJobConfigForBuildServer(BuildConfigurationModel config) throws IOException {
+
+        Job job = buildJob(config);
+        XStream xstream = new XStream();
+        xstream.processAnnotations(Job.class);
+        String paramsXML = xstream.toXML(job);
+        String jobName = job.getName();
+
+        String userContentPath = Jenkins.getInstance().getRootDir() + "/userContent/" + jobName + ".xml";
+
+        FileOutputStream fos = new FileOutputStream(userContentPath);
+        Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING);
+        try {
+            out.write(XmlExporter.XML_TITLE);
+            out.write(paramsXML);
+        } finally {
+            out.close();
+            fos.close();
+        }
+
+    }
+
 
     private static void createJobConfigNodes(Document doc, BuildConfigurationModel config) throws IOException, SAXException, ParserConfigurationException {
         JobElementDescription jed;

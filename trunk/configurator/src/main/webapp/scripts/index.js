@@ -101,8 +101,8 @@ function createJob(name)
     var s = document.getElementsByName(name)[0].innerHTML.trim();
     switch(document.getElementsByName(name)[0].innerHTML.trim())
     {
-        case("Create Job"):{message = "Job was successfully created."; break;}
-        case("Update Job"):{message = "Job was successfully updated."; break;}
+        case("Create Job"):{message = "Job will be created."; break;}
+        case("Update Job"):{message = "Job will be updated."; break;}
     }
     document.getElementById("helpReject").innerHTML = message;
     nameAction = name+"?createJob"; 
