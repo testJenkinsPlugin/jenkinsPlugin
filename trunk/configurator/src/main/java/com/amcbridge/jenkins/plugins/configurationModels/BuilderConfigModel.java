@@ -2,6 +2,7 @@ package com.amcbridge.jenkins.plugins.configurationModels;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 import com.amcbridge.jenkins.plugins.enums.Configuration;
 
@@ -12,7 +13,7 @@ public class BuilderConfigModel {
 
     @DataBoundConstructor
     public BuilderConfigModel(String builder, String platform, String userConfig,
-            Boolean release, Boolean debug, Boolean other) {
+                              Boolean release, Boolean debug, Boolean other) {
         this.configs = new ArrayList<Configuration>();
         this.builder = builder;
         this.platform = platform;

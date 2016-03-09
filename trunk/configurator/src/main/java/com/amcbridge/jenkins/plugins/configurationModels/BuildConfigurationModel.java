@@ -3,6 +3,7 @@ package com.amcbridge.jenkins.plugins.configurationModels;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import hudson.model.User;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;

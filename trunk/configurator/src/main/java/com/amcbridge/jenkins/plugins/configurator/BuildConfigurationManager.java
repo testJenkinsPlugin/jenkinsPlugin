@@ -1,13 +1,14 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.serialization.CredentialItem;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
 import com.amcbridge.jenkins.plugins.enums.SCMElement;
 import com.amcbridge.jenkins.plugins.enums.SCMLoader;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
-import com.amcbridge.jenkins.plugins.messenger.*;
+import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
+import com.amcbridge.jenkins.plugins.messenger.MailSender;
+import com.amcbridge.jenkins.plugins.serialization.CredentialItem;
 import hudson.XmlFile;
 import hudson.model.Node;
 import hudson.model.User;
@@ -16,20 +17,6 @@ import hudson.scm.SCMDescriptor;
 import hudson.security.AccessControlled;
 import hudson.security.Permission;
 import hudson.util.Iterators;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.servlet.ServletException;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 import org.apache.commons.io.FileUtils;
@@ -45,6 +32,21 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.servlet.ServletException;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class BuildConfigurationManager {
 
     public static final String CONFIG_FILE_NAME = "config.xml";
@@ -57,7 +59,7 @@ public class BuildConfigurationManager {
     private static final String CHECK_CONFIG_FILE_NAME = "configCheck.xml";
     private static final Integer MAX_FILE_SIZE = 1048576;//max file size which equal 1 mb in bytes
     private static final String[] SCRIPTS_EXTENSIONS = {"bat", "nant", "powershell", "shell",
-        "ant", "maven"};
+            "ant", "maven"};
     public static final String STRING_EMPTY = "";
     private static final MailSender mail = new MailSender();
     private static final ReentrantLock lock = new ReentrantLock();
@@ -76,8 +78,6 @@ public class BuildConfigurationManager {
     public static File getConfigFileFor(String id) {
         return new File(new File(getRootDir(), id), CONFIG_FILE_NAME);
     }
-
-
 
 
     public static File getFileToCreateJob() {
@@ -251,7 +251,6 @@ public class BuildConfigurationManager {
                 getAdminEmail(), getUserMailAddress(config), MessageDescription.RESTORE.toString(),
                 config.getProjectName());
         mail.sendMail(message);
-
     }
 
 

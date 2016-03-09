@@ -3,17 +3,17 @@ package com.amcbridge.jenkins.plugins.configurationModels;
 import com.amcbridge.jenkins.plugins.enums.UserLoader;
 import com.amcbridge.jenkins.plugins.serialization.CredentialItem;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 
 public class ProjectToBuildModel {
-    public static final String DEFAULT_CREDENTIAL_NAME = "builduser/";
     private String projectUrl, fileToBuild, localDirectoryPath, branchName, credentials;
-
     private Boolean isVersionFiles;
     private BuilderConfigModel[] builders;
     private String[] artefacts, versionFiles;
@@ -91,8 +91,8 @@ public class ProjectToBuildModel {
 
     @DataBoundConstructor
     public ProjectToBuildModel(String projectUrl, String credentials, String branchName, String fileToBuild,
-            String artefacts, String versionFiles, String localDirectoryPath,
-            Boolean isVersionFiles, BuilderConfigModel[] builders) {
+                               String artefacts, String versionFiles, String localDirectoryPath,
+                               Boolean isVersionFiles, BuilderConfigModel[] builders) {
         this.projectUrl = projectUrl;
         this.credentials = credentials;
         this.branchName = branchName;
@@ -116,7 +116,6 @@ public class ProjectToBuildModel {
         } catch (IOException ex) {
             Logger.getLogger(ProjectToBuildModel.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return result;
     }
 
@@ -155,12 +154,9 @@ public class ProjectToBuildModel {
         }
     }
 
-
     public static String getUserDefaultCredentials() {
         UserLoader loader = new UserLoader();
         return loader.getUserDefaultCredentials();
-
-
     }
 
 }

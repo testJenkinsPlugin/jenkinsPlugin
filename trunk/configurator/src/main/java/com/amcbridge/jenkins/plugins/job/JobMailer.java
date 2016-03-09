@@ -26,7 +26,6 @@ public class JobMailer implements JobElementDescription {
         if (config.getEmail().isEmpty()) {
             return StringUtils.EMPTY;
         }
-
         Mailer mailer = new Mailer();
         mailer.recipients = config.getEmail().trim();
 
@@ -46,7 +45,6 @@ public class JobMailer implements JobElementDescription {
         } else {
             mail = config.getEmail();
         }
-
         node.setTextContent(mail);
     }
 

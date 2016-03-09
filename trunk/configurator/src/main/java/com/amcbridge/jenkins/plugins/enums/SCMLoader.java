@@ -2,8 +2,10 @@ package com.amcbridge.jenkins.plugins.enums;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import java.io.File;
 import java.util.List;
+
 import jenkins.model.Jenkins;
 
 @XStreamAlias("scms")

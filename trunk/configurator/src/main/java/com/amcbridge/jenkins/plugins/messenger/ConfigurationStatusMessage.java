@@ -7,7 +7,7 @@ public class ConfigurationStatusMessage implements MessageInfo {
     private String subject, sendTo, sendCC, description, projectName;
 
     public ConfigurationStatusMessage(String subject,
-            String sendTo, String sendCC, String description, String projectName) {
+                                      String sendTo, String sendCC, String description, String projectName) {
         this.subject = subject;
         this.sendTo = sendTo;
         this.sendCC = sendCC;

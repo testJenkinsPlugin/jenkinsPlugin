@@ -81,7 +81,7 @@ public final class BuildConfigurator implements RootAction {
 
         JSONObject formAttribute = request.getSubmittedForm();
 
-        String newDefaultCredentials = formAttribute.get("default_credentials")!=null?formAttribute.get("default_credentials").toString():null ;
+        String newDefaultCredentials = formAttribute.get("default_credentials") != null ? formAttribute.get("default_credentials").toString() : null;
         UserLoader userLoader = new UserLoader();
         userLoader.updateUserDefaultCredentials(newDefaultCredentials);
         BuildConfigurationModel newConfig = new BuildConfigurationModel();
@@ -144,7 +144,6 @@ public final class BuildConfigurator implements RootAction {
         mail.sendMail(message);
         response.sendRedirect("./");
     }
-
 
 
     @JavaScriptMethod
@@ -216,7 +215,6 @@ public final class BuildConfigurator implements RootAction {
     public void deleteConfigurationPermanently(String name)
             throws AddressException, IOException, MessagingException, JAXBException, InterruptedException, ParserConfigurationException {
         BuildConfigurationManager.deleteConfigurationPermanently(name);
-       // isCommited = BuildConfigurationManager.isCommited();
     }
 
     @JavaScriptMethod
@@ -270,10 +268,11 @@ public final class BuildConfigurator implements RootAction {
     }
 
     @JavaScriptMethod
-    public String getDefaultUserCredentials(){
+    public String getDefaultUserCredentials() {
         String credentialsId = ProjectToBuildModel.getUserDefaultCredentials();
-        return credentialsId==null?"":credentialsId;
+        return credentialsId == null ? "" : credentialsId;
     }
+
     @JavaScriptMethod
     public boolean isJenkinsEmailConfigOK() {
         Properties prop = new Properties();

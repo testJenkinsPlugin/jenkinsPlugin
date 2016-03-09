@@ -19,7 +19,6 @@ public class UserLoader {
     private List<User> usersList = new ArrayList<User>();
 
     public UserLoader() {
-
     }
 
     private void load() {
@@ -30,7 +29,7 @@ public class UserLoader {
         if (file.exists()) {
             xstream.setClassLoader(User.class.getClassLoader());
             usersList = ((UserLoader) xstream.fromXML(file)).getUsersList();
-            if(usersList==null){
+            if (usersList == null) {
                 usersList = new ArrayList<User>();
             }
         }
@@ -55,7 +54,6 @@ public class UserLoader {
                         userExistsInList = true;
                         break;
                     }
-
                 }
                 if (!userExistsInList) {
                     newUserWithDefCredentials = new User(currentUserId, selectedCredentials);
@@ -87,8 +85,6 @@ public class UserLoader {
         } finally {
             out.close();
         }
-
-
     }
 
     public String getUserDefaultCredentials() {
@@ -99,7 +95,6 @@ public class UserLoader {
             for (User user : usersList) {
                 if (currentUserId.equals(user.getID())) {
                     return user.getDefCred();
-
                 }
             }
         }

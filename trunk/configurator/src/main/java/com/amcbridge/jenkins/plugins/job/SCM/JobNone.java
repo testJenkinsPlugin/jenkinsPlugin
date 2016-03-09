@@ -3,6 +3,7 @@ package com.amcbridge.jenkins.plugins.job.SCM;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import hudson.scm.NullSCM;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
