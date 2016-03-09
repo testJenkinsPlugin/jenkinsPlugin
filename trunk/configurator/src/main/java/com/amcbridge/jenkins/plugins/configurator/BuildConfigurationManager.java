@@ -8,13 +8,6 @@ import com.amcbridge.jenkins.plugins.enums.SCMElement;
 import com.amcbridge.jenkins.plugins.enums.SCMLoader;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.*;
-import com.amcbridge.jenkins.plugins.vsc.CommitError;
-import com.amcbridge.jenkins.plugins.vsc.GitManager;
-import com.amcbridge.jenkins.plugins.vsc.SvnManager;
-import com.amcbridge.jenkins.plugins.vsc.VersionControlSystem;
-import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
-import com.amcbridge.jenkins.plugins.xmlSerialization.*;
-import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
 import hudson.XmlFile;
 import hudson.model.Node;
 import hudson.model.User;
@@ -47,7 +40,6 @@ import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tmatesoft.svn.core.SVNException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -67,11 +59,9 @@ public class BuildConfigurationManager {
     private static final String[] SCRIPTS_EXTENSIONS = {"bat", "nant", "powershell", "shell",
         "ant", "maven"};
     public static final String STRING_EMPTY = "";
-    public static ApproveConfigurationManager acm = new ApproveConfigurationManager();
     private static final MailSender mail = new MailSender();
     private static final ReentrantLock lock = new ReentrantLock();
     private static String currentScm = "None";
-    private static String currentScm4Config = "None";
     private static final Logger log = LoggerFactory.getLogger(BuildConfigurationManager.class);
     private static final SCMLoader scmLoader = new SCMLoader();
 
@@ -87,13 +77,8 @@ public class BuildConfigurationManager {
         return new File(new File(getRootDir(), id), CONFIG_FILE_NAME);
     }
 
-    public static File getFileToExportConfigurations() {
-        return new File(getRootDir() + "\\" + CONFIG_FILE_NAME);
-    }
 
-    public static File getFileForCheckVSC() {
-        return new File(getRootDir() + "\\" + CHECK_CONFIG_FILE_NAME);
-    }
+
 
     public static File getFileToCreateJob() {
         return new File(getRootDir() + "\\" + CONFIG_JOB_FILE_NAME);
@@ -269,46 +254,6 @@ public class BuildConfigurationManager {
 
     }
 
-    public static VersionControlSystemResult exportToXml(/*String editedProjectName*/)
-            throws SVNException, IOException, InterruptedException {
-        lock.lock();
-        try {
-            XmlExporter xmlExporter = new XmlExporter();
-            String path = xmlExporter.exportToXml(true);
-
-//            BuildConfigurationModel config = load(editedProjectName);
-//            currentScm = config.getScm();
-
-            VersionControlSystem vcs = new SvnManager();
-
-            Settings settings = new Settings();
-
-            currentScm4Config = settings.getTypeSCM4Config();
-
-            if (currentScm4Config.equalsIgnoreCase("Subversion")) {
-                vcs = new SvnManager();
-            } else if (currentScm4Config.equalsIgnoreCase("Git")) {
-                vcs = new GitManager();
-            }
-
-            if (!settings.isSettingsSet()) {
-                VersionControlSystemResult result = new VersionControlSystemResult(false);
-                result.setErrorMassage(CommitError.NONE_PROPERTY.toString());
-                return result;
-            }
-
-            if (currentScm4Config.equalsIgnoreCase("Git")) {
-                ((GitManager) vcs).setLocalRepoPath(settings.getLocalGitRepoPath());
-//                ((GitManager) vcs).setProjectName(editedProjectName);
-                ((GitManager) vcs).setBranch(settings.getBranch());
-            }
-
-            return vcs.doCommit(path, settings.getUrl(), settings.getLogin(),
-                    settings.getPassword(), settings.getCommitMessage());
-        } finally {
-            lock.unlock();
-        }
-    }
 
     public static Boolean isNameUsing(String name) {
         File checkName = new File(getRootDirectory() + "\\" + name);
@@ -324,7 +269,6 @@ public class BuildConfigurationManager {
         }
 
         deleteJob(name);
-        acm.remove(name);
 
         ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName());
         message.setSubject(config.getProjectName());
@@ -455,17 +399,6 @@ public class BuildConfigurationManager {
         }
     }
 
-    public static Boolean isCommited() throws IOException {
-        if (!getFileToExportConfigurations().exists()) {
-            return !(XmlExporter.generateConfiguration().size() > 0);
-        }
-
-        File svnVersion = getFileToExportConfigurations();
-        XmlExporter xmlExporter = new XmlExporter();
-        String path = xmlExporter.exportToXml(false);
-        File currentVersion = new File(path);
-        return FileUtils.contentEquals(svnVersion, currentVersion);
-    }
 
     public static List<CredentialItem> openCredentials() throws IOException {
         String jenkinsHomePath = Jenkins.getInstance().getRootDir().getPath();

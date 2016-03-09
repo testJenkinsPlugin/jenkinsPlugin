@@ -1,6 +1,5 @@
 var type;
 var scroll=0;
-var isCommited;
 var isAdmin;
 var projectNumber=0;
 
@@ -44,20 +43,12 @@ window.onload = function()
     buildConfiguration.deleteNotUploadFile(document.getElementById("files_hidden_script")
         .value.split(';'), function(t) {});
     document.getElementById("files_hidden_script").value = "";
-    buildConfiguration.isCommited(function(t){
-        isCommited = t.responseObject();
-    });
+
     buildConfiguration.isCurrentUserAdministrator(function(t){
         isAdmin = t.responseObject();
     });
 }
 
-window.onbeforeunload = function (e) {
-    if (document.activeElement.href.indexOf("BuildConfigurator") == -1 && !isCommited && isAdmin)
-    {
-        return 'Are you sure you want leave this page when configurations it not synchronized with your svn repository?';
-    }
-}
 
 function setContent(name)
 {

@@ -1,52 +1,43 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
-import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
+import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
+import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
+import com.amcbridge.jenkins.plugins.enums.FormResult;
+import com.amcbridge.jenkins.plugins.enums.MessageDescription;
+import com.amcbridge.jenkins.plugins.enums.UserLoader;
+import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
+import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
+import com.amcbridge.jenkins.plugins.messenger.MailSender;
+import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
+import com.amcbridge.jenkins.plugins.view.ViewGenerator;
+import hudson.Extension;
+import hudson.model.RootAction;
+import hudson.model.User;
 import net.sf.json.JSONObject;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.jelly.JellyException;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
-import org.tmatesoft.svn.core.SVNException;
 import org.xml.sax.SAXException;
-import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.enums.*;
-import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
-import com.amcbridge.jenkins.plugins.messenger.*;
-import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
-import com.amcbridge.jenkins.plugins.view.ViewGenerator;
-import com.amcbridge.jenkins.plugins.vsc.VersionControlSystemResult;
-import com.amcbridge.jenkins.plugins.serialization.Job;
-import hudson.Extension;
-import hudson.model.RootAction;
-import hudson.model.User;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.servlet.ServletException;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Properties;
 
 @Extension
 public final class BuildConfigurator implements RootAction {
 
     private MailSender mail;
-    private static Boolean isCommited;
-
     private static final String VIEW_GENERATOR = "viewGenerator";
     private static final String PLUGIN_NAME = "Build Configurator";
     private static final String ICON_PATH = "/plugin/configurator/icons/system_config_services.png";
@@ -55,11 +46,6 @@ public final class BuildConfigurator implements RootAction {
 
     public BuildConfigurator() {
         mail = new MailSender();
-        try {
-            isCommited = BuildConfigurationManager.isCommited();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public String getDisplayName() {
@@ -135,12 +121,6 @@ public final class BuildConfigurator implements RootAction {
                 newConfig.setJobUpdate(false);
                 BuildConfigurationManager.save(newConfig);
 
-                Job newJob = JobManagerGenerator.buildJob(newConfig);
-                Job currentJob = BuildConfigurationManager.acm.get(newConfig.getProjectName());
-                if (!newJob.equals(currentJob)) {
-                    BuildConfigurationManager.acm.add(newJob);
-                    isCommited = BuildConfigurationManager.isCommited();
-                }
                 message.setDescription(MessageDescription.APPROVE.toString());
                 if (!BuildConfigurationManager.getUserMailAddress(newConfig).isEmpty()) {
                     message.setCC(BuildConfigurationManager.getUserMailAddress(newConfig));
@@ -159,42 +139,13 @@ public final class BuildConfigurator implements RootAction {
             default:
                 break;
         }
-//        editedProjectName = newConfig.getProjectName();
         BuildConfigurationManager.save(newConfig);
         message.setDestinationAddress(getAdminEmails());
         mail.sendMail(message);
         response.sendRedirect("./");
     }
 
-    public String doUploadFile(final HttpServletRequest request,
-                               final HttpServletResponse response) throws FileUploadException, IOException {
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        List items = upload.parseRequest(request);
-        Iterator iter = items.iterator();
-        FileItem item = (FileItem) iter.next();
-        byte[] data = item.get();
-        String path = BuildConfigurationManager.getUserContentFolder();
-        File checkFile = new File(path);
-        if (!checkFile.exists()) {
-            checkFile.mkdirs();
-        }
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        Date date = new Date();
-        String fileName = item.getName();
-        fileName = fileName.substring(0, fileName.lastIndexOf('.')) + "("
-                + dateFormat.format(date) + ")"
-                + fileName.substring(fileName.lastIndexOf('.'));
-        File saveFile = new File(path, fileName);
-        saveFile.createNewFile();
-        OutputStream os = new FileOutputStream(saveFile);
-        try {
-            os.write(data);
-        } finally {
-            os.close();
-        }
-        return fileName;
-    }
+
 
     @JavaScriptMethod
     public ProjectToBuildView getView()
@@ -243,20 +194,6 @@ public final class BuildConfigurator implements RootAction {
         BuildConfigurationManager.markConfigurationForDeletion(name);
     }
 
-    @JavaScriptMethod
-    public VersionControlSystemResult exportToXml()
-            throws SVNException, IOException, InterruptedException {
-        VersionControlSystemResult result = BuildConfigurationManager.exportToXml(/*editedProjectName*/);
-        if (result.getSuccess()) {
-            isCommited = true;
-        } else {
-            File file = BuildConfigurationManager.getFileToExportConfigurations();
-            if (file.exists()) {
-                file.delete();
-            }
-        }
-        return result;
-    }
 
     @JavaScriptMethod
     public void loadCreateNewBuildConfiguration() {
@@ -279,7 +216,7 @@ public final class BuildConfigurator implements RootAction {
     public void deleteConfigurationPermanently(String name)
             throws AddressException, IOException, MessagingException, JAXBException, InterruptedException, ParserConfigurationException {
         BuildConfigurationManager.deleteConfigurationPermanently(name);
-        isCommited = BuildConfigurationManager.isCommited();
+       // isCommited = BuildConfigurationManager.isCommited();
     }
 
     @JavaScriptMethod
@@ -330,11 +267,6 @@ public final class BuildConfigurator implements RootAction {
     public void deleteJob(String name)
             throws IOException, InterruptedException, ParserConfigurationException, JAXBException {
         BuildConfigurationManager.deleteJob(name);
-    }
-
-    @JavaScriptMethod
-    public Boolean isCommited() {
-        return isCommited;
     }
 
     @JavaScriptMethod

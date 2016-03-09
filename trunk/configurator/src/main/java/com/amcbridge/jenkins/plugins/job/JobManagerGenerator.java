@@ -12,17 +12,13 @@ import com.amcbridge.jenkins.plugins.job.SCM.JobGit;
 import com.amcbridge.jenkins.plugins.job.SCM.JobNone;
 import com.amcbridge.jenkins.plugins.job.SCM.JobSubversion;
 import com.amcbridge.jenkins.plugins.serialization.*;
-import com.amcbridge.jenkins.plugins.serialization.Job;
-import com.amcbridge.jenkins.plugins.serialization.Project;
-import com.amcbridge.jenkins.plugins.xmlSerialization.ExportSettings.Settings;
-import com.amcbridge.jenkins.plugins.xmlSerialization.XmlExporter;
 import com.thoughtworks.xstream.XStream;
-import hudson.model.*;
+import hudson.model.AbstractItem;
+import hudson.model.Item;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.*;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -34,7 +30,10 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.*;
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class JobManagerGenerator {
@@ -50,6 +49,7 @@ public class JobManagerGenerator {
     private static final String JOB_FOLDER_PATH = "\\jobs\\";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
     private static final String XPATH_FILE_TO_COPY = "/project/buildWrappers/com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper/includes/text()";
+     private static final String XML_TITLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 
     public static String convertToXML(Object obj) {
@@ -75,7 +75,7 @@ public class JobManagerGenerator {
             updateJobXML(jobName, config);
         } else {
             try {
-                FileInputStream fis = new FileInputStream(getJobXML(config, false));
+                FileInputStream fis = new FileInputStream(getJobXML(config));
                 Jenkins.getInstance().createProjectFromXML(jobName, fis);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
@@ -86,9 +86,6 @@ public class JobManagerGenerator {
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
             config.getProjectToBuild().get(i).setArtefacts(prevArtefacts.get(i));
         }
-
-        createConfigUpdaterJob();
-        createConfigUpdaterJobOnSlaveNodes();
 
     }
 
@@ -136,71 +133,6 @@ public class JobManagerGenerator {
         return pathPrefix;
     }
 
-    //TODO: bug!
-    private static void createConfigUpdaterJob() throws FileNotFoundException,
-            ParserConfigurationException, SAXException, IOException, TransformerException {
-
-        final String jobName = "BAMT_DEFAULT_CONFIG_UPDATER";
-        if (isJobExist(jobName)) {
-            return;
-        }
-
-        String url = "";
-        Settings configSettings = new Settings();
-        if (configSettings.isSettingsSet()) {
-            url = configSettings.getUrl();
-        }
-
-        BuildConfigurationModel defaultJobModel = createBCModel(url);
-        defaultJobModel.setProjectName(jobName);
-
-        FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
-        Jenkins.getInstance().createProjectFromXML(jobName, fis);
-
-    }
-
-    private static void createConfigUpdaterJobOnSlaveNodes() throws FileNotFoundException,
-            ParserConfigurationException, SAXException, IOException, TransformerException {
-
-        final String jobName = "BAMT_DEFAULT_CONFIG_UPDATER";
-
-        String url = "";
-        Settings configSettings = new Settings();
-        if (configSettings.isSettingsSet()) {
-            url = configSettings.getUrl();
-        }
-
-        BuildConfigurationModel defaultJobModel = createBCModel(url);
-
-        List<hudson.model.Node> slaveNodes = Jenkins.getInstance().getNodes();
-        String[] nodeArray = new String[1];
-        for (int i = 0; i < slaveNodes.size(); i++) {
-            String newJobName = jobName + "_" + ((hudson.model.Node) slaveNodes.get(i)).getDisplayName();
-            defaultJobModel.setProjectName(newJobName);
-            nodeArray[0] = ((hudson.model.Node) slaveNodes.get(i)).getDisplayName();
-            defaultJobModel.setBuildMachineConfiguration(nodeArray);
-            FileInputStream fis = new FileInputStream(getJobXML(defaultJobModel, true));
-            Jenkins.getInstance().createProjectFromXML(newJobName, fis);
-        }
-    }
-
-    private static BuildConfigurationModel createBCModel(String url) {
-        BuildConfigurationModel defaultJobModel = new BuildConfigurationModel();
-        defaultJobModel.setEmail("");
-        defaultJobModel.setCreator("");
-        defaultJobModel.setCurrentDate();
-        defaultJobModel.setJobUpdate(false);
-        defaultJobModel.setRejectionReason("");
-        Settings settings = new Settings();
-        defaultJobModel.setScm(settings.getTypeSCM4Config());
-        defaultJobModel.setScripts(null);
-        defaultJobModel.setState(ConfigurationState.APPROVED);
-        ProjectToBuildModel projectModel = new ProjectToBuildModel(
-                url, "", "", "", "", "", ".", false, null);
-        defaultJobModel.setProjectToBuild(Arrays.asList(projectModel));
-        return defaultJobModel;
-    }
-
     public static Boolean isJobExist(String name) {
         for (Item item : Jenkins.getInstance().getAllItems()) {
             if (item.getName().equals(name)) {
@@ -210,7 +142,7 @@ public class JobManagerGenerator {
         return false;
     }
 
-    private static File getJobXML(BuildConfigurationModel config, boolean removeAllBuilders)
+    private static File getJobXML(BuildConfigurationModel config)
             throws ParserConfigurationException,
             SAXException, IOException, TransformerException {
         Document doc = loadTemplate(JOB_TEMPLATE_PATH);
@@ -220,15 +152,11 @@ public class JobManagerGenerator {
 
         createJobConfigNodes(doc, config);
 
-        if (removeAllBuilders) {
-            // for BAMT_DEFAULT_CONFIG_UPDATER job
-            removeAllBuilders(doc);
-        } else
-        {
-            createPreAndPostScriptsNodes(config, doc);
-            setJobConfigFileName(doc, config.getProjectName());
-            writeJobConfigForBuildServer(config);
-        }
+
+        createPreAndPostScriptsNodes(config, doc);
+        setJobConfigFileName(doc, config.getProjectName());
+        writeJobConfigForBuildServer(config);
+
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
@@ -329,7 +257,7 @@ public class JobManagerGenerator {
         FileOutputStream fos = new FileOutputStream(userContentPath);
         Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING);
         try {
-            out.write(XmlExporter.XML_TITLE);
+            out.write(XML_TITLE);
             out.write(paramsXML);
         } finally {
             out.close();
