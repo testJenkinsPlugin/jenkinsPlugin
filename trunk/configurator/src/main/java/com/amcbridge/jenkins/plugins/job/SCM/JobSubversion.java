@@ -116,8 +116,8 @@ public class JobSubversion implements JobElementDescription {
     }
 
     public void appendToXML(BuildConfigurationModel config, Document doc) {
-        doc = JobSCM.removeSCM(doc);
-        doc = JobSCM.insertSCM(doc, generateXML(config));
+        JobSCM.removeSCM(doc);
+        JobSCM.insertSCM(doc, generateXML(config));
     }
 
     private Document setModuleValue(Document module, String url, String folder) {

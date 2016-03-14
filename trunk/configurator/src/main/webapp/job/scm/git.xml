@@ -1,44 +1,25 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<scm class="hudson.plugins.git.GitSCM" plugin="git@1.5.0">
-    <configVersion>2</configVersion> 
-    <userRemoteConfigs>
-        <hudson.plugins.git.UserRemoteConfig>
-            <refspec /> 
-            <url>https://github.com/MelnykRoman/TestLog4jProject.git</url> 
-            <globalConfigName></globalConfigName>
-            <globalConfigEmail></globalConfigEmail>
-            <credentialsId>550e8400-e29b-41d4-a716-446655440000</credentialsId>
-        </hudson.plugins.git.UserRemoteConfig>
-    </userRemoteConfigs>
-   
-    <branches>
-        <hudson.plugins.git.BranchSpec>
-            <name>**</name> 
-        </hudson.plugins.git.BranchSpec>
-    </branches>
-    <disableSubmodules>false</disableSubmodules> 
-    <recursiveSubmodules>false</recursiveSubmodules> 
-    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations> 
-    <authorOrCommitter>false</authorOrCommitter> 
-    <clean>false</clean> 
-    <wipeOutWorkspace>false</wipeOutWorkspace> 
-    <pruneBranches>false</pruneBranches> 
-    <remotePoll>false</remotePoll> 
-    <ignoreNotifyCommit>false</ignoreNotifyCommit> 
-    <useShallowClone>false</useShallowClone> 
-    <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser" /> 
-    <gitTool>Default</gitTool> 
-    <submoduleCfg class="list" /> 
-    <relativeTargetDir /> 
-    <reference /> 
-    <excludedRegions /> 
-    <excludedUsers /> 
-    <gitConfigName /> 
-    <gitConfigEmail/>  
-    <skipTag>false</skipTag> 
-    <includedRegions /> 
-    <scmName /> 
+<scm class="org.jenkinsci.plugins.multiplescms.MultiSCM" plugin="multiple-scms@0.5">
+    <scms>
+        <hudson.plugins.git.GitSCM plugin="git@2.4.2">
+            <configVersion>2</configVersion>
+            <userRemoteConfigs>
+                <hudson.plugins.git.UserRemoteConfig>
+                    <url></url>
+                    <credentialsId></credentialsId>
+                </hudson.plugins.git.UserRemoteConfig>
+            </userRemoteConfigs>
+            <branches>
+                <hudson.plugins.git.BranchSpec>
+                    <name>*/master</name>
+                </hudson.plugins.git.BranchSpec>
+            </branches>
+            <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+            <submoduleCfg class="list"/>
+            <extensions>
+                <hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
+                    <relativeTargetDir></relativeTargetDir>
+                </hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
+            </extensions>
+        </hudson.plugins.git.GitSCM>
+    </scms>
 </scm>
-
-
-
