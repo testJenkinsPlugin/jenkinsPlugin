@@ -136,7 +136,7 @@
                         <br/>
                     </div>
                 <div>
-                    <label class="div-label">Prebuild scripts:</label>
+                    <label class="div-label">Prebuild script:</label>
 
 
                     <textarea rows="10" cols="60" id="preScript" name="preScript" onblur="validatePrebuildScript(id)">
@@ -145,7 +145,7 @@
                 </div>
                 <br/>
                 <div>
-                    <label class="div-label">Postbuild scripts:</label>
+                    <label class="div-label">Postbuild script:</label>
                     <textarea rows="10" cols="60" id="postScript" name="postScript" onblur="validatePostbuildScript(id)">
                     </textarea>
                 </div>                
