@@ -158,6 +158,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>configurator</finalName>
     </build>
 
 
