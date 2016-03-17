@@ -106,15 +106,6 @@ public class JobSubversion implements JobElementDescription {
         return JobManagerGenerator.documentToXML(doc);
     }
 
-    private String getCredentialsId(String credentialsItem) {
-        String res = "";
-        String[] credentialsItemArray = credentialsItem.split(";");
-        if (credentialsItemArray.length > 1) {
-            res = credentialsItemArray[1].trim();
-        }
-        return res;
-    }
-
     public void appendToXML(BuildConfigurationModel config, Document doc) {
         JobSCM.removeSCM(doc);
         JobSCM.insertSCM(doc, generateXML(config));

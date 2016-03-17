@@ -281,13 +281,13 @@ public class JobManagerGenerator {
         Element buildStepNode = null;
         if (config.getPreScript() != null && !config.getPreScript().equals("")) {
             buildStepNode = doc.createElement(buildStepScriptClass);
-            createScriptNode(doc, buildStepNode, PREBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPreScript());
+            createScriptNode(doc, buildStepNode, config.getPreScript());
             buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getFirstChild());
         }
 
         if (config.getPostScript() != null && !config.getPostScript().equals("")) {
             buildStepNode = doc.createElement(buildStepScriptClass);
-            createScriptNode(doc, buildStepNode, POSTBUILD_SCRIPT_POSITION, buildStepScriptClass, config.getPostScript());
+            createScriptNode(doc, buildStepNode, config.getPostScript());
             buildStepNodeList.item(0).insertBefore(buildStepNode, null);
         }
     }
@@ -313,7 +313,21 @@ public class JobManagerGenerator {
     }
 
 
-    private static void createScriptNode(Document doc, Element buildStepNode, String commandIdPosition, String buildStepScriptClass, String scriptBody) {
+    private static void removeScriptNode1(Document doc) {
+
+
+
+
+      /*  if (scriptNode != null && scriptNode.getNodeName().equals(BUILDSTEP_BATCH_SCRIPT_CLASS) || scriptNode.getNodeName().equals(BUILDSTEP_SHELL_SCRIPT_CLASS)) {
+            if (scriptChildNode != null && scriptChildNode.getNodeName().equals("command")) {
+                scriptNode.getParentNode().removeChild(scriptNode);
+            }
+
+        }*/
+    }
+
+
+    private static void createScriptNode(Document doc, Element buildStepNode, String scriptBody) {
         //Script  node changed for use same node name before and after update
         Element commandNode = doc.createElement("command");
 
@@ -471,60 +485,66 @@ public class JobManagerGenerator {
         if (config.getProjectToBuild() != null) {
             job.setProjects(new ArrayList<Project>(config.getProjectToBuild().size()));
             for (ProjectToBuildModel projectModel : config.getProjectToBuild()) {
+                Project newProject = new Project();
 
                 Repository repo = new Repository();
                 repo.setType(config.getScm());
                 repo.setUrl(projectModel.getProjectUrl());
 
-                PathToArtefacts artefacts = new PathToArtefacts();
-                for (String artefactPath : projectModel.getArtefacts()) {
-                    artefacts.addFile(artefactPath);
+
+                PathToArtefacts artifacts = new PathToArtefacts();
+                for (String artifactPath : projectModel.getArtefacts()) {
+                    artifacts.addFile(artifactPath);
                 }
 
                 VersionFile versionFiles = new VersionFile();
-                if (versionFiles != null) {
-                    for (String versionFilePath : projectModel.getVersionFiles()) {
-                        versionFiles.addFile(versionFilePath);
-                    }
-                    if (!versionFiles.getFiles().isEmpty()) {
-                        versionFiles.setIsVersionFile(true);
-                    }
+                for (String versionFilePath : projectModel.getVersionFiles()) {
+                    versionFiles.addFile(versionFilePath);
+                }
+                if (!versionFiles.getFiles().isEmpty()) {
+                    versionFiles.setIsVersionFile(true);
                 }
 
-                List<Config> configurations = null;
-                if (projectModel.getBuilders() != null) {
-                    configurations = new ArrayList<Config>(projectModel.getBuilders().length);
-                    for (BuilderConfigModel builderModel : projectModel.getBuilders()) {
-                        Config newConfig = null;
-                        if (builderModel.getConfigs().isEmpty()) {
-                            newConfig = new Config();
-                            newConfig.setBuilder(builderModel.getBuilder());
-                            newConfig.setPlatform(builderModel.getPlatform());
-                            configurations.add(newConfig);
-                        } else {
-                            for (Configuration configEnum : builderModel.getConfigs()) {
-                                newConfig = new Config(configEnum.toString(), builderModel.getBuilder(),
-                                        builderModel.getPlatform());
-                                if (configEnum.equals(Configuration.OTHER)) {
-                                    newConfig.setUserConfig(builderModel.getUserConfig());
-                                }
-                                configurations.add(newConfig);
-                            }
-                        }
-                    }
-                }
 
-                Project newProject = new Project();
+                String localDirectory = projectModel.getLocalDirectoryPath().equals("") ? null : projectModel.getLocalDirectoryPath();
+                List<Config> configurations = createJobConfigurations(projectModel);
+
+
                 newProject.setRepository(repo);
                 newProject.setPathToFile(projectModel.getFileToBuild());
-                newProject.setLocalDirectory(projectModel.getLocalDirectoryPath() == ""
-                        ? null : projectModel.getLocalDirectoryPath());
-                newProject.setPathToArtefacts(artefacts);
+                newProject.setLocalDirectory(localDirectory);
+                newProject.setPathToArtefacts(artifacts);
                 newProject.setVersionFiles(versionFiles);
                 newProject.setConfigs(configurations);
                 job.getProjects().add(newProject);
             }
         }
         return job;
+    }
+
+    private static List<Config> createJobConfigurations(ProjectToBuildModel projectModel) {
+        List<Config> configurations = null;
+        if (projectModel.getBuilders() != null) {
+            configurations = new ArrayList<Config>(projectModel.getBuilders().length);
+            for (BuilderConfigModel builderModel : projectModel.getBuilders()) {
+                Config newConfig = null;
+                if (builderModel.getConfigs().isEmpty()) {
+                    newConfig = new Config();
+                    newConfig.setBuilder(builderModel.getBuilder());
+                    newConfig.setPlatform(builderModel.getPlatform());
+                    configurations.add(newConfig);
+                } else {
+                    for (Configuration configEnum : builderModel.getConfigs()) {
+                        newConfig = new Config(configEnum.toString(), builderModel.getBuilder(),
+                                builderModel.getPlatform());
+                        if (configEnum.equals(Configuration.OTHER)) {
+                            newConfig.setUserConfig(builderModel.getUserConfig());
+                        }
+                        configurations.add(newConfig);
+                    }
+                }
+            }
+        }
+        return configurations;
     }
 }

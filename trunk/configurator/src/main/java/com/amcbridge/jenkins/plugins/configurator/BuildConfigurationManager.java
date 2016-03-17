@@ -3,8 +3,8 @@ package com.amcbridge.jenkins.plugins.configurator;
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
-import com.amcbridge.jenkins.plugins.enums.SCMElement;
-import com.amcbridge.jenkins.plugins.enums.SCMLoader;
+import com.amcbridge.jenkins.plugins.xstreamElements.SCMElement;
+import com.amcbridge.jenkins.plugins.xstreamElements.SCMLoader;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
@@ -21,7 +21,6 @@ import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
@@ -33,7 +32,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 import javax.servlet.ServletException;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
@@ -45,7 +43,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class BuildConfigurationManager {
 
@@ -55,15 +52,8 @@ public class BuildConfigurationManager {
     private static final String CONFIG_JOB_FILE_NAME = "JobConfig.xml";
     private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "\\plugins\\BuildConfiguration";
     private static final String CONTENT_FOLDER = "userContent";
-    private static final String SCRIPT_FOLDER = "Scripts";
-    private static final String CHECK_CONFIG_FILE_NAME = "configCheck.xml";
-    private static final Integer MAX_FILE_SIZE = 1048576;//max file size which equal 1 mb in bytes
-    private static final String[] SCRIPTS_EXTENSIONS = {"bat", "nant", "powershell", "shell",
-            "ant", "maven"};
     public static final String STRING_EMPTY = "";
     private static final MailSender mail = new MailSender();
-    private static final ReentrantLock lock = new ReentrantLock();
-    private static String currentScm = "None";
     private static final Logger log = LoggerFactory.getLogger(BuildConfigurationManager.class);
     private static final SCMLoader scmLoader = new SCMLoader();
 
@@ -112,74 +102,8 @@ public class BuildConfigurationManager {
 
         XmlFile fileWriter = getConfigFile(config.getProjectName());
         fileWriter.write(config);
-        saveFile(config);
     }
 
-    public static void saveFile(BuildConfigurationModel config) {
-        if (config.getProjectName().isEmpty()) {
-            return;
-        }
-
-        String pathFolder = getRootDirectory() + "\\" + config.getProjectName()
-                + "\\" + SCRIPT_FOLDER;
-        String filePath;
-        File checkFolder = new File(pathFolder);
-        File checkFile;
-
-        if (config.getScripts().length == 0) {
-            if (checkFolder.exists()) {
-                FileUtils.deleteQuietly(checkFolder);
-            }
-            return;
-        }
-
-        if (!checkFolder.exists()) {
-            checkFolder.mkdirs();
-        }
-
-        String[] scripts = config.getScripts();
-
-        for (int i = 0; i < scripts.length; i++) {
-            if (scripts[i].isEmpty()) {
-                continue;
-            }
-            filePath = getUserContentFolder() + "\\" + scripts[i];
-            checkFile = new File(filePath);
-            if (!checkFile.exists()) {
-                checkFile = new File(pathFolder + "\\" + scripts[i]);
-                if (!checkFile.exists()) {
-                    scripts[i] = STRING_EMPTY;
-                }
-                continue;
-            }
-            if (checkFile.length() < MAX_FILE_SIZE && checkExtension(checkFile.getName())) {
-                checkFile.renameTo(new File(pathFolder + "\\"
-                        + checkFile.getName()));
-            } else {
-                scripts[i] = STRING_EMPTY;
-            }
-        }
-
-        config.setScripts(scripts);
-        checkFile = new File(pathFolder);
-        File[] listOfFiles = checkFile.listFiles();
-
-        for (File listOfFile : listOfFiles) {
-            if (ArrayUtils.indexOf(scripts, listOfFile.getName()) == -1) {
-                listOfFile.delete();
-            }
-        }
-    }
-
-    private static Boolean checkExtension(String fileName) {
-        String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
-        for (String script : SCRIPTS_EXTENSIONS) {
-            if (script.equals(extension)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     protected final static XmlFile getConfigFile(String nameProject) {
         return new XmlFile(Jenkins.XSTREAM, getConfigFileFor("\\" + nameProject));
@@ -227,13 +151,13 @@ public class BuildConfigurationManager {
 
     public static void markConfigurationForDeletion(String name)
             throws IOException, ParserConfigurationException,
-            JAXBException, AddressException, MessagingException {
+            JAXBException, MessagingException {
         BuildConfigurationModel config = load(name);
         if (config.getState() == ConfigurationState.FOR_DELETION) {
             return;
         }
         config.setState(ConfigurationState.FOR_DELETION);
-        config.setCurrentDate();
+        config.initCurrentDate();
         save(config);
         ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
                 getAdminEmail(), StringUtils.EMPTY, MessageDescription.MARKED_FOR_DELETION.toString(),
@@ -242,10 +166,9 @@ public class BuildConfigurationManager {
     }
 
     public static void restoreConfiguration(String name) throws IOException, ParserConfigurationException,
-            JAXBException, AddressException, MessagingException {
+            JAXBException, MessagingException {
         BuildConfigurationModel config = load(name);
         config.setState(ConfigurationState.UPDATED);
-        currentScm = config.getScm();
         save(config);
         ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
                 getAdminEmail(), getUserMailAddress(config), MessageDescription.RESTORE.toString(),
@@ -260,7 +183,7 @@ public class BuildConfigurationManager {
     }
 
     public static void deleteConfigurationPermanently(String name) throws IOException,
-            AddressException, MessagingException, JAXBException, InterruptedException, ParserConfigurationException {
+            MessagingException, JAXBException, InterruptedException, ParserConfigurationException {
         File checkFile = new File(getRootDirectory() + "\\" + name);
         BuildConfigurationModel config = load(name);
         if (checkFile.exists()) {
@@ -293,11 +216,11 @@ public class BuildConfigurationManager {
     }
 
     public static Boolean isCurrentUserAdministrator() {
-        Object inst = Jenkins.getInstance();
+        Jenkins inst = Jenkins.getInstance();
         Permission permission = Jenkins.ADMINISTER;
 
-        if (inst instanceof AccessControlled) {
-            return ((AccessControlled) inst).hasPermission(permission);
+        if (inst != null) {
+            return inst.hasPermission(permission);
         } else {
             List<Ancestor> ancs = Stapler.getCurrentRequest().getAncestors();
             for (Ancestor anc : Iterators.reverse(ancs)) {
@@ -311,25 +234,32 @@ public class BuildConfigurationManager {
     }
 
     public static BuildConfigurationModel getConfiguration(String name) throws IOException, JAXBException {
-        BuildConfigurationModel currenConfig = load(name);
+        BuildConfigurationModel currentConfig = load(name);
         if (!isCurrentUserAdministrator() && !isCurrentUserCreatorOfConfiguration(name)) {
             return null;
         }
-        return currenConfig;
+        return currentConfig;
     }
 
     public static String getAdminEmail() {
-        String adminMail = JenkinsLocationConfiguration.get().getAdminAddress();
-        return adminMail;
+        return JenkinsLocationConfiguration.get().getAdminAddress();
+    }
+
+    public static String getUserMailAddress(BuildConfigurationModel config) {
+        if (config.getConfigEmail() != null) {
+            String[] address = config.getConfigEmail().split(" ");
+            return StringUtils.join(address, ",");
+        }
+        return StringUtils.EMPTY;
     }
 
     public static List<String> getSCM() {
-        List<String> result = new ArrayList<String>();
+        List<String> supportedSCMs = new ArrayList<String>();
         boolean isGitCatch = false;
         boolean isSubversionCatch = false;
         for (SCMDescriptor<?> scm : SCM.all()) {
             if (isSupportedSCM(scm)) {
-                result.add(scm.getDisplayName());
+                supportedSCMs.add(scm.getDisplayName());
                 if (scm.getDisplayName().equalsIgnoreCase("git")) {
                     isGitCatch = true;
                 } else if (scm.getDisplayName().equalsIgnoreCase("subversion")) {
@@ -348,12 +278,12 @@ public class BuildConfigurationManager {
             log.info("----- subversion: plugin wasn't plugged");
         }
 
-        return result;
+        return supportedSCMs;
     }
 
     private static Boolean isSupportedSCM(SCMDescriptor<?> scm) {
-        for (SCMElement suportSCM : scmLoader.getSCMs()) {
-            if (suportSCM.getKey().equalsIgnoreCase(scm.getDisplayName())) {
+        for (SCMElement supportSCM : scmLoader.getSCMs()) {
+            if (supportSCM.getKey().equalsIgnoreCase(scm.getDisplayName())) {
                 return true;
             }
         }
@@ -361,20 +291,11 @@ public class BuildConfigurationManager {
     }
 
     public static List<String> getNodesName() {
-        List<String> result = new ArrayList<String>();
+        List<String> nodeNames = new ArrayList<String>();
         for (Node node : Jenkins.getInstance().getNodes()) {
-            result.add(node.getNodeName());
+            nodeNames.add(node.getNodeName());
         }
-
-        return result;
-    }
-
-    public static String getUserMailAddress(BuildConfigurationModel config) {
-        if (config.getConfigEmail() != null) {
-            String[] address = config.getConfigEmail().split(" ");
-            return StringUtils.join(address, ",");
-        }
-        return StringUtils.EMPTY;
+        return nodeNames;
     }
 
     public static void createJob(String name)
@@ -400,15 +321,12 @@ public class BuildConfigurationManager {
 
 
     public static List<CredentialItem> openCredentials() throws IOException {
+
         String jenkinsHomePath = Jenkins.getInstance().getRootDir().getPath();
-        if (jenkinsHomePath == null) {
-            return new ArrayList();
-        }
         List<CredentialItem> credentialItemList = new ArrayList<CredentialItem>();
+        String fileName = jenkinsHomePath + "\\credentials.xml";
 
-        String fileName = changeFilePath(jenkinsHomePath) + "/credentials.xml";
         try {
-
             File fXmlFile = new File(fileName);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -462,24 +380,4 @@ public class BuildConfigurationManager {
         }
         return credentialItemList;
     }
-
-    public static String changeFilePath(String filePath) {
-        String realFilePath = "";
-        if (filePath != null) {
-            filePath = filePath.replace("\\", "/");
-            for (int i = 0; i < filePath.length(); i++) {
-                if (filePath.charAt(i) != '.') {
-                    realFilePath += filePath.charAt(i);
-                } else {
-                    if (i < filePath.length() - 5) {
-                        i++;
-                    } else {
-                        realFilePath += filePath.charAt(i);
-                    }
-                }
-            }
-        }
-        return realFilePath;
-    }
-
 }

@@ -1,6 +1,6 @@
 package com.amcbridge.jenkins.plugins.configurationModels;
 
-import com.amcbridge.jenkins.plugins.enums.UserLoader;
+import com.amcbridge.jenkins.plugins.xstreamElements.UserLoader;
 import com.amcbridge.jenkins.plugins.serialization.CredentialItem;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 
@@ -19,6 +19,85 @@ public class ProjectToBuildModel {
     private String[] artefacts, versionFiles;
 
     public ProjectToBuildModel() {
+    }
+
+
+    @DataBoundConstructor
+    public ProjectToBuildModel(String projectUrl, String credentials, String branchName, String fileToBuild,
+                               String artefacts, String versionFiles, String localDirectoryPath,
+                               Boolean isVersionFiles, BuilderConfigModel[] builders) {
+        this.projectUrl = projectUrl;
+        this.credentials = credentials;
+        this.branchName = branchName;
+        this.fileToBuild = fileToBuild;
+        this.artefacts = BuildConfigurationManager.getPath(artefacts);
+        this.versionFiles = BuildConfigurationManager.getPath(versionFiles);
+        this.localDirectoryPath = localDirectoryPath;
+        this.isVersionFiles = isVersionFiles;
+        this.builders = builders;
+    }
+
+    public static List<String> getCredentialsList() {
+        List<String> result = new ArrayList<String>();
+        try {
+            List<CredentialItem> items = BuildConfigurationManager.openCredentials();
+            if (!items.isEmpty()) {
+                for (CredentialItem item : items) {
+                    result.add(item.getDisplayName());
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ProjectToBuildModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
+    }
+
+    public static Boolean isCredentialSelected(String curCredentials, String testedCredential) {
+        if ((curCredentials == null) || (testedCredential == null)) {
+            return false;
+        } else {
+            return curCredentials.equalsIgnoreCase(testedCredential);
+        }
+    }
+
+    public static String getCredentialId(String curCredentials) {
+        // credential looks like: "credentialsName";"credentialsId"
+        int idPosition = 1;
+        String res = "";
+        if (curCredentials.isEmpty()) {
+            return res;
+        }
+        String[] splittedCredentials = curCredentials.split(";");
+        if (splittedCredentials.length > 1) {
+            return splittedCredentials[idPosition].trim();
+        } else {
+            return res;
+        }
+    }
+
+    public static String getCredentialName(String curCredentials) {
+        // credential looks like: "credentialsName";"credentialsId"
+        int credentialsNamePosition = 0;
+        String res = "";
+        if (curCredentials.isEmpty()) {
+            return res;
+        }
+        String[] splittedCredentials = curCredentials.split(";");
+        if (splittedCredentials.length > 1) {
+            res = splittedCredentials[credentialsNamePosition].trim();
+        }
+        return res;
+
+    }
+
+    public static String getUserDefaultCredentials() {
+        UserLoader loader = new UserLoader();
+        return loader.getUserDefaultCredentials();
+    }
+
+
+    public String[] getVersionFiles() {
+        return versionFiles;
     }
 
     public void setCredentials(String value) {
@@ -83,80 +162,6 @@ public class ProjectToBuildModel {
 
     public void setVersionFiles(String[] values) {
         versionFiles = values;
-    }
-
-    public String[] getVersionFiles() {
-        return versionFiles;
-    }
-
-    @DataBoundConstructor
-    public ProjectToBuildModel(String projectUrl, String credentials, String branchName, String fileToBuild,
-                               String artefacts, String versionFiles, String localDirectoryPath,
-                               Boolean isVersionFiles, BuilderConfigModel[] builders) {
-        this.projectUrl = projectUrl;
-        this.credentials = credentials;
-        this.branchName = branchName;
-        this.fileToBuild = fileToBuild;
-        this.isVersionFiles = isVersionFiles;
-        this.localDirectoryPath = localDirectoryPath;
-        setArtefacts(BuildConfigurationManager.getPath(artefacts));
-        setVersionFiles(BuildConfigurationManager.getPath(versionFiles));
-        this.builders = builders;
-    }
-
-    public static List<String> getCredentialsList() {
-        List<String> result = new ArrayList<String>();
-        try {
-            List<CredentialItem> items = BuildConfigurationManager.openCredentials();
-            if (!items.isEmpty()) {
-                for (CredentialItem item : items) {
-                    result.add(item.getDisplayName());
-                }
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(ProjectToBuildModel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
-    }
-
-    public static Boolean isCredentialSelected(String curCredentials, String testedCredential) {
-        if ((curCredentials == null) || (testedCredential == null)) {
-            return false;
-        } else {
-            return curCredentials.equalsIgnoreCase(testedCredential);
-        }
-    }
-
-    public static String getCredentialId(String curCredentials) {
-        String res = "";
-        if (curCredentials.isEmpty()) {
-            return res;
-        }
-        String[] arr = curCredentials.split(";");
-        if (arr.length > 1) {
-            return arr[1].trim();
-        } else {
-            return res;
-        }
-    }
-
-    public static String getCredentialName(String curCredentials) {
-        String res = "";
-        if (curCredentials.isEmpty()) {
-            return res;
-        }
-        String[] arr = curCredentials.split(";");
-        if (arr.length > 1) {
-            res = arr[0].trim();
-            return res;
-        } else {
-            return res;
-        }
-    }
-
-    public static String getUserDefaultCredentials() {
-        UserLoader loader = new UserLoader();
-        return loader.getUserDefaultCredentials();
     }
 
 }

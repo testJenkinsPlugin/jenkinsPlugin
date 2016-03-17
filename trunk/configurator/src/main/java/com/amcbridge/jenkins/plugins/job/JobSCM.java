@@ -35,6 +35,7 @@ public class JobSCM {
             Node node = doc.importNode(scm.getChildNodes().item(0), true);
             doc.getChildNodes().item(0).appendChild(node);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return doc;
     }

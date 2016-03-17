@@ -11,22 +11,44 @@ import java.util.List;
 
 public class BuildConfigurationModel {
 
-    private String projectName, email, creator, date, rejectionReason, scm, configEmail;
+    private String projectName;
+    private String email;
+    private String creator;
+    private String date;
+    private String rejectionReason;
+    private String scm;
+    private String configEmail;
     private String scriptType;
-    private String preScript, postScript;
+    private String preScript;
+    private String postScript;
     private Boolean isJobUpdate;
     private ConfigurationState state;
     private List<ProjectToBuildModel> projectToBuild;
-    private String[] scripts, buildMachineConfiguration;
+    private String[] scripts;
+    private String[] buildMachineConfiguration;
 
     public BuildConfigurationModel() {
-        setCreator();
+        initCreator();
     }
 
-    public void setCurrentDate() {
+    private void initCreator() {
+        if (User.current() != null) {
+            creator = User.current().getId();
+        } else {
+            creator = BuildConfigurationManager.STRING_EMPTY;
+        }
+    }
+
+    public void initCurrentDate() {
         DateFormat df = new SimpleDateFormat(BuildConfigurationManager.DATE_FORMAT);
         Date dateobj = new Date();
         date = df.format(dateobj);
+    }
+
+    public String getFullNameCreator() {
+        User user = User.get(creator);
+        String fullname = user.getFullName();
+        return fullname;
     }
 
     public String getDate() {
@@ -121,26 +143,12 @@ public class BuildConfigurationModel {
         return state;
     }
 
-    void setCreator() {
-        if (User.current() != null) {
-            creator = User.current().getId();
-        } else {
-            creator = BuildConfigurationManager.STRING_EMPTY;
-        }
-    }
-
     public void setCreator(String value) {
         creator = value;
     }
 
     public String getCreator() {
         return creator;
-    }
-
-    public String getFullNameCreator() {
-        User user = User.get(creator);
-        String fullname = user.getFullName();
-        return fullname;
     }
 
     public void setRejectionReason(String reject) {

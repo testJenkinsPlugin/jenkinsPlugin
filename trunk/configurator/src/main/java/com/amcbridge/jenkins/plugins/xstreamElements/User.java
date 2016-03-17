@@ -1,4 +1,4 @@
-package com.amcbridge.jenkins.plugins.enums;
+package com.amcbridge.jenkins.plugins.xstreamElements;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;

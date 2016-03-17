@@ -5,7 +5,7 @@ import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.FormResult;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
-import com.amcbridge.jenkins.plugins.enums.UserLoader;
+import com.amcbridge.jenkins.plugins.xstreamElements.UserLoader;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
@@ -42,7 +42,6 @@ public final class BuildConfigurator implements RootAction {
     private static final String PLUGIN_NAME = "Build Configurator";
     private static final String ICON_PATH = "/plugin/configurator/icons/system_config_services.png";
     private static final String DEFAULT_PAGE_URL = "BuildConfigurator";
-    private String editedProjectName = "";
 
     public BuildConfigurator() {
         mail = new MailSender();
@@ -88,13 +87,11 @@ public final class BuildConfigurator implements RootAction {
 
         request.bindJSON(newConfig, formAttribute);
 
-        newConfig.setScripts(BuildConfigurationManager
-                .getPath(formAttribute.get("scripts").toString()));
         if (formAttribute.get("build_machine_configuration") != null) {
             newConfig.setBuildMachineConfiguration(BuildConfigurationManager
                     .getPath(formAttribute.get("build_machine_configuration").toString()));
         }
-        newConfig.setCurrentDate();
+        newConfig.initCurrentDate();
         newConfig.setJobUpdate(true);
 
         ConfigurationStatusMessage message

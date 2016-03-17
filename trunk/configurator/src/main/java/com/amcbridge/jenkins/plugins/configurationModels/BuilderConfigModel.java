@@ -8,7 +8,9 @@ import com.amcbridge.jenkins.plugins.enums.Configuration;
 
 public class BuilderConfigModel {
 
-    private String builder, platform, userConfig;
+    private String builder;
+    private String platform;
+    private String userConfig;
     private List<Configuration> configs;
 
     @DataBoundConstructor
@@ -37,32 +39,35 @@ public class BuilderConfigModel {
         Configuration conf = Configuration.valueOf(value);
         if (configs.indexOf(conf) != -1) {
             return true;
-        } else {
-            return false;
         }
-    }
-
-    public void setBuilder(String value) {
-        builder = value;
+        return false;
     }
 
     public String getBuilder() {
         return builder;
     }
 
-    public void setPlatform(String value) {
-        platform = value;
+    public void setBuilder(String builder) {
+        this.builder = builder;
     }
 
     public String getPlatform() {
         return platform;
     }
 
-    public void setUserConfig(String value) {
-        userConfig = value;
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 
     public String getUserConfig() {
         return userConfig;
+    }
+
+    public void setUserConfig(String userConfig) {
+        this.userConfig = userConfig;
+    }
+
+    public void setConfigs(List<Configuration> configs) {
+        this.configs = configs;
     }
 }
