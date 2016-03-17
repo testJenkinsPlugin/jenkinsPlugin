@@ -222,7 +222,7 @@ public class JobManagerGenerator {
         } catch (XPathExpressionException e) {
             e.printStackTrace();
         }
-        if (jobName != null) {
+        if (jobName != null && fileNameNode != null) {
             fileNameNode.setTextContent(jobName + ".xml");
         }
 
@@ -474,7 +474,6 @@ public class JobManagerGenerator {
         }
     }
 
-    //TODO: refactor
     public static Job buildJob(BuildConfigurationModel config) {
         Job job = new Job();
 
@@ -505,10 +504,8 @@ public class JobManagerGenerator {
                     versionFiles.setIsVersionFile(true);
                 }
 
-
                 String localDirectory = projectModel.getLocalDirectoryPath().equals("") ? null : projectModel.getLocalDirectoryPath();
                 List<Config> configurations = createJobConfigurations(projectModel);
-
 
                 newProject.setRepository(repo);
                 newProject.setPathToFile(projectModel.getFileToBuild());

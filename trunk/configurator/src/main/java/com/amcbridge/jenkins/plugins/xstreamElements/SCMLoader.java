@@ -12,13 +12,13 @@ import jenkins.model.Jenkins;
 public class SCMLoader {
 
     private static final String SCM = "\\plugins\\configurator\\builder\\SCM.xml";
-    List<SCMElement> scms;
+    List<com.amcbridge.jenkins.plugins.xstreamElements.SCM> scms;
 
     public SCMLoader() {
         load();
     }
 
-    public List<SCMElement> getSCMs() {
+    public List<com.amcbridge.jenkins.plugins.xstreamElements.SCM> getSCMs() {
         return scms;
     }
 
@@ -27,7 +27,7 @@ public class SCMLoader {
         xstream.addImplicitCollection(SCMLoader.class, "scms");
         xstream.processAnnotations(SCMLoader.class);
         File file = new File(Jenkins.getInstance().getRootDir() + SCM);
-        xstream.setClassLoader(SCMElement.class.getClassLoader());
+        xstream.setClassLoader(com.amcbridge.jenkins.plugins.xstreamElements.SCM.class.getClassLoader());
         scms = ((SCMLoader) xstream.fromXML(file)).getSCMs();
     }
 

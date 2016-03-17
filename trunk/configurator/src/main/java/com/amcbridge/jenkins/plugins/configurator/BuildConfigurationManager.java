@@ -3,7 +3,7 @@ package com.amcbridge.jenkins.plugins.configurator;
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
-import com.amcbridge.jenkins.plugins.xstreamElements.SCMElement;
+import com.amcbridge.jenkins.plugins.xstreamElements.SCM;
 import com.amcbridge.jenkins.plugins.xstreamElements.SCMLoader;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
@@ -12,7 +12,6 @@ import com.amcbridge.jenkins.plugins.serialization.CredentialItem;
 import hudson.XmlFile;
 import hudson.model.Node;
 import hudson.model.User;
-import hudson.scm.SCM;
 import hudson.scm.SCMDescriptor;
 import hudson.security.AccessControlled;
 import hudson.security.Permission;
@@ -257,7 +256,7 @@ public class BuildConfigurationManager {
         List<String> supportedSCMs = new ArrayList<String>();
         boolean isGitCatch = false;
         boolean isSubversionCatch = false;
-        for (SCMDescriptor<?> scm : SCM.all()) {
+        for (SCMDescriptor<?> scm : hudson.scm.SCM.all()) {
             if (isSupportedSCM(scm)) {
                 supportedSCMs.add(scm.getDisplayName());
                 if (scm.getDisplayName().equalsIgnoreCase("git")) {
@@ -282,7 +281,7 @@ public class BuildConfigurationManager {
     }
 
     private static Boolean isSupportedSCM(SCMDescriptor<?> scm) {
-        for (SCMElement supportSCM : scmLoader.getSCMs()) {
+        for (SCM supportSCM : scmLoader.getSCMs()) {
             if (supportSCM.getKey().equalsIgnoreCase(scm.getDisplayName())) {
                 return true;
             }

@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Vector;
 
+import com.amcbridge.jenkins.plugins.xstreamElements.BuilderLoader;
 import jenkins.model.Jenkins;
 import org.apache.commons.jelly.JellyContext;
 import org.apache.commons.jelly.JellyException;
@@ -22,11 +23,11 @@ public class ViewGenerator {
     private static final String HTML_SPACE = "%20";
 
     private Integer id;
-    private Builder builder;
+    private BuilderLoader builderLoader;
 
     public ViewGenerator() {
         id = 0;
-        builder = new Builder();
+        builderLoader = new BuilderLoader();
     }
 
     private ProjectToBuildView setContextForBuilderView(JellyContext jcontext)
@@ -38,7 +39,7 @@ public class ViewGenerator {
         jcontext.setVariable("divID", id);
         id++;
 
-        jcontext.setVariable("builders", builder.getBuilders());
+        jcontext.setVariable("builders", builderLoader.getBuilders());
         jcontext.setVariable("platforms", Platform.values());
         jcontext.setVariable("configuration", Configuration.values());
 
@@ -80,7 +81,7 @@ public class ViewGenerator {
         }
 
         jcontext.setVariable("sourceId", sourceId);
-        jcontext.setVariable("builders", builder.getBuilders());
+        jcontext.setVariable("builders", builderLoader.getBuilders());
         jcontext.setVariable("platforms", Platform.values());
         jcontext.setVariable("configuration", Configuration.values());
         jcontext.setVariable("credentialsList", ProjectToBuildModel.getCredentialsList());
@@ -108,7 +109,7 @@ public class ViewGenerator {
         Vector<Integer> sourceId;
 
         jcontext.setVariable("generator", this);
-        jcontext.setVariable("builders", builder.getBuilders());
+        jcontext.setVariable("builders", builderLoader.getBuilders());
         jcontext.setVariable("platforms", Platform.values());
         jcontext.setVariable("configuration", Configuration.values());
         jcontext.setVariable("credentialsList", ProjectToBuildModel.getCredentialsList());
