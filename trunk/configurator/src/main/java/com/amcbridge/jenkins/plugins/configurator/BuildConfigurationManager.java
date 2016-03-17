@@ -335,38 +335,32 @@ public class BuildConfigurationManager {
             NodeList nList = doc.getElementsByTagName("java.util.concurrent.CopyOnWriteArrayList");
             for (int temp = 0; temp < nList.getLength(); temp++) {
                 org.w3c.dom.Node nNode = nList.item(temp);
-                System.out.println("\nCurrent Element :" + nNode.getNodeName());
                 if (nNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
                     NodeList nodeList = eElement.getChildNodes();
                     for (int i = 0; i < nodeList.getLength(); i++) {
                         org.w3c.dom.Node curNode = nodeList.item(i);
                         if (curNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-                            System.out.println("\nCurrent Element :" + curNode.getNodeName());
                             Element curElement = (Element) curNode;
                             CredentialItem crItem = new CredentialItem();
                             if (curElement.getElementsByTagName("scope").item(0) != null) {
                                 if (curElement.getElementsByTagName("scope").item(0).getTextContent() != null) {
                                     crItem.setScope(curElement.getElementsByTagName("scope").item(0).getTextContent());
-                                    System.out.println("scope : " + curElement.getElementsByTagName("scope").item(0).getTextContent());
                                 }
                             }
                             if (curElement.getElementsByTagName("id").item(0) != null) {
                                 if (curElement.getElementsByTagName("id").item(0).getTextContent() != null) {
                                     crItem.setId(curElement.getElementsByTagName("id").item(0).getTextContent());
-                                    System.out.println("id : " + curElement.getElementsByTagName("id").item(0).getTextContent());
                                 }
                             }
                             if (curElement.getElementsByTagName("username").item(0) != null) {
                                 if (curElement.getElementsByTagName("username").item(0).getTextContent() != null) {
                                     crItem.setUsername(curElement.getElementsByTagName("username").item(0).getTextContent());
-                                    System.out.println("username : " + curElement.getElementsByTagName("username").item(0).getTextContent());
                                 }
                             }
                             if (curElement.getElementsByTagName("description").item(0) != null) {
                                 if (curElement.getElementsByTagName("description").item(0).getTextContent() != null) {
                                     crItem.setDescription(curElement.getElementsByTagName("description").item(0).getTextContent());
-                                    System.out.println("description : " + curElement.getElementsByTagName("description").item(0).getTextContent());
                                 }
                             }
                             credentialItemList.add(crItem);
