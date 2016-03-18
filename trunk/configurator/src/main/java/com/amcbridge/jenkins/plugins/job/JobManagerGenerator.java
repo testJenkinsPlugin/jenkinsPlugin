@@ -44,7 +44,7 @@ public class JobManagerGenerator {
     private static final String PREBUILD_SCRIPT_POSITION = "preScript";
     private static final String POSTBUILD_SCRIPT_POSITION = "postScript";
     public static final String COMMA_SEPARATOR = ", ";
-    private static final String JOB_TEMPLATE_PATH = "\\plugins\\configurator\\job\\config.xml";
+    private static final String JOB_TEMPLATE_PATH = "\\plugins\\build-configurator\\job\\config.xml";
     private static final String JOB_FOLDER_PATH = "\\jobs\\";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
     private static final String XPATH_FILE_TO_COPY = "/project/buildWrappers/com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper/includes/text()";
@@ -310,20 +310,6 @@ public class JobManagerGenerator {
             }
 
         }
-    }
-
-
-    private static void removeScriptNode1(Document doc) {
-
-
-
-
-      /*  if (scriptNode != null && scriptNode.getNodeName().equals(BUILDSTEP_BATCH_SCRIPT_CLASS) || scriptNode.getNodeName().equals(BUILDSTEP_SHELL_SCRIPT_CLASS)) {
-            if (scriptChildNode != null && scriptChildNode.getNodeName().equals("command")) {
-                scriptNode.getParentNode().removeChild(scriptNode);
-            }
-
-        }*/
     }
 
 

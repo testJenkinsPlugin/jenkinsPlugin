@@ -13,8 +13,8 @@
    
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
   <st:bind value="${it}" var="buildConfiguration"/>
-  <script type="text/javascript" src="../plugin/configurator/scripts/CreateBuildConfigurator.js"></script>
-  <link rel="stylesheet" href="../plugin/configurator/css/style.css" type="text/css"/>
+  <script type="text/javascript" src="../plugin/build-configurator/scripts/CreateBuildConfigurator.js"></script>
+  <link rel="stylesheet" href="../plugin/build-configurator/css/style.css" type="text/css"/>
 
   <l:layout>
         <st:include page="sidepanel.jelly" it="${app}"/>

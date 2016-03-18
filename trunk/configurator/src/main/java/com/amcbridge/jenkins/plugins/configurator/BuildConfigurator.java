@@ -40,7 +40,7 @@ public final class BuildConfigurator implements RootAction {
     private MailSender mail;
     private static final String VIEW_GENERATOR = "viewGenerator";
     private static final String PLUGIN_NAME = "Build Configurator";
-    private static final String ICON_PATH = "/plugin/configurator/icons/system_config_services.png";
+    private static final String ICON_PATH = "/plugin/build-configurator/icons/system_config_services.png";
     private static final String DEFAULT_PAGE_URL = "BuildConfigurator";
 
     public BuildConfigurator() {

@@ -4,14 +4,15 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.612
-        </version>  <!--1.532.3-->     <!--  1.612  which version of Jenkins is this plugin built against? Users must have at least this Jenkins version to use this plugin. -->
+        <version>1.612</version>
     </parent>
 
-    <groupId>com.amcbridge.jenkins.plugins</groupId>
-    <artifactId>configurator</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>build-configurator</artifactId>
+    <version>1.0</version>
     <packaging>hpi</packaging>
+    <name>Jenkins Build Automation Management Tool</name>
+    <description>Allows configure and administrate project builds, automatically create jobs for Jenkins.</description>
+
 
     <licenses>
         <license>
@@ -26,7 +27,6 @@
             <id>repo.jenkins-ci.org</id>
             <url>http://repo.jenkins-ci.org/public/</url>
         </repository>
-
     </repositories>
 
     <pluginRepositories>
@@ -107,8 +107,7 @@
         </dependency>
 
 
-
-       <dependency>
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>multiple-scms</artifactId>
             <version>0.5</version>
@@ -158,17 +157,15 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>configurator</finalName>
     </build>
 
 
-    <!--don't remove-->
-<!--    <profiles>
-        <profile>
-            <id>jenkins_debug</id>
-            <build>
-                <directory>work/plugins</directory>
-            </build>
-        </profile>
-    </profiles>-->
+    <!--        <profiles>
+                <profile>
+                    <id>jenkins_debug</id>
+                    <build>
+                        <directory>work/plugins</directory>
+                    </build>
+                </profile>
+            </profiles>-->
 </project>

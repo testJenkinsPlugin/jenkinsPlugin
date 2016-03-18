@@ -11,7 +11,7 @@ import jenkins.model.Jenkins;
 @XStreamAlias("scms")
 public class SCMLoader {
 
-    private static final String SCM = "\\plugins\\configurator\\builder\\SCM.xml";
+    private static final String SCM = "\\plugins\\build-configurator\\builder\\SCM.xml";
     List<com.amcbridge.jenkins.plugins.xstreamElements.SCM> scms;
 
     public SCMLoader() {

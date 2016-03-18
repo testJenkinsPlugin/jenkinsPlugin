@@ -12,8 +12,8 @@
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <st:bind value="${it}" var="buildConfiguration"/>
-  <script src="../plugin/configurator/scripts/index.js"/>
-  <link rel="stylesheet" href="../plugin/configurator/css/style.css" type="text/css"/>
+  <script src="../plugin/build-configurator/scripts/index.js"/>
+  <link rel="stylesheet" href="../plugin/build-configurator/css/style.css" type="text/css"/>
 
     <l:layout>
         <st:include page="sidepanel.jelly" it="${app}" />
@@ -30,7 +30,7 @@
             </div>
             <div id="loading-div-background" class="loading-div-background">
                 <div id="loading-div" class="loading-div">
-                    <img style="height:64px;width:64px;margin:30px;" src="../plugin/configurator/icons/loader.gif"/>
+                    <img style="height:64px;width:64px;margin:30px;" src="../plugin/build-configurator/icons/loader.gif"/>
                     <br/>
                     <label>Sending file to repository. Please wait...</label>
                 </div>

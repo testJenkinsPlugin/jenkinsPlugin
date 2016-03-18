@@ -14,7 +14,7 @@ import java.util.List;
  */
 @XStreamAlias("list")
 public class UserLoader {
-    private static final String USERS_DEFAULT_PATH = "\\plugins\\configurator\\usersDefaults.xml";
+    private static final String USERS_DEFAULT_PATH = "\\plugins\\build-configurator\\usersDefaults.xml";
     @XStreamImplicit()
     private List<User> usersList = new ArrayList<User>();
 
