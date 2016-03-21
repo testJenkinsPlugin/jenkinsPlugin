@@ -170,7 +170,7 @@
         </plugins>
     </build>
 
-    <!--            <profiles>
+<!--                <profiles>
                     <profile>
                         <id>jenkins_debug</id>
                         <build>
