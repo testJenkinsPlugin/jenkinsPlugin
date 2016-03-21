@@ -35,7 +35,7 @@
             <h1 class="header" id="titlePage">Create new build configuration</h1>
             <label id="reasonLabel" class="reason"></label>
             </div>
-            <f:form method="get" action="createNewConfigurator" name="createNewConfigurator" id="createNewConfigurator">
+            <f:form method="post" action="createNewConfigurator" name="createNewConfigurator" id="createNewConfigurator">
                 <div class="user">
                     <label id="userLabel"></label>
                 </div>
