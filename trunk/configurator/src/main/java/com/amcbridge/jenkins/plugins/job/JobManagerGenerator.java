@@ -194,6 +194,7 @@ public class JobManagerGenerator {
         doc.getElementsByTagName("project").item(0).appendChild(importedNode);
 
         createPreAndPostScriptsNodes(config, doc);
+        setJobConfigFileName(doc, config.getProjectName());
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
@@ -207,7 +208,6 @@ public class JobManagerGenerator {
         item.updateByXml(streamSource);
         item.save();
     }
-
 
     private static void setJobConfigFileName(Document doc, String jobName) {
 

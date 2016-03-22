@@ -28,13 +28,6 @@
                     </div>
                 </div>
             </div>
-            <div id="loading-div-background" class="loading-div-background">
-                <div id="loading-div" class="loading-div">
-                    <img style="height:64px;width:64px;margin:30px;" src="../plugin/build-configurator/icons/loader.gif"/>
-                    <br/>
-                    <label>Sending file to repository. Please wait...</label>
-                </div>
-            </div>
             <h1>Configurations</h1>
             <j:if test="${isAdmin}">
             <j:if test="${!it.isJenkinsEmailConfigOK()}">
