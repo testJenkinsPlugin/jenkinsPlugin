@@ -444,7 +444,7 @@ public class JobManagerGenerator {
     public static String validJobName(String name) {
         for (char ch : name.toCharArray()) {
             if (!Character.isLetterOrDigit(ch) && !ArrayUtils.contains(SPECIAL_SYMBOLS, ch)) {
-                name = name.replace(ch, ' ');
+                name = name.replace(ch, '_');
             }
         }
         return name;
