@@ -180,12 +180,12 @@ public class JobManagerGenerator {
         removeJunkElements(buildStepNodeJ.getChildNodes());
         Node scriptNode = buildStepNodeJ.getFirstChild();
         Node scriptChildNode = scriptNode.getFirstChild();
-        if (config.getPreScript() != null && !config.getPreScript().equals("")) {
+        if (config.getPreScript() != null /*&& !config.getPreScript().equals("")*/) {
             removeScriptNode(scriptNode, scriptChildNode);
         }
         scriptNode = buildStepNodeJ.getLastChild();
         scriptChildNode = scriptNode.getLastChild();
-        if (config.getPostScript() != null && !config.getPostScript().equals("")) {
+        if (config.getPostScript() != null /*&& !config.getPostScript().equals("")*/) {
             removeScriptNode(scriptNode, scriptChildNode);
         }
         //importing <builders> node from old job doc to new updated job doc
