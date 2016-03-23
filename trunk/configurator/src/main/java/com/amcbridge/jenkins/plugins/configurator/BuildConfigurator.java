@@ -1,11 +1,9 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.FormResult;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
-import com.amcbridge.jenkins.plugins.xstreamElements.UserLoader;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
@@ -76,13 +74,11 @@ public final class BuildConfigurator implements RootAction {
     public void doCreateNewConfigurator(final StaplerRequest request,
                                         final StaplerResponse response) throws
             IOException, ServletException, ParserConfigurationException, JAXBException,
-            AddressException, MessagingException {
+            MessagingException {
 
         JSONObject formAttribute = request.getSubmittedForm();
 
         String newDefaultCredentials = formAttribute.get("default_credentials") != null ? formAttribute.get("default_credentials").toString() : null;
-        UserLoader userLoader = new UserLoader();
-        userLoader.updateUserDefaultCredentials(newDefaultCredentials);
         BuildConfigurationModel newConfig = new BuildConfigurationModel();
 
         request.bindJSON(newConfig, formAttribute);
@@ -93,7 +89,9 @@ public final class BuildConfigurator implements RootAction {
         }
         newConfig.initCurrentDate();
         newConfig.setJobUpdate(true);
-
+        if (newDefaultCredentials != null && !newDefaultCredentials.isEmpty() && isCurrentUserAdministrator()) {
+            BuildConfigurationManager.setDefaultCredentials(newDefaultCredentials);
+        }
         ConfigurationStatusMessage message
                 = new ConfigurationStatusMessage(newConfig.getProjectName());
         message.setSubject(newConfig.getProjectName());
@@ -264,11 +262,6 @@ public final class BuildConfigurator implements RootAction {
         BuildConfigurationManager.deleteJob(name);
     }
 
-    @JavaScriptMethod
-    public String getDefaultUserCredentials() {
-        String credentialsId = ProjectToBuildModel.getUserDefaultCredentials();
-        return credentialsId == null ? "" : credentialsId;
-    }
 
     @JavaScriptMethod
     public boolean isJenkinsEmailConfigOK() {

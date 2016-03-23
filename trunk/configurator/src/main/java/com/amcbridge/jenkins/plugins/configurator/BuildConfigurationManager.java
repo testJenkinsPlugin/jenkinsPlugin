@@ -37,11 +37,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class BuildConfigurationManager {
 
@@ -55,6 +54,8 @@ public class BuildConfigurationManager {
     private static final MailSender mail = new MailSender();
     private static final Logger log = LoggerFactory.getLogger(BuildConfigurationManager.class);
     private static final SCMLoader scmLoader = new SCMLoader();
+    private static String defaultCredentialsPropertiesFileName = "credentialsDefaults.properties";
+    private static String credentialsPropertyName = "defaultCredentials";
 
     public static String getCurrentUserID() {
         if (User.current() != null) {
@@ -318,6 +319,64 @@ public class BuildConfigurationManager {
         }
     }
 
+    public static void setDefaultCredentials(String credentials) {
+        Properties prop = new Properties();
+        OutputStream output = null;
+        try {
+            File path = getRootDir();
+            if (!path.exists()) {
+                path.mkdirs();
+            }
+            output = new FileOutputStream(path + "\\" + defaultCredentialsPropertiesFileName);
+            prop.setProperty(credentialsPropertyName, credentials);
+            prop.store(output, null);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
+    public static String getDefaultCredentials() {
+        Properties prop = new Properties();
+        InputStream input = null;
+        File propertiesFile = new File(getRootDir(), defaultCredentialsPropertiesFileName);
+        String defaultCredentials = null;
+        if (!propertiesFile.exists()) {
+            return null;
+        }
+
+        try {
+
+            input = new FileInputStream(propertiesFile);
+
+            // load a properties file
+            prop.load(input);
+            defaultCredentials = prop.getProperty(credentialsPropertyName);
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return defaultCredentials;
+    }
 
     public static List<CredentialItem> openCredentials() throws IOException {
 

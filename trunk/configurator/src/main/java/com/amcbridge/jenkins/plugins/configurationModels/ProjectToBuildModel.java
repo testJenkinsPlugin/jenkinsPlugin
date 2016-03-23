@@ -1,6 +1,5 @@
 package com.amcbridge.jenkins.plugins.configurationModels;
 
-import com.amcbridge.jenkins.plugins.xstreamElements.UserLoader;
 import com.amcbridge.jenkins.plugins.serialization.CredentialItem;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 
@@ -88,11 +87,6 @@ public class ProjectToBuildModel {
         }
         return res;
 
-    }
-
-    public static String getUserDefaultCredentials() {
-        UserLoader loader = new UserLoader();
-        return loader.getUserDefaultCredentials();
     }
 
 

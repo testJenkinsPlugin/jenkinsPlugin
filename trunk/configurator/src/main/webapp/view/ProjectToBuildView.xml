@@ -55,8 +55,9 @@
                         </j:choose>
                     </j:forEach>
                 </select>
-
+                <j:if test="${isAdmin}">
                 <input type="button" id="def_cred_button" onclick="setCurrentCredentialsAsDefault(${sourceId[0]})" value="Set as default"/>
+                </j:if>
             </div>
         </div>	
         <div class="div-textinput">
