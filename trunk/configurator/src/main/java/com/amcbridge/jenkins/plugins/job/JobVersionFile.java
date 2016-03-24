@@ -39,14 +39,8 @@ public class JobVersionFile implements JobElementDescription {
         if (!isVersionFileSet(config)) {
             return;
         }
-
         Node node = xml.getElementsByTagName(REGEXP_TAG).item(0);
-
-        if (!node.getTextContent().isEmpty()) {
-            node.setTextContent(node.getTextContent() + JobManagerGenerator.COMMA_SEPARATOR + EXPRESSION);
-        } else {
-            node.setTextContent(EXPRESSION);
-        }
+        node.setTextContent(EXPRESSION);
     }
 
     private Boolean isVersionFileSet(BuildConfigurationModel config) {

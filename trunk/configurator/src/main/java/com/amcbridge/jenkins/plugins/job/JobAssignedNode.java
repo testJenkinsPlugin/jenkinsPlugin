@@ -51,11 +51,7 @@ public class JobAssignedNode implements JobElementDescriptionCheckBox {
         if (nodes.isEmpty()) {
             return;
         }
-        if (!node.getTextContent().isEmpty()) {
-            nodes = node.getTextContent() + JobManagerGenerator.COMMA_SEPARATOR + getNodes(config);
-        } else {
-            nodes = getNodes(config);
-        }
+        nodes = getNodes(config);
         node.setTextContent(nodes);
     }
 

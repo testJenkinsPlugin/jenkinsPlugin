@@ -39,12 +39,7 @@ public class JobArtifacts implements JobElementDescription {
         if (artf.isEmpty()) {
             return;
         }
-
-        if (!node.getTextContent().isEmpty()) {
-            artifacts = node.getTextContent() + JobManagerGenerator.COMMA_SEPARATOR + getArtifacts(config);
-        } else {
-            artifacts = getArtifacts(config);
-        }
+        artifacts = getArtifacts(config);
         node.setTextContent(artifacts);
     }
 
@@ -65,4 +60,5 @@ public class JobArtifacts implements JobElementDescription {
         }
         return result;
     }
+
 }
