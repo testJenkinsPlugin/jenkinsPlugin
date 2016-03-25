@@ -11,9 +11,6 @@ import org.w3c.dom.Node;
 
 import javax.xml.xpath.*;
 
-/**
- * Created by Oleksandr on 3/11/2016.
- */
 public class JobGit implements JobElementDescription {
 
     private static final String XPATH_ALL_GIT_SCM = "//hudson.plugins.git.GitSCM";

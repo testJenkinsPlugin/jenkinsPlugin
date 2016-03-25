@@ -58,7 +58,7 @@ public class JobManagerGenerator {
 
     //TODO: refactor
     public static void createJob(BuildConfigurationModel config)
-            throws FileNotFoundException, ParserConfigurationException,
+            throws ParserConfigurationException,
             SAXException, IOException, TransformerException {
         String jobName = validJobName(config.getProjectName());
 
@@ -136,7 +136,6 @@ public class JobManagerGenerator {
         return false;
     }
 
-    // CREATE
     private static File getJobXML(BuildConfigurationModel config)
             throws ParserConfigurationException,
             SAXException, IOException, TransformerException {
@@ -169,19 +168,18 @@ public class JobManagerGenerator {
         }
 
         createJobConfigNodes(doc, config);
-        // removeAllBuilders(doc);  //TODO ?
 
         //removing pre and post scripts (first and last child nodes in <builders> node)
         Node buildStepNodeJ = doc.getElementsByTagName("builders").item(0);
         removeJunkElements(buildStepNodeJ.getChildNodes());
         Node scriptNode = buildStepNodeJ.getFirstChild();
         Node scriptChildNode = scriptNode.getFirstChild();
-        if (config.getPreScript() != null /*&& !config.getPreScript().equals("")*/) {
+        if (config.getPreScript() != null) {
             removeScriptNode(scriptNode, scriptChildNode);
         }
         scriptNode = buildStepNodeJ.getLastChild();
         scriptChildNode = scriptNode.getLastChild();
-        if (config.getPostScript() != null /*&& !config.getPostScript().equals("")*/) {
+        if (config.getPostScript() != null) {
             removeScriptNode(scriptNode, scriptChildNode);
         }
         createPreAndPostScriptsNodes(config, doc);
@@ -200,58 +198,6 @@ public class JobManagerGenerator {
         item.updateByXml(streamSource);
         item.save();
     }
-
-
-    //UPDATE
-  /*  private static void updateJobXML(String jobName, BuildConfigurationModel config) throws IOException, TransformerException, SAXException, ParserConfigurationException {
-        AbstractItem item = (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
-        Document doc = loadTemplate(JOB_TEMPLATE_PATH);
-        if (doc == null) {
-            throw new FileNotFoundException(JOB_TEMPLATE_PATH + " file not found");
-        }
-
-        createJobConfigNodes(doc, config);
-        removeAllBuilders(doc);
-
-        String jobPath = JOB_FOLDER_PATH + jobName + "\\config.xml";
-        Document docJob = loadTemplate(jobPath);
-        if (docJob == null) {
-            throw new FileNotFoundException(jobPath + " file not found");
-        }
-
-        //removing pre and post scripts (first and last child nodes in <builders> node)
-        Node buildStepNodeJ = docJob.getElementsByTagName("builders").item(0);
-        removeJunkElements(buildStepNodeJ.getChildNodes());
-        Node scriptNode = buildStepNodeJ.getFirstChild();
-        Node scriptChildNode = scriptNode.getFirstChild();
-        if (config.getPreScript() != null *//*&& !config.getPreScript().equals("")*//*) {
-            removeScriptNode(scriptNode, scriptChildNode);
-        }
-        scriptNode = buildStepNodeJ.getLastChild();
-        scriptChildNode = scriptNode.getLastChild();
-        if (config.getPostScript() != null *//*&& !config.getPostScript().equals("")*//*) {
-            removeScriptNode(scriptNode, scriptChildNode);
-        }
-        //importing <builders> node from old job doc to new updated job doc
-        Node noteToImport = docJob.getElementsByTagName("builders").item(0);
-        Node importedNode = doc.importNode(noteToImport, true);
-        doc.getElementsByTagName("project").item(0).appendChild(importedNode);
-
-        createPreAndPostScriptsNodes(config, doc);
-        setJobConfigFileName(doc, config.getProjectName());
-
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        DOMSource source = new DOMSource(doc);
-
-        File file = BuildConfigurationManager.getFileToCreateJob();
-        StreamResult result = new StreamResult(file);
-        transformer.transform(source, result);
-
-        Source streamSource = new StreamSource(file);
-        item.updateByXml(streamSource);
-        item.save();
-    }*/
 
     private static void setJobConfigFileName(Document doc, String jobName) {
 

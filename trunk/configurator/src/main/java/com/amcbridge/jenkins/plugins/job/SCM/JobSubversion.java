@@ -46,7 +46,6 @@ public class JobSubversion implements JobElementDescription {
         }
 
         Document doc = JobManagerGenerator.loadTemplate(TEMPLATE_PATH);
-        String folder;
         Node node, imported_node;
         Document module = docBuilder.newDocument();
         if (doc.getElementsByTagName(MODULE_TAG).getLength() > 0) {
@@ -61,6 +60,7 @@ public class JobSubversion implements JobElementDescription {
                     locations.removeChild(locations.getChildNodes().item(1));
                 }
             } catch (Exception e) {
+                e.printStackTrace();
             }
         } else {
             node = doc.getFirstChild();
@@ -85,11 +85,6 @@ public class JobSubversion implements JobElementDescription {
         if (module.getElementsByTagName(CREDENTIAL_ID_TAG).getLength() == 0) {
             node = module.getElementsByTagName(MODULE_TAG).item(0);
             node.appendChild(module.createElement(CREDENTIAL_ID_TAG));
-        }
-
-        folder = module.getElementsByTagName(LOCAL_TAG).item(0).getTextContent();
-        if (folder.isEmpty()) {
-            folder = DEFAULT_LOCAL;
         }
 
         node = doc.getElementsByTagName(LOCATIONS_TAG).item(0);
