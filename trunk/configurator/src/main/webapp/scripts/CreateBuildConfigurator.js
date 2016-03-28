@@ -3,6 +3,7 @@ var scroll=0;
 var isAdmin;
 var projectNumber=0;
 
+
 window.onload = function()
 {
     var parameters = document.location.search.substr(1);
@@ -775,8 +776,9 @@ function checkURL(id,add)
 {
     var url = document.getElementById(id).value;
     var number = getElementNumber(id);
-    var regURL = /^(?:(?:https?|ftp|telnet):\/\/(?:[a-z0-9_-]{1,32}(?::[a-z0-9_-]{1,32})?@)?)?(?:(?:[a-z0-9-]{1,128}\.)+(?:com|net|org|mil|edu|arpa|ru|gov|biz|info|aero|inc|name|[a-z]{2})|(?!0)(?:(?!0[^.]|255)[0-9]{1,3}\.){3}(?!0|255)[0-9]{1,3})(?:\/[a-z0-9.,_@%&?+=\~\/-]*)?(?:#[^ \'\"&<>]*)?$/i;
-    if(regURL.test(url))
+    var regURL = /(((git|ssh|http(s)?)|(git@[\w\.]+))(:\/?)([\w\.\@:\/\-\~]+)(\.git)?)$/;
+
+    if(regURL.match(url))
     {
         document.getElementById("url_error_"+number+add).className = "error-none";
         document.getElementById(id).className = "textbox";
@@ -858,7 +860,7 @@ function OkReject()
     return;
 }
 
-function СancelReject()
+function CancelReject()
 {
     document.getElementById("rejectDiv").className = "div-none";
     document.getElementById("overlay").className = "div-none";

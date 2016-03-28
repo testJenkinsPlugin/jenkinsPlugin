@@ -24,7 +24,7 @@
                         <label class="reject-label">Please type reasons of rejection: </label>
                         <input type="text" id="textReject" name="textReject" class="textReject"/>
                         <input type="button" onClick="OkReject()" id="OkReject" class="button-reject" value="OK"/>
-                        <input type="button" onClick="СancelReject()" id="СancelReject" class="button-reject" value="Cancel"/>
+                        <input type="button" onClick="CancelReject()" id="CancelReject" class="button-reject" value="Cancel"/>
                 </div>
             </div>
             <div id="fieldHelpView" class="">

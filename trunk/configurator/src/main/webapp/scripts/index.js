@@ -39,7 +39,7 @@ function exportToXml()
         {
             document.getElementById("rejectDiv").className = "reject-div";
             document.getElementById("overlay").className = "overlay";
-            document.getElementById("СancelReject").className = "div-none";
+            document.getElementById("CancelReject").className = "div-none";
             document.getElementById("helpReject").innerHTML = t.responseObject().errorMassage;
         }
         else
@@ -53,8 +53,8 @@ function OkReject()
 {
     document.getElementById("rejectDiv").className = "div-none";
     document.getElementById("overlay").className = "div-none";
-    if(document.getElementById("СancelReject").className == "div-none")
-        document.getElementById("СancelReject").className = "button-reject";
+    if(document.getElementById("CancelReject").className == "div-none")
+        document.getElementById("CancelReject").className = "button-reject";
     if(nameAction != null)
     {
         var mas = nameAction.split('?');
@@ -70,7 +70,7 @@ function OkReject()
     }
 }
 
-function СancelReject()
+function CancelReject()
 {
     document.getElementById("overlay").className = "div-none";
 }
@@ -79,7 +79,7 @@ function createJob(name)
 {
     document.getElementById("rejectDiv").className = "reject-div";
     document.getElementById("overlay").className = "overlay";
-    document.getElementById("СancelReject").className = "div-none";
+    document.getElementById("CancelReject").className = "div-none";
     var message;
     var s = document.getElementsByName(name)[0].innerHTML.trim();
     switch(document.getElementsByName(name)[0].innerHTML.trim())
