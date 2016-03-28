@@ -114,6 +114,7 @@ public class ViewGenerator {
         jcontext.setVariable("platforms", Platform.values());
         jcontext.setVariable("configuration", Configuration.values());
         jcontext.setVariable("credentialsList", ProjectToBuildModel.getCredentialsList());
+        jcontext.setVariable("isAdmin", BuildConfigurationManager.isCurrentUserAdministrator());
         for (int i = 0; i < views.size(); i++) {
             sourceId = new Vector<Integer>();
 
