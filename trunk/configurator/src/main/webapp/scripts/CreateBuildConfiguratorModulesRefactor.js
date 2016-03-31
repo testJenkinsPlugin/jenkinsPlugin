@@ -116,7 +116,7 @@ var configurator = (function () {
         }
     }
 
-    function getElementNumber(id) {
+    var  getElementNumber = function (id) {
         return id.substring(id.lastIndexOf('_') + 1);
     }
 
@@ -513,7 +513,7 @@ var configurator = (function () {
         return true;
     }
 
-    function deleteFromHidden(hidden, value) {
+   var deleteFromHidden  = function (hidden, value) {
         hidden.value = hidden.value.replace(value, "");
         hidden.value = hidden.value.replace(";;", ";");
         if (hidden.value[0] == ";") {
@@ -815,7 +815,9 @@ var configurator = (function () {
         OkReject: OkReject,
         CancelReject: CancelReject,
         validateProject: validateProject,
-        bMCChange: bMCChange
+        bMCChange: bMCChange,
+        getElementNumber:getElementNumber,
+        deleteFromHidden:deleteFromHidden
 
     };
 })(); //END OF CONFIGURATOR MODULE
@@ -841,9 +843,9 @@ document.addEventListener('keyup', function (e) {
                     buildConfiguration.deleteNotUploadFile(selectionValue, function (t) {
                     });
                 }*/
-                var hiddenInput = document.getElementById("files_hidden_" + getElementNumber(selectionGroups[i].id));
+                var hiddenInput = document.getElementById("files_hidden_" + configurator.getElementNumber(selectionGroups[i].id));
                 selectionValue = selectionGroups[i][selectionGroups[i].selectedIndex].value;
-                deleteFromHidden(hiddenInput, selectionValue);
+                configurator.deleteFromHidden(hiddenInput, selectionValue);
 
                 selectionGroups[i].remove(selectionGroups[i].selectedIndex);
             }
