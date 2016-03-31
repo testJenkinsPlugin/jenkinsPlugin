@@ -95,7 +95,7 @@
                                     <a href="#" onclick="deleteJob(this.name);" name="delete_${configs.getProjectName()}" class="edit-link">Delete Job</a>
                                 </j:if>
 
-                                <j:if test="${isCreator &amp;&amp; configs.getState().toString() != 'For Deletion'}">
+                                <j:if test="${(isCreator || h.hasPermission(app.ADMINISTER)) &amp;&amp; configs.getState().toString() != 'For Deletion'}">
                                     <a href="CreateBuildConfiguratorRefactor?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
                                     <a href="#" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
                                 </j:if>

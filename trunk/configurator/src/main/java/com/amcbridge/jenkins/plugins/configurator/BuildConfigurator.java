@@ -107,6 +107,7 @@ public final class BuildConfigurator implements RootAction {
                 message.setDescription(MessageDescription.CREATE.toString());
                 break;
             case EDIT:
+                newConfig.setCreator(currentConfig.getCreator());
                 newConfig.setState(ConfigurationState.UPDATED);
                 message.setDescription(MessageDescription.CHANGE.toString());
                 break;
