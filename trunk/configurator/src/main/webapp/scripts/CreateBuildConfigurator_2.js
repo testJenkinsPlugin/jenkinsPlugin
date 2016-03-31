@@ -818,7 +818,7 @@ function OkReject()
     return;
 }
 
-function СancelReject()
+function CancelReject()
 {
     $("#rejectDiv").className = "div-none";
     $("#overlay").className = "div-none";

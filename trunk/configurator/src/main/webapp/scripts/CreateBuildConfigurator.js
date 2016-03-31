@@ -778,7 +778,7 @@ function checkURL(id,add)
     var number = getElementNumber(id);
     var regURL = /(((git|ssh|http(s)?)|(git@[\w\.]+))(:\/?)([\w\.\@:\/\-\~]+)(\.git)?)$/;
 
-    if(regURL.match(url))
+    if(regURL.test(url))
     {
         document.getElementById("url_error_"+number+add).className = "error-none";
         document.getElementById(id).className = "textbox";

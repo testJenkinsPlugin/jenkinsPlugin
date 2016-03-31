@@ -33,7 +33,7 @@
             <div>
                 <select id="credentials_${sourceId[0]}" name="credentials"
                         value="${view.getCredentials()}"
-                        onblur="checkCredentials(id)" class="textbox">
+                        class="textbox">
                     <option value="not selected">not selected</option>
                     <j:forEach items="${credentialsList}" var="sct">
 

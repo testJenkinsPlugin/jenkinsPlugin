@@ -10,35 +10,36 @@ var configurator = (function () {
         if (parameters.length != 0) {
             var projectName = getParameterValue("name");
             type = getParameterValue("type");
-            document.getElementById("formType").value = type.toUpperCase();
+            jQuery("#formType").val(type.toUpperCase());
             loadViews(projectName);
             setContent(projectName);
-            document.getElementById("projectName").disabled = true;
+            jQuery("#projectName").prop('disabled', true);
+
             if (type == "ApproveReject") {
-                document.getElementById("titlePage").innerHTML = "Approve/reject build configuration";
-                document.getElementById('save').value = 'Approve';
-                document.getElementById('reject').style.visibility = 'visible';
+                jQuery("#titlePage").html("Approve/reject build configuration");
+                jQuery('#save').val('Approve');
+                jQuery('#reject').show();
             }
             if (type == "view") {
-                document.getElementById('save').className = "confirm-button-hidden";
-                document.getElementById('reject').className = "reject-button-none";
-                document.getElementById('spanReject').className = "spanReject";
+                jQuery('#save').hide();
+                jQuery('#reject').hide();
+                jQuery('#spanReject').show();
             }
         }
         else {
-            document.getElementById("formType").value = "CREATE";
+            jQuery("#formType").val('CREATE');
             projectNumber = 0;
         }
         buildConfiguration.loadCreateNewBuildConfiguration(function (t) {
-            if (document.getElementById("formType").value == "CREATE") {
+            if (jQuery("#formType").val() == "CREATE") {
                 document.getElementById("addProjectToBuild").click();
             }
         });
 
-        buildConfiguration.deleteNotUploadFile(document.getElementById("files_hidden_script")
-            .value.split(';'), function (t) {
+        buildConfiguration.deleteNotUploadFile(jQuery("#files_hidden_script")
+            .val().split(';'), function (t) {
         });
-        document.getElementById("files_hidden_script").value = "";
+        jQuery("#files_hidden_script").val();
 
         buildConfiguration.isCurrentUserAdministrator(function (t) {
             isAdmin = t.responseObject();
@@ -51,26 +52,26 @@ var configurator = (function () {
     function setContent(name) // used in initPage only
     {
         buildConfiguration.getConfiguration(name, function (t) {
-            document.getElementById("projectName").value = t.responseObject().projectName;
-            document.getElementById("typeSCM").value = t.responseObject().scm;
-            document.getElementById("preScript").value = t.responseObject().preScript;
-            document.getElementById("postScript").value = t.responseObject().postScript;
+            jQuery("#projectName").val(t.responseObject().projectName);
+            jQuery("#typeSCM").val(t.responseObject().scm);
+            jQuery("#preScript").val(t.responseObject().preScript);
+            jQuery("#postScript").val(t.responseObject().postScript);
             setScriptTypeSelect(t.responseObject().scriptType);
 
             if (t.responseObject().rejectionReason != "")
-                document.getElementById("reasonLabel").innerHTML = "Reason of rejection:  " + t.responseObject().rejectionReason;
+                jQuery("#reasonLabel").html("Reason of rejection:  " + t.responseObject().rejectionReason);
 
             var bmcValue = t.responseObject().buildMachineConfiguration;
-            if (document.getElementById("build_machine_configuration") != null) {
-                document.getElementById("build_machine_configuration").value = "";
+            if (jQuery("#build_machine_configuration") != null) {
+                jQuery("#build_machine_configuration").val("");
                 var bmc = document.getElementsByName("node");
                 for (var i = 0; i < bmc.length; i++) {
-                    document.getElementById(bmc[i].id).checked = false;
+                    jQuery("#" + bmc[i].id).prop('checked', false);
                 }
             }
 
             for (var i = 0; i < bmcValue.length; i++) {
-                if (document.getElementById(bmcValue[i]) != null) {
+                if (jQuery(bmcValue[i]) != null) {
                     document.getElementById(bmcValue[i]).checked = true;
                     addToHidden("build_machine_configuration", bmcValue[i]);
                 }
@@ -126,7 +127,7 @@ var configurator = (function () {
     }
 
     var addView = function () {
-        document.getElementById("label-add-view").className = "label-add-view-hidden";
+        jQuery(".add-view .label").hide();
         buildConfiguration.getView(
             function (t) {
                 var iDiv = document.createElement("div");
@@ -652,7 +653,7 @@ var configurator = (function () {
     var checkURL = function (id, add) {
         var url = document.getElementById(id).value;
         var number = getElementNumber(id);
-        var regURL = /^(?:(?:https?|ftp|telnet):\/\/(?:[a-z0-9_-]{1,32}(?::[a-z0-9_-]{1,32})?@)?)?(?:(?:[a-z0-9-]{1,128}\.)+(?:com|net|org|mil|edu|arpa|ru|gov|biz|info|aero|inc|name|[a-z]{2})|(?!0)(?:(?!0[^.]|255)[0-9]{1,3}\.){3}(?!0|255)[0-9]{1,3})(?:\/[a-z0-9.,_@%&?+=\~\/-]*)?(?:#[^ \'\"&<>]*)?$/i;
+        var regURL = /(((git|ssh|http(s)?)|(git@[\w\.]+))(:\/?)([\w\.\@:\/\-\~]+)(\.git)?)$/;
         if (regURL.test(url)) {
             document.getElementById("url_error_" + number + add).className = "error-none";
             document.getElementById(id).className = "textbox";
@@ -720,7 +721,7 @@ var configurator = (function () {
         return;
     }
 
-    var СancelReject = function () {
+    var CancelReject = function () {
         document.getElementById("rejectDiv").className = "div-none";
         document.getElementById("overlay").className = "div-none";
         document.getElementById("textReject").value = "";
@@ -811,7 +812,7 @@ var configurator = (function () {
         checkPath: checkPath,
         checkPTB: checkPTB,
         OkReject: OkReject,
-        СancelReject: СancelReject,
+        CancelReject: CancelReject,
         validateProject: validateProject,
         bMCChange: bMCChange
 
