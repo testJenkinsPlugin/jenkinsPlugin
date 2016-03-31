@@ -35,10 +35,10 @@ public class JobMailer implements JobElementDescription {
     public void appendToXML(BuildConfigurationModel config, Document xml) {
         Node node = xml.getElementsByTagName(RECIPIENT_TAG).item(0);
         String mail;
-        if (config.getEmail().isEmpty()) {
-            return;
-        }
         mail = config.getEmail();
+        if (config.getEmail() == null) {
+            mail = "";
+        }
         node.setTextContent(mail);
     }
 
