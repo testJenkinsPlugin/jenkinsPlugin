@@ -1,0 +1,218 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core"
+         xmlns:st="jelly:stapler"
+         xmlns:d="jelly:define"
+         xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson"
+         xmlns:f="/lib/form"
+         xmlns:i="jelly:fmt"
+         xmlns:p="/lib/hudson/project"
+>
+    <div id="${divID}" name="projectToBuild" class="div-add-project-to-build-view">
+
+        <label id="close_${divID}" onclick="configurator.closeButtonClick(this)" class="close-project-to-build">X</label>
+        
+        <div>		
+            <div class="div-folder-chooser">
+                <div class="div-file-chooser-label">
+                    <label>Project url:</label>
+                </div>
+                <div>        
+                    <input type="text" id="project_Url_${sourceId[0]}" name="projectUrl" onblur="configurator.checkURL(id,'url')" value="${view.getProjectUrl()}" class="textbox"/>
+                </div>
+                <div id="url_error_${sourceId[0]}url" class="error-none">
+                    <img src="../images/16x16/error.png"/>
+                    Not correct url
+                </div>
+            </div>
+        </div>
+        <div class="div-textinput">
+            <div class="div-file-chooser-label">
+                <label>Credentials:</label>
+            </div>
+            <div>
+                <select id="credentials_${sourceId[0]}" name="credentials"
+                        value="${view.getCredentials()}"
+                        class="textbox">
+                    <option value="not selected">not selected</option>
+                    <j:forEach items="${credentialsList}" var="sct">
+
+                        <j:choose>
+                            <j:when test="${((view.getCredentials()==null) and userDefaultCredentials!=null and sct.endsWith(userDefaultCredentials))}">
+                                <option value="${userDefaultCredentials}" selected='true'>
+                                    ${view.getCredentialName(sct)}
+                                </option>
+                            </j:when>
+                            <j:when test="${view.isCredentialSelected(view.getCredentials(),view.getCredentialId(sct))}">
+                                <option value="${view.getCredentialId(sct)}" selected='true'>
+                                    ${view.getCredentialName(sct)}
+                                </option>
+                            </j:when>
+
+                            <j:otherwise>
+                                <option value="${view.getCredentialId(sct)}">${view.getCredentialName(sct)}</option>
+                            </j:otherwise>
+                        </j:choose>
+                    </j:forEach>
+                </select>
+                <j:if test="${isAdmin}">
+                <input type="button" id="def_cred_button" onclick="configurator.setCurrentCredentialsAsDefault(${sourceId[0]})" value="Set as default"/>
+                </j:if>
+            </div>
+        </div>	
+        <div class="div-textinput">
+            <div class="div-file-chooser-label">
+                <label>Branch name:</label>
+            </div>
+            <div>        
+                <input type="text" id="branch_Name_${sourceId[0]}" name="branchName"  onblur="configurator.checkBranchName(id)" value="${view.getBranchName()}" class="textbox"/>
+            </div>
+        </div>
+        <div class="div-textinput">
+            <div class="div-file-chooser-label">
+                <label>Local module directory (optional):</label>
+            </div>
+            <div class="left">
+                <input type="text" id="localDirectoryPath_${sourceId[0]}" onblur="configurator.checkPath(id)" value="${view.getLocalDirectoryPath()}" name="localDirectoryPath" class="textbox"/>
+                <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id+'path')" class="image"/>
+            </div>
+        </div>
+        <div id="path_error_${sourceId[0]}" class="error-none">
+            <img src="../images/16x16/error.png"/>
+            Not correct path
+        </div>
+        <div id="block_help_${sourceId[0]}path" class="help-view">
+            <lebel id="text_help_${sourceId[0]}path" class="helptext">
+                Specify a local directory (relative to the workspace root) where this module is checked out. If left empty, the last path component of the URL is used as the default, just like the svn CLI. A single period (.) may be used to check out the project directly into the workspace rather than into a subdirectory.
+            </lebel>
+        </div>
+
+        <div class="div-textinput">
+            <div class="div-file-chooser-label">
+                <label>Project to build:</label>
+            </div>
+            <div class="left">
+                <input type="text" id="project_to_build_${sourceId[0]}" name="fileToBuild" onblur="configurator.checkPTB(id)" value="${view.getFileToBuild()}" class="textbox"/>
+                <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id+'build')" class="image"/>
+            </div>
+        </div>
+        <div>
+            <div id="ptb_error_${sourceId[0]}" class="error-none">
+                <img src="../images/16x16/error.png"/>
+                Not correct file name
+            </div>
+
+            <div id="block_help_${sourceId[0]}build" class="help-view">
+                <lebel id="text_help_${sourceId[0]}build" class="helptext">
+                    Project file name (with extension)
+                </lebel>
+            </div>
+        </div>
+        
+        <div class="div-project-to-build">
+            <div class="project-to-build-label">
+                <label class="div-file-chooser-label">Path to artifacts:</label>
+            </div>
+            <div>
+                <input type="text" id="path_input_${sourceId[1]}" name="pathToArtefacts" onblur="" class="textbox"/>
+                <input type="button" id="add_button_${sourceId[1]}" onclick="configurator.addPath(this)" class="div-plus-button" value="+"/>
+                <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id+'art')" class="image"/>
+            </div>
+            <div id="path_error_${sourceId[1]}" class="error-none">
+                <img src="../images/16x16/error.png"/>
+                <label id="coincide_${sourceId[1]}"> Not correct path</label>
+            </div>
+            <div id="block_help_${sourceId[0]}art" class="help-view">
+                <lebel id="text_help_${sourceId[0]}art" class="helptext">
+                    You can use wildcards like 'module/dist/**/*.zip'. See 
+                    <a href="http://ant.apache.org/manual/Types/fileset.html">
+                        the includes attribute of Ant fileset </a>for the exact format. The base directory is the workspace. You can only archive files that are located in your workspace.
+                </lebel>
+            </div>
+            <div class="div-legend">
+                <fieldset>
+                    <legend>Artifacts</legend>
+                    <select id="files_${sourceId[1]}" name="artefacts_group" class="select" onchange="configurator.selectionBoxIndexChange(this)" size="3">
+                        <j:set var="forHidden" value=""/>
+                        <j:forEach items="${view.getArtefacts()}" var="art" indexVar="i">
+                            <option value="${art}">${art}</option>
+                            <j:set var="forHidden" value="${forHidden+art+';'}"/>
+                        </j:forEach>
+                    </select>
+                </fieldset>
+
+                <input type="hidden" name="artefacts" value="${forHidden}" id="files_hidden_${sourceId[1]}"/>
+            </div>
+        </div>
+
+        <div  class="div-project-version-file">
+
+            <j:if test="${view.IsVersionFiles()}">
+                <div class="project-to-build-label">
+                    <input type="checkbox" class="check-box" name="isVersionFiles" checked="checked" onclick="configurator.versionFileCheckBoxChange(this)" id="isVersionFiles_${sourceId[2]}"/>
+                    <label class="div-label">Version Files</label>
+                </div>
+                <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="configurator.checkPath(id)" class="textbox"/>
+                <input type="button" onclick="configurator.addPathFiles(this)" class="div-plus-button" id="add_button_${sourceId[2]}" value="+"/>
+            </j:if>
+            <j:if test="${!view.IsVersionFiles()}">
+                <div class="project-to-build-label">
+                    <input type="checkbox" class="check-box" name="isVersionFiles" onclick="configurator.versionFileCheckBoxChange(this)" id="isVersionFiles_${sourceId[2]}"/>
+                    <label class="div-label">Version Files</label>
+                </div>
+                <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="configurator.checkPath(id)" class="textbox-hidden"/>
+                <input type="button" onclick="configurator.addPathFiles(this)" class="div-plus-button-hidden" id="add_button_${sourceId[2]}" value="+"/>
+            </j:if>
+            <div id="path_error_${sourceId[2]}" class="error-none">
+                <img src="../images/16x16/error.png"/>
+                <label id="coincide_${sourceId[2]}"> Not correct path</label>
+            </div>
+            
+            <j:if test="${view.IsVersionFiles()}">
+                <div id = "div-fieldset_${sourceId[2]}" class="div-legend">
+                    <fieldset>
+                        <legend>Version Files</legend>
+                        <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select" onchange="configurator.selectionBoxIndexChange(this)" size="3">
+                            <j:set var="forHidden" value=""/>
+                            <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
+                                <option value="${vf}">${vf}</option>
+                                <j:set var="forHidden" value="${forHidden+vf+';'}"/>
+                            </j:forEach>
+                        </select>
+                    </fieldset>
+                    <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
+                </div>
+            </j:if>
+            <j:if test="${!view.IsVersionFiles()}">
+                <div id = "div-fieldset_${sourceId[2]}" class="div-legend-hidden">
+                    <fieldset>
+                        <legend>Version Files</legend>
+                        <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select-hidden" onchange="configurator.selectionBoxIndexChange(this)" size="3">
+                            <j:set var="forHidden" value=""/>
+                            <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
+                                <option value="${vf}">${vf}</option>
+                                <j:set var="forHidden" value="${forHidden+vf+';'}"/>
+                            </j:forEach>
+                        </select>
+                    </fieldset>
+                    <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
+                </div>
+            </j:if>
+        </div>
+
+        <div id="builders_${divID}" class="builders">
+            <j:forEach items="${view.getBuilders()}" var="build" indexVar="i">
+                ${generator.getBuilderView(build).getHtml()}
+            </j:forEach>
+            <span></span>
+        </div>
+
+        <div id="addView_${divID}" class="div-add-view">
+            <input type="button" onClick="configurator.addBuilder(this)" id="addBuilders_${divID}" value="Add Builder"/>
+        </div>
+        
+    </div>         
+
+    <j:forEach items="s" var="config" indexVar="i">
+    </j:forEach>
+</j:jelly>

@@ -150,19 +150,19 @@
                     </textarea>
                 </div>                
 
-                <div class="div-confirm-button">
+                 <div class="div-confirm-button">
 
-                    <input type="submit" onclick="return isValidForm();" class="confirm-button" name="save" id="save" value="Save"/>
-                    <span class="span"></span>
-                    <input type="button" onclick="rejectDiv();" class="reject-button" name="reject" id="reject" value="Reject"/>
-                    <input type="submit" onclick="return rejectionSubmit();" class="div-none" name="rejectSubmit" id="rejectSubmit"/>
-                    <span id="spanReject" class="span"></span>
-                    <input type="submit" onclick="setFormResultDialog('cancel');" class="confirm-button" name="cancelButton" id="cancelButton" value="Cancel"/>
-                    <input type="hidden" name="formResultHidden" id="formResultHidden"/>
-                    <input type="hidden" name="formType" id="formType"/>
-                    <input type="hidden" id="rejectionReason" name="rejectionReason" value=""/>
-                    <input type="hidden" id="def_cred" name="default_credentials" value="${it.getDefaultUserCredentials()}"/>
-                </div>
+                      <input type="submit" onclick="return configurator.isValidForm();" class="confirm-button" name="save" id="save" value="Save"/>
+                      <span class="span"></span>
+                      <input type="button" onclick="configurator.rejectDiv();" class="reject-button" name="reject" id="reject" value="Reject"/>
+                      <input type="submit" onclick="return configurator.rejectionSubmit();" class="div-none" name="rejectSubmit" id="rejectSubmit"/>
+                      <span id="spanReject" class="span"></span>
+                      <input type="submit" onclick="configurator.setFormResultDialog('cancel');" class="confirm-button" name="cancelButton" id="cancelButton" value="Cancel"/>
+                      <input type="hidden" name="formResultHidden" id="formResultHidden"/>
+                      <input type="hidden" name="formType" id="formType"/>
+                      <input type="hidden" id="rejectionReason" name="rejectionReason" value=""/>
+                                    <input type="hidden" id="def_cred" name="default_credentials" value="${it.getDefaultUserCredentials()}"/>
+                                </div>
             </f:form>
         </l:main-panel>
     </l:layout>

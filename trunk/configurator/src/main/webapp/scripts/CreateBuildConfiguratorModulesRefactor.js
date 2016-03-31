@@ -17,7 +17,7 @@ var configurator = (function () {
 
             if (type == "ApproveReject") {
                 jQuery("#titlePage").html("Approve/reject build configuration");
-                jQuery('#save').val('Approve');
+                jQuery('#save').val("Approve");
                 jQuery('#reject').show();
             }
             if (type == "view") {
@@ -28,6 +28,7 @@ var configurator = (function () {
         }
         else {
             jQuery("#formType").val('CREATE');
+            // jQuery('#reject').hide();
             projectNumber = 0;
         }
         buildConfiguration.loadCreateNewBuildConfiguration(function (t) {
@@ -85,11 +86,11 @@ var configurator = (function () {
             }
             document.getElementById("configEmail").value = t.responseObject().configEmail;
 
-            var scripts = t.responseObject().scripts;
+           /* var scripts = t.responseObject().scripts;
             for (var i = 0; i < scripts.length; i++) {
                 addToSelectionBox("files_script", scripts[i])
             }
-
+*/
             if (t.responseObject().creator != null) {
                 buildConfiguration.getFullNameCreator(t.responseObject().creator, function (t) {
                     document.getElementById("userLabel").innerHTML = "Created by:  " + t.responseObject();
@@ -835,11 +836,11 @@ document.addEventListener('keyup', function (e) {
                 continue;
             }
             if (selectionGroups[i].selectedIndex != -1) {
-                if (selectionGroups[i].id == "files_script") {
+               /* if (selectionGroups[i].id == "files_script") {
                     selectionValue = selectionGroups[i][selectionGroups[i].selectedIndex].value;
                     buildConfiguration.deleteNotUploadFile(selectionValue, function (t) {
                     });
-                }
+                }*/
                 var hiddenInput = document.getElementById("files_hidden_" + getElementNumber(selectionGroups[i].id));
                 selectionValue = selectionGroups[i][selectionGroups[i].selectedIndex].value;
                 deleteFromHidden(hiddenInput, selectionValue);

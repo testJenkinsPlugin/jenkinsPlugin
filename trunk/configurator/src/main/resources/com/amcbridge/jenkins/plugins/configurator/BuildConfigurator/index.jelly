@@ -35,7 +35,7 @@
                                          <br/>   </j:if>
                                             </j:if>
 
-            <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
+            <a href="CreateBuildConfiguratorRefactor" class="CreateBuildConfiguratorRefactor">Create new build configuration</a>
 
 
 
@@ -75,7 +75,7 @@
                                             </j:if>
                                         </j:if>
                                         <j:if test="${configs.getState().toString() != 'For Deletion'}">
-                                            <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=ApproveReject" class="approve-reject-link">Approve/Reject</a>
+                                            <a href="CreateBuildConfiguratorRefactor?name=${configs.getProjectName()}&amp;type=ApproveReject" class="approve-reject-link">Approve/Reject</a>
                                         </j:if>
                                     </j:if>
                                 </j:if>
@@ -96,11 +96,11 @@
                                 </j:if>
 
                                 <j:if test="${isCreator &amp;&amp; configs.getState().toString() != 'For Deletion'}">
-                                    <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
+                                    <a href="CreateBuildConfiguratorRefactor?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
                                     <a href="#" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
                                 </j:if>
                                 <j:if test="${!isCreator &amp;&amp; configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
-                                    <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
+                                    <a href="CreateBuildConfiguratorRefactor?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
                                 </j:if>
                                 <span></span>
                             </td>
