@@ -671,9 +671,8 @@ var configurator = (function () {
         var number = getElementNumber(id);
 
         var regPath;
-        if ((document.getElementById(id).name == "pathToArtefacts") ||
-            (document.getElementById(id).name == "versionFilesPath")) {
-            regPath = /^(?![*?])(?:[^\\/:"*?<>|\r\n]+?(?:\/?|\/\*{0,2})*?|\/\*\.\*$)*?$/;// Allow Ant wildcards valid folder/file structure only
+        if (document.getElementById(id).name == "versionFilesPath") {
+            regPath = /^(?![?])(?:[^\\/:"*?<>|\r\n]+?(?:\/?|\/\*{0,2})*?|\/\*\.\*$)*?$/;// Allow Ant wildcards valid folder/file structure only
         }
         else if (document.getElementById(id).name == "localDirectoryPath") {																		// Change also correctArtifactPaths at JobManagerGenerator
             regPath = /(^\.[A-Za-z0-9]*$)|^(?:(?!\.)[^\\/:*?"<>|\r\n]+\/?)*$/;				// Match only one . or valid folder structure (zero-length - ok)
@@ -723,7 +722,7 @@ var configurator = (function () {
         return;
     }
 
-    var СancelReject = function () {
+    var CancelReject = function () {
         document.getElementById("rejectDiv").className = "div-none";
         document.getElementById("overlay").className = "div-none";
         document.getElementById("textReject").value = "";
@@ -814,7 +813,7 @@ var configurator = (function () {
         checkPath: checkPath,
         checkPTB: checkPTB,
         OkReject: OkReject,
-        СancelReject: СancelReject,
+        CancelReject: CancelReject,
         validateProject: validateProject,
         bMCChange: bMCChange
 

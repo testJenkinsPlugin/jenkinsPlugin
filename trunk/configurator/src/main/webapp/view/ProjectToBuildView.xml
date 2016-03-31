@@ -114,7 +114,7 @@
                 <label class="div-file-chooser-label">Path to artifacts:</label>
             </div>
             <div>
-                <input type="text" id="path_input_${sourceId[1]}" name="pathToArtefacts" onblur="checkPath(id)" class="textbox"/>
+                <input type="text" id="path_input_${sourceId[1]}" name="pathToArtefacts" class="textbox"/>
                 <input type="button" id="add_button_${sourceId[1]}" onclick="addPath(this)" class="div-plus-button" value="+"/>
                 <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="imageHelp(id+'art')" class="image"/>
             </div>

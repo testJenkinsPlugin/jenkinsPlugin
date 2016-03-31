@@ -796,8 +796,7 @@ function checkPath(id)
     var number = getElementNumber(id);
     
     var regPath;
-    if ((document.getElementById(id).name == "pathToArtefacts")||
-        (document.getElementById(id).name == "versionFilesPath"))     
+    if (document.getElementById(id).name == "versionFilesPath")
     {
         regPath = /^(?![*?])(?:[^\\/:"*?<>|\r\n]+?(?:\/?|\/\*{0,2})*?|\/\*\.\*$)*?$/;// Allow Ant wildcards valid folder/file structure only
     }
