@@ -36,10 +36,12 @@ public class JobMailer implements JobElementDescription {
         Node node = xml.getElementsByTagName(RECIPIENT_TAG).item(0);
         String mail;
         mail = config.getEmail();
-        if (config.getEmail() == null) {
-            mail = "";
+        if (config.getEmail() == null || config.getEmail().equals("")) {
+            node = xml.getElementsByTagName(ELEMENT_TAG).item(0);
+            node.getParentNode().removeChild(node);
+        } else {
+            node.setTextContent(mail);
         }
-        node.setTextContent(mail);
     }
 
 }
