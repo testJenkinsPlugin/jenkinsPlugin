@@ -14,6 +14,7 @@ var configurator = (function () {
             loadViews(projectName);
             setContent(projectName);
             jQuery("#projectName").prop('disabled', true);
+            jQuery('#reject').hide();
 
             if (type == "ApproveReject") {
                 jQuery("#titlePage").html("Approve/reject build configuration");
@@ -28,7 +29,7 @@ var configurator = (function () {
         }
         else {
             jQuery("#formType").val('CREATE');
-            // jQuery('#reject').hide();
+            jQuery('#reject').hide();
             projectNumber = 0;
         }
         buildConfiguration.loadCreateNewBuildConfiguration(function (t) {
@@ -80,11 +81,11 @@ var configurator = (function () {
 
             var mail = t.responseObject().email;
             if (mail.length != 0) {
-                document.getElementById('email').disabled = false
-                document.getElementById('email').value = mail;
-                document.getElementById('isEmail').checked = true;
+                jQuery("#email").prop('disabled', false);
+                jQuery('#email').val(mail);
+                jQuery('#isEmail').prop('checked', true);
             }
-            document.getElementById("configEmail").value = t.responseObject().configEmail;
+            jQuery("#configEmail").val(t.responseObject().configEmail);
 
            /* var scripts = t.responseObject().scripts;
             for (var i = 0; i < scripts.length; i++) {
@@ -93,7 +94,7 @@ var configurator = (function () {
 */
             if (t.responseObject().creator != null) {
                 buildConfiguration.getFullNameCreator(t.responseObject().creator, function (t) {
-                    document.getElementById("userLabel").innerHTML = "Created by:  " + t.responseObject();
+                    jQuery("#userLabel").html("Created by:  " + t.responseObject());
                 })
             }
         })
@@ -121,7 +122,7 @@ var configurator = (function () {
     }
 
     function cleacSelectionGroup(groupId) {
-        var selectElement = document.getElementById(groupId);
+        var selectElement = jQuery("#" + groupId);
         for (var option in selectElement) {
             selectElement.remove(option);
         }
@@ -133,7 +134,7 @@ var configurator = (function () {
             function (t) {
                 var iDiv = document.createElement("div");
                 iDiv.innerHTML = t.responseObject().html;
-                document.getElementById("projectsToBuild").appendChild(iDiv);
+                jQuery("#projectsToBuild").append(iDiv);
                 var currentDivId = iDiv.firstElementChild.id;
 
                 var scm = document.getElementById("typeSCM");

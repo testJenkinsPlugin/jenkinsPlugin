@@ -116,25 +116,23 @@ public final class BuildConfigurator implements RootAction {
                 newConfig.setCreator(currentConfig.getCreator());
                 newConfig.setJobUpdate(false);
                 BuildConfigurationManager.save(newConfig);
-
                 message.setDescription(MessageDescription.APPROVE.toString());
-                if (!BuildConfigurationManager.getUserMailAddress(newConfig).isEmpty()) {
-                    message.setCC(BuildConfigurationManager.getUserMailAddress(newConfig));
-                }
+
                 break;
             case REJECT:
                 newConfig = currentConfig;
                 newConfig.setState(ConfigurationState.REJECTED);
                 message.setDescription(MessageDescription.REJECT.toString()
                         + " " + formAttribute.get("rejectionReason").toString());
-                if (!BuildConfigurationManager.getUserMailAddress(newConfig).isEmpty()) {
-                    message.setCC(BuildConfigurationManager.getUserMailAddress(newConfig));
-                }
                 newConfig.setRejectionReason(formAttribute.get("rejectionReason").toString());
                 break;
             default:
                 break;
         }
+        if (!BuildConfigurationManager.getUserMailAddress(newConfig).isEmpty()) {
+            message.setCC(BuildConfigurationManager.getUserMailAddress(newConfig));
+        }
+
         BuildConfigurationManager.save(newConfig);
         message.setDestinationAddress(getAdminEmails());
         mail.sendMail(message);

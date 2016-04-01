@@ -159,8 +159,12 @@ public class BuildConfigurationManager {
         config.setState(ConfigurationState.FOR_DELETION);
         config.initCurrentDate();
         save(config);
+        String userEmail = StringUtils.EMPTY;
+        if (!getUserMailAddress(config).isEmpty()) {
+            userEmail = getUserMailAddress(config);
+        }
         ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
-                getAdminEmail(), StringUtils.EMPTY, MessageDescription.MARKED_FOR_DELETION.toString(),
+                getAdminEmail(), userEmail, MessageDescription.MARKED_FOR_DELETION.toString(),
                 config.getProjectName());
         mail.sendMail(message);
     }
@@ -170,8 +174,12 @@ public class BuildConfigurationManager {
         BuildConfigurationModel config = load(name);
         config.setState(ConfigurationState.UPDATED);
         save(config);
+        String userEmail = StringUtils.EMPTY;
+        if (!getUserMailAddress(config).isEmpty()) {
+            userEmail = getUserMailAddress(config);
+        }
         ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
-                getAdminEmail(), getUserMailAddress(config), MessageDescription.RESTORE.toString(),
+                getAdminEmail(), userEmail, MessageDescription.RESTORE.toString(),
                 config.getProjectName());
         mail.sendMail(message);
     }
@@ -195,8 +203,9 @@ public class BuildConfigurationManager {
         ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName());
         message.setSubject(config.getProjectName());
         message.setDescription(MessageDescription.DELETE_PERMANENTLY.toString());
-
-        message.setCC(getUserMailAddress(config));
+        if (!getUserMailAddress(config).isEmpty()) {
+            message.setCC(BuildConfigurationManager.getUserMailAddress(config));
+        }
         message.setDestinationAddress(getAdminEmail());
         mail.sendMail(message);
     }
