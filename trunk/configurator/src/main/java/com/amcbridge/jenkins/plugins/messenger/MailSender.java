@@ -1,5 +1,6 @@
 package com.amcbridge.jenkins.plugins.messenger;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -7,14 +8,14 @@ import javax.mail.*;
 import javax.mail.internet.*;
 
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
+import jenkins.model.Jenkins;
 
 public class MailSender implements Runnable {
-
     String host, from, pass;
-    Integer port;
 
+    Integer port;
     private static MessageInfo message;
-    private static final String MAIL_PROPERTIES_FILE_NAME = "MailSender.properties";
+    private static final String MAIL_PROPERTIES_FILE_NAME = "/plugins/build-configurator/MailSender.properties";
 
     public void sendMail(MessageInfo message) throws AddressException,
             MessagingException {
@@ -27,7 +28,7 @@ public class MailSender implements Runnable {
         Properties prop = new Properties();
         InputStream input = null;
         try {
-            InputStream inputStream = MailSender.class.getResourceAsStream(MAIL_PROPERTIES_FILE_NAME);
+            InputStream inputStream = new FileInputStream(Jenkins.getInstance().getRootPath() + MAIL_PROPERTIES_FILE_NAME);
             prop.load(inputStream);
             host = prop.getProperty("host");
             from = prop.getProperty("from");
@@ -91,6 +92,6 @@ public class MailSender implements Runnable {
     }
 
     public static String getMailPropertiesFileName() {
-        return MAIL_PROPERTIES_FILE_NAME;
+        return Jenkins.getInstance().getRootPath() + MAIL_PROPERTIES_FILE_NAME;
     }
 }

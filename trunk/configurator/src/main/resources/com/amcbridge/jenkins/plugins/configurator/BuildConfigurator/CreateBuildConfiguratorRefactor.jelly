@@ -110,9 +110,9 @@
                 </div>
 
                 <div id="block_help_-2" class="help-view">
-                <lebel id="text_help_-2" class="helptext">
+                <label id="text_help_-2" class="helptext">
                      Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when configuration state changes.
-                </lebel>
+                </label>
                 </div>
 
                 <div id="projectsToBuild" class="div-root-project">

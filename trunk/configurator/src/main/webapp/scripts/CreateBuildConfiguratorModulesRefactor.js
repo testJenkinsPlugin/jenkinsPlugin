@@ -14,7 +14,7 @@ var configurator = (function () {
             loadViews(projectName);
             setContent(projectName);
             jQuery("#projectName").prop('disabled', true);
-            jQuery('#reject').hide();
+            // jQuery('#reject').hide();
 
             if (type == "ApproveReject") {
                 jQuery("#titlePage").html("Approve/reject build configuration");
@@ -23,13 +23,11 @@ var configurator = (function () {
             }
             if (type == "view") {
                 jQuery('#save').hide();
-                jQuery('#reject').hide();
                 jQuery('#spanReject').show();
             }
         }
         else {
             jQuery("#formType").val('CREATE');
-            jQuery('#reject').hide();
             projectNumber = 0;
         }
         buildConfiguration.loadCreateNewBuildConfiguration(function (t) {

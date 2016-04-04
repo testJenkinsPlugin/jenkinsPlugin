@@ -26,6 +26,7 @@ import javax.servlet.ServletException;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -269,7 +270,7 @@ public final class BuildConfigurator implements RootAction {
         boolean isEmailPropertiesOK = false;
         boolean isPortOk = false;
         try {
-            inputStream = MailSender.class.getResourceAsStream(MailSender.getMailPropertiesFileName());
+            inputStream = new FileInputStream(MailSender.getMailPropertiesFileName());
             prop.load(inputStream);
 
             String host = prop.getProperty("host");
