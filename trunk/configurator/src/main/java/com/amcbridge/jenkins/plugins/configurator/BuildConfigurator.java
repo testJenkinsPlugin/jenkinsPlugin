@@ -176,11 +176,11 @@ public final class BuildConfigurator implements RootAction {
                 .getBuilderView();
     }
 
-    @JavaScriptMethod
+ /*   @JavaScriptMethod
     public static void deleteNotUploadFile(String[] files) {
         String pathFolder = BuildConfigurationManager.getUserContentFolder();
         BuildConfigurationManager.deleteFiles(files, pathFolder);
-    }
+    }*/
 
     @JavaScriptMethod
     public void setForDeletion(String name) throws AddressException,

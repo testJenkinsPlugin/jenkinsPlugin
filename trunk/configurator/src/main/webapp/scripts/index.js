@@ -26,29 +26,6 @@ function restore(name)
     nameAction = name+"?restore"; 
 }
 
-function exportToXml()
-{
-    document.getElementById("loading-div-background").style.visibility='visible';
-    document.getElementById("loading-div").style.visibility='visible';
-    buildConfiguration.exportToXml(function(t) 
-    {
-        document.getElementById("loading-div-background").style.visibility='hidden';
-        document.getElementById("loading-div").style.visibility='hidden';
-
-        if (!t.responseObject().success)
-        {
-            document.getElementById("rejectDiv").className = "reject-div";
-            document.getElementById("overlay").className = "overlay";
-            document.getElementById("CancelReject").className = "div-none";
-            document.getElementById("helpReject").innerHTML = t.responseObject().errorMassage;
-        }
-        else
-        {
-            location.reload();
-        }
-    });
-}
-
 function OkReject()
 {
     document.getElementById("rejectDiv").className = "div-none";

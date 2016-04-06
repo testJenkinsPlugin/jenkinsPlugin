@@ -14,7 +14,6 @@ var configurator = (function () {
             loadViews(projectName);
             setContent(projectName);
             jQuery("#projectName").prop('disabled', true);
-            // jQuery('#reject').hide();
 
             if (type == "ApproveReject") {
                 jQuery("#titlePage").html("Approve/reject build configuration");
@@ -32,14 +31,9 @@ var configurator = (function () {
         }
         buildConfiguration.loadCreateNewBuildConfiguration(function (t) {
             if (jQuery("#formType").val() == "CREATE") {
-                document.getElementById("addProjectToBuild").click();
+                addView();
             }
         });
-
-        buildConfiguration.deleteNotUploadFile(jQuery("#files_hidden_script")
-            .val().split(';'), function (t) {
-        });
-        jQuery("#files_hidden_script").val();
 
         buildConfiguration.isCurrentUserAdministrator(function (t) {
             isAdmin = t.responseObject();
@@ -120,14 +114,14 @@ var configurator = (function () {
     }
 
     function cleacSelectionGroup(groupId) {
-        var selectElement = jQuery("#" + groupId);
+        var selectElement = jQuery("#" + groupId)[0];
         for (var option in selectElement) {
             selectElement.remove(option);
         }
     }
 
     var addView = function () {
-        jQuery(".add-view .label").hide();
+        jQuery("#label-add-view").hide();
         buildConfiguration.getView(
             function (t) {
                 var iDiv = document.createElement("div");
@@ -135,7 +129,8 @@ var configurator = (function () {
                 jQuery("#projectsToBuild").append(iDiv);
                 var currentDivId = iDiv.firstElementChild.id;
 
-                var scm = document.getElementById("typeSCM");
+                var scm = jQuery("#typeSCM")[0];
+                // var scm = document.getElementById("typeSCM");
                 var scmValue = scm.options[scm.selectedIndex].value;
 
                 var defaultLocalPath;
@@ -152,14 +147,14 @@ var configurator = (function () {
                 }
                 // setting default local path
                 defaultLocalPath = defaultLocalPath + ((projectNumber > 0) ? projectNumber : "");
-                document.getElementById("localDirectoryPath_" + currentDivId).value = defaultLocalPath;
+                jQuery("#localDirectoryPath_" + currentDivId).val(defaultLocalPath);
                 projectNumber++;
                 addBuilderOnDefault(currentDivId);
 
 
                 // setting default credentials on view creating
-                var cred_select = document.getElementById("credentials_" + currentDivId);
-                var default_cred_value = document.getElementById("def_cred").value;
+                var cred_select = jQuery("#credentials_" + currentDivId)[0];
+                var default_cred_value = jQuery("#def_cred").val();
                 for (var i = 0; i < cred_select.options.length; i++) {
                     if (cred_select.options[i].value === default_cred_value) {
                         cred_select.selectedIndex = i;
@@ -174,7 +169,7 @@ var configurator = (function () {
 
     function setScriptTypeSelect(scriptTypeSelected) {
 
-        var script_select = document.getElementById("scriptTypeSelect");
+        var script_select = jQuery("#scriptTypeSelect")[0];
         for (var i = 0; i < script_select.options.length; i++) {
             if (script_select.options[i].value === scriptTypeSelected) {
                 script_select.selectedIndex = i;
@@ -186,9 +181,9 @@ var configurator = (function () {
     }
 
     var setCurrentCredentialsAsDefault = function (credentials_select_id) {
-        var credentials_select = document.getElementById("credentials_" + credentials_select_id);
+        var credentials_select = jQuery("#credentials_" + credentials_select_id)[0];
         var def_cred_value = credentials_select.options[credentials_select.selectedIndex].value;
-        document.getElementById("def_cred").value = def_cred_value;
+        jQuery("#def_cred").val(def_cred_value);
     }
 
 
@@ -238,30 +233,6 @@ var configurator = (function () {
         }
     }
 
-    /*   function fieldsethidden(id)
-     {
-     var number = getElementNumber(id);
-     var addfield = "files_" + number;
-     var checkBox = document.getElementById("isVersionFiles_"+number);
-
-     if (checkBox.checked)
-     {
-     var hiddenInput = "files_hidden_" + number;
-
-     document.getElementById("div-fieldset_"+number).style.visibility = "visible";
-     document.getElementById(addfield).style.visibility = "visible";
-     document.getElementById("div-fieldset_"+number).style.height = 60;
-     }
-
-     if (!checkBox.checked)
-     {
-     var selectionGroupId = "files_" + number;
-     document.getElementById("div-fieldset_"+number).style.visibility = "hidden";
-     document.getElementById(addfield).style.visibility = "hidden";
-     document.getElementById("div-fieldset_"+number).style.height = 0;
-     }
-     }*/
-
     var otherCheckBoxChange = function (checkBox) {
         var textboxId = "userConfig_" + getElementNumber(checkBox.id);
         textboxDisabled(checkBox, textboxId);
@@ -273,86 +244,18 @@ var configurator = (function () {
 
     function textboxDisabled(checkBox, textboxId) {
         if (!checkBox.checked) {
-            document.getElementById("email_Error").className = "error-none";
-            document.getElementById("email").className = "email-notification";
-            document.getElementById(textboxId).disabled = true;
-            document.getElementById(textboxId).value = "";
+            // document.getElementById("email_Error").className = "error-none";
+            jQuery("#email_Error").attr('class', 'error-none');
+
+            jQuery("#email").attr('class', "email-notification");
+            jQuery("#" + textboxId).prop("disabled", true);
+            jQuery("#" + textboxId).val("");
         }
         if (checkBox.checked) {
-            document.getElementById(textboxId).disabled = false;
+            jQuery("#" + textboxId).prop("disabled", false);
+
         }
     }
-
-    /*    function uploadPrebuildScript()
-     {
-     var file = document.getElementById("scriptsButtonPrebuild").files[0];
-     if (file.size > 1048576)
-     {
-     document.getElementById("scriptErrorPrebuildText").innerHTML = " You can't upload file which size is more than 1MB";
-     document.getElementById("scriptErrorPrebuild").className = "error-block script-error";
-     document.getElementById("scriptsButtonPrebuild").value = "";
-     return;
-     }
-     if (!validateExtension(file.name))
-     {
-     document.getElementById("scriptErrorPrebuildText").innerHTML = " You can't upload file with this extension. Please choose file with '.bat, .nant, .powershell, .shell, .ant, .maven' extension only.";
-     document.getElementById("scriptErrorPrebuild").className = "error-block script-error";
-     document.getElementById("scriptsButtonPrebuild").value = "";
-     return;
-     }
-     document.getElementById("scriptErrorPrebuild").className = "div-none";
-     document.getElementById("scriptsButtonPrebuild").disabled = true;
-     var formdata = new FormData();
-     formdata.append("sampleFile", file);
-     var xhr = new XMLHttpRequest();
-     xhr.open("post", "uploadFile", true);
-     xhr.send(formdata);
-     xhr.onload = function(e)
-     {
-     if (this.status == 200)
-     {
-     addToSelectionBox("files_script_prebuild", this.responseText);
-     }
-     document.getElementById("scriptsButtonPrebuild").disabled = false;
-     document.getElementById("scriptsButtonPrebuild").value = "";
-     };
-     }*/
-
-
-    /*    function upload()
-     {
-     var file = document.getElementById("scriptsButton").files[0];
-     if (file.size > 1048576)
-     {
-     document.getElementById("scriptErrorText").innerHTML = " You can't upload file which size is more than 1MB";
-     document.getElementById("scriptError").className = "error-block script-error";
-     document.getElementById("scriptsButton").value = "";
-     return;
-     }
-     if (!validateExtension(file.name))
-     {
-     document.getElementById("scriptErrorText").innerHTML = " You can't upload file with this extension. Please choose file with '.bat, .nant, .powershell, .shell, .ant, .maven, .python' extension only.";
-     document.getElementById("scriptError").className = "error-block script-error";
-     document.getElementById("scriptsButton").value = "";
-     return;
-     }
-     document.getElementById("scriptError").className = "div-none";
-     document.getElementById("scriptsButton").disabled = true;
-     var formdata = new FormData();
-     formdata.append("sampleFile", file);
-     var xhr = new XMLHttpRequest();
-     xhr.open("post", "uploadFile", true);
-     xhr.send(formdata);
-     xhr.onload = function(e)
-     {
-     if (this.status == 200)
-     {
-     addToSelectionBox("files_script", this.responseText);
-     }
-     document.getElementById("scriptsButton").disabled = false;
-     document.getElementById("scriptsButton").value = "";
-     };
-     }*/
 
     function addToSelectionBox(selectionBoxId, path) {
         var x = document.getElementById(selectionBoxId);
@@ -375,26 +278,14 @@ var configurator = (function () {
     function addToHidden(hiddenInputId, value) {
         var hiddenValue = document.getElementById(hiddenInputId).value;
         if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1) {
-            document.getElementById(hiddenInputId).value += ";" + value + ";";
+            var inputValue = jQuery("#" + hiddenInputId).val();
+            jQuery("#" + hiddenInputId).val(inputValue + ";" + value + ";");
         }
         else {
-            document.getElementById(hiddenInputId).value += value + ";";
+            var inputValue = jQuery("#" + hiddenInputId).val();
+            jQuery("#" + hiddenInputId).val(inputValue + value + ";");
         }
     }
-
-    /*    function validateExtension(filename)
-     {
-     var ext = filename.substring(filename.lastIndexOf('.')+1);
-     var extensions = new Array ("bat","nant","powershell","shell","ant","maven","python");
-     for (var extension in extensions)
-     {
-     if (extensions[extension] == ext)
-     {
-     return true;
-     }
-     }
-     return false;
-     }*/
 
     var versionFileCheckBoxChange = function (checkBox) {
         var pathInput = "path_input_" + getElementNumber(checkBox.id);
@@ -403,13 +294,13 @@ var configurator = (function () {
 
         if (checkBox.checked) {
             var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
-            document.getElementById(pathInput).style.visibility = "visible";
-            document.getElementById(addButton).style.visibility = "visible";
-            document.getElementById(pathInput).value = "";
-            document.getElementById(hiddenInput).value = "";
-            document.getElementById("div-fieldset_" + getElementNumber(checkBox.id)).style.visibility = "visible";
-            document.getElementById(addfield).style.visibility = "visible";
-            document.getElementById("div-fieldset_" + getElementNumber(checkBox.id)).style.height = 60;
+            jQuery("#" + pathInput).css("visibility", "visible");
+            jQuery("#" + addButton).css("visibility", "visible");
+            jQuery("#" + pathInput).val("");
+            jQuery("#" + hiddenInput).val("");
+            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).css("visibility", "visible");
+            jQuery("#" + addfield).css("visibility", "visible");
+            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).css("height", 60);
         }
 
         if (!checkBox.checked) {
@@ -417,18 +308,18 @@ var configurator = (function () {
             document.getElementById(hiddenInput).value = "";
             var selectionGroupId = "files_" + getElementNumber(checkBox.id);
             cleacSelectionGroup(selectionGroupId);
-            document.getElementById(pathInput).style.visibility = "hidden";
-            document.getElementById(addButton).style.visibility = "hidden";
-            document.getElementById("div-fieldset_" + getElementNumber(checkBox.id)).style.visibility = "hidden";
-            document.getElementById(addfield).style.visibility = "hidden";
-            document.getElementById("div-fieldset_" + getElementNumber(checkBox.id)).style.height = 0;
-            document.getElementById("path_error_" + getElementNumber(checkBox.id)).className = "error-none";
-            document.getElementById("path_input_" + getElementNumber(checkBox.id)).className = "textbox";
+            jQuery("#" + pathInput).css("visibility", "hidden");
+            jQuery("#" + addButton).css("visibility", "hidden");
+            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).css("visibility", "hidden");
+            jQuery("#" + addfield).css("visibility", "hidden");
+            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).css("height", 0);
+            jQuery("#path_error_" + getElementNumber(checkBox.id)).attr("class", "error-none");
+            jQuery("#path_input_" + getElementNumber(checkBox.id)).attr("class", "textbox");
         }
     }
 
     var isValidForm = function () {
-        var projectName = document.getElementById("projectName");
+        var projectName = jQuery("#projectName")[0];
         var pathFolder = document.getElementsByName("localDirectoryPath");
         var pathUrl = document.getElementsByName("projectUrl");
         var pathArt = document.getElementsByName("pathToArtefacts");
@@ -436,8 +327,8 @@ var configurator = (function () {
         var build = document.getElementsByName("projectToBuild");
         var patBuild = document.getElementsByName("fileToBuild");
         if (projectName.value == "") {
-            document.getElementById("projectErrorText").innerHTML = " Please, enter your project name";
-            document.getElementById("projectError").className = "error-block empty";
+            jQuery("#projectErrorText").html(" Please, enter your project name");
+            jQuery("#projectError").attr("class", "error-block empty");
             projectName.focus();
             return false;
         }
@@ -446,15 +337,15 @@ var configurator = (function () {
             return false;
         }
         if (build.length == 0) {
-            document.getElementById("label-add-view").className = "label-add-view";
+            jQuery("#label-add-view").show();
             return false;
         }
-        if (document.getElementById("email_Error").className == "error-block") {
-            document.getElementById("email").focus();
+        if (jQuery("#email_Error").attr("class") == "error-block") {
+            jQuery("#email").focus();
             return false;
         }
-        if (document.getElementById("configEmail_Error").className == "error-block") {
-            document.getElementById("configEmail").focus();
+        if (jQuery("#configEmail_Error").attr("class") == "error-block") {
+            jQuery("#configEmail").focus();
             return false;
         }
 
@@ -472,7 +363,7 @@ var configurator = (function () {
         if (type == "edit")
             return true;
         if (type == "ApproveReject") {
-            document.getElementById("formType").value = "APPROVED";
+            jQuery("#formType").val("APPROVED");
             return true;
         }
         buildConfiguration.isNameFree(projectName.value, function (t) {
@@ -482,8 +373,8 @@ var configurator = (function () {
                 document.getElementById('save').click();
             }
             else {
-                document.getElementById("fieldHelp").innerHTML = "Configuration with name '" + projectName.value + "' already exists. Please select another name.";
-                document.getElementById("fieldHelp").className = "field-help-error";
+                jQuery("#fieldHelp").html("Configuration with name '" + projectName.value + "' already exists. Please select another name.");
+                jQuery("#fieldHelp").attr("class", "field-help-error");
             }
         });
         return false;
@@ -502,9 +393,9 @@ var configurator = (function () {
     }
 
     var rejectDiv = function () {
-        document.getElementById("rejectDiv").className = "reject-div help-top";
-        document.getElementById("overlay").className = (scroll != 0 ? 'overlay help-top' : 'overlay');
-        document.getElementById("textReject").focus();
+        jQuery("#rejectDiv").attr("class", "reject-div help-top");
+        jQuery("#overlay").attr("class" ,(scroll != 0 ? 'overlay help-top' : 'overlay'));
+        jQuery("#textReject").focus();
     }
 
     var rejectionSubmit = function ()
@@ -524,22 +415,22 @@ var configurator = (function () {
     }
 
     var setFormResultDialog = function (result) {
-        document.getElementById("formResultHidden").value = result;
+        jQuery("#formResultHidden").val(result);
     }
 
     var closeButtonClick = function (button) {
         var divId = button.id.replace('close_', '');
-        var element = document.getElementById(divId);
+        var element = jQuery("#" + divId)[0];
         element.outerHTML = "";
         delete element;
     }
 
     var addPath = function (button) {
         var number = getElementNumber(button.id);
-        var path = document.getElementById("path_input_" + number).value;
-        var pathInput = document.getElementById("localDirectoryPath_" + (number - 1)).value;
-        var error = document.getElementById("path_error_" + number).className;
-        var errorInput = document.getElementById("path_error_" + (number - 1)).className;
+        var path = jQuery("#path_input_" + number).val();
+        var pathInput = jQuery("#localDirectoryPath_" + (number - 1)).val();
+        var error = jQuery("#path_error_" + number).attr("class");
+        var errorInput = jQuery("#path_error_" + (number - 1)).attr("class");
         if ((pathInput.length <= 0) || (errorInput == "error-block") || (path.length <= 0) || (error == "error-block")) {
             return;
         }
@@ -548,19 +439,19 @@ var configurator = (function () {
 
         if (!checkPathRepeat(path, selectionId)) {
             addToSelectionBox(selectionId, path);
-            document.getElementById("path_input_" + number).value = "";
+            jQuery("#path_input_" + number).val("");
         }
         else {
-            document.getElementById("path_error_" + number).className = "error-block";
-            document.getElementById("coincide_" + number).innerHTML = " such pass already exists";
+            jQuery("#path_error_" + number).attr("class", "error-block");
+            jQuery("#coincide_" + number).html(" such pass already exists");
             return;
         }
     }
 
     var addPathFiles = function (button) {
         var number = getElementNumber(button.id);
-        var path = document.getElementById("path_input_" + number).value;
-        var error = document.getElementById("path_error_" + number).className;
+        var path = jQuery("#path_input_" + number).val();
+        var error = jQuery("#path_error_" + number).attr("class");
 
         if ((path.length <= 0) || (error == "error-block")) {
             return;
@@ -569,11 +460,11 @@ var configurator = (function () {
         var selectionId = "files_" + number;
         if (!checkPathRepeat(path, selectionId)) {
             addToSelectionBox(selectionId, path);
-            document.getElementById("path_input_" + number).value = "";
+            jQuery("#path_input_" + number).val("");
         }
         else {
-            document.getElementById("path_error_" + number).className = "error-block";
-            document.getElementById("coincide_" + number).innerHTML = " path has already added";
+            jQuery("#path_error_" + number).attr("class", "error-block");
+            jQuery("#coincide_" + number).html(" path has already added");
             return;
         }
     }
@@ -591,24 +482,15 @@ var configurator = (function () {
         return false;
     }
 
-    /* function trimSlash(value)
-     {
-     while (value[value.length-1] == "\\")
-     {
-     value = value.substr(0, value.length-1);
-     }
-     return value;
-     }
-     */
     var imageHelp = function (id) {
         var number = getElementNumber(id);
-        if (document.getElementById("block_help_" + number).className == "help-view") {
-            document.getElementById("block_help_" + number).className = "block-help-view";
-            document.getElementById("text_help_" + number).className = "helptext-block";
+        if (jQuery("#block_help_" + number).attr("class") == "help-view") {
+            jQuery("#block_help_" + number).attr("class", "block-help-view");
+            jQuery("#text_help_" + number).attr("class", "helptext-block");
         }
         else {
-            document.getElementById("block_help_" + number).className = "help-view";
-            document.getElementById("text_help_" + number).className = "helptext";
+            jQuery("#block_help_" + number).attr("class","help-view");
+            jQuery("#text_help_" + number).attr("class", "helptext");
         }
     }
 
@@ -616,28 +498,28 @@ var configurator = (function () {
         var name = mail.name;
         var mailValue = mail.value;
         var mails = mailValue.split(' ');
-        var cheking = true;
+        var checking = true;
         for (var i = 0; i < mails.length; i++) {
-            cheking = checkMail(mails[i]);
-            if (!cheking)
+            checking = checkMail(mails[i]);
+            if (!checking)
                 break;
         }
-        if (cheking || mail.value == "") {
-            document.getElementById(name + "_Error").className = "error-none";
+        if (checking || mail.value == "") {
+            jQuery("#" + name + "_Error").attr("class", "error-none");
             if (name == "email") {
-                document.getElementById(name).className = "email-notification";
+                jQuery("#"+name).attr("class","email-notification");
             }
             else {
-                document.getElementById(name).className = "textbox";
+                jQuery("#" + name).attr("class", "textbox");
             }
         }
         else {
-            document.getElementById(name + "_Error").className = "error-block";
+            jQuery("#" + name + "_Error").attr("class", "error-block");
             if (name == "email") {
-                document.getElementById(name).className = "email-notification-error";
+                jQuery("#" + name).attr("class", "email-notification-error");
             }
             else {
-                document.getElementById(name).className = "textbox-error";
+                jQuery("#" + name).attr("class", "textbox-error");
             }
         }
     }
@@ -655,17 +537,17 @@ var configurator = (function () {
         var number = getElementNumber(id);
         var regURL = /(((git|ssh|http(s)?)|(git@[\w\.]+))(:\/?)([\w\.\@:\/\-\~]+)(\.git)?)$/;
         if (regURL.test(url)) {
-            document.getElementById("url_error_" + number + add).className = "error-none";
-            document.getElementById(id).className = "textbox";
+            jQuery("#url_error_" + number + add).attr("class", "error-none");
+            jQuery("#" + id).attr("class", "textbox");
         }
         else {
-            document.getElementById("url_error_" + number + add).className = "error-block";
-            document.getElementById(id).className = "textbox-error";
+            jQuery("#url_error_" + number + add).attr("class", "error-block");
+            jQuery("#" + id).attr("class","textbox-error");
         }
     }
 
     var checkPath = function (id) {
-        var path = document.getElementById(id).value;
+        var path = jQuery("#" + id).val();
         var number = getElementNumber(id);
 
         var regPath;
@@ -681,68 +563,69 @@ var configurator = (function () {
         }
 
         if (regPath.test(path) || path == "") {
-            document.getElementById("path_error_" + number).className = "error-none";
-            document.getElementById(id).className = "textbox";
+            jQuery("#path_error_" + number).attr("class", "error-none");
+            jQuery("#" + id).attr("class", "textbox");
         }
         else {
             if (document.getElementById(id).name == "pathToArtefacts" || document.getElementById(id).name == "versionFilesPath") {
-                document.getElementById("coincide_" + number).innerHTML = " Not correct path";
+                jQuery("#coincide_" + number).html(" Not correct path");
             }
-            document.getElementById("path_error_" + number).className = "error-block";
-            document.getElementById(id).className = "textbox-error";
+            jQuery("#path_error_" + number).attr("class","error-block");
+            jQuery("#" + id).attr("class", "textbox-error");
         }
     }
 
     var checkPTB = function (id) {
-        var path = document.getElementById(id).value;
+        var path = jQuery("#" + id).val();
         var number = getElementNumber(id);
         var regPath = /^([a-zA-Z]:\\)?[^\x00-\x1F"<>\|:\*\?/]+\.[a-zA-Z]{3,5}$/i;
         if (regPath.test(path)) {
-            document.getElementById("ptb_error_" + number).className = "error-none";
-            document.getElementById(id).className = "textbox";
+            jQuery("#ptb_error_" + number).attr("class","error-none");
+            jQuery("#" + id).attr("class", "textbox");
         }
         else {
-            document.getElementById("ptb_error_" + number).className = "error-block";
-            document.getElementById(id).className = "textbox-error";
+            jQuery("#ptb_error_" + number).attr("class", "error-block");
+            jQuery("#" + id).attr("class", "textbox-error");
         }
     }
 
     var OkReject = function () {
-        var reason = document.getElementById("textReject").value;
+        var reason = jQuery("#textReject").val();
         if (reason != null) {
             if (reason.length == 0) {
-                document.getElementById("textReject").focus();
+                jQuery("#textReject").focus();
                 return false;
             }
-            document.getElementById("rejectionReason").value = reason;
-            document.getElementById("formType").value = "REJECT";
+            jQuery("#rejectionReason").val(reason);
+            jQuery("#formType").val("REJECT");
             document.getElementById("rejectSubmit").click();
+            rejectionSubmit();
         }
         return;
     }
 
     var CancelReject = function () {
-        document.getElementById("rejectDiv").className = "div-none";
-        document.getElementById("overlay").className = "div-none";
-        document.getElementById("textReject").value = "";
+        jQuery("#rejectDiv").attr("class","div-none");
+        jQuery("#overlay").attr("class", "div-none");
+        jQuery("#textReject").val("");
     }
 
     var validateProject = function (project) {
         var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|]*$/i;
-        var cl = document.getElementById("projectError").className;
+        var cl = jQuery("#projectError").attr("class");
         var classes = cl.split(" ");
         if ((classes.length == 2) && (project.value.length == 0))
             return;
         if (regPath.test(project.value) || (project.value.length == 0)) {
-            document.getElementById("projectError").className = "error-none";
-            document.getElementById(project.id).className = "textbox";
-            document.getElementById("projectErrorText").innerHTML = "";
-            document.getElementById("fieldHelp").className = "";
+            jQuery("#projectError").attr("class", "error-none");
+            jQuery("#" + project.id).attr("class", "textbox");
+            jQuery("#projectErrorText").html("");
         }
         else {
-            document.getElementById("projectError").className = "error-block";
-            document.getElementById("projectErrorText").innerHTML = " Not correct name";
-            document.getElementById(project.id).className = "textbox-error";
+            jQuery("#projectError").attr("class", "error-block");
+            jQuery("#projectErrorText").html(" Not correct name");
+            jQuery("#" + project.id).attr("class", "textbox-error");
+
         }
     }
 
@@ -755,26 +638,9 @@ var configurator = (function () {
         }
     }
 
-    /*    function checkName(id)
-     {
-     var path = document.getElementById(id).value;
-     var number = getElementNumber(id);
-     var regPath = /[/ ? " : < >]$/i;
-
-     if(!regPath.test(path) || path.length == 0)
-     {
-     document.getElementById("name_error_"+number).className = "error-none";
-     document.getElementById(id).className = "textbox";
-     }
-     else
-     {
-     document.getElementById("name_error_"+number).className = "error-block";
-     document.getElementById(id).className= "textbox-error";
-     }
-     }*/
 
     function validAllView() {
-        var view = document.getElementsByClassName("div-add-project-to-build-view");
+        var view = jQuery(".div-add-project-to-build-view");
         var textboxes;
         for (var i = 0; i < view.length; i++) {
             textboxes = view[i].getElementsByClassName("textbox");
@@ -837,12 +703,7 @@ document.addEventListener('keyup', function (e) {
                 continue;
             }
             if (selectionGroups[i].selectedIndex != -1) {
-               /* if (selectionGroups[i].id == "files_script") {
-                    selectionValue = selectionGroups[i][selectionGroups[i].selectedIndex].value;
-                    buildConfiguration.deleteNotUploadFile(selectionValue, function (t) {
-                    });
-                }*/
-                var hiddenInput = document.getElementById("files_hidden_" + configurator.getElementNumber(selectionGroups[i].id));
+                var hiddenInput = jQuery("#files_hidden_" + configurator.getElementNumber(selectionGroups[i].id))[0];
                 selectionValue = selectionGroups[i][selectionGroups[i].selectedIndex].value;
                 configurator.deleteFromHidden(hiddenInput, selectionValue);
 
