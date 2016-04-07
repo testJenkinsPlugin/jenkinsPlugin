@@ -56,7 +56,6 @@ public class JobManagerGenerator {
         return xstream.toXML(obj);
     }
 
-    //TODO: refactor
     public static void createJob(BuildConfigurationModel config)
             throws ParserConfigurationException,
             SAXException, IOException, TransformerException {
@@ -67,8 +66,9 @@ public class JobManagerGenerator {
             prevArtefacts.add(Arrays.copyOf(config.getProjectToBuild().get(i).getArtefacts(),
                     config.getProjectToBuild().get(i).getArtefacts().length));
         }
-        JobManagerGenerator.correctArtifactPaths(config.getProjectToBuild());
-        JobManagerGenerator.correctVersionFilesPaths(config.getProjectToBuild());
+        correctArtifactPaths(config.getProjectToBuild());
+        correctVersionFilesPaths(config.getProjectToBuild());
+        correctLocalFolderPaths(config.getProjectToBuild());
 
         if (isJobExist(jobName)) {
             updateJobXML(jobName, config);
@@ -125,6 +125,19 @@ public class JobManagerGenerator {
             pathPrefix += "/";
         }
         return pathPrefix;
+    }
+
+    private static void correctLocalFolderPaths(List<ProjectToBuildModel> projectModels) {
+        for (ProjectToBuildModel projectModel : projectModels) {
+            String localDirectory = projectModel.getLocalDirectoryPath();
+            String repoUrl = projectModel.getProjectUrl();
+            if ((localDirectory == null || localDirectory.isEmpty())&&(repoUrl != null && !repoUrl.isEmpty())) {
+                localDirectory =
+                        repoUrl.substring(                  // Adding last URL's entry as local directory
+                                repoUrl.lastIndexOf('/') + 1);
+            }
+            projectModel.setLocalDirectoryPath(localDirectory);
+        }
     }
 
     public static Boolean isJobExist(String name) {
@@ -320,7 +333,7 @@ public class JobManagerGenerator {
     }
 
 
-    private static void removeJunkElements(/*Document doc*/ NodeList builderList) {
+    private static void removeJunkElements(NodeList builderList) {
         //removing empty text nodes like whitespaces, new line symbols etc.
         //going deep with recursion
         for (int i = 0; i < builderList.getLength(); i++) {
@@ -416,7 +429,6 @@ public class JobManagerGenerator {
         return result;
     }
 
-    //TODO: StringUtils
     public static String validJobName(String name) {
         for (char ch : name.toCharArray()) {
             if (!Character.isLetterOrDigit(ch) && !ArrayUtils.contains(SPECIAL_SYMBOLS, ch)) {
