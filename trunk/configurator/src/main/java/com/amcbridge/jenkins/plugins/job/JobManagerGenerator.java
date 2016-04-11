@@ -44,8 +44,8 @@ public class JobManagerGenerator {
     private static final String PREBUILD_SCRIPT_POSITION = "preScript";
     private static final String POSTBUILD_SCRIPT_POSITION = "postScript";
     public static final String COMMA_SEPARATOR = ", ";
-    private static final String JOB_TEMPLATE_PATH = "\\plugins\\build-configurator\\job\\config.xml";
-    private static final String JOB_FOLDER_PATH = "\\jobs\\";
+    private static final String JOB_TEMPLATE_PATH = "/plugins/build-configurator/job/config.xml";
+    private static final String JOB_FOLDER_PATH = "/jobs/";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
     private static final String XPATH_FILE_TO_COPY = "/project/buildWrappers/com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper/includes/text()";
     private static final String XML_TITLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -174,7 +174,7 @@ public class JobManagerGenerator {
 
     private static void updateJobXML(String jobName, BuildConfigurationModel config) throws IOException, TransformerException, SAXException, ParserConfigurationException {
         AbstractItem item = (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
-        String jobPath = JOB_FOLDER_PATH + jobName + "\\config.xml";
+        String jobPath = JOB_FOLDER_PATH + jobName + "/config.xml";
         Document doc = loadTemplate(jobPath);
         if (doc == null) {
             throw new FileNotFoundException(JOB_TEMPLATE_PATH + " file not found");

@@ -21,7 +21,7 @@ public class JobSubversion implements JobElementDescription {
     private static final String LOCATIONS_TAG = "locations";
     private static final String CREDENTIAL_ID_TAG = "credentialsId";
 
-    private static final String TEMPLATE_PATH = "\\plugins\\build-configurator\\job\\scm\\subversion.xml";
+    private static final String TEMPLATE_PATH = "/plugins/build-configurator/job/scm/subversion.xml";
 
     public String getElementTag() {
         return JobSCM.ELEMENT_TAG;

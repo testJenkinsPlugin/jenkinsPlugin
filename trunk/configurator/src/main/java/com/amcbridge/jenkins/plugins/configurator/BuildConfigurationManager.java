@@ -48,7 +48,7 @@ public class BuildConfigurationManager {
     public static final String DATE_FORMAT = "MM/dd/yyyy";
     public static final String ENCODING = "UTF-8";
     private static final String CONFIG_JOB_FILE_NAME = "JobConfig.xml";
-    private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "\\plugins\\BuildConfiguration";
+    private static final String BUILD_CONFIGURATOR_DIRECTORY_NAME = "/plugins/BuildConfiguration";
     private static final String CONTENT_FOLDER = "userContent";
     public static final String STRING_EMPTY = "";
     private static final MailSender mail = new MailSender();
@@ -71,7 +71,7 @@ public class BuildConfigurationManager {
 
 
     public static File getFileToCreateJob() {
-        return new File(getRootDir() + "\\" + CONFIG_JOB_FILE_NAME);
+        return new File(getRootDir() + "/" + CONFIG_JOB_FILE_NAME);
     }
 
     static File getRootDir() {
@@ -80,12 +80,12 @@ public class BuildConfigurationManager {
     }
 
     public static String getRootDirectory() {
-        return Jenkins.getInstance().getRootDir() + "\\"
+        return Jenkins.getInstance().getRootDir() + "/"
                 + BUILD_CONFIGURATOR_DIRECTORY_NAME;
     }
 
     public static String getUserContentFolder() {
-        return Jenkins.getInstance().getRootDir() + "\\" + CONTENT_FOLDER;
+        return Jenkins.getInstance().getRootDir() + "/" + CONTENT_FOLDER;
     }
 
     public static void save(BuildConfigurationModel config) throws IOException,
@@ -95,7 +95,7 @@ public class BuildConfigurationManager {
             return;
         }
 
-        File checkFile = new File(getRootDirectory() + "\\" + config.getProjectName());
+        File checkFile = new File(getRootDirectory() + "/" + config.getProjectName());
         if (!checkFile.exists()) {
             checkFile.mkdirs();
         }
@@ -106,7 +106,7 @@ public class BuildConfigurationManager {
 
 
     protected final static XmlFile getConfigFile(String nameProject) {
-        return new XmlFile(Jenkins.XSTREAM, getConfigFileFor("\\" + nameProject));
+        return new XmlFile(Jenkins.XSTREAM, getConfigFileFor("/" + nameProject));
     }
 
     public static BuildConfigurationModel load(String nameProject) throws IOException {
@@ -144,7 +144,7 @@ public class BuildConfigurationManager {
             if (strFile.isEmpty()) {
                 continue;
             }
-            file = new File(pathFolder + "\\" + strFile);
+            file = new File(pathFolder + "/" + strFile);
             file.delete();
         }
     }
@@ -186,13 +186,13 @@ public class BuildConfigurationManager {
 
 
     public static Boolean isNameUsing(String name) {
-        File checkName = new File(getRootDirectory() + "\\" + name);
+        File checkName = new File(getRootDirectory() + "/" + name);
         return checkName.exists();
     }
 
     public static void deleteConfigurationPermanently(String name) throws IOException,
             MessagingException, JAXBException, InterruptedException, ParserConfigurationException {
-        File checkFile = new File(getRootDirectory() + "\\" + name);
+        File checkFile = new File(getRootDirectory() + "/" + name);
         BuildConfigurationModel config = load(name);
         if (checkFile.exists()) {
             FileUtils.deleteDirectory(checkFile);
@@ -336,7 +336,7 @@ public class BuildConfigurationManager {
             if (!path.exists()) {
                 path.mkdirs();
             }
-            output = new FileOutputStream(path + "\\" + defaultCredentialsPropertiesFileName);
+            output = new FileOutputStream(path + "/" + defaultCredentialsPropertiesFileName);
             prop.setProperty(credentialsPropertyName, credentials);
             prop.store(output, null);
 
@@ -391,7 +391,7 @@ public class BuildConfigurationManager {
 
         String jenkinsHomePath = Jenkins.getInstance().getRootDir().getPath();
         List<CredentialItem> credentialItemList = new ArrayList<CredentialItem>();
-        String fileName = jenkinsHomePath + "\\credentials.xml";
+        String fileName = jenkinsHomePath + "/credentials.xml";
 
         try {
             File fXmlFile = new File(fileName);

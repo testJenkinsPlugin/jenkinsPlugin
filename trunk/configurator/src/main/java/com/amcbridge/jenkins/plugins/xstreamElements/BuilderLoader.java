@@ -10,7 +10,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("builders")
 public class BuilderLoader {
 
-    private static final String BUILDER = "\\plugins\\build-configurator\\builder\\Builders.xml";
+    private static final String BUILDER = "/plugins/build-configurator/builder/Builders.xml";
     List<Builder> builders;
 
     public BuilderLoader() {
