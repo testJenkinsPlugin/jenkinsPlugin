@@ -244,8 +244,8 @@ var configurator = (function () {
 
     function textboxDisabled(checkBox, textboxId) {
         if (!checkBox.checked) {
-            // document.getElementById("email_Error").className = "error-none";
-            jQuery("#email_Error").attr('class', 'error-none');
+            // document.getElementById("email_Error").className = "error-block none";
+            jQuery("#email_Error").attr('class', 'error-block none');
 
             jQuery("#email").attr('class', "email-notification");
             jQuery("#" + textboxId).prop("disabled", true);
@@ -294,13 +294,12 @@ var configurator = (function () {
 
         if (checkBox.checked) {
             var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
-            jQuery("#" + pathInput).css("visibility", "visible");
-            jQuery("#" + addButton).css("visibility", "visible");
+            jQuery("#" + pathInput).attr("class", "textbox");;
             jQuery("#" + pathInput).val("");
             jQuery("#" + hiddenInput).val("");
-            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).css("visibility", "visible");
+            jQuery("#" + addButton).css("visibility", "visible");
             jQuery("#" + addfield).css("visibility", "visible");
-            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).css("height", 60);
+            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).show();
         }
 
         if (!checkBox.checked) {
@@ -308,13 +307,10 @@ var configurator = (function () {
             document.getElementById(hiddenInput).value = "";
             var selectionGroupId = "files_" + getElementNumber(checkBox.id);
             cleacSelectionGroup(selectionGroupId);
-            jQuery("#" + pathInput).css("visibility", "hidden");
+            jQuery("#path_input_" + getElementNumber(checkBox.id)).attr("class", "textbox hidden");
             jQuery("#" + addButton).css("visibility", "hidden");
-            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).css("visibility", "hidden");
             jQuery("#" + addfield).css("visibility", "hidden");
-            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).css("height", 0);
-            jQuery("#path_error_" + getElementNumber(checkBox.id)).attr("class", "error-none");
-            jQuery("#path_input_" + getElementNumber(checkBox.id)).attr("class", "textbox");
+            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).hide();
         }
     }
 
@@ -332,7 +328,7 @@ var configurator = (function () {
             projectName.focus();
             return false;
         }
-        if (projectName.className == "textbox-error") {
+        if (projectName.className == "textbox wrong") {
             projectName.focus();
             return false;
         }
@@ -384,7 +380,7 @@ var configurator = (function () {
         if (path.length == 0)
             return true;
         for (var i = 0; i < path.length; i++) {
-            if (path[i].className == "textbox-error") {
+            if (path[i].className == "textbox wrong") {
                 path[i].focus();
                 return false;
             }
@@ -486,7 +482,8 @@ var configurator = (function () {
         var number = getElementNumber(id);
         if (jQuery("#block_help_" + number).attr("class") == "help-view") {
             jQuery("#block_help_" + number).attr("class", "block-help-view");
-            jQuery("#text_help_" + number).attr("class", "helptext-block");
+            // jQuery("#text_help_" + number).attr("class", "helptext-block");
+            jQuery("#text_help_" + number).css("display", "block");
         }
         else {
             jQuery("#block_help_" + number).attr("class","help-view");
@@ -505,7 +502,7 @@ var configurator = (function () {
                 break;
         }
         if (checking || mail.value == "") {
-            jQuery("#" + name + "_Error").attr("class", "error-none");
+            jQuery("#" + name + "_Error").attr("class", "error-block none");
             if (name == "email") {
                 jQuery("#"+name).attr("class","email-notification");
             }
@@ -516,10 +513,10 @@ var configurator = (function () {
         else {
             jQuery("#" + name + "_Error").attr("class", "error-block");
             if (name == "email") {
-                jQuery("#" + name).attr("class", "email-notification-error");
+                jQuery("#" + name).attr("class", "email-notification wrong");
             }
             else {
-                jQuery("#" + name).attr("class", "textbox-error");
+                jQuery("#" + name).attr("class", "textbox wrong");
             }
         }
     }
@@ -537,12 +534,12 @@ var configurator = (function () {
         var number = getElementNumber(id);
         var regURL = /(((git|ssh|http(s)?)|(git@[\w\.]+))(:\/?)([\w\.\@:\/\-\~]+)(\.git)?)$/;
         if (regURL.test(url)) {
-            jQuery("#url_error_" + number + add).attr("class", "error-none");
+            jQuery("#url_error_" + number + add).attr("class", "error-block none");
             jQuery("#" + id).attr("class", "textbox");
         }
         else {
             jQuery("#url_error_" + number + add).attr("class", "error-block");
-            jQuery("#" + id).attr("class","textbox-error");
+            jQuery("#" + id).attr("class","textbox wrong");
         }
     }
 
@@ -563,7 +560,7 @@ var configurator = (function () {
         }
 
         if (regPath.test(path) || path == "") {
-            jQuery("#path_error_" + number).attr("class", "error-none");
+            jQuery("#path_error_" + number).attr("class", "error-block none");
             jQuery("#" + id).attr("class", "textbox");
         }
         else {
@@ -571,7 +568,7 @@ var configurator = (function () {
                 jQuery("#coincide_" + number).html(" Not correct path");
             }
             jQuery("#path_error_" + number).attr("class","error-block");
-            jQuery("#" + id).attr("class", "textbox-error");
+            jQuery("#" + id).attr("class", "textbox wrong");
         }
     }
 
@@ -580,12 +577,12 @@ var configurator = (function () {
         var number = getElementNumber(id);
         var regPath = /^([a-zA-Z]:\\)?[^\x00-\x1F"<>\|:\*\?/]+\.[a-zA-Z]{3,5}$/i;
         if (regPath.test(path)) {
-            jQuery("#ptb_error_" + number).attr("class","error-none");
+            jQuery("#ptb_error_" + number).attr("class","error-block none");
             jQuery("#" + id).attr("class", "textbox");
         }
         else {
             jQuery("#ptb_error_" + number).attr("class", "error-block");
-            jQuery("#" + id).attr("class", "textbox-error");
+            jQuery("#" + id).attr("class", "textbox wrong");
         }
     }
 
@@ -617,14 +614,14 @@ var configurator = (function () {
         if ((classes.length == 2) && (project.value.length == 0))
             return;
         if (regPath.test(project.value) || (project.value.length == 0)) {
-            jQuery("#projectError").attr("class", "error-none");
+            jQuery("#projectError").attr("class", "error-block none");
             jQuery("#" + project.id).attr("class", "textbox");
             jQuery("#projectErrorText").html("");
         }
         else {
             jQuery("#projectError").attr("class", "error-block");
             jQuery("#projectErrorText").html(" Not correct name");
-            jQuery("#" + project.id).attr("class", "textbox-error");
+            jQuery("#" + project.id).attr("class", "textbox wrong");
 
         }
     }
@@ -640,7 +637,7 @@ var configurator = (function () {
 
 
     function validAllView() {
-        var view = jQuery(".div-add-project-to-build-view");
+        var view = jQuery(".project-container");
         var textboxes;
         for (var i = 0; i < view.length; i++) {
             textboxes = view[i].getElementsByClassName("textbox");

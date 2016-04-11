@@ -66,11 +66,11 @@
 
             <j:if test="${view.isConfigChecked('OTHER')}">
                 <input type="checkbox" id="Other_${divID}" name="other" checked="checked" onclick="configurator.otherCheckBoxChange(this)"/>Other
-                <input type="text" id="userConfig_${divID}" name="userConfig" value="${view.getUserConfig()}" class="othet-config" field="userConfig_${divID}"/>
+                <input type="text" id="userConfig_${divID}" name="userConfig" value="${view.getUserConfig()}" class="other-config" field="userConfig_${divID}"/>
             </j:if>
             <j:if test="${!view.isConfigChecked('OTHER')}">
                 <input type="checkbox" id="Other_${divID}" name="other" onclick="configurator.otherCheckBoxChange(this)"/>Other
-                <input type="text" id="userConfig_${divID}" name="userConfig" disabled="false" class="othet-config" field="userConfig_${divID}"/>
+                <input type="text" id="userConfig_${divID}" name="userConfig" disabled="false" class="other-config" field="userConfig_${divID}"/>
             </j:if>
         </div>
     </div>

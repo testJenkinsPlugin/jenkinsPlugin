@@ -8,28 +8,22 @@
          xmlns:i="jelly:fmt"
          xmlns:p="/lib/hudson/project"
 >
-    <div id="${divID}" name="projectToBuild" class="div-add-project-to-build-view">
+    <div id="${divID}" name="projectToBuild" class="project-container">
 
         <label id="close_${divID}" onclick="configurator.closeButtonClick(this)" class="close-project-to-build">X</label>
         
-        <div>		
-            <div class="div-folder-chooser">
-                <div class="div-file-chooser-label">
+        <div class="div-textinput">
                     <label>Project url:</label>
-                </div>
-                <div>        
+                <div>
                     <input type="text" id="project_Url_${sourceId[0]}" name="projectUrl" onblur="configurator.checkURL(id,'url')" value="${view.getProjectUrl()}" class="textbox"/>
                 </div>
-                <div id="url_error_${sourceId[0]}url" class="error-none">
+                <div id="url_error_${sourceId[0]}url" class="error-block none">
                     <img src="../images/16x16/error.png"/>
                     Not correct url
                 </div>
-            </div>
         </div>
         <div class="div-textinput">
-            <div class="div-file-chooser-label">
                 <label>Credentials:</label>
-            </div>
             <div>
                 <select id="credentials_${sourceId[0]}" name="credentials"
                         value="${view.getCredentials()}"
@@ -61,23 +55,19 @@
             </div>
         </div>	
         <div class="div-textinput">
-            <div class="div-file-chooser-label">
                 <label>Branch name:</label>
-            </div>
-            <div>        
-                <input type="text" id="branch_Name_${sourceId[0]}" name="branchName"  onblur="configurator.checkBranchName(id)" value="${view.getBranchName()}" class="textbox"/>
+            <div>
+                <input type="text" id="branch_Name_${sourceId[0]}" name="branchName" value="${view.getBranchName()}" class="textbox"/>
             </div>
         </div>
         <div class="div-textinput">
-            <div class="div-file-chooser-label">
                 <label>Local module directory (optional):</label>
-            </div>
             <div class="left">
                 <input type="text" id="localDirectoryPath_${sourceId[0]}" onblur="configurator.checkPath(id)" value="${view.getLocalDirectoryPath()}" name="localDirectoryPath" class="textbox"/>
                 <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id+'path')" class="image"/>
             </div>
         </div>
-        <div id="path_error_${sourceId[0]}" class="error-none">
+        <div id="path_error_${sourceId[0]}" class="error-block none">
             <img src="../images/16x16/error.png"/>
             Not correct path
         </div>
@@ -88,16 +78,14 @@
         </div>
 
         <div class="div-textinput">
-            <div class="div-file-chooser-label">
                 <label>Project to build:</label>
-            </div>
             <div class="left">
                 <input type="text" id="project_to_build_${sourceId[0]}" name="fileToBuild" onblur="configurator.checkPTB(id)" value="${view.getFileToBuild()}" class="textbox"/>
                 <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id+'build')" class="image"/>
             </div>
         </div>
         <div>
-            <div id="ptb_error_${sourceId[0]}" class="error-none">
+            <div id="ptb_error_${sourceId[0]}" class="error-block none">
                 <img src="../images/16x16/error.png"/>
                 Not correct file name
             </div>
@@ -115,10 +103,10 @@
             </div>
             <div>
                 <input type="text" id="path_input_${sourceId[1]}" name="pathToArtefacts" onblur="" class="textbox"/>
-                <input type="button" id="add_button_${sourceId[1]}" onclick="configurator.addPath(this)" class="div-plus-button" value="+"/>
+                <input type="button" id="add_button_${sourceId[1]}" onclick="configurator.addPath(this)" class="add-button" value="+"/>
                 <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id+'art')" class="image"/>
             </div>
-            <div id="path_error_${sourceId[1]}" class="error-none">
+            <div id="path_error_${sourceId[1]}" class="error-block none">
                 <img src="../images/16x16/error.png"/>
                 <label id="coincide_${sourceId[1]}"> Not correct path</label>
             </div>
@@ -153,17 +141,17 @@
                     <label class="div-label">Version Files</label>
                 </div>
                 <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="configurator.checkPath(id)" class="textbox"/>
-                <input type="button" onclick="configurator.addPathFiles(this)" class="div-plus-button" id="add_button_${sourceId[2]}" value="+"/>
+                <input type="button" onclick="configurator.addPathFiles(this)" class="add-button" id="add_button_${sourceId[2]}" value="+"/>
             </j:if>
             <j:if test="${!view.IsVersionFiles()}">
                 <div class="project-to-build-label">
                     <input type="checkbox" class="check-box" name="isVersionFiles" onclick="configurator.versionFileCheckBoxChange(this)" id="isVersionFiles_${sourceId[2]}"/>
                     <label class="div-label">Version Files</label>
                 </div>
-                <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="configurator.checkPath(id)" class="textbox-hidden"/>
-                <input type="button" onclick="configurator.addPathFiles(this)" class="div-plus-button-hidden" id="add_button_${sourceId[2]}" value="+"/>
+                <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="configurator.checkPath(id)" class="textbox hidden"/>
+                <input type="button" onclick="configurator.addPathFiles(this)" class="add-button hidden" id="add_button_${sourceId[2]}" value="+"/>
             </j:if>
-            <div id="path_error_${sourceId[2]}" class="error-none">
+            <div id="path_error_${sourceId[2]}" class="error-block none">
                 <img src="../images/16x16/error.png"/>
                 <label id="coincide_${sourceId[2]}"> Not correct path</label>
             </div>
@@ -184,10 +172,10 @@
                 </div>
             </j:if>
             <j:if test="${!view.IsVersionFiles()}">
-                <div id = "div-fieldset_${sourceId[2]}" class="div-legend-hidden">
+                <div id = "div-fieldset_${sourceId[2]}" class="div-legend none">
                     <fieldset>
                         <legend>Version Files</legend>
-                        <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select-hidden" onchange="configurator.selectionBoxIndexChange(this)" size="3">
+                        <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select hidden" onchange="configurator.selectionBoxIndexChange(this)" size="3">
                             <j:set var="forHidden" value=""/>
                             <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
                                 <option value="${vf}">${vf}</option>

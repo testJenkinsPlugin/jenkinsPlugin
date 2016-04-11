@@ -4,15 +4,6 @@
 
 .select {
     width: 565px;
-    visibility: visible;
-}
-
-.select-hidden {
-
-    width: 565px;
-    height: 35px;
-    visibility: hidden;
-
 }
 
 .span {
@@ -92,14 +83,16 @@
     font-weight: bold;
 }
 
-.div-root-project {
-    padding-top: 1px;
-}
-
 .div-textinput {
     margin-top: 15px;
     height: 30px;
 }
+
+        .div-textinput label {
+            width: 143px;
+            float: left;
+        }
+
 
 .div-label {
     width: 120px;
@@ -150,41 +143,23 @@
     margin-top: 20px;
 }
 
-.div-plus-button, .div-plus-button-hidden {
+.add-button {
     margin-left: 10px;
     width: 25px;
+}
 
-    }
-        .div-plus-button-hidden {
-            visibility: hidden;
-        }
-
-.textbox, .textbox-hidden, .textbox-error  {
+.textbox{
     margin-left: 5px;
     width: 330px;
 }
-
-        .textbox-hidden {
-            visibility: hidden;
-        }
-
-        .textbox-error {
-            border: 1px solid red;
-        }
-
 .project-to-build-label {
     width: 145px;
 }
 
-.div-legend, .div-legend-hidden  {
+.div-legend{
     width: 585px;
     margin-top: 5px;
 }
-
-        .div-legend-hidden {
-            height: 0px;
-            visibility: hidden;
-        }
 
 .div-drop-down {
     float: left;
@@ -201,7 +176,7 @@
     float: left;
 }
 
-.othet-config {
+.other-config {
     margin-left: 45px;
     margin-top: 5px;
     margin-bottom: 10px;
@@ -212,7 +187,7 @@
     margin-top: 20px;
 }
 
-.div-add-project-to-build-view {
+.project-container {
     margin-top: 35px;
     width: 655px;
     border: 3px solid rgba(128, 128, 128, 0.79);
@@ -228,6 +203,23 @@
     float: left;
     width: 202px;
 }
+/*
+
+div.projectToBuild
+{
+
+}
+    div.projectToBuild[input]
+    {
+
+    }
+
+    div.projectToBuild[input].error
+    {
+    color:red;
+    }
+*/
+
 
 .button-container{
     width: 585px;
@@ -270,21 +262,17 @@
             display: block;
         }
 
-.helptext, .helptext-block {
+.helptext {
     font-family: Verdana, Helvetica, sans serif;
     font-size: 11px;
     display: none;
 }
 
-        .helptext-block {
-            display: block;
-        }
-
 .image {
     margin-left: 10px;
 }
 
-.error-block, .error-none {
+.error-block{
     margin-left: 150px;
     margin-top: 5px;
     display: block;
@@ -295,11 +283,6 @@
     background-position: left center;
     background-repeat: no-repeat;
 }
-
-        .error-none {
-            display: none;
-            background-image: url("/static/e45d7697/images/16x16/error.png");
-        }
 
 .user {
     font-size: 15px;
@@ -394,14 +377,10 @@
     width: 165px;
 }
 
-.email-notification, .email-notification-error  {
+.email-notification{
     margin-left: 37px;
     width: 330px;
 }
-
-        .email-notification-error {
-            border: 1px solid red;
-        }
 
 .wrong-email {
     font-family: Verdana, Helvetica, sans serif;
@@ -409,3 +388,13 @@
     color: #CC0000;
 }
 
+.none{
+    display: none;
+}
+
+.hidden{
+    visibility: hidden;
+}
+.wrong {
+    border: 1px solid red;
+}

@@ -46,7 +46,7 @@
                     </div>
                     <input type="text" id="projectName" onblur="configurator.validateProject(this);" name="projectName" class="textbox"/>
                 </div>
-                <div id="projectError" class="error-none" style="margin-left: 205px;">
+                <div id="projectError" class="error-block none" style="margin-left: 205px;">
                     <img src="../images/16x16/error.png"/>
                     <label id="projectErrorText"></label>
                 </div>
@@ -86,14 +86,14 @@
                     <input type="text" field="email" onblur="configurator.validateMail(this)" name="email" disabled="false" id="email" class="email-notification"/>
                     <img id="image_url_-1" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id)" class="image"/>
                 </div>
-                <div id="email_Error" class="error-none" style="margin-left: 205px;">
+                <div id="email_Error" class="error-block none" style="margin-left: 205px;">
                     <img src="../images/16x16/error.png"/>
                     Not correct e-mail
                 </div>
 
                 <div id="block_help_-1" class="help-view">
                 <lebel id="text_help_-1" class="helptext">
-                     Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build.
+                      Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build.
                 </lebel>
                 </div>
 
@@ -104,7 +104,7 @@
                     <input type="text" field="email" onblur="configurator.validateMail(this);" name="configEmail" id="configEmail" class="textbox"/>
                     <img id="image_url_-2" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id)" class="image"/>
                 </div>
-                <div id="configEmail_Error" class="error-none" style="margin-left: 205px;">
+                <div id="configEmail_Error" class="error-block none" style="margin-left: 205px;">
                     <img src="../images/16x16/error.png"/>
                     Not correct e-mail
                 </div>
@@ -115,7 +115,7 @@
                 </label>
                 </div>
 
-                <div id="projectsToBuild" class="div-root-project">
+                <div id="projectsToBuild">
                 </div>
 
                 <div class="div-add-view">
