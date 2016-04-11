@@ -93,7 +93,7 @@
 
                 <div id="block_help_-1" class="help-view">
                 <lebel id="text_help_-1" class="helptext">
-                      Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build.
+                      Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build. E-mail will be sent when a build fails, becomes unstable or returns to stable.
                 </lebel>
                 </div>
 
