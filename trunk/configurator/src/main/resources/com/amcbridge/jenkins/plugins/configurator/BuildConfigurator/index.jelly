@@ -60,7 +60,14 @@
                     <j:forEach items="${it.getAllConfigurations()}" var="configs" indexVar="i">
                         <j:set var="isCreator" value="${it.isCurrentUserCreator(configs.getProjectName())}"/>
                         <tr height="25">
-                            <td class="projectName">${configs.getProjectName()}</td>
+                             <j:choose>
+                                <j:when test="${it.isJobCreated(configs.getProjectName())}">
+                                    <td class="projectName"><a href="../job/${configs.getProjectName()}">${configs.getProjectName()}</a></td>
+                                </j:when>
+                                <j:otherwise>
+                                    <td class="projectName"><a href="#">${configs.getProjectName()}</a></td>
+                                </j:otherwise>
+                             </j:choose>
                             <td class="state">
                                 <label id="${configs.getState().toString()}" class="${configs.getState().getCSSClassName()}">${configs.getState().toString()}</label>
                             </td>
