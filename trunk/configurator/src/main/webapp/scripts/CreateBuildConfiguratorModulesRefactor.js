@@ -39,7 +39,9 @@ var configurator = (function () {
             isAdmin = t.responseObject();
         });
 
-
+        jQuery("#cancelButton").click(function () {
+            location.href = '../BuildConfigurator';
+        })
     };
 
 
@@ -428,10 +430,9 @@ var configurator = (function () {
     var addPath = function (button) {
         var number = getElementNumber(button.id);
         var path = jQuery("#path_input_" + number).val();
-        var pathInput = jQuery("#localDirectoryPath_" + (number - 1)).val();
         var error = jQuery("#path_error_" + number).attr("class");
         var errorInput = jQuery("#path_error_" + (number - 1)).attr("class");
-        if ((pathInput.length <= 0) || (errorInput == "error-block") || (path.length <= 0) || (error == "error-block")) {
+        if ((errorInput == "error-block") || (path.length <= 0) || (error == "error-block")) {
             return;
         }
 
