@@ -136,7 +136,7 @@
 }
 
 .div-project-to-build {
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .div-project-version-file {
@@ -187,12 +187,20 @@
     margin-top: 20px;
 }
 
-.project-container {
+/*.project-container {
+    margin-top: 35px;
+    width: 655px;
+    border: 3px solid rgba(128, 128, 128, 0.79);
+    padding-left: 30px;
+}*/
+
+div [name='projectToBuild']{
     margin-top: 35px;
     width: 655px;
     border: 3px solid rgba(128, 128, 128, 0.79);
     padding-left: 30px;
 }
+
 
 .div-file-chooser-label {
     width: 143px;

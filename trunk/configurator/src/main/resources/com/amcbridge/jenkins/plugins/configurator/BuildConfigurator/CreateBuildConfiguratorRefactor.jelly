@@ -156,7 +156,7 @@
                     <input type="button" onclick="configurator.rejectDiv();" class="button reject" name="reject" id="reject" value="Reject"/>
                     <input type="submit" onclick="return configurator.rejectionSubmit();" class="div-none" name="rejectSubmit" id="rejectSubmit"/>
                     <span id="spanReject" class="span"></span>
-                    <input type="submit" onclick="configurator.setFormResultDialog('cancel');" class="button confirm" name="cancelButton" id="cancelButton" value="Cancel"/>
+                    <input type="submit" onclick="configurator.setFormResultDialog('cancel')" class="button confirm" name="cancelButton" id="cancelButton" value="Cancel"/>
                     <input type="hidden" name="formResultHidden" id="formResultHidden"/>
                     <input type="hidden" name="formType" id="formType"/>
                     <input type="hidden" id="rejectionReason" name="rejectionReason" value=""/>

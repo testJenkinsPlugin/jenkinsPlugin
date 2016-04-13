@@ -99,19 +99,25 @@ var configurator = (function () {
         parameters = parameters.split('&');
         if (parameters.length == 0)
             return;
-        var variabel = parameters[0];
-        if (variabel.indexOf(parameter) != -1) {
-            return variabel.split('=')[1];
+        var variable = parameters[0];
+        if (variable.indexOf(parameter) != -1) {
+            return variable.split('=')[1];
         }
-        variabel = parameters[1];
-        if (variabel.indexOf(parameter) != -1) {
-            return variabel.split('=')[1];
+        variable = parameters[1];
+        if (variable.indexOf(parameter) != -1) {
+            return variable.split('=')[1];
         }
     }
 
     var  getElementNumber = function (id) {
         return id.substring(id.lastIndexOf('_') + 1);
     }
+
+    var getProjectId = function (element) {
+        return jQuery(element).closest("div[name=projectToBuild]").attr("id");
+    }
+
+
 
     function cleacSelectionGroup(groupId) {
         var selectElement = jQuery("#" + groupId)[0];
@@ -146,25 +152,31 @@ var configurator = (function () {
                         break;
                 }
                 // setting default local path
-                defaultLocalPath = defaultLocalPath + ((projectNumber > 0) ? projectNumber : "");
-                jQuery("#localDirectoryPath_" + currentDivId).val(defaultLocalPath);
+
+                setLocalFolderPath(defaultLocalPath, currentDivId);
                 projectNumber++;
-                addBuilderOnDefault(currentDivId);
-
-
-                // setting default credentials on view creating
-                var cred_select = jQuery("#credentials_" + currentDivId)[0];
-                var default_cred_value = jQuery("#def_cred").val();
-                for (var i = 0; i < cred_select.options.length; i++) {
-                    if (cred_select.options[i].value === default_cred_value) {
-                        cred_select.selectedIndex = i;
-                        cred_select.options[i].selected = 'selected';
-                        break;
-                    }
-                }
-
-
+                // addBuilderOnDefault(currentDivId);
+                addBuilder(currentDivId);
+                setDefaultCredentials(currentDivId)
             });
+    }
+    function setDefaultCredentials(currentDivId){
+        var cred_select = jQuery("#credentials_" + currentDivId)[0];
+        var default_cred_value = jQuery("#def_cred").val();
+        for (var i = 0; i < cred_select.options.length; i++) {
+            if (cred_select.options[i].value === default_cred_value) {
+                cred_select.selectedIndex = i;
+                cred_select.options[i].selected = 'selected';
+                break;
+            }
+        }
+
+    }
+
+    function setLocalFolderPath(defaultLocalPath, currentDivId) {
+        var projectSelector = "div[name=projectToBuild][id=" + currentDivId + "]";
+        defaultLocalPath = defaultLocalPath + ((projectNumber > 0) ? projectNumber : "");
+        jQuery(projectSelector).find("[name=localDirectoryPath]").val(defaultLocalPath);
     }
 
     function setScriptTypeSelect(scriptTypeSelected) {
@@ -180,8 +192,10 @@ var configurator = (function () {
 
     }
 
-    var setCurrentCredentialsAsDefault = function (credentials_select_id) {
-        var credentials_select = jQuery("#credentials_" + credentials_select_id)[0];
+    var setCurrentCredentialsAsDefault = function (element) {
+        var projectId = getProjectId(element);
+        var projectSelector = "div[name=projectToBuild][id=" + projectId + "]"
+        var credentials_select = jQuery(projectSelector).find("[name=credentials]")[0];
         var def_cred_value = credentials_select.options[credentials_select.selectedIndex].value;
         jQuery("#def_cred").val(def_cred_value);
     }
@@ -200,23 +214,13 @@ var configurator = (function () {
             });
     }
 
-    function addBuilderOnDefault(parentId) {
+    var addBuilder = function (projectId) {
         buildConfiguration.getBuilderView(
             function (t) {
+                var projectSelector = "div[name=projectToBuild][id=" + projectId + "]"
                 var iDiv = document.createElement("div");
                 iDiv.innerHTML = t.responseObject().html;
-                document.getElementById("builders_" + parentId).appendChild(iDiv);
-            });
-    }
-
-    var addBuilder = function (button) {
-        buildConfiguration.getBuilderView(
-            function (t) {
-                var iDiv = document.createElement("div");
-                iDiv.innerHTML = t.responseObject().html;
-
-                var divs = button.parentNode.parentNode.id;
-                document.getElementById("builders_" + divs).appendChild(iDiv);
+                jQuery(projectSelector).find("[class=builders]").append(iDiv);
             });
     }
 
@@ -529,19 +533,38 @@ var configurator = (function () {
             return false;
     }
 
-    var checkURL = function (id, add) {
-        var url = document.getElementById(id).value;
-        var number = getElementNumber(id);
+    var checkURL = function (element) {
         var regURL = /(((git|ssh|http(s)?)|(git@[\w\.]+))(:\/?)([\w\.\@:\/\-\~]+)(\.git)?)$/;
+        var projectId = getProjectId(element);
+        var projectSelector = "div[name=projectToBuild][id=" + projectId + "]"
+        var url = jQuery(projectSelector).find("[name=projectUrl]").val();
         if (regURL.test(url)) {
-            jQuery("#url_error_" + number + add).attr("class", "error-block none");
-            jQuery("#" + id).attr("class", "textbox");
+            jQuery(projectSelector).find("[name=projectUrl-block]").attr("class", "error-block none");
+            jQuery(projectSelector).find("[name=projectUrl]").attr("class", "textbox");
         }
         else {
-            jQuery("#url_error_" + number + add).attr("class", "error-block");
-            jQuery("#" + id).attr("class","textbox wrong");
+            jQuery(projectSelector).find("[name=projectUrl-block]").attr("class", "error-block");
+            jQuery(projectSelector).find("[name=projectUrl]").attr("class", "textbox wrong");
         }
     }
+
+
+    var checkPTB = function (element) {
+        var regPath = /^([a-zA-Z]:\\)?[^\x00-\x1F"<>\|:\*\?/]+\.[a-zA-Z]{3,5}$/i;
+        var projectId = getProjectId(element);
+        var projectSelector = "div[name=projectToBuild][id=" + projectId + "]"
+        var path = jQuery(projectSelector).find("[name=fileToBuild]").val();
+        if (regPath.test(path)) {
+            jQuery(projectSelector).find("[name=fileToBuild-block]").attr("class", "error-block none");
+            jQuery(projectSelector).find("[name=fileToBuild]").attr("class", "textbox");
+        }
+        else {
+            jQuery(projectSelector).find("[name=fileToBuild-block]").attr("class", "error-block");
+            jQuery(projectSelector).find("[name=fileToBuild]").attr("class", "textbox wrong");
+        }
+    }
+
+
 
     var checkPath = function (id) {
         var path = jQuery("#" + id).val();
@@ -572,19 +595,7 @@ var configurator = (function () {
         }
     }
 
-    var checkPTB = function (id) {
-        var path = jQuery("#" + id).val();
-        var number = getElementNumber(id);
-        var regPath = /^([a-zA-Z]:\\)?[^\x00-\x1F"<>\|:\*\?/]+\.[a-zA-Z]{3,5}$/i;
-        if (regPath.test(path)) {
-            jQuery("#ptb_error_" + number).attr("class","error-block none");
-            jQuery("#" + id).attr("class", "textbox");
-        }
-        else {
-            jQuery("#ptb_error_" + number).attr("class", "error-block");
-            jQuery("#" + id).attr("class", "textbox wrong");
-        }
-    }
+
 
     var OkReject = function () {
         var reason = jQuery("#textReject").val();
@@ -637,7 +648,9 @@ var configurator = (function () {
 
 
     function validAllView() {
-        var view = jQuery(".project-container");
+        // var view = jQuery(".project-container");
+        var view = jQuery("div[name=projectToBuild]");
+
         var textboxes;
         for (var i = 0; i < view.length; i++) {
             textboxes = view[i].getElementsByClassName("textbox");

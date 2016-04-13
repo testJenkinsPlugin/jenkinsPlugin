@@ -8,16 +8,16 @@
          xmlns:i="jelly:fmt"
          xmlns:p="/lib/hudson/project"
 >
-    <div id="${divID}" name="projectToBuild" class="project-container">
+    <div id="${divID}" name="projectToBuild">
 
         <label id="close_${divID}" onclick="configurator.closeButtonClick(this)" class="close-project-to-build">X</label>
-        
+
         <div class="div-textinput">
                     <label>Project url:</label>
                 <div>
-                    <input type="text" id="project_Url_${sourceId[0]}" name="projectUrl" onblur="configurator.checkURL(id,'url')" value="${view.getProjectUrl()}" class="textbox"/>
+                    <input type="text" name="projectUrl" onblur="configurator.checkURL(this)" value="${view.getProjectUrl()}" class="textbox"/>
                 </div>
-                <div id="url_error_${sourceId[0]}url" class="error-block none">
+                <div class="error-block none" name = "projectUrl-block">
                     <img src="../images/16x16/error.png"/>
                     Not correct url
                 </div>
@@ -50,10 +50,10 @@
                     </j:forEach>
                 </select>
                 <j:if test="${isAdmin}">
-                <input type="button" id="def_cred_button" onclick="configurator.setCurrentCredentialsAsDefault(${sourceId[0]})" value="Set as default"/>
+                <input type="button" id="def_cred_button" onclick="configurator.setCurrentCredentialsAsDefault(this)" value="Set as default"/>
                 </j:if>
             </div>
-        </div>	
+        </div>
         <div class="div-textinput">
                 <label>Branch name:</label>
             <div>
@@ -62,15 +62,17 @@
         </div>
         <div class="div-textinput">
                 <label>Local module directory (optional):</label>
-            <div class="left">
+            <div>
                 <input type="text" id="localDirectoryPath_${sourceId[0]}" onblur="configurator.checkPath(id)" value="${view.getLocalDirectoryPath()}" name="localDirectoryPath" class="textbox"/>
                 <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id+'path')" class="image"/>
             </div>
+            <div id="path_error_${sourceId[0]}" class="error-block none" name = "localDirectoryPath-block">
+                <img src="../images/16x16/error.png"/>
+                Not correct path
+            </div>
+
         </div>
-        <div id="path_error_${sourceId[0]}" class="error-block none">
-            <img src="../images/16x16/error.png"/>
-            Not correct path
-        </div>
+
         <div id="block_help_${sourceId[0]}path" class="help-view">
             <lebel id="text_help_${sourceId[0]}path" class="helptext">
                 Specify a local directory (relative to the workspace root) where this module is checked out. If left empty, the last path component of the URL is used as the default, just like the svn CLI. A single period (.) may be used to check out the project directly into the workspace rather than into a subdirectory.
@@ -79,24 +81,25 @@
 
         <div class="div-textinput">
                 <label>Project to build:</label>
-            <div class="left">
-                <input type="text" id="project_to_build_${sourceId[0]}" name="fileToBuild" onblur="configurator.checkPTB(id)" value="${view.getFileToBuild()}" class="textbox"/>
+            <div>
+                <input type="text" name="fileToBuild" onblur="configurator.checkPTB(this)" value="${view.getFileToBuild()}" class="textbox"/>
                 <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id+'build')" class="image"/>
             </div>
-        </div>
-        <div>
-            <div id="ptb_error_${sourceId[0]}" class="error-block none">
+            <div class="error-block none" name = "fileToBuild-block">
                 <img src="../images/16x16/error.png"/>
                 Not correct file name
             </div>
 
-            <div id="block_help_${sourceId[0]}build" class="help-view">
-                <lebel id="text_help_${sourceId[0]}build" class="helptext">
-                    Project file name (with extension)
-                </lebel>
-            </div>
+
         </div>
-        
+
+        <div id="block_help_${sourceId[0]}build" class="help-view">
+            <lebel id="text_help_${sourceId[0]}build" class="helptext">
+                Project file name (with extension)
+            </lebel>
+        </div>
+
+
         <div class="div-project-to-build">
             <div class="project-to-build-label">
                 <label class="div-file-chooser-label">Path to artifacts:</label>
@@ -188,15 +191,15 @@
             </j:if>
         </div>
 
-        <div id="builders_${divID}" class="builders">
+        <div class="builders">
             <j:forEach items="${view.getBuilders()}" var="build" indexVar="i">
                 ${generator.getBuilderView(build).getHtml()}
             </j:forEach>
             <span></span>
         </div>
 
-        <div id="addView_${divID}" class="div-add-view">
-            <input type="button" onClick="configurator.addBuilder(this)" id="addBuilders_${divID}" value="Add Builder"/>
+        <div class="div-add-view">
+            <input type="button" onClick="configurator.addBuilder(${divID})" value="Add Builder"/>
         </div>
         
     </div>         
