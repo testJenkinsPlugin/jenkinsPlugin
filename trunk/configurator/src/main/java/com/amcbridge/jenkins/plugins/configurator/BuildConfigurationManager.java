@@ -215,7 +215,7 @@ public class BuildConfigurationManager {
     }
 
     public static String[] getPath(String value) {
-        if (value.equals(STRING_EMPTY)) {
+        if (value == null || value.equals(STRING_EMPTY)) {
             return new String[0];
         }
         if (value.lastIndexOf(';') == value.length() - 1) {

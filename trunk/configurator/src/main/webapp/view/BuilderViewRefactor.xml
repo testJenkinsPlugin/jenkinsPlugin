@@ -10,9 +10,9 @@
    xmlns:p="/lib/hudson/project"
    xmlns:g="glide"
    >
-
     <div name="builders" class="builders-group">
-        <label onclick="configurator.closeButtonClick(this)" class="close-builder">X</label>
+        <label onclick="configurator.closeElement(this)" class="close-builder" name="closeBuilder">X</label>
+
 
         <div class="div-drop-down">
             <label>Builder:</label>
@@ -20,10 +20,10 @@
                 
                 <j:forEach items="${builders}" var="build" indexVar="i">
                     <j:if test="${build.getValue() == view.getBuilder()}">
-                        <option id="${build.getKey()+'_'+divID}" name="${build.getKey()+'_'+divID}" selected="selected" value="${build.getValue()}">${build.getValue()}</option>
+                        <option  name="${build.getKey()+'_'+divID}" selected="selected" value="${build.getValue()}">${build.getValue()}</option>
                     </j:if>
                     <j:if test="${build.getValue() != view.getBuilder()}">
-                        <option id="${build.getKey()+'_'+divID}" name="${build.getKey()+'_'+divID}" value="${build.getValue()}">${build.getValue()}</option>
+                        <option  name="${build.getKey()+'_'+divID}" value="${build.getValue()}">${build.getValue()}</option>
                     </j:if>
                 </j:forEach>
             </select>
@@ -65,11 +65,11 @@
             <br/>
 
             <j:if test="${view.isConfigChecked('OTHER')}">
-                <input type="checkbox" id="Other_${divID}" name="other" checked="checked" onclick="configurator.otherCheckBoxChange(this)"/>Other
+                <input type="checkbox" id="Other_${divID}" name="other" checked="checked" onclick="configurator.disableOtherConfig(this)"/>Other
                 <input type="text" id="userConfig_${divID}" name="userConfig" value="${view.getUserConfig()}" class="other-config" field="userConfig_${divID}"/>
             </j:if>
             <j:if test="${!view.isConfigChecked('OTHER')}">
-                <input type="checkbox" id="Other_${divID}" name="other" onclick="configurator.otherCheckBoxChange(this)"/>Other
+                <input type="checkbox" id="Other_${divID}" name="other" onclick="configurator.disableOtherConfig(this)"/>Other
                 <input type="text" id="userConfig_${divID}" name="userConfig" disabled="false" class="other-config" field="userConfig_${divID}"/>
             </j:if>
         </div>

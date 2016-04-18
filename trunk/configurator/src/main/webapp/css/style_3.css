@@ -256,24 +256,21 @@ div.projectToBuild
     background: rgba(128, 128, 128, 0.39);
 }
 
-.help-view, .block-help-view {
-    width: 453px;
+
+.help-view{
+    width: 480px;
     margin-top: 7px;
-    display: none;
+    display: block;
     border: solid #bbb 1px;
     background-color: #f0f0f0;
     padding: 1em;
     margin-bottom: 1em;
 }
-        .block-help-view {
-            width: 480px;
-            display: block;
-        }
 
 .helptext {
     font-family: Verdana, Helvetica, sans serif;
     font-size: 11px;
-    display: none;
+    display: block;
 }
 
 .image {
@@ -288,8 +285,7 @@ div.projectToBuild
     font-weight: bold;
     min-height: 16px;
     line-height: 16px;
-    background-position: left center;
-    background-repeat: no-repeat;
+    background: no-repeat left center;
 }
 
 .user {

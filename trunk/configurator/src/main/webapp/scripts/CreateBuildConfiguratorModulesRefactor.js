@@ -44,7 +44,7 @@ var configurator = (function () {
         })
     };
 
-
+// TODO: ADD TO HIDDEN FUNCTION FOR BMC!!!
     function setContent(name) // used in initPage only
     {
         buildConfiguration.getConfiguration(name, function (t) {
@@ -81,11 +81,6 @@ var configurator = (function () {
             }
             jQuery("#configEmail").val(t.responseObject().configEmail);
 
-           /* var scripts = t.responseObject().scripts;
-            for (var i = 0; i < scripts.length; i++) {
-                addToSelectionBox("files_script", scripts[i])
-            }
-*/
             if (t.responseObject().creator != null) {
                 buildConfiguration.getFullNameCreator(t.responseObject().creator, function (t) {
                     jQuery("#userLabel").html("Created by:  " + t.responseObject());
@@ -96,18 +91,18 @@ var configurator = (function () {
 
 
     function getParameterValue(parameter) {
-        var parameters = decodeURIComponent(document.location.search.substr(1));
-        parameters = parameters.replace(/%20/g, " ");
-        parameters = parameters.split('&');
-        if (parameters.length == 0)
+        var params = decodeURIComponent(document.location.search.substr(1));
+        params = params.replace(/%20/g, " ");
+        params = params.split('&');
+        if (params.length == 0)
             return;
-        var variable = parameters[0];
-        if (variable.indexOf(parameter) != -1) {
-            return variable.split('=')[1];
+        var paramValue = params[0];
+        if (paramValue.indexOf(parameter) != -1) {
+            return paramValue.split('=')[1];
         }
-        variable = parameters[1];
-        if (variable.indexOf(parameter) != -1) {
-            return variable.split('=')[1];
+        paramValue = params[1];
+        if (paramValue.indexOf(parameter) != -1) {
+            return paramValue.split('=')[1];
         }
     }
 
@@ -116,15 +111,12 @@ var configurator = (function () {
     }
 
     var getProjectId = function (element) {
-        return jQuery(element).closest("div[name=projectToBuild]").attr("id");
+        return "#" + jQuery(element).closest("div[name=projectToBuild]").attr("id");
     }
 
-
-
-    function cleacSelectionGroup(groupId) {
-        var selectElement = jQuery("#" + groupId)[0];
-        for (var option in selectElement) {
-            selectElement.remove(option);
+    function clearSelectionGroup(selectedElement) {
+        for (var option in selectedElement) {
+            selectedElement.remove(option);
         }
     }
 
@@ -135,10 +127,9 @@ var configurator = (function () {
                 var iDiv = document.createElement("div");
                 iDiv.innerHTML = t.responseObject().html;
                 jQuery("#projectsToBuild").append(iDiv);
-                var currentDivId = iDiv.firstElementChild.id;
+                var projectId = "#" + iDiv.firstElementChild.id;
 
                 var scm = jQuery("#typeSCM")[0];
-                // var scm = document.getElementById("typeSCM");
                 var scmValue = scm.options[scm.selectedIndex].value;
 
                 var defaultLocalPath;
@@ -153,17 +144,14 @@ var configurator = (function () {
                         defaultLocalPath = "";
                         break;
                 }
-                // setting default local path
-
-                setLocalFolderPath(defaultLocalPath, currentDivId);
+                setLocalFolderPath(defaultLocalPath, projectId);
+                addBuilder(projectId);
+                setDefaultCredentials(projectId)
                 projectNumber++;
-                // addBuilderOnDefault(currentDivId);
-                addBuilder(currentDivId);
-                setDefaultCredentials(currentDivId)
             });
     }
-    function setDefaultCredentials(currentDivId){
-        var cred_select = jQuery("#credentials_" + currentDivId)[0];
+    function setDefaultCredentials(projectId){
+        var cred_select = jQuery(projectId).find("[name = credentials]")[0];
         var default_cred_value = jQuery("#def_cred").val();
         for (var i = 0; i < cred_select.options.length; i++) {
             if (cred_select.options[i].value === default_cred_value) {
@@ -175,10 +163,9 @@ var configurator = (function () {
 
     }
 
-    function setLocalFolderPath(defaultLocalPath, currentDivId) {
-        var projectSelector = "div[name=projectToBuild][id=" + currentDivId + "]";
+    function setLocalFolderPath(defaultLocalPath, projectId) {
         defaultLocalPath = defaultLocalPath + ((projectNumber > 0) ? projectNumber : "");
-        jQuery(projectSelector).find("[name=localDirectoryPath]").val(defaultLocalPath);
+        jQuery(projectId).find("[name=localDirectoryPath]").val(defaultLocalPath);
     }
 
     function setScriptTypeSelect(scriptTypeSelected) {
@@ -196,8 +183,7 @@ var configurator = (function () {
 
     var setCurrentCredentialsAsDefault = function (element) {
         var projectId = getProjectId(element);
-        var projectSelector = "div[name=projectToBuild][id=" + projectId + "]"
-        var credentials_select = jQuery(projectSelector).find("[name=credentials]")[0];
+        var credentials_select = jQuery(projectId).find("[name=credentials]")[0];
         var def_cred_value = credentials_select.options[credentials_select.selectedIndex].value;
         jQuery("#def_cred").val(def_cred_value);
     }
@@ -219,12 +205,13 @@ var configurator = (function () {
     var addBuilder = function (projectId) {
         buildConfiguration.getBuilderView(
             function (t) {
-                var projectSelector = "div[name=projectToBuild][id=" + projectId + "]"
                 var iDiv = document.createElement("div");
                 iDiv.innerHTML = t.responseObject().html;
-                jQuery(projectSelector).find("[class=builders]").append(iDiv);
+                jQuery(projectId).find("[class=builders]").append(iDiv);
             });
     }
+
+
 
     var selectionBoxIndexChange = function (selectionBox) {
         var selections = document.getElementsByTagName("select");
@@ -232,91 +219,90 @@ var configurator = (function () {
             if (selections[i].id == selectionBox.id || selections[i].id.indexOf("files") == -1) {
                 continue;
             }
-
             if (selections[i].selectedIndex != -1) {
                 selections[i].selectedIndex = -1;
             }
         }
     }
 
-    var otherCheckBoxChange = function (checkBox) {
-        var textboxId = "userConfig_" + getElementNumber(checkBox.id);
-        textboxDisabled(checkBox, textboxId);
-    }
-
     var emailCheckBoxChange = function (checkBox) {
-        textboxDisabled(checkBox, "email");
-    }
-
-    function textboxDisabled(checkBox, textboxId) {
         if (!checkBox.checked) {
-            // document.getElementById("email_Error").className = "error-block none";
             jQuery("#email_Error").attr('class', 'error-block none');
-
             jQuery("#email").attr('class', "email-notification");
-            jQuery("#" + textboxId).prop("disabled", true);
-            jQuery("#" + textboxId).val("");
+            jQuery("#email").prop("disabled", true);
+            jQuery("#email").val("");
         }
-        if (checkBox.checked) {
-            jQuery("#" + textboxId).prop("disabled", false);
-
+        else {
+            jQuery("#email").prop("disabled", false);
         }
     }
 
-    function addToSelectionBox(selectionBoxId, path) {
-        var x = document.getElementById(selectionBoxId);
-        if (x.length != 0) {
-            if (x[0].value == "")
-                x.remove(0);
+    function disableOtherConfig(checkBox) {
+        var builder = jQuery(checkBox).closest("div[name=builders]");
+        if (!checkBox.checked) {
+            jQuery(builder).find("[name=userConfig]").prop("disabled", true);
+            jQuery(builder).find("[name=userConfig]").val("");
+        }
+        else {
+            jQuery(builder).find("[name=userConfig]").prop("disabled", false);
+        }
+    }
+
+
+    function addToSelectionBox(selectionBox, path) {
+        if (selectionBox.length != 0) {
+            if (selectionBox[0].value == "")
+                selectionBox.remove(0);
         }
 
         var option = document.createElement("option");
         option.text = path;
         option.value = path;
-        option.setAttribute("name", "artefacts");
-        x.add(option);
+        selectionBox.add(option);
 
-        var hiddenInputId = "files_hidden_" + getElementNumber(selectionBoxId);
-        addToHidden(hiddenInputId, path);
+        var hiddenInputName;
+        if (selectionBox.name == "artefacts_group"){
+            hiddenInputName="artefacts";
+        }
+        else if(selectionBox.name == "vFiles"){
+            hiddenInputName="versionFiles";
+        }
+
+        addToHidden(hiddenInputName, path, selectionBox);
     }
 
 
-    function addToHidden(hiddenInputId, value) {
-        var hiddenValue = document.getElementById(hiddenInputId).value;
+    function addToHidden(hiddenInputName, value, element) {
+        var projectId = getProjectId(element);
+        var hiddenValue = jQuery(projectId).find("[name=" + hiddenInputName +"][type=hidden]").val();
         if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1) {
-            var inputValue = jQuery("#" + hiddenInputId).val();
-            jQuery("#" + hiddenInputId).val(inputValue + ";" + value + ";");
+            jQuery(projectId).find("[name="+hiddenInputName+"][type=hidden]").val(hiddenValue + ";" + value + ";");
         }
         else {
-            var inputValue = jQuery("#" + hiddenInputId).val();
-            jQuery("#" + hiddenInputId).val(inputValue + value + ";");
+            jQuery(projectId).find("[name="+hiddenInputName+"][type=hidden]").val(hiddenValue + value + ";");
         }
     }
 
     var versionFileCheckBoxChange = function (checkBox) {
-        var pathInput = "path_input_" + getElementNumber(checkBox.id);
-        var addButton = "add_button_" + getElementNumber(checkBox.id);
-        var addfield = "files_" + getElementNumber(checkBox.id);
-
+        var projectId = getProjectId(checkBox);
         if (checkBox.checked) {
-            var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
-            jQuery("#" + pathInput).attr("class", "textbox");;
-            jQuery("#" + pathInput).val("");
-            jQuery("#" + hiddenInput).val("");
-            jQuery("#" + addButton).css("visibility", "visible");
-            jQuery("#" + addfield).css("visibility", "visible");
-            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).show();
+            jQuery(projectId).find("[name=versionFilesPath]").attr("class", "textbox");
+            jQuery(projectId).find("[name=versionFilesPath]").val("");
+            jQuery(projectId).find("[name=versionFiles]").val("");
+            jQuery(projectId).find("[name=addVersion]").css("visibility", "visible");
+            jQuery(projectId).find("[name=vFiles]").css("visibility", "visible");
+            jQuery(projectId).find("[dir=fieldSetDiv]").show();
         }
 
         if (!checkBox.checked) {
-            var hiddenInput = "files_hidden_" + getElementNumber(checkBox.id);
-            document.getElementById(hiddenInput).value = "";
-            var selectionGroupId = "files_" + getElementNumber(checkBox.id);
-            cleacSelectionGroup(selectionGroupId);
-            jQuery("#path_input_" + getElementNumber(checkBox.id)).attr("class", "textbox hidden");
-            jQuery("#" + addButton).css("visibility", "hidden");
-            jQuery("#" + addfield).css("visibility", "hidden");
-            jQuery("#div-fieldset_" + getElementNumber(checkBox.id)).hide();
+            jQuery(projectId).find("[name=versionFiles]").val("");
+
+            var selectionElement = jQuery(projectId).find("[name=vFiles]")[0];
+            clearSelectionGroup(selectionElement);
+            jQuery(projectId).find("[name=versionFilesPath]").attr("class", "textbox hidden");
+            jQuery(projectId).find("[name=addVersion]").css("visibility", "hidden");
+            jQuery(projectId).find("[name=vFiles]").css("visibility", "hidden");
+            jQuery(projectId).find("[dir=fieldSetDiv]").hide();
         }
     }
 
@@ -420,58 +406,66 @@ var configurator = (function () {
         jQuery("#formResultHidden").val(result);
     }
 
-    var closeButtonClick = function (button) {
-        var divId = button.id.replace('close_', '');
-        var element = jQuery("#" + divId)[0];
-        element.outerHTML = "";
-        delete element;
+    var closeElement = function (element) {
+        var divToDeleteName;
+        var divToDelete;
+        if (jQuery(element).attr("name") == "closeProject") {
+            divToDeleteName = "projectToBuild";
+        }
+        else if (jQuery(element).attr("name") == "closeBuilder") {
+            divToDeleteName = "builders";
+        }
+        divToDelete = jQuery(element).closest("div[name=" + divToDeleteName + "]");
+        jQuery(divToDelete).html("");
+        jQuery(divToDelete).remove();
     }
 
     var addPath = function (button) {
-        var number = getElementNumber(button.id);
-        var path = jQuery("#path_input_" + number).val();
-        var error = jQuery("#path_error_" + number).attr("class");
-        var errorInput = jQuery("#path_error_" + (number - 1)).attr("class");
-        if ((errorInput == "error-block") || (path.length <= 0) || (error == "error-block")) {
+        var projectId = getProjectId(button);
+        var path = jQuery(projectId).find("[name=pathToArtefacts]").val();
+        var error = jQuery(projectId).find("[name=project-to-build-block]").attr("class");
+
+        if ((path.length <= 0) || (error == "error-block")) {
             return;
         }
+        var selectionBox = jQuery(projectId).find("[name=artefacts_group]")[0];
 
-        var selectionId = "files_" + number;
+        if (!checkPathRepeat(path, selectionBox)) {
+            addToSelectionBox(selectionBox, path);
+            jQuery(projectId).find("[name=pathToArtefacts]").val("");
 
-        if (!checkPathRepeat(path, selectionId)) {
-            addToSelectionBox(selectionId, path);
-            jQuery("#path_input_" + number).val("");
+            jQuery(projectId).find("[name=pathToArtefacts-block]").attr("class", "error-block none");
         }
         else {
-            jQuery("#path_error_" + number).attr("class", "error-block");
-            jQuery("#coincide_" + number).html(" such pass already exists");
+            jQuery(projectId).find("[name=pathToArtefacts-block]").attr("class", "error-block");
+            jQuery(projectId).find("[error=artifact_error_exp]").html(" This path already exists");
             return;
         }
     }
 
     var addPathFiles = function (button) {
-        var number = getElementNumber(button.id);
-        var path = jQuery("#path_input_" + number).val();
-        var error = jQuery("#path_error_" + number).attr("class");
+        var projectId = getProjectId(button);
+        var path = jQuery(projectId).find("[name=versionFilesPath]").val();
+        var error = jQuery(projectId).find("[name=versionFilesPath-block]").attr("class");
 
         if ((path.length <= 0) || (error == "error-block")) {
             return;
         }
+        var selectionBox = jQuery(projectId).find("[name=vFiles]")[0];
 
-        var selectionId = "files_" + number;
-        if (!checkPathRepeat(path, selectionId)) {
-            addToSelectionBox(selectionId, path);
-            jQuery("#path_input_" + number).val("");
+        if (!checkPathRepeat(path, selectionBox)) {
+            addToSelectionBox(selectionBox, path);
+            jQuery(projectId).find("[name=versionFilesPath]").val("");
         }
         else {
-            jQuery("#path_error_" + number).attr("class", "error-block");
-            jQuery("#coincide_" + number).html(" path has already added");
+            jQuery(projectId).find("[error=v_files_error]").attr("class", "error-block");
+            jQuery(projectId).find("[error=v_files_error_exp]").html(" This path already exists");
             return;
         }
     }
 
-    function checkPathRepeat(path, selectionBoxId) {
-        var options = document.getElementById(selectionBoxId).options;
+    function checkPathRepeat(path, selectionBox) {
+        var options = selectionBox.options;
         if (options == null) {
             return false;
         }
@@ -484,11 +478,10 @@ var configurator = (function () {
     }
 
     var imageHelp = function (id) {
-        var number = getElementNumber(id);
+        var number = getElementNumber(id);  //TODO !!!!!!!!!!!!!!!!!!!!
         if (jQuery("#block_help_" + number).attr("class") == "help-view") {
-            jQuery("#block_help_" + number).attr("class", "block-help-view");
-            // jQuery("#text_help_" + number).attr("class", "helptext-block");
-            jQuery("#text_help_" + number).css("display", "block");
+            jQuery("#block_help_" + number).attr("class", "help-view none");
+            jQuery("#text_help_" + number).attr("class", "helptext none");
         }
         else {
             jQuery("#block_help_" + number).attr("class","help-view");
@@ -528,24 +521,23 @@ var configurator = (function () {
 
     function checkMail(mailp) {
         var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
-        if (pattern.test(mailp))
+        if (pattern.test(mailp)) {
             return true;
-        else
-            return false;
+        }
+        return false;
     }
 
     var checkURL = function (element) {
         var regURL = /(((git|ssh|http(s)?)|(git@[\w\.]+))(:\/?)([\w\.\@:\/\-\~]+)(\.git)?)$/;
         var projectId = getProjectId(element);
-        var projectSelector = "div[name=projectToBuild][id=" + projectId + "]"
-        var url = jQuery(projectSelector).find("[name=projectUrl]").val();
+        var url = jQuery(projectId).find("[name=projectUrl]").val();
         if (regURL.test(url)) {
-            jQuery(projectSelector).find("[name=projectUrl-block]").attr("class", "error-block none");
-            jQuery(projectSelector).find("[name=projectUrl]").attr("class", "textbox");
+            jQuery(projectId).find("[name=projectUrl-block]").attr("class", "error-block none");
+            jQuery(projectId).find("[name=projectUrl]").attr("class", "textbox");
         }
         else {
-            jQuery(projectSelector).find("[name=projectUrl-block]").attr("class", "error-block");
-            jQuery(projectSelector).find("[name=projectUrl]").attr("class", "textbox wrong");
+            jQuery(projectId).find("[name=projectUrl-block]").attr("class", "error-block");
+            jQuery(projectId).find("[name=projectUrl]").attr("class", "textbox wrong");
         }
     }
 
@@ -553,46 +545,41 @@ var configurator = (function () {
     var checkPTB = function (element) {
         var regPath = /^([a-zA-Z]:\\)?[^\x00-\x1F"<>\|:\*\?/]+\.[a-zA-Z]{3,5}$/i;
         var projectId = getProjectId(element);
-        var projectSelector = "div[name=projectToBuild][id=" + projectId + "]"
-        var path = jQuery(projectSelector).find("[name=fileToBuild]").val();
+        var path = jQuery(projectId).find("[name=fileToBuild]").val();
         if (regPath.test(path)) {
-            jQuery(projectSelector).find("[name=fileToBuild-block]").attr("class", "error-block none");
-            jQuery(projectSelector).find("[name=fileToBuild]").attr("class", "textbox");
+            jQuery(projectId).find("[name=fileToBuild-block]").attr("class", "error-block none");
+            jQuery(projectId).find("[name=fileToBuild]").attr("class", "textbox");
         }
         else {
-            jQuery(projectSelector).find("[name=fileToBuild-block]").attr("class", "error-block");
-            jQuery(projectSelector).find("[name=fileToBuild]").attr("class", "textbox wrong");
+            jQuery(projectId).find("[name=fileToBuild-block]").attr("class", "error-block");
+            jQuery(projectId).find("[name=fileToBuild]").attr("class", "textbox wrong");
         }
     }
 
-
-
-    var checkPath = function (id) {
-        var path = jQuery("#" + id).val();
-        var number = getElementNumber(id);
-
+    var checkPath = function (element) {
+        var projectId = getProjectId(element);
+        var path = jQuery(projectId).find("[name="+element.name+"]").val();
         var regPath;
-        if ((document.getElementById(id).name == "pathToArtefacts") ||
-            (document.getElementById(id).name == "versionFilesPath")) {
-            regPath = /^(?![*?])(?:[^\\/:"*?<>|\r\n]+?(?:\/?|\/\*{0,2})*?|\/\*\.\*$)*?$/;// Allow Ant wildcards valid folder/file structure only
-        }
-        else if (document.getElementById(id).name == "localDirectoryPath") {																		// Change also correctArtifactPaths at JobManagerGenerator
-            regPath = /(^\.[A-Za-z0-9]*$)|^(?:(?!\.)[^\\/:*?"<>|\r\n]+\/?)*$/;				// Match only one . or valid folder structure (zero-length - ok)
-        }
-        else {
-            regPath = /^([a-zA-Z]:)?(\\[^<>:"/\\|?*]+)+\\?$/i;
+
+        switch (element.name) {
+            case 'versionFilesPath':
+                regPath = /^(?![*?])(?:[^\\/:"*?<>|\r\n]+?(?:\/?|\/\*{0,2})*?|\/\*\.\*$)*?$/;// Allow Ant wildcards valid folder/file structure only
+                break;
+            case 'localDirectoryPath':
+                regPath = /(^\.[A-Za-z0-9]*$)|^(?:(?!\.)[^\\/:*?"<>|\r\n]+\/?)*$/;				// Match only one . or valid folder structure (zero-length - ok)
+                break;
+            default:
+                regPath = /(.)*$/;
+                break;
         }
 
         if (regPath.test(path) || path == "") {
-            jQuery("#path_error_" + number).attr("class", "error-block none");
-            jQuery("#" + id).attr("class", "textbox");
+            jQuery(projectId).find("[name="+ element.name +"-block]").attr("class", "error-block none");
+            jQuery(projectId).find("[name="+element.name+"]").attr("class", "textbox");
         }
         else {
-            if (document.getElementById(id).name == "pathToArtefacts" || document.getElementById(id).name == "versionFilesPath") {
-                jQuery("#coincide_" + number).html(" Not correct path");
-            }
-            jQuery("#path_error_" + number).attr("class","error-block");
-            jQuery("#" + id).attr("class", "textbox wrong");
+            jQuery(projectId).find("[name="+ element.name +"-block]").attr("class","error-block");
+            jQuery(projectId).find("[name="+element.name+"]").attr("class", "textbox wrong");
         }
     }
 
@@ -619,21 +606,17 @@ var configurator = (function () {
         jQuery("#textReject").val("");
     }
 
-    var validateProject = function (project) {
+    var validateProject = function (project) {  //TODO !!!!!!!!!!!!!!!!!!!!
         var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|]*$/i;
-        var cl = jQuery("#projectError").attr("class");
-        var classes = cl.split(" ");
-        if ((classes.length == 2) && (project.value.length == 0))
-            return;
         if (regPath.test(project.value) || (project.value.length == 0)) {
             jQuery("#projectError").attr("class", "error-block none");
-            jQuery("#" + project.id).attr("class", "textbox");
             jQuery("#projectErrorText").html("");
+            jQuery("[name=projectName]").attr("class", "textbox");
         }
         else {
             jQuery("#projectError").attr("class", "error-block");
             jQuery("#projectErrorText").html(" Not correct name");
-            jQuery("#" + project.id).attr("class", "textbox wrong");
+            jQuery("[name=projectName]").attr("class", "textbox wrong");
 
         }
     }
@@ -649,9 +632,7 @@ var configurator = (function () {
 
 
     function validAllView() {
-        // var view = jQuery(".project-container");
         var view = jQuery("div[name=projectToBuild]");
-
         var textboxes;
         for (var i = 0; i < view.length; i++) {
             textboxes = view[i].getElementsByClassName("textbox");
@@ -673,14 +654,12 @@ var configurator = (function () {
         loadViews: loadViews,
         addBuilder: addBuilder,
         selectionBoxIndexChange: selectionBoxIndexChange,
-        otherCheckBoxChange: otherCheckBoxChange,
         emailCheckBoxChange: emailCheckBoxChange,
         versionFileCheckBoxChange: versionFileCheckBoxChange,
         isValidForm: isValidForm,
         rejectDiv: rejectDiv,
         rejectionSubmit: rejectionSubmit,
         setFormResultDialog: setFormResultDialog,
-        closeButtonClick: closeButtonClick,
         addPath: addPath,
         addPathFiles: addPathFiles,
         imageHelp: imageHelp,
@@ -693,7 +672,9 @@ var configurator = (function () {
         validateProject: validateProject,
         bMCChange: bMCChange,
         getElementNumber:getElementNumber,
-        deleteFromHidden:deleteFromHidden
+        deleteFromHidden:deleteFromHidden,
+        closeElement:closeElement,
+        disableOtherConfig:disableOtherConfig
 
     };
 })(); //END OF CONFIGURATOR MODULE

@@ -10,7 +10,7 @@
 >
     <div id="${divID}" name="projectToBuild">
 
-        <label id="close_${divID}" onclick="configurator.closeButtonClick(this)" class="close-project-to-build">X</label>
+        <label onclick="configurator.closeElement(this)" class="close-project-to-build" name="closeProject">X</label>
 
         <div class="div-textinput">
                     <label>Project url:</label>
@@ -25,7 +25,7 @@
         <div class="div-textinput">
                 <label>Credentials:</label>
             <div>
-                <select id="credentials_${sourceId[0]}" name="credentials"
+                <select name="credentials"
                         value="${view.getCredentials()}"
                         class="textbox">
                     <option value="not selected">not selected</option>
@@ -63,8 +63,8 @@
         <div class="div-textinput">
                 <label>Local module directory (optional):</label>
             <div>
-                <input type="text" id="localDirectoryPath_${sourceId[0]}" onblur="configurator.checkPath(id)" value="${view.getLocalDirectoryPath()}" name="localDirectoryPath" class="textbox"/>
-                <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id+'path')" class="image"/>
+                <input type="text" onblur="configurator.checkPath(this)" value="${view.getLocalDirectoryPath()}" name="localDirectoryPath" class="textbox"/>
+                <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id+'path')" class="image"/>
             </div>
             <div id="path_error_${sourceId[0]}" class="error-block none" name = "localDirectoryPath-block">
                 <img src="../images/16x16/error.png"/>
@@ -73,8 +73,8 @@
 
         </div>
 
-        <div id="block_help_${sourceId[0]}path" class="help-view">
-            <lebel id="text_help_${sourceId[0]}path" class="helptext">
+        <div id="block_help_${sourceId[0]}path" class="help-view none">
+            <lebel id="text_help_${sourceId[0]}path" class="helptext none">
                 Specify a local directory (relative to the workspace root) where this module is checked out. If left empty, the last path component of the URL is used as the default, just like the svn CLI. A single period (.) may be used to check out the project directly into the workspace rather than into a subdirectory.
             </lebel>
         </div>
@@ -93,8 +93,8 @@
 
         </div>
 
-        <div id="block_help_${sourceId[0]}build" class="help-view">
-            <lebel id="text_help_${sourceId[0]}build" class="helptext">
+        <div id="block_help_${sourceId[0]}build" class="help-view none">
+            <lebel id="text_help_${sourceId[0]}build" class="helptext none">
                 Project file name (with extension)
             </lebel>
         </div>
@@ -105,16 +105,16 @@
                 <label class="div-file-chooser-label">Path to artifacts:</label>
             </div>
             <div>
-                <input type="text" id="path_input_${sourceId[1]}" name="pathToArtefacts" onblur="" class="textbox"/>
-                <input type="button" id="add_button_${sourceId[1]}" onclick="configurator.addPath(this)" class="add-button" value="+"/>
+                <input type="text" id="path_input_${sourceId[1]}" name="pathToArtefacts" onblur="configurator.checkPath(this)" class="textbox"/>
+                <input type="button" id="add_button_${sourceId[1]}" onclick="configurator.addPath(this)" class="add-button" value="+" name = "addProject"/>
                 <img id="image_${sourceId[0]}" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id+'art')" class="image"/>
             </div>
-            <div id="path_error_${sourceId[1]}" class="error-block none">
+            <div error="artifact_error" class="error-block none" name="pathToArtefacts-block">
                 <img src="../images/16x16/error.png"/>
-                <label id="coincide_${sourceId[1]}"> Not correct path</label>
+                <label error="artifact_error_exp" > Not correct path</label>
             </div>
-            <div id="block_help_${sourceId[0]}art" class="help-view">
-                <lebel id="text_help_${sourceId[0]}art" class="helptext">
+            <div id="block_help_${sourceId[0]}art" class="help-view none">
+                <lebel id="text_help_${sourceId[0]}art" class="helptext none">
                     You can use wildcards like 'module/dist/**/*.zip'. See 
                     <a href="http://ant.apache.org/manual/Types/fileset.html">
                         the includes attribute of Ant fileset </a>for the exact format. The base directory is the workspace. You can only archive files that are located in your workspace.
@@ -143,27 +143,27 @@
                     <input type="checkbox" class="check-box" name="isVersionFiles" checked="checked" onclick="configurator.versionFileCheckBoxChange(this)" id="isVersionFiles_${sourceId[2]}"/>
                     <label class="div-label">Version Files</label>
                 </div>
-                <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="configurator.checkPath(id)" class="textbox"/>
-                <input type="button" onclick="configurator.addPathFiles(this)" class="add-button" id="add_button_${sourceId[2]}" value="+"/>
+                <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="configurator.checkPath(this)" class="textbox"/>
+                <input type="button" onclick="configurator.addPathFiles(this)" class="add-button" id="add_button_${sourceId[2]}" value="+" name = "addVersion"/>
             </j:if>
             <j:if test="${!view.IsVersionFiles()}">
                 <div class="project-to-build-label">
                     <input type="checkbox" class="check-box" name="isVersionFiles" onclick="configurator.versionFileCheckBoxChange(this)" id="isVersionFiles_${sourceId[2]}"/>
                     <label class="div-label">Version Files</label>
                 </div>
-                <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="configurator.checkPath(id)" class="textbox hidden"/>
-                <input type="button" onclick="configurator.addPathFiles(this)" class="add-button hidden" id="add_button_${sourceId[2]}" value="+"/>
+                <input type="text" id="path_input_${sourceId[2]}" name="versionFilesPath" onblur="configurator.checkPath(this)" class="textbox hidden"/>
+                <input type="button" onclick="configurator.addPathFiles(this)" class="add-button hidden" id="add_button_${sourceId[2]}" value="+" name = "addVersion" />
             </j:if>
-            <div id="path_error_${sourceId[2]}" class="error-block none">
+            <div error="v_files_error" class="error-block none" name="versionFilesPath-block">
                 <img src="../images/16x16/error.png"/>
-                <label id="coincide_${sourceId[2]}"> Not correct path</label>
+                <label error="v_files_error_exp"> Not correct path</label>
             </div>
             
             <j:if test="${view.IsVersionFiles()}">
-                <div id = "div-fieldset_${sourceId[2]}" class="div-legend">
+                <div id = "div-fieldset_${sourceId[2]}" class="div-legend" dir="fieldSetDiv">
                     <fieldset>
                         <legend>Version Files</legend>
-                        <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select" onchange="configurator.selectionBoxIndexChange(this)" size="3">
+                        <select id="files_${sourceId[2]}" name="vFiles"  class="select" onchange="configurator.selectionBoxIndexChange(this)" size="3">
                             <j:set var="forHidden" value=""/>
                             <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
                                 <option value="${vf}">${vf}</option>
@@ -171,14 +171,14 @@
                             </j:forEach>
                         </select>
                     </fieldset>
-                    <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
-                </div>
-            </j:if>
+                 <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
+
+           </div> </j:if>
             <j:if test="${!view.IsVersionFiles()}">
-                <div id = "div-fieldset_${sourceId[2]}" class="div-legend none">
+                <div id = "div-fieldset_${sourceId[2]}" class="div-legend none" dir="fieldSetDiv">
                     <fieldset>
                         <legend>Version Files</legend>
-                        <select id="files_${sourceId[2]}" name="vFiles_${sourceId[1]}"  class="select hidden" onchange="configurator.selectionBoxIndexChange(this)" size="3">
+                        <select id="files_${sourceId[2]}" name="vFiles"  class="select hidden" onchange="configurator.selectionBoxIndexChange(this)" size="3">
                             <j:set var="forHidden" value=""/>
                             <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
                                 <option value="${vf}">${vf}</option>
@@ -186,9 +186,9 @@
                             </j:forEach>
                         </select>
                     </fieldset>
-                    <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
-                </div>
-            </j:if>
+                  <input type="hidden" name="versionFiles" value="${forHidden}" id="files_hidden_${sourceId[2]}"/>
+
+           </div> </j:if>
         </div>
 
         <div class="builders">
@@ -199,7 +199,7 @@
         </div>
 
         <div class="div-add-view">
-            <input type="button" onClick="configurator.addBuilder(${divID})" value="Add Builder"/>
+            <input type="button" onClick="configurator.addBuilder('#' + ${divID})" value="Add Builder"/>
         </div>
         
     </div>         
