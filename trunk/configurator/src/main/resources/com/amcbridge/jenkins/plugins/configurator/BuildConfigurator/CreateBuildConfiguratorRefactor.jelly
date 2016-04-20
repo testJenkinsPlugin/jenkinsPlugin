@@ -84,15 +84,15 @@
                 <div class="div-textinput">
                     <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="configurator.emailCheckBoxChange(this)" title="Job E-mails notifications"/>
                     <input type="text" field="email" onblur="configurator.validateMail(this)" name="email" disabled="false" id="email" class="email-notification"/>
-                    <img id="image_url_-1" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id)" class="image"/>
+                    <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.emailHelp(name)" name="email-help" class="image"/>
                 </div>
                 <div id="email_Error" class="error-block none" style="margin-left: 205px;">
                     <img src="../images/16x16/error.png"/>
                     Not correct e-mail
                 </div>
 
-                <div id="block_help_-1" class="help-view none">
-                <lebel id="text_help_-1" class="helptext none">
+                <div id="email-help-block" class="help-view none">
+                <lebel id="email-help-text" class="helptext none">
                       Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build. E-mail will be sent when a build fails, becomes unstable or returns to stable.
                 </lebel>
                 </div>
@@ -102,15 +102,15 @@
                         <label>Configuration E-mails notifications</label>
                     </div>
                     <input type="text" field="email" onblur="configurator.validateMail(this);" name="configEmail" id="configEmail" class="textbox"/>
-                    <img id="image_url_-2" src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(id)" class="image"/>
+                    <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.emailHelp(name)" name="configEmail-help" class="image"/>
                 </div>
                 <div id="configEmail_Error" class="error-block none" style="margin-left: 205px;">
                     <img src="../images/16x16/error.png"/>
                     Not correct e-mail
                 </div>
 
-                <div id="block_help_-2" class="help-view none">
-                <label id="text_help_-2" class="helptext none">
+                <div id="configEmail-help-block" class="help-view none">
+                <label id="configEmail-help-text" class="helptext none">
                      Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when configuration state changes.
                 </label>
                 </div>
@@ -141,7 +141,6 @@
 
                     <textarea rows="10" cols="60" id="preScript" name="preScript" onblur="configurator.validatePrebuildScript(id)">
                     </textarea>
-                    <input type="hidden" name="scripts" id="files_hidden_script"/>
                 </div>
                 <br/>
                 <div>

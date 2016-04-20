@@ -58,8 +58,9 @@ var configurator = (function () {
                 jQuery("#reasonLabel").html("Reason of rejection:  " + t.responseObject().rejectionReason);
 
             var bmcValue = t.responseObject().buildMachineConfiguration;
-            if (jQuery("#build_machine_configuration") != null) {
-                jQuery("#build_machine_configuration").val("");
+            var build_machine_configuration = jQuery("#build_machine_configuration");
+            if (build_machine_configuration != null) {
+                build_machine_configuration.val("");
                 var bmc = document.getElementsByName("node");
                 for (var i = 0; i < bmc.length; i++) {
                     jQuery("#" + bmc[i].id).prop('checked', false);
@@ -75,8 +76,9 @@ var configurator = (function () {
 
             var mail = t.responseObject().email;
             if (mail.length != 0) {
-                jQuery("#email").prop('disabled', false);
-                jQuery('#email').val(mail);
+                var email = jQuery("#email");
+                email.prop('disabled', false);
+                email.val(mail);
                 jQuery('#isEmail').prop('checked', true);
             }
             jQuery("#configEmail").val(t.responseObject().configEmail);
@@ -213,7 +215,7 @@ var configurator = (function () {
 
 
 
-    var selectionBoxIndexChange = function (selectionBox) {
+    var selectionBoxIndexChange = function (selectionBox) {  //TODO: !!!!!!!!!!!!
         var selections = document.getElementsByTagName("select");
         for (var i = 0; i < selections.length; i++) {
             if (selections[i].id == selectionBox.id || selections[i].id.indexOf("files") == -1) {
@@ -226,25 +228,26 @@ var configurator = (function () {
     }
 
     var emailCheckBoxChange = function (checkBox) {
+        var email = jQuery("#email");
         if (!checkBox.checked) {
             jQuery("#email_Error").attr('class', 'error-block none');
-            jQuery("#email").attr('class', "email-notification");
-            jQuery("#email").prop("disabled", true);
-            jQuery("#email").val("");
+            email.attr('class', "email-notification");
+            email.prop("disabled", true);
+            email.val("");
         }
         else {
-            jQuery("#email").prop("disabled", false);
+            email.prop("disabled", false);
         }
     }
 
     function disableOtherConfig(checkBox) {
         var builder = jQuery(checkBox).closest("div[name=builders]");
         if (!checkBox.checked) {
-            jQuery(builder).find("[name=userConfig]").prop("disabled", true);
-            jQuery(builder).find("[name=userConfig]").val("");
+            builder.find("[name=userConfig]").prop("disabled", true);
+            builder.find("[name=userConfig]").val("");
         }
         else {
-            jQuery(builder).find("[name=userConfig]").prop("disabled", false);
+            builder.find("[name=userConfig]").prop("disabled", false);
         }
     }
 
@@ -275,23 +278,26 @@ var configurator = (function () {
     function addToHidden(hiddenInputName, value, element) {
         var projectId = getProjectId(element);
         var hiddenValue = jQuery(projectId).find("[name=" + hiddenInputName +"][type=hidden]").val();
+        var project = jQuery(projectId);
         if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1) {
-            jQuery(projectId).find("[name="+hiddenInputName+"][type=hidden]").val(hiddenValue + ";" + value + ";");
+            project.find("[name="+hiddenInputName+"][type=hidden]").val(hiddenValue + ";" + value + ";");
         }
         else {
-            jQuery(projectId).find("[name="+hiddenInputName+"][type=hidden]").val(hiddenValue + value + ";");
+            project.find("[name="+hiddenInputName+"][type=hidden]").val(hiddenValue + value + ";");
         }
     }
 
     var versionFileCheckBoxChange = function (checkBox) {
         var projectId = getProjectId(checkBox);
+        var project = jQuery(projectId); 
+        var versionFilesPath = project.find("[name=versionFilesPath]");
         if (checkBox.checked) {
-            jQuery(projectId).find("[name=versionFilesPath]").attr("class", "textbox");
-            jQuery(projectId).find("[name=versionFilesPath]").val("");
-            jQuery(projectId).find("[name=versionFiles]").val("");
-            jQuery(projectId).find("[name=addVersion]").css("visibility", "visible");
-            jQuery(projectId).find("[name=vFiles]").css("visibility", "visible");
-            jQuery(projectId).find("[dir=fieldSetDiv]").show();
+            versionFilesPath.attr("class", "textbox");
+            versionFilesPath.val("");
+            project.find("[name=versionFiles]").val("");
+            project.find("[name=addVersion]").css("visibility", "visible");
+            project.find("[name=vFiles]").css("visibility", "visible");
+            project.find("[dir=fieldSetDiv]").show();
         }
 
         if (!checkBox.checked) {
@@ -299,21 +305,21 @@ var configurator = (function () {
 
             var selectionElement = jQuery(projectId).find("[name=vFiles]")[0];
             clearSelectionGroup(selectionElement);
-            jQuery(projectId).find("[name=versionFilesPath]").attr("class", "textbox hidden");
-            jQuery(projectId).find("[name=addVersion]").css("visibility", "hidden");
-            jQuery(projectId).find("[name=vFiles]").css("visibility", "hidden");
-            jQuery(projectId).find("[dir=fieldSetDiv]").hide();
+            versionFilesPath.attr("class", "textbox hidden");
+            project.find("[name=addVersion]").css("visibility", "hidden");
+            project.find("[name=vFiles]").css("visibility", "hidden");
+            project.find("[dir=fieldSetDiv]").hide();
         }
     }
 
     var isValidForm = function () {
         var projectName = jQuery("#projectName")[0];
-        var pathFolder = document.getElementsByName("localDirectoryPath");
-        var pathUrl = document.getElementsByName("projectUrl");
-        var pathArt = document.getElementsByName("pathToArtefacts");
-        var pathVer = document.getElementsByName("versionFilesPath");
-        var build = document.getElementsByName("projectToBuild");
-        var patBuild = document.getElementsByName("fileToBuild");
+        var pathFolder = jQuery("[name=localDirectoryPath]");
+        var pathUrl = jQuery("[name=projectUrl]");
+        var pathArt = jQuery("[name=pathToArtefacts]");
+        var pathVer = jQuery("[name=versionFilesPath]");
+        var build = jQuery("[name=projectToBuild]");
+        var patBuild = jQuery("[name=fileToBuild]");
         if (projectName.value == "") {
             jQuery("#projectErrorText").html(" Please, enter your project name");
             jQuery("#projectError").attr("class", "error-block empty");
@@ -406,66 +412,68 @@ var configurator = (function () {
         jQuery("#formResultHidden").val(result);
     }
 
-    var closeElement = function (element) {
+    var closeElement = function (closeElement) {
         var divToDeleteName;
         var divToDelete;
-        if (jQuery(element).attr("name") == "closeProject") {
+        var element = jQuery(closeElement);
+        if (element.attr("name") == "closeProject") {
             divToDeleteName = "projectToBuild";
         }
-        else if (jQuery(element).attr("name") == "closeBuilder") {
+        else if (element.attr("name") == "closeBuilder") {
             divToDeleteName = "builders";
         }
-        divToDelete = jQuery(element).closest("div[name=" + divToDeleteName + "]");
-        jQuery(divToDelete).html("");
-        jQuery(divToDelete).remove();
+        divToDelete = element.closest("div[name=" + divToDeleteName + "]");
+        divToDelete.html("");
+        divToDelete.remove();
     }
 
     var addPath = function (button) {
         var projectId = getProjectId(button);
-        var path = jQuery(projectId).find("[name=pathToArtefacts]").val();
-        var error = jQuery(projectId).find("[name=project-to-build-block]").attr("class");
+        var project = jQuery(projectId); 
+        var pathValue = project.find("[name=pathToArtefacts]").val();
+        var error = project.find("[name=project-to-build-block]").attr("class");
+        var pathBlock = project.find("[name=pathToArtefacts-block]");
 
-        if ((path.length <= 0) || (error == "error-block")) {
+        if ((pathValue.length <= 0) || (error == "error-block")) {
             return;
         }
         var selectionBox = jQuery(projectId).find("[name=artefacts_group]")[0];
 
-        if (!checkPathRepeat(path, selectionBox)) {
-            addToSelectionBox(selectionBox, path);
-            jQuery(projectId).find("[name=pathToArtefacts]").val("");
-
-            jQuery(projectId).find("[name=pathToArtefacts-block]").attr("class", "error-block none");
+        if (!checkPathRepeat(pathValue, selectionBox)) {
+            addToSelectionBox(selectionBox, pathValue);
+            pathBlock.attr("class", "error-block none");
+            project.find("[name=pathToArtefacts]").val("");
         }
         else {
-            jQuery(projectId).find("[name=pathToArtefacts-block]").attr("class", "error-block");
-            jQuery(projectId).find("[error=artifact_error_exp]").html(" This path already exists");
+            pathBlock.attr("class", "error-block");
+            project.find("[error=artifact_error_exp]").html(" This path already exists");
             return;
         }
     }
 
     var addPathFiles = function (button) {
         var projectId = getProjectId(button);
-        var path = jQuery(projectId).find("[name=versionFilesPath]").val();
-        var error = jQuery(projectId).find("[name=versionFilesPath-block]").attr("class");
+        var project = jQuery(projectId);
+        var path = project.find("[name=versionFilesPath]").val();
+        var error = project.find("[name=versionFilesPath-block]").attr("class");
 
         if ((path.length <= 0) || (error == "error-block")) {
             return;
         }
-        var selectionBox = jQuery(projectId).find("[name=vFiles]")[0];
+        var selectionBox = project.find("[name=vFiles]")[0];
 
         if (!checkPathRepeat(path, selectionBox)) {
             addToSelectionBox(selectionBox, path);
-            jQuery(projectId).find("[name=versionFilesPath]").val("");
+            project.find("[name=versionFilesPath]").val("");
         }
         else {
-            jQuery(projectId).find("[error=v_files_error]").attr("class", "error-block");
-            jQuery(projectId).find("[error=v_files_error_exp]").html(" This path already exists");
-            return;
-        }
+            project.find("[error=v_files_error]").attr("class", "error-block");
+            project.find("[error=v_files_error_exp]").html(" This path already exists");
+             }
     }
 
     function checkPathRepeat(path, selectionBox) {
-        var options = selectionBox.options;
+        var options = selectionBox.options;o
         if (options == null) {
             return false;
         }
@@ -477,15 +485,34 @@ var configurator = (function () {
         return false;
     }
 
-    var imageHelp = function (id) {
-        var number = getElementNumber(id);  //TODO !!!!!!!!!!!!!!!!!!!!
-        if (jQuery("#block_help_" + number).attr("class") == "help-view") {
-            jQuery("#block_help_" + number).attr("class", "help-view none");
-            jQuery("#text_help_" + number).attr("class", "helptext none");
+
+    var emailHelp = function (emailImageHelpName) {
+        var helpBlock = jQuery("#" + emailImageHelpName + "-block");
+        var help = jQuery("#" + emailImageHelpName + "-text");    
+        if (helpBlock.attr("class") == "help-view") {
+            helpBlock.attr("class", "help-view none");
+            help.attr("class", "helptext none");
+
         }
         else {
-            jQuery("#block_help_" + number).attr("class","help-view");
-            jQuery("#text_help_" + number).attr("class", "helptext");
+            helpBlock.attr("class", "help-view");
+            help.attr("class", "helptext");
+        }    
+            
+        }
+        
+    var imageHelp = function (element) {
+        var projectId = getProjectId(element);
+        var project = jQuery(projectId); 
+        var helpBlock = project.find("[name="+element.name+"-block]"); 
+        var help =  project.find("[name="+element.name+"-text]");
+        if (helpBlock.attr("class") == "help-view") {
+            helpBlock.attr("class", "help-view none");
+            help.attr("class", "helptext none");
+             }
+        else {
+            helpBlock.attr("class", "help-view");
+            help.attr("class", "helptext");
         }
     }
 
@@ -494,6 +521,7 @@ var configurator = (function () {
         var mailValue = mail.value;
         var mails = mailValue.split(' ');
         var checking = true;
+        var email = jQuery("#"+name); 
         for (var i = 0; i < mails.length; i++) {
             checking = checkMail(mails[i]);
             if (!checking)
@@ -502,19 +530,19 @@ var configurator = (function () {
         if (checking || mail.value == "") {
             jQuery("#" + name + "_Error").attr("class", "error-block none");
             if (name == "email") {
-                jQuery("#"+name).attr("class","email-notification");
+                email.attr("class","email-notification");
             }
             else {
-                jQuery("#" + name).attr("class", "textbox");
+                email.attr("class", "textbox");
             }
         }
         else {
             jQuery("#" + name + "_Error").attr("class", "error-block");
             if (name == "email") {
-                jQuery("#" + name).attr("class", "email-notification wrong");
+                email.attr("class", "email-notification wrong");
             }
             else {
-                jQuery("#" + name).attr("class", "textbox wrong");
+                email.attr("class", "textbox wrong");
             }
         }
     }
@@ -530,14 +558,18 @@ var configurator = (function () {
     var checkURL = function (element) {
         var regURL = /(((git|ssh|http(s)?)|(git@[\w\.]+))(:\/?)([\w\.\@:\/\-\~]+)(\.git)?)$/;
         var projectId = getProjectId(element);
-        var url = jQuery(projectId).find("[name=projectUrl]").val();
-        if (regURL.test(url)) {
-            jQuery(projectId).find("[name=projectUrl-block]").attr("class", "error-block none");
-            jQuery(projectId).find("[name=projectUrl]").attr("class", "textbox");
+        var project = jQuery(projectId);
+        var urlValue = project.find("[name=projectUrl]").val();
+        var urlBlock = project.find("[name=projectUrl-block]");
+        var url =  project.find("[name=projectUrl]");
+
+        if (regURL.test(urlValue)) {
+            urlBlock.attr("class", "error-block none");
+            url.attr("class", "textbox");
         }
         else {
-            jQuery(projectId).find("[name=projectUrl-block]").attr("class", "error-block");
-            jQuery(projectId).find("[name=projectUrl]").attr("class", "textbox wrong");
+           urlBlock.attr("class", "error-block");
+           url.attr("class", "textbox wrong");
         }
     }
 
@@ -545,21 +577,27 @@ var configurator = (function () {
     var checkPTB = function (element) {
         var regPath = /^([a-zA-Z]:\\)?[^\x00-\x1F"<>\|:\*\?/]+\.[a-zA-Z]{3,5}$/i;
         var projectId = getProjectId(element);
+        var project = jQuery(projectId);
+        var fileBlock = project.find("[name=fileToBuild-block]");
+        var file = project.find("[name=fileToBuild]");
         var path = jQuery(projectId).find("[name=fileToBuild]").val();
         if (regPath.test(path)) {
-            jQuery(projectId).find("[name=fileToBuild-block]").attr("class", "error-block none");
-            jQuery(projectId).find("[name=fileToBuild]").attr("class", "textbox");
+           fileBlock.attr("class", "error-block none");
+           file.attr("class", "textbox");
         }
         else {
-            jQuery(projectId).find("[name=fileToBuild-block]").attr("class", "error-block");
-            jQuery(projectId).find("[name=fileToBuild]").attr("class", "textbox wrong");
+           fileBlock.attr("class", "error-block");
+           file.attr("class", "textbox wrong");
         }
     }
 
     var checkPath = function (element) {
         var projectId = getProjectId(element);
+        var project = jQuery(projectId);
         var path = jQuery(projectId).find("[name="+element.name+"]").val();
         var regPath;
+        var path =  project.find("[name="+element.name+"]");
+        var pathBlock = project.find("[name="+ element.name +"-block]");
 
         switch (element.name) {
             case 'versionFilesPath':
@@ -574,12 +612,12 @@ var configurator = (function () {
         }
 
         if (regPath.test(path) || path == "") {
-            jQuery(projectId).find("[name="+ element.name +"-block]").attr("class", "error-block none");
-            jQuery(projectId).find("[name="+element.name+"]").attr("class", "textbox");
+            pathBlock.attr("class", "error-block none");
+            path.attr("class", "textbox");
         }
         else {
-            jQuery(projectId).find("[name="+ element.name +"-block]").attr("class","error-block");
-            jQuery(projectId).find("[name="+element.name+"]").attr("class", "textbox wrong");
+            pathBlock.attr("class","error-block");
+            path.attr("class", "textbox wrong");
         }
     }
 
@@ -608,15 +646,18 @@ var configurator = (function () {
 
     var validateProject = function (project) {  //TODO !!!!!!!!!!!!!!!!!!!!
         var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|]*$/i;
+        var projectError = jQuery("#projectError");
+        var projectErrorText = jQuery("#projectErrorText");
+        var projectName = jQuery("[name=projectName]");
         if (regPath.test(project.value) || (project.value.length == 0)) {
-            jQuery("#projectError").attr("class", "error-block none");
-            jQuery("#projectErrorText").html("");
-            jQuery("[name=projectName]").attr("class", "textbox");
+            projectError.attr("class", "error-block none");
+            projectErrorText.html("");
+            projectName.attr("class", "textbox");
         }
         else {
-            jQuery("#projectError").attr("class", "error-block");
-            jQuery("#projectErrorText").html(" Not correct name");
-            jQuery("[name=projectName]").attr("class", "textbox wrong");
+            projectError.attr("class", "error-block");
+            projectErrorText.html(" Not correct name");
+            projectName.attr("class", "textbox wrong");
 
         }
     }
@@ -674,7 +715,8 @@ var configurator = (function () {
         getElementNumber:getElementNumber,
         deleteFromHidden:deleteFromHidden,
         closeElement:closeElement,
-        disableOtherConfig:disableOtherConfig
+        disableOtherConfig:disableOtherConfig,
+        emailHelp:emailHelp
 
     };
 })(); //END OF CONFIGURATOR MODULE
