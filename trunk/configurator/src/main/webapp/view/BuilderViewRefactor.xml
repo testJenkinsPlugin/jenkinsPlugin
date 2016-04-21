@@ -20,10 +20,10 @@
                 
                 <j:forEach items="${builders}" var="build" indexVar="i">
                     <j:if test="${build.getValue() == view.getBuilder()}">
-                        <option  name="${build.getKey()+'_'+divID}" selected="selected" value="${build.getValue()}">${build.getValue()}</option>
+                        <option selected="selected" value="${build.getValue()}">${build.getValue()}</option>
                     </j:if>
                     <j:if test="${build.getValue() != view.getBuilder()}">
-                        <option  name="${build.getKey()+'_'+divID}" value="${build.getValue()}">${build.getValue()}</option>
+                        <option value="${build.getValue()}">${build.getValue()}</option>
                     </j:if>
                 </j:forEach>
             </select>
@@ -34,10 +34,10 @@
             <select name="platform">
                 <j:forEach items="${platforms}" var="platform" indexVar="i">
                     <j:if test="${platform == view.getPlatform()}">
-                        <option id="${platform.name()+'_'+divID}" name="${platform.name()+'_'+divID}" selected="selected" value="${platform}">${platform}</option>
+                        <option selected="selected" value="${platform}">${platform}</option>
                     </j:if>
                     <j:if test="${platform != view.getPlatform()}">
-                        <option id="${platform.name()+'_'+divID}" name="${platform.name()+'_'+divID}" value="${platform}">${platform}</option>
+                        <option value="${platform}">${platform}</option>
                     </j:if>
                 </j:forEach>
             </select>
@@ -49,28 +49,28 @@
             </div>
 
             <j:if test="${view.isConfigChecked('RELEASE')}">
-                <input type="checkbox" id="release" checked="checked" name="release"/>Release
+                <input type="checkbox" checked="checked" name="release"/>Release
             </j:if>
             <j:if test="${!view.isConfigChecked('RELEASE')}">
-                <input type="checkbox" id="release" name="release"/>Release
+                <input type="checkbox" name="release"/>Release
             </j:if>
             <br/>
 
             <j:if test="${view.isConfigChecked('DEBUG')}">
-                <input type="checkbox" id="debug" checked="checked" name="debug"/>Debug
+                <input type="checkbox" checked="checked" name="debug"/>Debug
             </j:if>
             <j:if test="${!view.isConfigChecked('DEBUG')}">
-                <input type="checkbox" id="debug" name="debug"/>Debug
+                <input type="checkbox" name="debug"/>Debug
             </j:if>
             <br/>
 
             <j:if test="${view.isConfigChecked('OTHER')}">
-                <input type="checkbox" id="Other_${divID}" name="other" checked="checked" onclick="configurator.disableOtherConfig(this)"/>Other
-                <input type="text" id="userConfig_${divID}" name="userConfig" value="${view.getUserConfig()}" class="other-config" field="userConfig_${divID}"/>
+                <input type="checkbox" name="other" checked="checked" onclick="configurator.disableOtherConfig(this)"/>Other
+                <input type="text" name="userConfig" value="${view.getUserConfig()}" class="other-config" field="userConfig_${divID}"/>
             </j:if>
             <j:if test="${!view.isConfigChecked('OTHER')}">
-                <input type="checkbox" id="Other_${divID}" name="other" onclick="configurator.disableOtherConfig(this)"/>Other
-                <input type="text" id="userConfig_${divID}" name="userConfig" disabled="false" class="other-config" field="userConfig_${divID}"/>
+                <input type="checkbox" name="other" onclick="configurator.disableOtherConfig(this)"/>Other
+                <input type="text" name="userConfig" disabled="false" class="other-config" field="userConfig_${divID}"/>
             </j:if>
         </div>
     </div>

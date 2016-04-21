@@ -187,12 +187,6 @@
     margin-top: 20px;
 }
 
-/*.project-container {
-    margin-top: 35px;
-    width: 655px;
-    border: 3px solid rgba(128, 128, 128, 0.79);
-    padding-left: 30px;
-}*/
 
 div [name='projectToBuild']{
     margin-top: 35px;
@@ -211,23 +205,6 @@ div [name='projectToBuild']{
     float: left;
     width: 202px;
 }
-/*
-
-div.projectToBuild
-{
-
-}
-    div.projectToBuild[input]
-    {
-
-    }
-
-    div.projectToBuild[input].error
-    {
-    color:red;
-    }
-*/
-
 
 .button-container{
     width: 585px;
@@ -392,7 +369,7 @@ div.projectToBuild
     color: #CC0000;
 }
 
-.none{
+.display-none{
     display: none;
 }
 
