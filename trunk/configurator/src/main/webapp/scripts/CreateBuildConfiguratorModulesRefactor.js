@@ -14,6 +14,9 @@ var configurator = (function () {
             loadViews(projectName);
             setContent(projectName);
             jQuery("#projectName").prop('disabled', true);
+            initCommentCheckbox(true);    
+           
+
 
             if (type == "ApproveReject") {
                 jQuery("#titlePage").html("Approve/reject build configuration");
@@ -24,10 +27,12 @@ var configurator = (function () {
                 jQuery('#save').hide();
                 jQuery('#spanReject').show();
             }
+
         }
         else {
             jQuery("#formType").val('CREATE');
             projectNumber = 0;
+            initCommentCheckbox(false);
         }
         buildConfiguration.loadCreateNewBuildConfiguration(function (t) {
             if (jQuery("#formType").val() == "CREATE") {
@@ -52,6 +57,7 @@ var configurator = (function () {
             jQuery("#typeSCM").val(t.responseObject().scm);
             jQuery("#preScript").val(t.responseObject().preScript);
             jQuery("#postScript").val(t.responseObject().postScript);
+            jQuery("#comments").val(t.responseObject().comments);
             setScriptTypeSelect(t.responseObject().scriptType);
 
             if (t.responseObject().rejectionReason != "")
@@ -701,6 +707,30 @@ var configurator = (function () {
         }
     }
 
+    var commentCheckboxChange = function (checkBox) {
+        var comments = jQuery("#comments");
+        if (!checkBox.checked) {
+            comments.hide('100');
+            comments.val("");
+        }
+        else {
+            comments.show('100');
+        }
+    }
+    function initCommentCheckbox(enable){
+        var checkboxComment = jQuery("#isComment"); 
+        var textareaComment = jQuery("#comments");
+        if(enable){
+            checkboxComment.prop('checked',true);
+            textareaComment.attr("class","");
+        } 
+        else{
+            checkboxComment.prop('checked',false);
+            textareaComment.attr("class","display-none");
+        }
+
+    } 
+
 
     return {
         initPage: initPage,
@@ -730,7 +760,8 @@ var configurator = (function () {
         deleteFromHidden:deleteFromHidden,
         closeElement:closeElement,
         disableOtherConfig:disableOtherConfig,
-        emailHelp:emailHelp
+        emailHelp:emailHelp,
+        commentCheckboxChange:commentCheckboxChange
 
     };
 })(); //END OF CONFIGURATOR MODULE

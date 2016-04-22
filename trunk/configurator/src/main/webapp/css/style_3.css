@@ -379,3 +379,8 @@ div [name='projectToBuild']{
 .wrong {
     border: 1px solid red;
 }
+.version{
+    float: right;
+    font-size: 14px;
+
+}

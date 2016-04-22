@@ -296,5 +296,11 @@ public final class BuildConfigurator implements RootAction {
 
     }
 
+    @JavaScriptMethod
+    public String getBuildConfiguratorVersion() {
+        String version = this.getClass().getPackage().getImplementationVersion();
+        return version;
+    }
+
 }
 

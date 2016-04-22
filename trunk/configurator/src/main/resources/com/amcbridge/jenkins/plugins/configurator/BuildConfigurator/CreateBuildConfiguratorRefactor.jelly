@@ -148,6 +148,16 @@
                     <textarea rows="10" cols="60" id="postScript" name="postScript" onblur="configurator.validatePostbuildScript(id)">
                     </textarea>
                 </div>
+                <br/>
+                
+
+
+                <div >
+                    <f:checkbox class="div-label" id="isComment" onclick="configurator.commentCheckboxChange(this)" type="checkbox" title="Comments"/>
+                          <br/>    
+                          <label class="div-label"/>     
+                    <textarea rows="10" cols="60" id="comments" name="comments"></textarea>
+                </div>
 
                 <div class="button-container">
                     <input type="submit" onclick="return configurator.isValidForm();" class="button confirm" name="save" id="save" value="Save"/>

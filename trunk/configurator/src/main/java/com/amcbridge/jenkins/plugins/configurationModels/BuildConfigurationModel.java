@@ -26,6 +26,15 @@ public class BuildConfigurationModel {
     private List<ProjectToBuildModel> projectToBuild;
     private String[] scripts;
     private String[] buildMachineConfiguration;
+    private String comments;
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
 
     public BuildConfigurationModel() {
         initCreator();
