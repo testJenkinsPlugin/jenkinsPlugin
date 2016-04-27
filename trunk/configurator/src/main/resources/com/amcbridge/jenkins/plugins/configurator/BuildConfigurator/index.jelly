@@ -58,7 +58,7 @@
                 </thead>
                 <tbody>
                     <j:forEach items="${it.getAllConfigurations()}" var="configs" indexVar="i">
-                        <j:set var="isCreator" value="${it.isCurrentUserCreator(configs.getProjectName())}"/>
+                        <j:set var="isCreator" value="${it.isCurrentUserHasAccess(configs.getProjectName())}"/>
                         <tr height="25">
                              <j:choose>
                                 <j:when test="${it.isJobCreated(configs.getProjectName())}">

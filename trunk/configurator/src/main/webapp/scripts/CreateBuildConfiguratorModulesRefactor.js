@@ -59,6 +59,11 @@ var configurator = (function () {
             jQuery("#postScript").val(t.responseObject().postScript);
             jQuery("#comments").val(t.responseObject().comments);
             setScriptTypeSelect(t.responseObject().scriptType);
+            var usersList = t.responseObject().usersList; 
+            var isNewConfiguration = false;
+             for (var i = 0; i < usersList.length; i++) {
+               addUser(isNewConfiguration, usersList[i]);
+            }
 
             if (t.responseObject().rejectionReason != "")
                 jQuery("#reasonLabel").html("Reason of rejection:  " + t.responseObject().rejectionReason);
@@ -732,6 +737,48 @@ var configurator = (function () {
     } 
 
 
+    var deleteUser = function (element){
+        jQuery(element).closest('div').remove();
+     }
+
+     var addUserToNewConfig = function(){
+        addUser(true,null);
+     }
+     function addUser(isToNewConfig, name) {
+        var div;
+        var userNameInput;
+        var button;
+        var userNameValue;
+        var addUserField;
+        if(isToNewConfig){
+            addUserField = jQuery("#addUserField");
+            userNameValue = addUserField.val();
+            addUserField.val("");
+        }
+        else{
+            userNameValue = name;
+        }
+        div = jQuery('<div/>');
+
+        button =  jQuery('<input/>', {
+        type: "button",
+        val: "remove",
+        click: function() {
+        configurator.deleteUser(this);
+        } });
+
+        userNameInput = jQuery('<input/>', {
+        val: userNameValue,
+        class: "user-field",
+        name: "usersList"});
+
+        jQuery(userNameInput).appendTo(div);
+        jQuery(button).appendTo(div);
+        jQuery(div).appendTo('#usersList');
+
+    }
+    
+
     return {
         initPage: initPage,
         addView: addView,
@@ -761,7 +808,10 @@ var configurator = (function () {
         closeElement:closeElement,
         disableOtherConfig:disableOtherConfig,
         emailHelp:emailHelp,
-        commentCheckboxChange:commentCheckboxChange
+        commentCheckboxChange:commentCheckboxChange,
+        addUser:addUser,
+        deleteUser:deleteUser,
+        addUserToNewConfig:addUserToNewConfig
 
     };
 })(); //END OF CONFIGURATOR MODULE

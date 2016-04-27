@@ -130,7 +130,7 @@ public class BuildConfigurationManager {
 
         File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
         for (File directory : directories) {
-            if (!isCurrentUserAdministrator() && !isCurrentUserCreatorOfConfiguration(directory.getName())) {
+            if (!isCurrentUserHasAccess(directory.getName())) {
                 continue;
             }
             configs.add(load(directory.getName()));
@@ -210,8 +210,20 @@ public class BuildConfigurationManager {
         mail.sendMail(message);
     }
 
-    public static Boolean isCurrentUserCreatorOfConfiguration(String name) throws IOException, JAXBException {
-        return load(name).getCreator().equals(getCurrentUserID());
+    public static Boolean isCurrentUserHasAccess(String name) throws IOException {
+        boolean isUserAdmin = isCurrentUserAdministrator();
+        boolean isUserInAccessList = false;
+
+        if (isUserAdmin) {
+            return true;
+        }
+        BuildConfigurationModel configs = load(name);
+        List<String> usersList = configs.getUsersList();
+        if (usersList != null) {
+            isUserInAccessList = configs.getUsersList().contains(getCurrentUserID());
+        }
+        boolean isCurrentUserCreator = configs.getCreator().equals(getCurrentUserID());
+        return isUserInAccessList || isCurrentUserCreator;
     }
 
     public static String[] getPath(String value) {
@@ -243,10 +255,11 @@ public class BuildConfigurationManager {
     }
 
     public static BuildConfigurationModel getConfiguration(String name) throws IOException, JAXBException {
-        BuildConfigurationModel currentConfig = load(name);
-        if (!isCurrentUserAdministrator() && !isCurrentUserCreatorOfConfiguration(name)) {
+
+        if (!isCurrentUserHasAccess(name)) {
             return null;
         }
+        BuildConfigurationModel currentConfig = load(name);
         return currentConfig;
     }
 

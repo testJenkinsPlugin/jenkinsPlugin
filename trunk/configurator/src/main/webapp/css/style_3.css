@@ -384,3 +384,13 @@ div [name='projectToBuild']{
     font-size: 14px;
 
 }
+.user-field, .add-user-field{
+    margin-left: 120px;
+    margin-top: 10px;
+    margin-right: 10;
+    margin-bottom: 10;
+    width: 180;
+}
+    .add-user-field{
+        margin-left: 0;
+    }

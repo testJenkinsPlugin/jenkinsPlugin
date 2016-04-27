@@ -27,6 +27,7 @@ public class BuildConfigurationModel {
     private String[] scripts;
     private String[] buildMachineConfiguration;
     private String comments;
+    private List<String> usersList;
 
     public String getComments() {
         return comments;
@@ -174,5 +175,13 @@ public class BuildConfigurationModel {
 
     public void setScriptType(String scriptType) {
         this.scriptType = scriptType;
+    }
+
+    public List<String> getUsersList() {
+        return usersList;
+    }
+
+    public void setUsersList(List<String> usersList) {
+        this.usersList = usersList;
     }
 }

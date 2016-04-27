@@ -218,8 +218,9 @@ public final class BuildConfigurator implements RootAction {
         BuildConfigurationManager.restoreConfiguration(name);
     }
 
-    public static Boolean isCurrentUserCreator(String name) throws IOException, JAXBException {
-        return BuildConfigurationManager.isCurrentUserCreatorOfConfiguration(name);
+    @JavaScriptMethod
+    public static Boolean isCurrentUserHasAccess(String name) throws IOException, JAXBException {
+        return BuildConfigurationManager.isCurrentUserHasAccess(name);
     }
 
     @JavaScriptMethod
