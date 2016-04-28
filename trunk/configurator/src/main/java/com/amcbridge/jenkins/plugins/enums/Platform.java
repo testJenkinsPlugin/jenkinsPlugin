@@ -8,7 +8,8 @@ public enum Platform {
     WIN_32("Win32"),
     x86_64("x86_64"),
     i386("i386"),
-    ppc("ppc");
+    ppc("ppc"),
+    mixedPlatforms("Mixed Platforms");
 
     private String platformValue;
 
