@@ -606,7 +606,7 @@ var configurator = (function () {
         var fileBlock = project.find("[name=fileToBuild-block]");
         var file = project.find("[name=fileToBuild]");
         var path = jQuery(projectId).find("[name=fileToBuild]").val();
-        if (regPath.test(path)) {
+        if (regPath.test(path) || path.length==0) {
            fileBlock.attr("class", "error-block display-none");
            file.attr("class", "textbox");
         }
