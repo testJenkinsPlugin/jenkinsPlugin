@@ -172,6 +172,7 @@
     </build>
 <!--                <profiles>
                     <profile>
+                    
                         <id>jenkins_debug</id>
                         <build>
                             <directory>work/plugins</directory>
