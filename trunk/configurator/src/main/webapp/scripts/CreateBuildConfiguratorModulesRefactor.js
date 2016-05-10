@@ -226,7 +226,6 @@ var configurator = (function () {
     }
 
 
-
     var deleteFromSelect = function (selectionBox, event) {
         if (event.which == 46){
         var valueToDelete = jQuery(selectionBox).find('option:selected').val();
@@ -452,11 +451,11 @@ var configurator = (function () {
         divToDelete.remove();
     }
 
-    var addPath = function (button) {
+    var addArtifactPath = function (button) {
         var projectId = getProjectId(button);
         var project = jQuery(projectId); 
         var pathValue = project.find("[name=pathToArtefacts]").val();
-        var error = project.find("[name=project-to-build-block]").attr("class");
+        var error = project.find("[name=pathToArtefacts-block]").attr("class");
         var pathBlock = project.find("[name=pathToArtefacts-block]");
 
         if ((pathValue.length <= 0) || (error == "error-block")) {
@@ -631,6 +630,11 @@ var configurator = (function () {
             case 'localDirectoryPath':
                 regPath = /(^\.[A-Za-z0-9]*$)|^(?:(?!\.)[^\\/:*?"<>|\r\n]+\/?)*$/;				// Match only one . or valid folder structure (zero-length - ok)
                 break;
+
+            case 'pathToArtefacts':
+                regPath = /^(?![*?])(?:[^\\/:"*?<>|\r\n]+?(?:\/?|\/\*{0,2})*?|\/\*\.\*$)*?$/;// Allow Ant wildcards valid folder/file structure only
+                break;
+
             default:
                 regPath = /(.)*$/;
                 break;
@@ -792,7 +796,7 @@ var configurator = (function () {
         rejectDiv: rejectDiv,
         rejectionSubmit: rejectionSubmit,
         setFormResultDialog: setFormResultDialog,
-        addPath: addPath,
+        addArtifactPath: addArtifactPath,
         addPathFiles: addPathFiles,
         imageHelp: imageHelp,
         validateMail: validateMail,

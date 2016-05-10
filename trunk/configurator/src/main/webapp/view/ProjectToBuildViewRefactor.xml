@@ -106,7 +106,7 @@
             </div>
             <div>
                 <input type="text" name="pathToArtefacts" onblur="configurator.checkPath(this)" class="textbox"/>
-                <input type="button" onclick="configurator.addPath(this)" class="add-button" value="+" name = "addProject"/>
+                <input type="button" onclick="configurator.addArtifactPath(this)" class="add-button" value="+" name = "addProject"/>
                 <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(this)" class="image" name="pathToArtefacts-help"/>
             </div>
             <div error="artifact_error" class="error-block display-none" name="pathToArtefacts-block">
