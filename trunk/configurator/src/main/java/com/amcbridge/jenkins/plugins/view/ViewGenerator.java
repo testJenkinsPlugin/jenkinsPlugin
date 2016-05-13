@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import com.amcbridge.jenkins.plugins.configurationModels.UserAccessModel;
 import com.amcbridge.jenkins.plugins.xstreamElements.BuilderLoader;
+import com.amcbridge.jenkins.plugins.xstreamElements.PlatformLoader;
 import jenkins.model.Jenkins;
 import org.apache.commons.jelly.JellyContext;
 import org.apache.commons.jelly.JellyException;
@@ -40,9 +41,8 @@ public class ViewGenerator {
         viewTemplatePath = viewTemplatePath.replaceAll(" ", HTML_SPACE);
         jcontext.setVariable("divID", id);
         id++;
-
         jcontext.setVariable("builders", builderLoader.getBuilders());
-        jcontext.setVariable("platforms", Platform.values());
+        jcontext.setVariable("platforms", (new PlatformLoader()).getPlatformList());
         jcontext.setVariable("configuration", Configuration.values());
 
         result.setViewId(id);
@@ -84,7 +84,7 @@ public class ViewGenerator {
             throws UnsupportedEncodingException, JellyException {
 
         ProjectToBuildView result = new ProjectToBuildView();
-        if (userConfig.size() == 0) {
+        if (userConfig == null || userConfig.size() == 0) {
             result.setHtml(BuildConfigurationManager.STRING_EMPTY);
             return result;
         }
@@ -124,7 +124,7 @@ public class ViewGenerator {
 
         jcontext.setVariable("sourceId", sourceId);
         jcontext.setVariable("builders", builderLoader.getBuilders());
-        jcontext.setVariable("platforms", Platform.values());
+        jcontext.setVariable("platforms", (new PlatformLoader()).getPlatformList());
         jcontext.setVariable("configuration", Configuration.values());
         jcontext.setVariable("credentialsList", ProjectToBuildModel.getCredentialsList());
         jcontext.setVariable("view", new ProjectToBuildModel());
@@ -153,7 +153,7 @@ public class ViewGenerator {
 
         jcontext.setVariable("generator", this);
         jcontext.setVariable("builders", builderLoader.getBuilders());
-        jcontext.setVariable("platforms", Platform.values());
+        jcontext.setVariable("platforms", (new PlatformLoader()).getPlatformList());
         jcontext.setVariable("configuration", Configuration.values());
         jcontext.setVariable("credentialsList", ProjectToBuildModel.getCredentialsList());
         jcontext.setVariable("isAdmin", BuildConfigurationManager.isCurrentUserAdministrator());
