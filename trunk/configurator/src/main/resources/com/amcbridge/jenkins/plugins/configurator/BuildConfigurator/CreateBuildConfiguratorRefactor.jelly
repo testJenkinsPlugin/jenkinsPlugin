@@ -164,13 +164,12 @@
                        <label>User's with access to configuration:</label><br/><br/>
                         <label class="div-label">add user:</label>
                         <input type="text" id="addUserField"  class="add-user-field"/>
-                        <input type="button" class="add-button" id="addUserButton" onclick="configurator.addUserToNewConfig();" value="+"/>
+                        <input type="button" class="add-button" id="addUserButton" onclick="configurator.addNewUserAccess();" value="+"/>
                     </div>
                 
 
 
                 <div id="usersList">
-                    
                 </div>
 
                 <div class="button-container">

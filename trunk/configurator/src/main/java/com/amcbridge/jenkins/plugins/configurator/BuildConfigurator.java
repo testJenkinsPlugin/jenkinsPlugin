@@ -166,6 +166,33 @@ public final class BuildConfigurator implements RootAction {
     }
 
     @JavaScriptMethod
+    public ProjectToBuildView getUserAccessView()
+            throws UnsupportedEncodingException, JellyException {
+        if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
+            loadCreateNewBuildConfiguration();
+        }
+        return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
+                .getUserAccessView();
+    }
+
+    @JavaScriptMethod
+    public ProjectToBuildView loadUserAccessView(String projectName) throws UnsupportedEncodingException, JellyException {
+                BuildConfigurationModel conf = null;
+                try {
+                    conf = BuildConfigurationManager.load(projectName);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
+            loadCreateNewBuildConfiguration();
+        }
+
+        return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
+                .getUserAccessView(conf.getUserWithAccess());
+    }
+
+    @JavaScriptMethod
     public ProjectToBuildView getBuilderView()
             throws UnsupportedEncodingException, JellyException {
         if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
@@ -175,12 +202,6 @@ public final class BuildConfigurator implements RootAction {
         return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                 .getBuilderView();
     }
-
- /*   @JavaScriptMethod
-    public static void deleteNotUploadFile(String[] files) {
-        String pathFolder = BuildConfigurationManager.getUserContentFolder();
-        BuildConfigurationManager.deleteFiles(files, pathFolder);
-    }*/
 
     @JavaScriptMethod
     public void setForDeletion(String name) throws AddressException,
@@ -302,6 +323,8 @@ public final class BuildConfigurator implements RootAction {
         String version = this.getClass().getPackage().getImplementationVersion();
         return version;
     }
+
+
 
 }
 

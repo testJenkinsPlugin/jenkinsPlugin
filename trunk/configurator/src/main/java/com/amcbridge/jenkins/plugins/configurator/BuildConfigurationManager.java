@@ -1,6 +1,7 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.configurationModels.UserAccessModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
 import com.amcbridge.jenkins.plugins.xstreamElements.SCM;
@@ -218,9 +219,9 @@ public class BuildConfigurationManager {
             return true;
         }
         BuildConfigurationModel configs = load(name);
-        List<String> usersList = configs.getUsersList();
+        List<UserAccessModel> usersList = configs.getUserWithAccess();
         if (usersList != null) {
-            isUserInAccessList = configs.getUsersList().contains(getCurrentUserID());
+            isUserInAccessList = configs.getUserWithAccess().contains(new UserAccessModel(getCurrentUserID()));
         }
         boolean isCurrentUserCreator = configs.getCreator().equals(getCurrentUserID());
         return isUserInAccessList || isCurrentUserCreator;
@@ -454,4 +455,5 @@ public class BuildConfigurationManager {
         }
         return credentialItemList;
     }
+
 }

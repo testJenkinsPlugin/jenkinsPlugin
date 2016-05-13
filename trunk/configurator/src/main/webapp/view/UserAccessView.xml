@@ -1,0 +1,19 @@
+<?jelly escape-by-default='true' encoding='UTF-8'?>
+
+<j:jelly xmlns:j="jelly:core"
+         xmlns:st="jelly:stapler"
+         xmlns:d="jelly:define"
+         xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson"
+         xmlns:f="/lib/form"
+         xmlns:i="jelly:fmt"
+         xmlns:p="/lib/hudson/project"
+         xmlns:g="glide"
+>
+<div name="userWithAccess">
+    <input type="text" name = "userName" class="user-field" value="${userName}"/>
+    <input type="button" value="remove" onclick="configurator.deleteUser(this);"/>
+</div>
+    <j:forEach items="s" var="config" indexVar="i">
+    </j:forEach>
+</j:jelly>

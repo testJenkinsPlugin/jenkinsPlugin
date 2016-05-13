@@ -27,7 +27,7 @@ public class BuildConfigurationModel {
     private String[] scripts;
     private String[] buildMachineConfiguration;
     private String comments;
-    private List<String> usersList;
+    private List<UserAccessModel> userWithAccess;
 
     public String getComments() {
         return comments;
@@ -177,11 +177,11 @@ public class BuildConfigurationModel {
         this.scriptType = scriptType;
     }
 
-    public List<String> getUsersList() {
-        return usersList;
+    public List<UserAccessModel> getUserWithAccess() {
+        return userWithAccess;
     }
 
-    public void setUsersList(List<String> usersList) {
-        this.usersList = usersList;
+    public void setUserWithAccess(List<UserAccessModel> userWithAccess) {
+        this.userWithAccess = userWithAccess;
     }
 }

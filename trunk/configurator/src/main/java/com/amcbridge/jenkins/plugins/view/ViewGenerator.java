@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Vector;
 
+import com.amcbridge.jenkins.plugins.configurationModels.UserAccessModel;
 import com.amcbridge.jenkins.plugins.xstreamElements.BuilderLoader;
 import jenkins.model.Jenkins;
 import org.apache.commons.jelly.JellyContext;
@@ -21,6 +22,7 @@ public class ViewGenerator {
     private static final String PROJECT_TO_BUILD_VIEW = "/plugins/build-configurator/view/ProjectToBuildViewRefactor.xml";
     private static final String BUILDER_VIEW = "/plugins/build-configurator/view/BuilderViewRefactor.xml";
     private static final String HTML_SPACE = "%20";
+    private static final String USERACCESS_VIEW_PATH = "/plugins/build-configurator/view/UserAccessView.xml";
 
     private Integer id;
     private BuilderLoader builderLoader;
@@ -61,6 +63,46 @@ public class ViewGenerator {
         jcontext.setVariable("view", config);
         return setContextForBuilderView(jcontext);
     }
+
+    private ProjectToBuildView setContextForUserAccessView(JellyContext jcontext)
+            throws UnsupportedEncodingException, JellyException {
+        ProjectToBuildView result = new ProjectToBuildView();
+        String viewTemplatePath = Jenkins.getInstance().getRootDir() + USERACCESS_VIEW_PATH;
+        viewTemplatePath = viewTemplatePath.replaceAll(" ", HTML_SPACE);
+        result.setHtml(launchScript(jcontext, viewTemplatePath));
+
+        return result;
+    }
+
+
+    public ProjectToBuildView getUserAccessView()
+            throws UnsupportedEncodingException, JellyException {
+        return setContextForUserAccessView(new JellyContext());
+    }
+
+    public ProjectToBuildView getUserAccessView(List<UserAccessModel> userConfig)
+            throws UnsupportedEncodingException, JellyException {
+
+        ProjectToBuildView result = new ProjectToBuildView();
+        if (userConfig.size() == 0) {
+            result.setHtml(BuildConfigurationManager.STRING_EMPTY);
+            return result;
+        }
+
+        String viewTemplatePath = Jenkins.getInstance().getRootDir() + USERACCESS_VIEW_PATH;
+        viewTemplatePath = viewTemplatePath.replaceAll(" ", HTML_SPACE);
+        String html = "";
+
+        JellyContext jcontext = new JellyContext();
+        for (int i = 0; i < userConfig.size(); i++) {
+            jcontext.setVariable("userName", userConfig.get(i).getUserName());
+            html += launchScript(jcontext, viewTemplatePath);
+        }
+        result.setHtml(html);
+        return result;
+    }
+
+
 
     public ProjectToBuildView getProjectToBuildlView()
             throws UnsupportedEncodingException, JellyException {
@@ -134,6 +176,8 @@ public class ViewGenerator {
         result.setHtml(html);
         return result;
     }
+
+
 
     private String launchScript(JellyContext jcontext, String viewTemplatePath)
             throws UnsupportedEncodingException, JellyException {

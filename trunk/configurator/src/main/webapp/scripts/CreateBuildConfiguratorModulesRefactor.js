@@ -12,6 +12,7 @@ var configurator = (function () {
             type = getParameterValue("type");
             jQuery("#formType").val(type.toUpperCase());
             loadViews(projectName);
+            loadUsers(projectName);
             setContent(projectName);
             jQuery("#projectName").prop('disabled', true);
             initCommentCheckbox(true);    
@@ -61,10 +62,7 @@ var configurator = (function () {
             setScriptTypeSelect(t.responseObject().scriptType);
             var usersList = t.responseObject().usersList; 
             var isNewConfiguration = false;
-             for (var i = 0; i < usersList.length; i++) {
-               addUser(isNewConfiguration, usersList[i]);
-            }
-
+     
             if (t.responseObject().rejectionReason != "")
                 jQuery("#reasonLabel").html("Reason of rejection:  " + t.responseObject().rejectionReason);
 
@@ -215,6 +213,20 @@ var configurator = (function () {
             });
     }
 
+    var loadUsers = function (projectName){
+
+        buildConfiguration.loadUserAccessView(projectName,
+            function (t) {
+                if (t.responseObject().html.length == 0) {
+                    return;
+                }
+                var iDiv = document.createElement("div");
+                iDiv.innerHTML = t.responseObject().html;
+                jQuery("#usersList").append(iDiv); 
+            });
+
+    }
+
     var addBuilder = function (projectId) {
     
         buildConfiguration.getBuilderView(
@@ -223,6 +235,26 @@ var configurator = (function () {
                 iDiv.innerHTML = t.responseObject().html;
                 jQuery(projectId).find("[class=builders]").append(iDiv);
             });
+    }
+
+
+    var addNewUserAccess = function() {
+
+        var addUserField = jQuery("#addUserField");
+        var uName = addUserField.val();
+        addUserAccess(uName);
+        addUserField.val("");
+
+    }
+    var addUserAccess = function(uName) {
+        buildConfiguration.getUserAccessView(
+            function (t) {
+               var iDiv = document.createElement("div");
+                iDiv.innerHTML = t.responseObject().html;
+                jQuery(iDiv).find("[name=userName]").val(uName);
+                jQuery("#usersList").append(iDiv); 
+            
+        });
     }
 
 
@@ -744,43 +776,6 @@ var configurator = (function () {
     var deleteUser = function (element){
         jQuery(element).closest('div').remove();
      }
-
-     var addUserToNewConfig = function(){
-        addUser(true,null);
-     }
-     function addUser(isToNewConfig, name) {
-        var div;
-        var userNameInput;
-        var button;
-        var userNameValue;
-        var addUserField;
-        if(isToNewConfig){
-            addUserField = jQuery("#addUserField");
-            userNameValue = addUserField.val();
-            addUserField.val("");
-        }
-        else{
-            userNameValue = name;
-        }
-        div = jQuery('<div/>');
-
-        button =  jQuery('<input/>', {
-        type: "button",
-        val: "remove",
-        click: function() {
-        configurator.deleteUser(this);
-        } });
-
-        userNameInput = jQuery('<input/>', {
-        val: userNameValue,
-        class: "user-field",
-        name: "usersList"});
-
-        jQuery(userNameInput).appendTo(div);
-        jQuery(button).appendTo(div);
-        jQuery(div).appendTo('#usersList');
-
-    }
     
 
     return {
@@ -813,10 +808,9 @@ var configurator = (function () {
         disableOtherConfig:disableOtherConfig,
         emailHelp:emailHelp,
         commentCheckboxChange:commentCheckboxChange,
-        addUser:addUser,
         deleteUser:deleteUser,
-        addUserToNewConfig:addUserToNewConfig
-
+        addUserAccess:addUserAccess,
+        addNewUserAccess:addNewUserAccess
     };
 })(); //END OF CONFIGURATOR MODULE
 window.onload = function () {
