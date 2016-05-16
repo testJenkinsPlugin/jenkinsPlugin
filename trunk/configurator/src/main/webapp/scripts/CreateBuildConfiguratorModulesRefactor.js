@@ -79,7 +79,8 @@ var configurator = (function () {
             for (var i = 0; i < bmcValue.length; i++) {
                 if (jQuery(bmcValue[i]) != null) {
                     document.getElementById(bmcValue[i]).checked = true;
-                    addToHidden("build_machine_configuration", bmcValue[i]);
+                    var isBelongToProject = false;
+                    addToHidden("build_machine_configuration", bmcValue[i], null, isBelongToProject);
                 }
             }
 
@@ -326,20 +327,31 @@ var configurator = (function () {
         else if(selectionBox.name == "vFiles"){
             hiddenInputName="versionFiles";
         }
-
-        addToHidden(hiddenInputName, path, selectionBox);
+        var isBelongToProject = true;
+        addToHidden(hiddenInputName, path, selectionBox, isBelongToProject);
     }
 
 
-    function addToHidden(hiddenInputName, value, element) {
+    function addToHidden(hiddenInputName, value, element, isBelongToProject) {
         var projectId = getProjectId(element);
-        var hiddenValue = jQuery(projectId).find("[name=" + hiddenInputName +"][type=hidden]").val();
         var project = jQuery(projectId);
-        if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1) {
-            project.find("[name="+hiddenInputName+"][type=hidden]").val(hiddenValue + ";" + value + ";");
+        var hiddenValue;
+
+        var hiddenField; 
+        if (isBelongToProject){
+            hiddenField = project.find("[name=" + hiddenInputName +"][type=hidden]");
         }
         else {
-            project.find("[name="+hiddenInputName+"][type=hidden]").val(hiddenValue + value + ";");
+            hiddenField = jQuery("[name=" + hiddenInputName +"][type=hidden]");   
+        }
+
+        hiddenValue = hiddenField.val();
+
+        if (hiddenValue.length > 0 && hiddenValue.lastIndexOf(";") != hiddenValue.length - 1) {
+            hiddenField.val(hiddenValue + ";" + value + ";");
+        }
+        else {
+            hiddenField.val(hiddenValue + value + ";");
         }
     }
 
@@ -724,8 +736,10 @@ var configurator = (function () {
     }
 
     var bMCChange = function (checkBox) {
+        var checkBoxValue = jQuery(checkBox).val();
         if (checkBox.checked) {
-            addToHidden("build_machine_configuration", checkBox.id);
+            var isBelongToProject=false;
+            addToHidden("build_machine_configuration", checkBoxValue, checkBox, isBelongToProject);
         }
         if (!checkBox.checked) {
             deleteFromHidden(document.getElementById("build_machine_configuration"), checkBox.id);
