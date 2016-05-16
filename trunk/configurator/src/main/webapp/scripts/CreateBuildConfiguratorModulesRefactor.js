@@ -706,7 +706,7 @@ var configurator = (function () {
     }
 
     var validateProject = function (project) {  //TODO !!!!!!!!!!!!!!!!!!!!
-        var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|]*$/i;
+        var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|\.\ ]*$/i;
         var projectError = jQuery("#projectError");
         var projectErrorText = jQuery("#projectErrorText");
         var projectName = jQuery("[name=projectName]");
