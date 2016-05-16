@@ -763,7 +763,7 @@ var configurator = (function () {
         var textareaComment = jQuery("#comments");
         if(enable){
             checkboxComment.prop('checked',true);
-            textareaComment.attr("class","");
+            textareaComment.removeClass();
         } 
         else{
             checkboxComment.prop('checked',false);
