@@ -287,8 +287,8 @@ var configurator = (function () {
     var emailCheckBoxChange = function (checkBox) {
         var email = jQuery("#email");
         if (!checkBox.checked) {
-            jQuery("#email_Error").attr('class', 'error-block display-none');
-            email.attr('class', "email-notification");
+            jQuery("#email_Error").addClass('display-none');
+            email.removeClass('wrong');
             email.prop("disabled", true);
             email.val("");
         }
@@ -360,7 +360,7 @@ var configurator = (function () {
         var project = jQuery(projectId); 
         var versionFilesPath = project.find("[name=versionFilesPath]");
         if (checkBox.checked) {
-            versionFilesPath.attr("class", "textbox");
+            versionFilesPath.removeClass('hidden');
             versionFilesPath.val("");
             project.find("[name=versionFiles]").val("");
             project.find("[name=addVersion]").css("visibility", "visible");
@@ -373,7 +373,7 @@ var configurator = (function () {
 
             var selectionElement = jQuery(projectId).find("[name=vFiles]")[0];
             clearSelectionGroup(selectionElement);
-            versionFilesPath.attr("class", "textbox hidden");
+            versionFilesPath.addClass('hidden');
             project.find("[name=addVersion]").css("visibility", "hidden");
             project.find("[name=vFiles]").css("visibility", "hidden");
             project.find("[dir=fieldSetDiv]").hide();
@@ -390,7 +390,11 @@ var configurator = (function () {
         var patBuild = jQuery("[name=fileToBuild]");
         if (projectName.value == "") {
             jQuery("#projectErrorText").html(" Please, enter your project name");
-            jQuery("#projectError").attr("class", "error-block empty");
+            jQuery("#projectError").removeClass('display-none');
+            jQuery("#projectError").addClass('empty');
+            
+            
+
             projectName.focus();
             return false;
         }
@@ -436,7 +440,8 @@ var configurator = (function () {
             }
             else {
                 jQuery("#fieldHelp").html("Configuration with name '" + projectName.value + "' already exists. Please select another name.");
-                jQuery("#fieldHelp").attr("class", "field-help-error");
+                jQuery("#fieldHelp").removeClass('display-none');
+
             }
         });
         return false;
@@ -455,8 +460,8 @@ var configurator = (function () {
     }
 
     var rejectDiv = function () {
-        jQuery("#rejectDiv").attr("class", "reject-div help-top");
-        jQuery("#overlay").attr("class" ,(scroll != 0 ? 'overlay help-top' : 'overlay'));
+        jQuery("#rejectDiv").removeClass('display-none');
+        jQuery("#overlay").removeClass('display-none');
         jQuery("#textReject").focus();
     }
 
@@ -509,11 +514,11 @@ var configurator = (function () {
 
         if (!checkPathRepeat(pathValue, selectionBox)) {
             addToSelectionBox(selectionBox, pathValue);
-            pathBlock.attr("class", "error-block display-none");
+            pathBlock.addClass('display-none');
             project.find("[name=pathToArtefacts]").val("");
         }
         else {
-            pathBlock.attr("class", "error-block");
+            pathBlock.removeClass('display-none');
             project.find("[error=artifact_error_exp]").html(" This path already exists");
             return;
         }
@@ -535,7 +540,7 @@ var configurator = (function () {
             project.find("[name=versionFilesPath]").val("");
         }
         else {
-            project.find("[error=v_files_error]").attr("class", "error-block");
+            project.find("[error=v_files_error]").removeClass('display-none');
             project.find("[error=v_files_error_exp]").html(" This path already exists");
              }
     }
@@ -558,13 +563,13 @@ var configurator = (function () {
         var helpBlock = jQuery("#" + emailImageHelpName + "-block");
         var help = jQuery("#" + emailImageHelpName + "-text");    
         if (helpBlock.attr("class") == "help-view") {
-            helpBlock.attr("class", "help-view display-none");
-            help.attr("class", "helptext display-none");
-
+            helpBlock.addClass('display-none');
+            help.addClass('display-none');
         }
         else {
-            helpBlock.attr("class", "help-view");
-            help.attr("class", "helptext");
+
+            helpBlock.removeClass('display-none');
+            help.removeClass('display-none');
         }    
             
         }
@@ -575,12 +580,13 @@ var configurator = (function () {
         var helpBlock = project.find("[name="+element.name+"-block]"); 
         var help =  project.find("[name="+element.name+"-text]");
         if (helpBlock.attr("class") == "help-view") {
-            helpBlock.attr("class", "help-view display-none");
-            help.attr("class", "helptext display-none");
+
+            helpBlock.addClass('display-none');
+            help.addClass('display-none');
              }
         else {
-            helpBlock.attr("class", "help-view");
-            help.attr("class", "helptext");
+            helpBlock.removeClass('display-none');
+            help.removeClass('display-none');
         }
     }
 
@@ -596,23 +602,13 @@ var configurator = (function () {
                 break;
         }
         if (checking || mail.value == "") {
-            jQuery("#" + name + "_Error").attr("class", "error-block display-none");
-            if (name == "email") {
-                email.attr("class","email-notification");
-            }
-            else {
-                email.attr("class", "textbox");
-            }
+            jQuery("#" + name + "_Error").addClass('display-none');
+                email.removeClass('wrong');
         }
         else {
-            jQuery("#" + name + "_Error").attr("class", "error-block");
-            if (name == "email") {
-                email.attr("class", "email-notification wrong");
+            jQuery("#" + name + "_Error").removeClass('display-none');
+            email.addClass("wrong");
             }
-            else {
-                email.attr("class", "textbox wrong");
-            }
-        }
     }
 
     function checkMail(mailp) {
@@ -632,12 +628,13 @@ var configurator = (function () {
         var url =  project.find("[name=projectUrl]");
 
         if (regURL.test(urlValue)) {
-            urlBlock.attr("class", "error-block display-none");
-            url.attr("class", "textbox");
+            urlBlock.addClass('display-none');
+            url.removeClass('wrong');
         }
         else {
-           urlBlock.attr("class", "error-block");
-           url.attr("class", "textbox wrong");
+
+            urlBlock.removeClass('display-none');
+            url.addClass('wrong');
         }
     }
 
@@ -650,12 +647,13 @@ var configurator = (function () {
         var file = project.find("[name=fileToBuild]");
         var path = jQuery(projectId).find("[name=fileToBuild]").val();
         if (regPath.test(path) || path.length==0) {
-           fileBlock.attr("class", "error-block display-none");
-           file.attr("class", "textbox");
+
+        fileBlock.addClass('display-none');
+        file.removeClass('wrong');
         }
         else {
-           fileBlock.attr("class", "error-block");
-           file.attr("class", "textbox wrong");
+        fileBlock.removeClass('display-none');
+        file.addClass('wrong');
         }
     }
 
@@ -685,12 +683,13 @@ var configurator = (function () {
         }
 
         if (regPath.test(pathValue) || path == "") {
-            pathBlock.attr("class", "error-block display-none");
-            path.attr("class", "textbox");
+                 pathBlock.addClass('display-none');
+            path.removeClass('wrong');
         }
         else {
-            pathBlock.attr("class","error-block");
-            path.attr("class", "textbox wrong");
+
+            pathBlock.removeClass('display-none');
+            path.addClass('wrong');
         }
     }
 
@@ -712,8 +711,8 @@ var configurator = (function () {
     }
 
     var CancelReject = function () {
-        jQuery("#rejectDiv").attr("class","div-none");
-        jQuery("#overlay").attr("class", "div-none");
+        jQuery("#rejectDiv").addClass('display-none');
+        jQuery("#overlay").addClass('display-none');
         jQuery("#textReject").val("");
     }
 
@@ -723,14 +722,16 @@ var configurator = (function () {
         var projectErrorText = jQuery("#projectErrorText");
         var projectName = jQuery("[name=projectName]");
         if (regPath.test(project.value) || (project.value.length == 0)) {
-            projectError.attr("class", "error-block display-none");
+            
+            projectError.addClass('display-none');
             projectErrorText.html("");
-            projectName.attr("class", "textbox");
+            projectName.removeClass('wrong');
         }
         else {
-            projectError.attr("class", "error-block");
+
+            projectError.removeClass('display-none');
             projectErrorText.html(" Not correct name");
-            projectName.attr("class", "textbox wrong");
+            projectName.addClass('wrong');
 
         }
     }
@@ -777,11 +778,11 @@ var configurator = (function () {
         var textareaComment = jQuery("#comments");
         if(enable){
             checkboxComment.prop('checked',true);
-            textareaComment.removeClass();
+            textareaComment.removeClass('display-none');
         } 
         else{
             checkboxComment.prop('checked',false);
-            textareaComment.attr("class","display-none");
+            textareaComment.addClass('display-none');
         }
 
     } 

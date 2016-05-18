@@ -19,8 +19,8 @@
   <l:layout>
         <st:include page="sidepanel.jelly" it="${app}"/>
         <l:main-panel>
-            <div id="overlay" class="div-none">
-                <div id="rejectDiv" class="div-none">
+            <div id="overlay" class="overlay display-none">
+                <div id="rejectDiv" class="reject-div display-none">
                         <label class="reject-label">Please type reasons of rejection: </label>
                         <input type="text" id="textReject" name="textReject" class="textReject"/>
                         <input type="button" onClick="configurator.OkReject()" id="OkReject" class="button-reject" value="OK"/>
@@ -28,7 +28,7 @@
                 </div>
             </div>
             <div id="fieldHelpView" class="">
-                <div id="fieldHelp" class="div-none">
+                <div id="fieldHelp" class="field-help-error display-none">
                 </div>
             </div>
             <div class="title-header">
@@ -176,7 +176,7 @@
                     <input type="submit" onclick="return configurator.isValidForm();" class="button confirm" name="save" id="save" value="Save"/>
                     <span class="span"></span>
                     <input type="button" onclick="configurator.rejectDiv();" class="button reject" name="reject" id="reject" value="Reject"/>
-                    <input type="submit" onclick="return configurator.rejectionSubmit();" class="div-none" name="rejectSubmit" id="rejectSubmit"/>
+                    <input type="submit" onclick="return configurator.rejectionSubmit();" class="display-none" name="rejectSubmit" id="rejectSubmit"/>
                     <span id="spanReject" class="span"></span>
                     <input type = "button" id="cancelButton" class="button confirm" value="Cancel"/>
                     <input type="hidden" name="formResultHidden" id="formResultHidden"/>
