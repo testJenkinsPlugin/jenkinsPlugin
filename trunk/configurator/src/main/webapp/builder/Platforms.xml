@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<platforms>
+  <platform>
+    <platformName>x86</platformName>
+  </platform>
+  <platform>
+    <platformName>x64</platformName>
+  </platform>
+  <platform>
+    <platformName>Any CPU</platformName>
+  </platform>
+  <platform>
+    <platformName>Win32</platformName>
+  </platform>
+  <platform>
+    <platformName>x86_64</platformName>
+  </platform>
+  <platform>
+    <platformName>i386</platformName>
+  </platform>
+  <platform>
+    <platformName>ppc</platformName>
+  </platform>
+  <platform>
+    <platformName>Mixed Platforms</platformName>
+  </platform>
+</platforms>
