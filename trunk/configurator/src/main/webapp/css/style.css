@@ -161,11 +161,19 @@
     margin-top: 5px;
 }
 
-.div-drop-down {
+.div-drop-down, .args{
     float: left;
     margin-top: 10px;
     width: 173px;
     margin-left: 15px;
+}
+
+.args{
+    margin-top: -70px;
+    width: 400px;
+}
+.args input{
+    width: 360;
 }
 
 .div-configuration {

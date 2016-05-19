@@ -73,6 +73,12 @@
                 <input type="text" name="userConfig" disabled="false" class="other-config" field="userConfig_${divID}"/>
             </j:if>
         </div>
+<br/>
+        <div class="args">
+            <label>Command line args:</label><br/>
+            <input type="text" name="args" value = "some of args"/>
+
+        </div>
     </div>
     <j:forEach items="s" var="config" indexVar="i">
     </j:forEach>
