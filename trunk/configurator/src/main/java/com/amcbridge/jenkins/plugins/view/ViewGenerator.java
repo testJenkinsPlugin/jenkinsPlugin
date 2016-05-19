@@ -20,8 +20,8 @@ import com.amcbridge.jenkins.plugins.enums.*;
 
 public class ViewGenerator {
 
-    private static final String PROJECT_TO_BUILD_VIEW = "/plugins/build-configurator/view/ProjectToBuildViewRefactor.xml";
-    private static final String BUILDER_VIEW = "/plugins/build-configurator/view/BuilderViewRefactor.xml";
+    private static final String PROJECT_TO_BUILD_VIEW = "/plugins/build-configurator/view/ProjectToBuildView.xml";
+    private static final String BUILDER_VIEW = "/plugins/build-configurator/view/BuilderView.xml";
     private static final String HTML_SPACE = "%20";
     private static final String USERACCESS_VIEW_PATH = "/plugins/build-configurator/view/UserAccessView.xml";
 

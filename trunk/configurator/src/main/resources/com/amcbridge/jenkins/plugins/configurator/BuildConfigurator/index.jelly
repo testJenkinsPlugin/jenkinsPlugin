@@ -13,7 +13,7 @@
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <st:bind value="${it}" var="buildConfiguration"/>
   <script src="../plugin/build-configurator/scripts/index.js"/>
-  <link rel="stylesheet" href="../plugin/build-configurator/css/style_3.css" type="text/css"/>
+  <link rel="stylesheet" href="../plugin/build-configurator/css/style.css" type="text/css"/>
 
     <l:layout>
         <st:include page="sidepanel.jelly" it="${app}" />
@@ -35,7 +35,7 @@
                                          <br/>   </j:if>
                                             </j:if>
 
-            <a href="CreateBuildConfiguratorRefactor" class="CreateBuildConfiguratorRefactor">Create new build configuration</a>
+            <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
 
 
 
@@ -82,7 +82,7 @@
                                             </j:if>
                                         </j:if>
                                         <j:if test="${configs.getState().toString() != 'For Deletion'}">
-                                            <a href="CreateBuildConfiguratorRefactor?name=${configs.getProjectName()}&amp;type=ApproveReject" class="approve-reject-link">Approve/Reject</a>
+                                            <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=ApproveReject" class="approve-reject-link">Approve/Reject</a>
                                         </j:if>
                                     </j:if>
                                 </j:if>
@@ -103,11 +103,11 @@
                                 </j:if>
 
                                 <j:if test="${(isCreator || h.hasPermission(app.ADMINISTER)) &amp;&amp; configs.getState().toString() != 'For Deletion'}">
-                                    <a href="CreateBuildConfiguratorRefactor?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
+                                    <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
                                     <a href="#" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
                                 </j:if>
                                 <j:if test="${!isCreator &amp;&amp; configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
-                                    <a href="CreateBuildConfiguratorRefactor?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
+                                    <a href="CreateBuildConfigurator?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
                                 </j:if>
                                 <span></span>
                             </td>

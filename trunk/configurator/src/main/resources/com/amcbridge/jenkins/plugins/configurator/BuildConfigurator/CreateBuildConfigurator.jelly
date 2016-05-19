@@ -10,7 +10,7 @@
    xmlns:p="/lib/hudson/project"
    xmlns:g="glide"
    >
-   
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <st:bind value="${it}" var="buildConfiguration"/>
   <script type="text/javascript" src="../plugin/build-configurator/scripts/CreateBuildConfigurator.js"></script>
@@ -19,16 +19,16 @@
   <l:layout>
         <st:include page="sidepanel.jelly" it="${app}"/>
         <l:main-panel>
-            <div id="overlay" class="div-none">
-                <div id="rejectDiv" class="div-none">
+            <div id="overlay" class="overlay display-none">
+                <div id="rejectDiv" class="reject-div display-none">
                         <label class="reject-label">Please type reasons of rejection: </label>
                         <input type="text" id="textReject" name="textReject" class="textReject"/>
-                        <input type="button" onClick="OkReject()" id="OkReject" class="button-reject" value="OK"/>
-                        <input type="button" onClick="CancelReject()" id="CancelReject" class="button-reject" value="Cancel"/>
+                        <input type="button" onClick="configurator.OkReject()" id="OkReject" class="button-reject" value="OK"/>
+                        <input type="button" onClick="configurator.CancelReject()" id="CancelReject" class="button-reject" value="Cancel"/>
                 </div>
             </div>
             <div id="fieldHelpView" class="">
-                <div id="fieldHelp" class="div-none">
+                <div id="fieldHelp" class="field-help-error display-none">
                 </div>
             </div>
             <div class="title-header">
@@ -39,14 +39,14 @@
                 <div class="user">
                     <label id="userLabel"></label>
                 </div>
-                
+
                 <div class="div-textinput">
                     <div class="div-project-name">
                         <label>Project Name</label>
                     </div>
-                    <input type="text" id="projectName" onblur="validateProject(this)" name="projectName" class="textbox"/>
+                    <input type="text" id="projectName" onblur="configurator.validateProject(this);" name="projectName" class="textbox"/>
                 </div>
-                <div id="projectError" class="error-none" style="margin-left: 205px;">
+                <div id="projectError" class="error-block display-none" style="margin-left: 205px;">
                     <img src="../images/16x16/error.png"/>
                     <label id="projectErrorText"></label>
                 </div>
@@ -71,10 +71,10 @@
                         	<label>Build machine configuration:</label>
                         	<input type="hidden" id="build_machine_configuration" name="build_machine_configuration" value=""/>
                         </div>
-                        
+
                         <div class="div-radiogroup">
                         	<j:forEach items="${it.getNodesName()}" var="node">
-                            	<f:checkbox name="node" id="${node}" value="${node}" title="${node}" onclick="bMCChange(this)"/>
+                            	<f:checkbox name="node" id="${node}" value="${node}" title="${node}" onclick="configurator.bMCChange(this)"/>
                             	<br/>
                         	</j:forEach>
                     	</div>
@@ -82,18 +82,18 @@
                 </j:if>
 
                 <div class="div-textinput">
-                    <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="emailCheckBoxChange(this)" title="Job E-mails notifications"/>
-                    <input type="text" field="email" onblur="validateMail(this)" name="email" disabled="false" id="email" class="email-notification"/>
-                    <img id="image_url_-1" src="/static/c2e30787/images/16x16/help.png" onClick="imageHelp(id)" class="image"/>
+                    <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="configurator.emailCheckBoxChange(this)" title="Job E-mails notifications"/>
+                    <input type="text" field="email" onblur="configurator.validateMail(this)" name="email" disabled="false" id="email" class="email-notification"/>
+                    <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.emailHelp(name)" name="email-help" class="image"/>
                 </div>
-                <div id="email_Error" class="error-none" style="margin-left: 205px;">
+                <div id="email_Error" class="error-block display-none" style="margin-left: 205px;">
                     <img src="../images/16x16/error.png"/>
                     Not correct e-mail
                 </div>
 
-                <div id="block_help_-1" class="help-view">
-                <lebel id="text_help_-1" class="helptext">
-                     Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build.
+                <div id="email-help-block" class="help-view display-none">
+                <lebel id="email-help-text" class="helptext display-none">
+                      Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build. E-mail will be sent when a build fails, becomes unstable or returns to stable.
                 </lebel>
                 </div>
 
@@ -101,26 +101,26 @@
                     <div class="div-project-name">
                         <label>Configuration E-mails notifications</label>
                     </div>
-                    <input type="text" field="email" onblur="validateMail(this)" name="configEmail" id="configEmail" class="textbox"/>
-                    <img id="image_url_-2" src="/static/c2e30787/images/16x16/help.png" onClick="imageHelp(id)" class="image"/>
+                    <input type="text" field="email" onblur="configurator.validateMail(this);" name="configEmail" id="configEmail" class="textbox"/>
+                    <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.emailHelp(name)" name="configEmail-help" class="image"/>
                 </div>
-                <div id="configEmail_Error" class="error-none" style="margin-left: 205px;">
+                <div id="configEmail_Error" class="error-block display-none" style="margin-left: 205px;">
                     <img src="../images/16x16/error.png"/>
                     Not correct e-mail
                 </div>
 
-                <div id="block_help_-2" class="help-view">
-                <lebel id="text_help_-2" class="helptext">
+                <div id="configEmail-help-block" class="help-view display-none">
+                <label id="configEmail-help-text" class="helptext display-none">
                      Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when configuration state changes.
-                </lebel>
-                </div> 
+                </label>
+                </div>
 
-                <div id="projectsToBuild" class="div-root-project">
+                <div id="projectsToBuild">
                 </div>
 
                 <div class="div-add-view">
-                    <input type="button" onClick="addView()" id="addProjectToBuild" value="Add project to build"/>
-                    <label id="label-add-view" class="label-add-view-hidden">You should create one project to build</label>
+                    <input type="button" onClick="configurator.addView()" id="addProjectToBuild" value="Add project to build"/>
+                    <label id="label-add-view" class="label-add-view">You should create one project to build</label>
                 </div>
 
                     <div>
@@ -139,30 +139,51 @@
                     <label class="div-label">Prebuild script:</label>
 
 
-                    <textarea rows="10" cols="60" id="preScript" name="preScript" onblur="validatePrebuildScript(id)">
-                    </textarea>   
-                    <input type="hidden" name="scripts" id="files_hidden_script"/>
+                    <textarea rows="10" cols="60" id="preScript" name="preScript" onblur="configurator.validatePrebuildScript(id)">
+                    </textarea>
                 </div>
                 <br/>
                 <div>
                     <label class="div-label">Postbuild script:</label>
-                    <textarea rows="10" cols="60" id="postScript" name="postScript" onblur="validatePostbuildScript(id)">
+                    <textarea rows="10" cols="60" id="postScript" name="postScript" onblur="configurator.validatePostbuildScript(id)">
                     </textarea>
-                </div>                
+                </div>
+                <br/>
+                
 
-                 <div class="div-confirm-button">
 
-                      <input type="submit" onclick="return configurator.isValidForm();" class="confirm-button" name="save" id="save" value="Save"/>
-                      <span class="span"></span>
-                      <input type="button" onclick="configurator.rejectDiv();" class="reject-button" name="reject" id="reject" value="Reject"/>
-                      <input type="submit" onclick="return configurator.rejectionSubmit();" class="div-none" name="rejectSubmit" id="rejectSubmit"/>
-                      <span id="spanReject" class="span"></span>
-                      <input type="submit" onclick="configurator.setFormResultDialog('cancel');" class="confirm-button" name="cancelButton" id="cancelButton" value="Cancel"/>
-                      <input type="hidden" name="formResultHidden" id="formResultHidden"/>
-                      <input type="hidden" name="formType" id="formType"/>
-                      <input type="hidden" id="rejectionReason" name="rejectionReason" value=""/>
-                                    <input type="hidden" id="def_cred" name="default_credentials" value="${it.getDefaultUserCredentials()}"/>
-                                </div>
+                <div>
+                    <f:checkbox class="div-label" id="isComment" onclick="configurator.commentCheckboxChange(this)" type="checkbox" title="Comments"/>
+                          <br/>    
+                          <label class="div-label"/>     
+                    <textarea rows="10" cols="60" id="comments" name="comments"></textarea>
+                </div>
+                <br/>
+
+                    <div>
+                       <label>User's with access to configuration:</label><br/><br/>
+                        <label class="div-label">add user:</label>
+                        <input type="text" id="addUserField"  class="add-user-field"/>
+                        <input type="button" class="add-button" id="addUserButton" onclick="configurator.addNewUserAccess();" value="+"/>
+                    </div>
+                
+
+
+                <div id="usersList">
+                </div>
+
+                <div class="button-container">
+                    <input type="submit" onclick="return configurator.isValidForm();" class="button confirm" name="save" id="save" value="Save"/>
+                    <span class="span"></span>
+                    <input type="button" onclick="configurator.rejectDiv();" class="button reject" name="reject" id="reject" value="Reject"/>
+                    <input type="submit" onclick="return configurator.rejectionSubmit();" class="display-none" name="rejectSubmit" id="rejectSubmit"/>
+                    <span id="spanReject" class="span"></span>
+                    <input type = "button" id="cancelButton" class="button confirm" value="Cancel"/>
+                    <input type="hidden" name="formResultHidden" id="formResultHidden"/>
+                    <input type="hidden" name="formType" id="formType"/>
+                    <input type="hidden" id="rejectionReason" name="rejectionReason" value=""/>
+                    <input type="hidden" id="def_cred" name="default_credentials" value="${it.getDefaultUserCredentials()}"/>
+                </div>
             </f:form>
         </l:main-panel>
     </l:layout>
