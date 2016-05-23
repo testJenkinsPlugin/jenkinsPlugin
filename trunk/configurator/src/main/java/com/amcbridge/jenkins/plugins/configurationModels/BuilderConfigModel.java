@@ -12,14 +12,16 @@ public class BuilderConfigModel {
     private String platform;
     private String userConfig;
     private List<Configuration> configs;
+    private String builderArgs;
 
     @DataBoundConstructor
     public BuilderConfigModel(String builder, String platform, String userConfig,
-                              Boolean release, Boolean debug, Boolean other) {
+                              Boolean release, Boolean debug, Boolean other, String builderArgs) {
         this.configs = new ArrayList<Configuration>();
         this.builder = builder;
         this.platform = platform;
         this.userConfig = userConfig;
+        this.builderArgs = builderArgs;
         if (release) {
             configs.add(Configuration.RELEASE);
         }
@@ -69,5 +71,13 @@ public class BuilderConfigModel {
 
     public void setConfigs(List<Configuration> configs) {
         this.configs = configs;
+    }
+
+    public String getBuilderArgs() {
+        return builderArgs;
+    }
+
+    public void setBuilderArgs(String builderArgs) {
+        this.builderArgs = builderArgs;
     }
 }

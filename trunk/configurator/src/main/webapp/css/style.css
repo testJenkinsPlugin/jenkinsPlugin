@@ -161,7 +161,7 @@
     margin-top: 5px;
 }
 
-.div-drop-down, .args{
+.div-drop-down{
     float: left;
     margin-top: 10px;
     width: 173px;
@@ -169,12 +169,14 @@
 }
 
 .args{
+    float: left;
+    margin-left: 15px;
     margin-top: -70px;
     width: 400px;
 }
-.args input{
-    width: 360;
-}
+    .args input{
+        width: 360;
+    }
 
 .div-configuration {
     margin-bottom: 10px;

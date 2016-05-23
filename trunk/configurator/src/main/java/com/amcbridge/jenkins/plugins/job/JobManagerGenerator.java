@@ -503,11 +503,14 @@ public class JobManagerGenerator {
                     newConfig = new Config();
                     newConfig.setBuilder(builderModel.getBuilder());
                     newConfig.setPlatform(builderModel.getPlatform());
+                    if(builderModel.getBuilderArgs()!=null && !builderModel.equals("")){
+                        newConfig.setBuilderArgs(builderModel.getBuilderArgs());
+                    }
                     configurations.add(newConfig);
                 } else {
                     for (Configuration configEnum : builderModel.getConfigs()) {
                         newConfig = new Config(configEnum.toString(), builderModel.getBuilder(),
-                                builderModel.getPlatform());
+                                builderModel.getPlatform(), builderModel.getBuilderArgs());
                         if (configEnum.equals(Configuration.OTHER)) {
                             newConfig.setUserConfig(builderModel.getUserConfig());
                         }

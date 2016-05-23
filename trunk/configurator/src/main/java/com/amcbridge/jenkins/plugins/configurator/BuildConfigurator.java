@@ -1,6 +1,8 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
 import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.configurationModels.BuilderConfigModel;
+import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.FormResult;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
@@ -30,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -134,10 +137,52 @@ public final class BuildConfigurator implements RootAction {
             message.setCC(BuildConfigurationManager.getUserMailAddress(newConfig));
         }
 
-        BuildConfigurationManager.save(newConfig);
-        message.setDestinationAddress(getAdminEmails());
-        mail.sendMail(message);
+        if (isArgsOk(currentConfig, newConfig)) {
+            BuildConfigurationManager.save(newConfig);
+            message.setDestinationAddress(getAdminEmails());
+            mail.sendMail(message);
+        }
+
         response.sendRedirect("./");
+    }
+
+    private boolean isArgsOk(BuildConfigurationModel currentBuildModel, BuildConfigurationModel newBuildModel) {
+        boolean isConfigCompletelyNew = currentBuildModel.getProjectName()==null || currentBuildModel.getProjectName().length()==0;
+
+        if (newBuildModel == null) {
+            return false;
+        }
+
+        // User created new config with builder args
+        if (!isCurrentUserAdministrator() && isConfigCompletelyNew && getAllArgsFromBuilders(newBuildModel).size() > 0) {
+            return false;
+        }
+
+        // User edited config and there are new/changed args across all builders.
+        if (!isCurrentUserAdministrator() && !isConfigCompletelyNew && getAllArgsFromBuilders(newBuildModel).size() > 0) {
+            List<String> argsFromCurrentConfig = getAllArgsFromBuilders(currentBuildModel);
+            List<String> argsFromNewConfig = getAllArgsFromBuilders(newBuildModel);
+            for (String newArgs : argsFromNewConfig) {
+                if (!argsFromCurrentConfig.contains(newArgs)) {
+                    return false;
+                }
+            }
+        }
+        // Action made by admin or user doesn't added/changed args
+        return true;
+    }
+
+    private List<String> getAllArgsFromBuilders(BuildConfigurationModel configs) {
+        List<String> argsList = new LinkedList<>();
+        for (ProjectToBuildModel projectModel : configs.getProjectToBuild()) {
+            for (BuilderConfigModel builderModel : projectModel.getBuilders()) {
+                String args = builderModel.getBuilderArgs();
+                if (args != null && args.length() > 0) {
+                    argsList.add(args);
+                }
+            }
+        }
+        return argsList;
     }
 
 

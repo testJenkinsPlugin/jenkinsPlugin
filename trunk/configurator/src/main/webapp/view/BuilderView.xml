@@ -74,11 +74,22 @@
             </j:if>
         </div>
 <br/>
-        <div class="args">
-            <label>Command line args:</label><br/>
-            <input type="text" name="args" value = "some of args"/>
 
-        </div>
+        <j:if test="${isAdmin}">
+            <div class="args">
+                <label>Command line args:</label><br/>
+                <input type="text" name="builderArgs" value = "${view.getBuilderArgs()}"/>
+
+            </div>
+        </j:if>
+
+        <j:if test="${!isAdmin}">
+            <div class="args display-none">
+                <label>Command line args:</label><br/>
+                <input type="text" name="builderArgs" value = "${view.getBuilderArgs()}"/>
+            </div>
+        </j:if>
+
     </div>
     <j:forEach items="s" var="config" indexVar="i">
     </j:forEach>

@@ -44,6 +44,7 @@ public class ViewGenerator {
         jcontext.setVariable("builders", builderLoader.getBuilders());
         jcontext.setVariable("platforms", (new PlatformLoader()).getPlatformList());
         jcontext.setVariable("configuration", Configuration.values());
+        jcontext.setVariable("isAdmin", BuildConfigurationManager.isCurrentUserAdministrator());
 
         result.setViewId(id);
 
