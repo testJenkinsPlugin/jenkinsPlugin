@@ -2,6 +2,7 @@ package com.amcbridge.jenkins.plugins.configurationModels;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import com.amcbridge.jenkins.plugins.enums.Configuration;
@@ -13,15 +14,22 @@ public class BuilderConfigModel {
     private String userConfig;
     private List<Configuration> configs;
     private String builderArgs;
+    private UUID guid;
 
     @DataBoundConstructor
     public BuilderConfigModel(String builder, String platform, String userConfig,
-                              Boolean release, Boolean debug, Boolean other, String builderArgs) {
+                              Boolean release, Boolean debug, Boolean other, String builderArgs, String guid) {
         this.configs = new ArrayList<Configuration>();
         this.builder = builder;
         this.platform = platform;
         this.userConfig = userConfig;
         this.builderArgs = builderArgs;
+
+        if (guid == null || guid.equals("")) {
+            this.guid = UUID.randomUUID();
+        } else {
+            this.guid = UUID.fromString(guid);
+        }
         if (release) {
             configs.add(Configuration.RELEASE);
         }
@@ -80,4 +88,13 @@ public class BuilderConfigModel {
     public void setBuilderArgs(String builderArgs) {
         this.builderArgs = builderArgs;
     }
+
+    public UUID getGuid() {
+        return guid;
+    }
+
+    public void setGuid(UUID guid) {
+        this.guid = guid;
+    }
+
 }

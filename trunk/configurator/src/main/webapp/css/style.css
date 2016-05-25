@@ -161,22 +161,24 @@
     margin-top: 5px;
 }
 
-.div-drop-down{
+.div-drop-down, .args, .builder-config{
     float: left;
     margin-top: 10px;
     width: 173px;
     margin-left: 15px;
 }
-
-.args{
-    float: left;
-    margin-left: 15px;
-    margin-top: -70px;
-    width: 400px;
-}
-    .args input{
-        width: 360;
+    .builder-config{
+        float: none;
+        width: 500px;
+        display: inline-block;
     }
+
+    .args{
+        width: 400px;
+    }
+        .args input{
+            width: 360;
+        }
 
 .div-configuration {
     margin-bottom: 10px;
@@ -184,13 +186,6 @@
 
 .left {
     float: left;
-}
-
-.other-config {
-    margin-left: 45px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    width: 140px;
 }
 
 .div-folder-chooser {

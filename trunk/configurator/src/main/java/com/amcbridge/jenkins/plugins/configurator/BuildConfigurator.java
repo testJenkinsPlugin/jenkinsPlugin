@@ -32,9 +32,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @Extension
 public final class BuildConfigurator implements RootAction {
@@ -146,43 +144,62 @@ public final class BuildConfigurator implements RootAction {
         response.sendRedirect("./");
     }
 
+
     private boolean isArgsOk(BuildConfigurationModel currentBuildModel, BuildConfigurationModel newBuildModel) {
-        boolean isConfigCompletelyNew = currentBuildModel.getProjectName()==null || currentBuildModel.getProjectName().length()==0;
+        String projectName = currentBuildModel.getProjectName();
+
 
         if (newBuildModel == null) {
             return false;
         }
 
         // User created new config with builder args
-        if (!isCurrentUserAdministrator() && isConfigCompletelyNew && getAllArgsFromBuilders(newBuildModel).size() > 0) {
-            return false;
+        if (!isCurrentUserAdministrator()) {
+            boolean isConfigCompletelyNew = projectName == null || projectName.length() == 0;
+
+            Map<UUID, BuilderConfigModel> newBuildersMap = getBuildersMap(newBuildModel);
+            List<BuilderConfigModel> newBuildersList = new LinkedList<>(newBuildersMap.values());
+
+            if (isConfigCompletelyNew) {
+                for (BuilderConfigModel builderModel : newBuildersList) {
+                    if (!builderModel.getBuilderArgs().equals("")) {
+                        return false;
+                    }
+                }
+
+            } else {
+                Map<UUID, BuilderConfigModel> currentBuildersMap = getBuildersMap(currentBuildModel);
+
+                for (BuilderConfigModel newBuilder : newBuildersList) {
+                    boolean isBuilderExistInCurrentConfig = currentBuildersMap.containsKey(newBuilder.getGuid());
+                    BuilderConfigModel currentBuilder = currentBuildersMap.get(newBuilder.getGuid());
+
+                    if (isBuilderExistInCurrentConfig) {
+                        if (!newBuilder.getBuilderArgs().equals(currentBuilder.getBuilderArgs()))
+                            return false;
+                    } else {
+                        if (!newBuilder.getBuilderArgs().equals("")) {
+                            return false;
+                        }
+                    }
+                }
+
+            }
+
         }
 
-        // User edited config and there are new/changed args across all builders.
-        if (!isCurrentUserAdministrator() && !isConfigCompletelyNew && getAllArgsFromBuilders(newBuildModel).size() > 0) {
-            List<String> argsFromCurrentConfig = getAllArgsFromBuilders(currentBuildModel);
-            List<String> argsFromNewConfig = getAllArgsFromBuilders(newBuildModel);
-            for (String newArgs : argsFromNewConfig) {
-                if (!argsFromCurrentConfig.contains(newArgs)) {
-                    return false;
-                }
-            }
-        }
         // Action made by admin or user doesn't added/changed args
         return true;
     }
 
-    private List<String> getAllArgsFromBuilders(BuildConfigurationModel configs) {
-        List<String> argsList = new LinkedList<>();
+    private Map<UUID, BuilderConfigModel> getBuildersMap(BuildConfigurationModel configs) {
+        Map<UUID, BuilderConfigModel> buildersMap = new HashMap<>();
         for (ProjectToBuildModel projectModel : configs.getProjectToBuild()) {
             for (BuilderConfigModel builderModel : projectModel.getBuilders()) {
-                String args = builderModel.getBuilderArgs();
-                if (args != null && args.length() > 0) {
-                    argsList.add(args);
-                }
+                buildersMap.put(builderModel.getGuid(), builderModel);
             }
         }
-        return argsList;
+        return buildersMap;
     }
 
 

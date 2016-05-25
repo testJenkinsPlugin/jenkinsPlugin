@@ -42,11 +42,10 @@
                 </j:forEach>
             </select>
         </div>
+<br/>
+        <div class="builder-config">
 
-        <div class="div-drop-down">
-            <div class="div-configuration">
                 <label>Configuration:</label>
-            </div>
 
             <j:if test="${view.isConfigChecked('RELEASE')}">
                 <input type="checkbox" checked="checked" name="release"/>Release
@@ -54,7 +53,6 @@
             <j:if test="${!view.isConfigChecked('RELEASE')}">
                 <input type="checkbox" name="release"/>Release
             </j:if>
-            <br/>
 
             <j:if test="${view.isConfigChecked('DEBUG')}">
                 <input type="checkbox" checked="checked" name="debug"/>Debug
@@ -62,15 +60,15 @@
             <j:if test="${!view.isConfigChecked('DEBUG')}">
                 <input type="checkbox" name="debug"/>Debug
             </j:if>
-            <br/>
+
 
             <j:if test="${view.isConfigChecked('OTHER')}">
                 <input type="checkbox" name="other" checked="checked" onclick="configurator.disableOtherConfig(this)"/>Other
-                <input type="text" name="userConfig" value="${view.getUserConfig()}" class="other-config" field="userConfig_${divID}"/>
+                <input type="text" name="userConfig" value="${view.getUserConfig()}" field="userConfig_${divID}"/>
             </j:if>
             <j:if test="${!view.isConfigChecked('OTHER')}">
                 <input type="checkbox" name="other" onclick="configurator.disableOtherConfig(this)"/>Other
-                <input type="text" name="userConfig" disabled="false" class="other-config" field="userConfig_${divID}"/>
+                <input type="text" name="userConfig"  class="hidden" field="userConfig_${divID}"/>
             </j:if>
         </div>
 <br/>
@@ -79,7 +77,7 @@
             <div class="args">
                 <label>Command line args:</label><br/>
                 <input type="text" name="builderArgs" value = "${view.getBuilderArgs()}"/>
-
+                <input type="hidden" name="guid" value = "${view.getGuid()}"/>
             </div>
         </j:if>
 
@@ -87,6 +85,8 @@
             <div class="args display-none">
                 <label>Command line args:</label><br/>
                 <input type="text" name="builderArgs" value = "${view.getBuilderArgs()}"/>
+                <input type="hidden" name="guid" value = "${view.getGuid()}"/>
+
             </div>
         </j:if>
 

@@ -300,11 +300,11 @@ var configurator = (function () {
     function disableOtherConfig(checkBox) {
         var builder = jQuery(checkBox).closest("div[name=builders]");
         if (!checkBox.checked) {
-            builder.find("[name=userConfig]").prop("disabled", true);
+            builder.find("[name=userConfig]").addClass('hidden');
             builder.find("[name=userConfig]").val("");
         }
         else {
-            builder.find("[name=userConfig]").prop("disabled", false);
+            builder.find("[name=userConfig]").removeClass('hidden');
         }
     }
 
