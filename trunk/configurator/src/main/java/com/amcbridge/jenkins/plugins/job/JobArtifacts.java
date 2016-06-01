@@ -14,14 +14,17 @@ public class JobArtifacts implements JobElementDescription {
     private static final String PARENT_ELEMENT_TAG = "publishers";
     private static final String PATH_TAG = "artifacts";
 
+    @Override
     public String getElementTag() {
         return ELEMENT_TAG;
     }
 
+    @Override
     public String getParentElementTag() {
         return PARENT_ELEMENT_TAG;
     }
 
+    @Override
     public String generateXML(BuildConfigurationModel config) {
         String artf = getArtifacts(config);
         if (artf.isEmpty()) {
@@ -31,6 +34,7 @@ public class JobArtifacts implements JobElementDescription {
         return JobManagerGenerator.convertToXML(artifact);
     }
 
+    @Override
     public void appendToXML(BuildConfigurationModel config, Document xml) {
         Node node = xml.getElementsByTagName(PATH_TAG).item(0);
         String artf = getArtifacts(config);

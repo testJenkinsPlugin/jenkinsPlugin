@@ -8,12 +8,14 @@ import javax.mail.*;
 import javax.mail.internet.*;
 
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
+import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
 import jenkins.model.Jenkins;
 
 public class MailSender implements Runnable {
-    String host, from, pass;
-
-    Integer port;
+    private String host;
+    private String from;
+    private String pass;
+    private Integer port;
     private static MessageInfo message;
     private static final String MAIL_PROPERTIES_FILE_NAME = "/plugins/build-configurator/MailSender.properties";
 
@@ -24,11 +26,10 @@ public class MailSender implements Runnable {
         theard.start();
     }
 
-    void load() {
+    private void load() {
         Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            InputStream inputStream = new FileInputStream(Jenkins.getInstance().getRootPath() + MAIL_PROPERTIES_FILE_NAME);
+        try (InputStream inputStream = new FileInputStream(BuildConfigurationManager.getJenkins().getRootPath() + MAIL_PROPERTIES_FILE_NAME)) {
+
             prop.load(inputStream);
             host = prop.getProperty("host");
             from = prop.getProperty("from");
@@ -36,14 +37,6 @@ public class MailSender implements Runnable {
             port = Integer.parseInt(prop.getProperty("port"));
         } catch (Exception ex) {
             ex.printStackTrace();
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
@@ -51,6 +44,7 @@ public class MailSender implements Runnable {
         load();
     }
 
+    @Override
     public void run() {
         try {
             MessageInfo message = this.message;
@@ -91,7 +85,7 @@ public class MailSender implements Runnable {
         }
     }
 
-    public static String getMailPropertiesFileName() {
-        return Jenkins.getInstance().getRootPath() + MAIL_PROPERTIES_FILE_NAME;
+    public static String getMailPropertiesFileName() throws JenkinsInstanceNotFoundException {
+        return BuildConfigurationManager.getJenkins().getRootPath() + MAIL_PROPERTIES_FILE_NAME;
     }
 }

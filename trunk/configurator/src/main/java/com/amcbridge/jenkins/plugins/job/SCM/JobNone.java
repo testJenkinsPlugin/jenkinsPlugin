@@ -16,32 +16,33 @@ public class JobNone implements JobElementDescription {
 
     private static final String ATTRIBUTE = "class";
 
+    @Override
     public String getElementTag() {
         return JobSCM.ELEMENT_TAG;
     }
 
+    @Override
     public String getParentElementTag() {
         return JobSCM.PARENT_ELEMENT_TAG;
     }
 
-    public String generateXML(BuildConfigurationModel config) {
+    @Override
+    public String generateXML(BuildConfigurationModel config) throws ParserConfigurationException {
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        Document doc = null;
-        try {
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-            doc = docBuilder.newDocument();
-            doc.appendChild(doc.createElement(JobSCM.ELEMENT_TAG));
-            Element scm = (Element) doc.getElementsByTagName(JobSCM.ELEMENT_TAG).item(0);
-            NullSCM nullSCM = new NullSCM();
-            String value = nullSCM.getType();
-            scm.setAttribute(ATTRIBUTE, value);
-        } catch (ParserConfigurationException e) {
-        }
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+        Document doc = docBuilder.newDocument();
+        doc.appendChild(doc.createElement(JobSCM.ELEMENT_TAG));
+        Element scm = (Element) doc.getElementsByTagName(JobSCM.ELEMENT_TAG).item(0);
+        NullSCM nullSCM = new NullSCM();
+        String value = nullSCM.getType();
+        scm.setAttribute(ATTRIBUTE, value);
+
         return JobManagerGenerator.documentToXML(doc);
     }
 
-    public void appendToXML(BuildConfigurationModel config, Document doc) {
+    @Override
+    public void appendToXML(BuildConfigurationModel config, Document doc) throws ParserConfigurationException {
         JobSCM.removeSCM(doc);
         JobSCM.insertSCM(doc, generateXML(config));
     }

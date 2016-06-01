@@ -37,7 +37,7 @@ public class ProjectToBuildModel {
     }
 
     public static List<String> getCredentialsList() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         try {
             List<CredentialItem> items = BuildConfigurationManager.openCredentials();
             if (!items.isEmpty()) {

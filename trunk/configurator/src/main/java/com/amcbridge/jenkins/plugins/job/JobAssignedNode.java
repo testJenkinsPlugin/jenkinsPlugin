@@ -16,14 +16,17 @@ public class JobAssignedNode implements JobElementDescriptionCheckBox {
     private static final String NODE_SEPARATOR = " || ";
     private static final String CHECK_TAG = "canRoam";
 
+    @Override
     public String getElementTag() {
         return ELEMENT_TAG;
     }
 
+    @Override
     public String getParentElementTag() {
         return PARENT_ELEMENT_TAG;
     }
 
+    @Override
     public String generateXML(BuildConfigurationModel config) {
         DocumentBuilderFactory docFactory;
         DocumentBuilder docBuilder;
@@ -45,6 +48,7 @@ public class JobAssignedNode implements JobElementDescriptionCheckBox {
         return JobManagerGenerator.documentToXML(node);
     }
 
+    @Override
     public void appendToXML(BuildConfigurationModel config, Document xml) {
         Node node = xml.getElementsByTagName(ELEMENT_TAG).item(0);
         String nodes = getNodes(config);
@@ -65,13 +69,15 @@ public class JobAssignedNode implements JobElementDescriptionCheckBox {
         return result;
     }
 
-    public void uncheck(Document doc) {
+    @Override
+    public void unCheck(Document doc) {
         if (doc.getElementsByTagName(CHECK_TAG).getLength() != 0) {
             Node node = doc.getElementsByTagName(CHECK_TAG).item(0);
             node.setTextContent(Boolean.TRUE.toString());
         }
     }
 
+    @Override
     public void check(Document doc) {
         if (doc.getElementsByTagName(CHECK_TAG).getLength() == 0) {
             return;

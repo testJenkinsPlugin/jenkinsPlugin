@@ -5,6 +5,7 @@ import com.amcbridge.jenkins.plugins.configurationModels.BuilderConfigModel;
 import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.Configuration;
+import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescriptionCheckBox;
 import com.amcbridge.jenkins.plugins.job.SCM.JobGit;
@@ -41,8 +42,6 @@ public class JobManagerGenerator {
     private static final String BUILDSTEP_BATCH_SCRIPT_CLASS = "hudson.tasks.BatchFile";
     public static final String CONFIG_BATCH_TYPE = "batch_type";
     public static final String CONFIG_SHELL_TYPE = "shell_type";
-    private static final String PREBUILD_SCRIPT_POSITION = "preScript";
-    private static final String POSTBUILD_SCRIPT_POSITION = "postScript";
     public static final String COMMA_SEPARATOR = ", ";
     private static final String JOB_TEMPLATE_PATH = "/plugins/build-configurator/job/config.xml";
     private static final String JOB_FOLDER_PATH = "/jobs/";
@@ -58,10 +57,10 @@ public class JobManagerGenerator {
 
     public static void createJob(BuildConfigurationModel config)
             throws ParserConfigurationException,
-            SAXException, IOException, TransformerException {
+            SAXException, IOException, TransformerException, XPathExpressionException {
         String jobName = validJobName(config.getProjectName());
 
-        List<String[]> prevArtefacts = new ArrayList<String[]>(config.getProjectToBuild().size());
+        List<String[]> prevArtefacts = new ArrayList<>(config.getProjectToBuild().size());
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
             prevArtefacts.add(Arrays.copyOf(config.getProjectToBuild().get(i).getArtefacts(),
                     config.getProjectToBuild().get(i).getArtefacts().length));
@@ -75,7 +74,7 @@ public class JobManagerGenerator {
         } else {
             try {
                 FileInputStream fis = new FileInputStream(getJobXML(config));
-                Jenkins.getInstance().createProjectFromXML(jobName, fis);
+                BuildConfigurationManager.getJenkins().createProjectFromXML(jobName, fis);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
                 throw new IOException("Job not created!", ex);
@@ -140,8 +139,8 @@ public class JobManagerGenerator {
         }
     }
 
-    public static Boolean isJobExist(String name) {
-        for (Item item : Jenkins.getInstance().getAllItems()) {
+    public static Boolean isJobExist(String name) throws JenkinsInstanceNotFoundException {
+        for (Item item : BuildConfigurationManager.getJenkins().getAllItems()) {
             if (item.getName().equals(name)) {
                 return true;
             }
@@ -151,7 +150,7 @@ public class JobManagerGenerator {
 
     private static File getJobXML(BuildConfigurationModel config)
             throws ParserConfigurationException,
-            SAXException, IOException, TransformerException {
+            SAXException, IOException, TransformerException, XPathExpressionException {
         Document doc = loadTemplate(JOB_TEMPLATE_PATH);
         if (doc == null) {
             throw new FileNotFoundException(JOB_TEMPLATE_PATH + " file not found");
@@ -172,8 +171,11 @@ public class JobManagerGenerator {
     }
 
 
-    private static void updateJobXML(String jobName, BuildConfigurationModel config) throws IOException, TransformerException, SAXException, ParserConfigurationException {
-        AbstractItem item = (AbstractItem) Jenkins.getInstance().getItemByFullName(jobName);
+    private static void updateJobXML(String jobName, BuildConfigurationModel config) throws IOException, TransformerException, SAXException, ParserConfigurationException, XPathExpressionException {
+        AbstractItem item = (AbstractItem) BuildConfigurationManager.getJenkins().getItemByFullName(jobName);
+        if (item == null){
+            throw new NullPointerException("Jenkins item not found");
+        }
         String jobPath = JOB_FOLDER_PATH + jobName + "/config.xml";
         Document doc = loadTemplate(jobPath);
         if (doc == null) {
@@ -212,19 +214,16 @@ public class JobManagerGenerator {
         item.save();
     }
 
-    private static void setJobConfigFileName(Document doc, String jobName) {
+    private static void setJobConfigFileName(Document doc, String jobName) throws XPathExpressionException {
 
         Node fileNameNode = null;
         XPath xPath = XPathFactory.newInstance().newXPath();
         XPathExpression exp;
-        try {
             exp = xPath.compile(XPATH_FILE_TO_COPY);
             fileNameNode = (Node) exp.evaluate(doc, XPathConstants.NODE);
             fileNameNode.getTextContent();
             fileNameNode.getNodeValue();
-        } catch (XPathExpressionException e) {
-            e.printStackTrace();
-        }
+
         if (jobName != null && fileNameNode != null) {
             fileNameNode.setTextContent(jobName + ".xml");
         }
@@ -239,7 +238,7 @@ public class JobManagerGenerator {
         String paramsXML = xstream.toXML(job);
         String jobName = job.getName();
 
-        String userContentPath = Jenkins.getInstance().getRootDir() + "/userContent/" + jobName + ".xml";
+        String userContentPath = BuildConfigurationManager.getJenkins().getRootDir() + "/userContent/" + jobName + ".xml";
 
         FileOutputStream fos = new FileOutputStream(userContentPath);
         Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING);
@@ -253,7 +252,7 @@ public class JobManagerGenerator {
     }
 
 
-    private static void createJobConfigNodes(Document doc, BuildConfigurationModel config) throws IOException, SAXException, ParserConfigurationException {
+    private static void createJobConfigNodes(Document doc, BuildConfigurationModel config) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         JobElementDescription jed;
 
         jed = new JobArtifacts();
@@ -353,7 +352,7 @@ public class JobManagerGenerator {
 
 
     private static void setElement(JobElementDescription element, Document document, BuildConfigurationModel config)
-            throws ParserConfigurationException, SAXException, IOException {
+            throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
         if (!isNodeExist(document, element.getElementTag())) {
             if (!isNodeExist(document, element.getParentElementTag())) {
                 Node mainNode = document.getFirstChild();
@@ -364,7 +363,7 @@ public class JobManagerGenerator {
 
             if (element instanceof JobElementDescriptionCheckBox) {
                 if (newNode.getFirstChild() == null) {
-                    ((JobElementDescriptionCheckBox) element).uncheck(document);
+                    ((JobElementDescriptionCheckBox) element).unCheck(document);
                 } else {
                     ((JobElementDescriptionCheckBox) element).check(document);
                 }
@@ -398,7 +397,7 @@ public class JobManagerGenerator {
         Document doc = null;
         try {
             docBuilder = docFactory.newDocumentBuilder();
-            doc = docBuilder.parse(Jenkins.getInstance().getRootDir() + path);
+            doc = docBuilder.parse(BuildConfigurationManager.getJenkins().getRootDir() + path);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -439,9 +438,8 @@ public class JobManagerGenerator {
     }
 
     public static void deleteJob(String name) throws IOException, InterruptedException {
-        name = validJobName(name);
-        for (Item job : Jenkins.getInstance().getAllItems()) {
-            if (job.getName().equals(name)) {
+        for (Item job : BuildConfigurationManager.getJenkins().getAllItems()) {
+            if (job.getName().equals( validJobName(name))) {
                 job.delete();
                 return;
             }
@@ -503,7 +501,7 @@ public class JobManagerGenerator {
                     newConfig = new Config();
                     newConfig.setBuilder(builderModel.getBuilder());
                     newConfig.setPlatform(builderModel.getPlatform());
-                    if(builderModel.getBuilderArgs()!=null && !builderModel.equals("")){
+                    if(builderModel.getBuilderArgs()!=null && !builderModel.getBuilderArgs().equals("")){
                         newConfig.setBuilderArgs(builderModel.getBuilderArgs());
                     }
                     configurations.add(newConfig);
@@ -521,4 +519,5 @@ public class JobManagerGenerator {
         }
         return configurations;
     }
+
 }

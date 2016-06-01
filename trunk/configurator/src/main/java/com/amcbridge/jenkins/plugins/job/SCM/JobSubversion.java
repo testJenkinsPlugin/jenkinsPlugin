@@ -17,36 +17,33 @@ public class JobSubversion implements JobElementDescription {
     private static final String URL_TAG = "remote";
     private static final String LOCAL_TAG = "local";
     private static final String MODULE_TAG = "hudson.scm.SubversionSCM_-ModuleLocation";
-    private static final String DEFAULT_LOCAL = "Development";
     private static final String LOCATIONS_TAG = "locations";
     private static final String CREDENTIAL_ID_TAG = "credentialsId";
 
     private static final String TEMPLATE_PATH = "/plugins/build-configurator/job/scm/subversion.xml";
-
+    @Override
     public String getElementTag() {
         return JobSCM.ELEMENT_TAG;
     }
-
+    @Override
     public String getParentElementTag() {
         return JobSCM.PARENT_ELEMENT_TAG;
     }
-
-    public String generateXML(BuildConfigurationModel config) {
+    @Override
+    public String generateXML(BuildConfigurationModel config) throws ParserConfigurationException {
 
         if (config.getProjectToBuild() == null) {
             return StringUtils.EMPTY;
         }
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = null;
-        try {
-            docBuilder = docFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+
 
         Document doc = JobManagerGenerator.loadTemplate(TEMPLATE_PATH);
-        Node node, imported_node;
+        Node node;
+        Node importedNode;
         Document module = docBuilder.newDocument();
         if (doc.getElementsByTagName(MODULE_TAG).getLength() > 0) {
             module.appendChild(module.importNode(doc.getElementsByTagName(MODULE_TAG).item(0), true));
@@ -55,13 +52,10 @@ public class JobSubversion implements JobElementDescription {
 
         if (doc.getElementsByTagName(LOCATIONS_TAG).getLength() > 0) {
             locations = doc.getElementsByTagName(LOCATIONS_TAG).item(0);
-            try {
-                if (locations.getChildNodes().getLength() >= 2) {
-                    locations.removeChild(locations.getChildNodes().item(1));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (locations.getChildNodes().getLength() >= 2) {
+                locations.removeChild(locations.getChildNodes().item(1));
             }
+
         } else {
             node = doc.getFirstChild();
             node.appendChild(doc.createElement(LOCATIONS_TAG));
@@ -94,14 +88,15 @@ public class JobSubversion implements JobElementDescription {
             module = setModuleValue(module, config.getProjectToBuild().get(i).getProjectUrl(),
                     config.getProjectToBuild().get(i).getLocalDirectoryPath());
             module = setModuleCredentialsValue(module, credentialsId);
-            imported_node = doc.importNode(module.getChildNodes().item(0), true);
-            node.appendChild(imported_node);
+            importedNode = doc.importNode(module.getChildNodes().item(0), true);
+            node.appendChild(importedNode);
         }
 
         return JobManagerGenerator.documentToXML(doc);
     }
 
-    public void appendToXML(BuildConfigurationModel config, Document doc) {
+    @Override
+    public void appendToXML(BuildConfigurationModel config, Document doc) throws ParserConfigurationException {
         JobSCM.removeSCM(doc);
         JobSCM.insertSCM(doc, generateXML(config));
     }

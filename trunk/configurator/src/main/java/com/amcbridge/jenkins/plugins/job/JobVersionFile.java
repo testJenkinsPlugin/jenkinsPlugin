@@ -15,14 +15,17 @@ public class JobVersionFile implements JobElementDescription {
     private static final String REGEXP_TAG = "regexp";
     private static final String EXPRESSION = "\\[getting of version of the build started by hudson\\] (.*)";
 
+    @Override
     public String getElementTag() {
         return ELEMENT_TAG;
     }
 
+    @Override
     public String getParentElementTag() {
         return PARENT_ELEMENT_TAG;
     }
 
+    @Override
     public String generateXML(BuildConfigurationModel config) {
 
         if (!isVersionFileSet(config)) {
@@ -34,6 +37,7 @@ public class JobVersionFile implements JobElementDescription {
         return JobManagerGenerator.convertToXML(dsp);
     }
 
+    @Override
     public void appendToXML(BuildConfigurationModel config, Document xml) {
 
         if (!isVersionFileSet(config)) {

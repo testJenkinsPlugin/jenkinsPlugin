@@ -6,6 +6,7 @@ import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.FormResult;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
+import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
@@ -20,14 +21,12 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
-import org.xml.sax.SAXException;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.servlet.ServletException;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +46,7 @@ public final class BuildConfigurator implements RootAction {
         mail = new MailSender();
     }
 
+    @Override
     public String getDisplayName() {
         if (User.current() == null) {
             return null;
@@ -54,6 +54,7 @@ public final class BuildConfigurator implements RootAction {
         return PLUGIN_NAME;
     }
 
+    @Override
     public String getIconFileName() {
         if (User.current() == null) {
             return null;
@@ -61,6 +62,7 @@ public final class BuildConfigurator implements RootAction {
         return ICON_PATH;
     }
 
+    @Override
     public String getUrlName() {
         if (User.current() == null) {
             return null;
@@ -210,8 +212,13 @@ public final class BuildConfigurator implements RootAction {
             loadCreateNewBuildConfiguration();
         }
 
-        return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
-                .getProjectToBuildlView();
+        try {
+            return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
+                    .getProjectToBuildlView();
+        } catch (JenkinsInstanceNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @JavaScriptMethod
@@ -244,14 +251,20 @@ public final class BuildConfigurator implements RootAction {
                     conf = BuildConfigurationManager.load(projectName);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    return null;
                 }
 
                 if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
             loadCreateNewBuildConfiguration();
         }
 
-        return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
-                .getUserAccessView(conf.getUserWithAccess());
+        try {
+            return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
+                    .getUserAccessView(conf.getUserWithAccess());
+        } catch (JenkinsInstanceNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @JavaScriptMethod
@@ -274,19 +287,32 @@ public final class BuildConfigurator implements RootAction {
 
     @JavaScriptMethod
     public void loadCreateNewBuildConfiguration() {
-        Stapler.getCurrentRequest().getSession().setAttribute(VIEW_GENERATOR, new ViewGenerator());
+        try {
+            Stapler.getCurrentRequest().getSession().setAttribute(VIEW_GENERATOR, new ViewGenerator());
+        } catch (JenkinsInstanceNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @JavaScriptMethod
     public Boolean isNameFree(String name) {
-        return !BuildConfigurationManager.isNameUsing(name);
+        try {
+            return !BuildConfigurationManager.isNameUsing(name);
+        } catch (JenkinsInstanceNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @JavaScriptMethod
     public String getFullNameCreator(String creator) {
-        User user = User.current().get(creator);
-        String fullname = user.getFullName();
-        return fullname;
+        User user;
+        if (User.current() != null) {
+            user = User.get(creator);
+            return user.getFullName();
+        } else {
+            return "Error, user not found";
+        }
     }
 
     @JavaScriptMethod
@@ -308,7 +334,12 @@ public final class BuildConfigurator implements RootAction {
 
     @JavaScriptMethod
     public static Boolean isCurrentUserAdministrator() {
-        return BuildConfigurationManager.isCurrentUserAdministrator();
+        try {
+            return BuildConfigurationManager.isCurrentUserAdministrator();
+        } catch (JenkinsInstanceNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @JavaScriptMethod
@@ -321,23 +352,42 @@ public final class BuildConfigurator implements RootAction {
     }
 
     public List<String> getSCM() {
-        return BuildConfigurationManager.getSCM();
+        try {
+            return BuildConfigurationManager.getSCM();
+        } catch (JenkinsInstanceNotFoundException e) {
+            return new LinkedList<>();
+        }
     }
 
     public List<String> getNodesName() {
-        return BuildConfigurationManager.getNodesName();
+        try {
+            return BuildConfigurationManager.getNodesName();
+        } catch (JenkinsInstanceNotFoundException e) {
+            e.printStackTrace();
+            return new LinkedList<>();
+        }
     }
 
     @JavaScriptMethod
-    public void createJob(String name)
-            throws IOException, ParserConfigurationException,
-            SAXException, TransformerException, JAXBException {
-        BuildConfigurationManager.createJob(name);
+    public boolean createJob(String name) {
+        try {
+            BuildConfigurationManager.createJob(name);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        // TODO alert user if failure !!!
     }
 
     @JavaScriptMethod
     public Boolean isJobCreated(String name) {
-        return JobManagerGenerator.isJobExist(JobManagerGenerator.validJobName(name));
+        try {
+            return JobManagerGenerator.isJobExist(JobManagerGenerator.validJobName(name));
+        } catch (JenkinsInstanceNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @JavaScriptMethod
@@ -350,11 +400,9 @@ public final class BuildConfigurator implements RootAction {
     @JavaScriptMethod
     public boolean isJenkinsEmailConfigOK() {
         Properties prop = new Properties();
-        InputStream inputStream = null;
         boolean isEmailPropertiesOK = false;
         boolean isPortOk = false;
-        try {
-            inputStream = new FileInputStream(MailSender.getMailPropertiesFileName());
+        try (InputStream inputStream = new FileInputStream(MailSender.getMailPropertiesFileName())) {
             prop.load(inputStream);
 
             String host = prop.getProperty("host");
@@ -363,21 +411,12 @@ public final class BuildConfigurator implements RootAction {
             isEmailPropertiesOK = (host != null && !host.equals("")) && (from != null && !from.equals("")) && (pass != null && !pass.equals(""));
             String strPort = prop.getProperty("port");
             isPortOk = (strPort != null) && (strPort.matches("[0-9]+"));
+            return isEmailPropertiesOK && isPortOk;
 
         } catch (Exception ex) {
             ex.printStackTrace();
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return isEmailPropertiesOK && isPortOk;
+            return false;
         }
-
-
     }
 
     @JavaScriptMethod

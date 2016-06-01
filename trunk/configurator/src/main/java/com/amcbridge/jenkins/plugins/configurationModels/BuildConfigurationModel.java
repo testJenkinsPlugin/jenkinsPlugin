@@ -42,8 +42,9 @@ public class BuildConfigurationModel {
     }
 
     private void initCreator() {
-        if (User.current() != null) {
-            creator = User.current().getId();
+        User user = User.current();
+        if (user != null) {
+            creator = user.getId();
         } else {
             creator = BuildConfigurationManager.STRING_EMPTY;
         }

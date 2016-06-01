@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Vector;
 
 import com.amcbridge.jenkins.plugins.configurationModels.UserAccessModel;
+import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
 import com.amcbridge.jenkins.plugins.xstreamElements.BuilderLoader;
 import com.amcbridge.jenkins.plugins.xstreamElements.PlatformLoader;
 import jenkins.model.Jenkins;
@@ -28,7 +29,7 @@ public class ViewGenerator {
     private Integer id;
     private BuilderLoader builderLoader;
 
-    public ViewGenerator() {
+    public ViewGenerator() throws JenkinsInstanceNotFoundException {
         id = 0;
         builderLoader = new BuilderLoader();
     }
@@ -37,14 +38,31 @@ public class ViewGenerator {
             throws UnsupportedEncodingException, JellyException {
         ProjectToBuildView result = new ProjectToBuildView();
 
-        String viewTemplatePath = Jenkins.getInstance().getRootDir() + BUILDER_VIEW;
+        String viewTemplatePath = null;
+        try {
+            viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + BUILDER_VIEW;
+        } catch (JenkinsInstanceNotFoundException e) {
+            e.printStackTrace();
+            result.setHtml("");
+            return result;
+        }
         viewTemplatePath = viewTemplatePath.replaceAll(" ", HTML_SPACE);
         jcontext.setVariable("divID", id);
         id++;
         jcontext.setVariable("builders", builderLoader.getBuilders());
-        jcontext.setVariable("platforms", (new PlatformLoader()).getPlatformList());
+
+        try {
+            jcontext.setVariable("platforms", (new PlatformLoader()).getPlatformList());
+        } catch (JenkinsInstanceNotFoundException e) {
+            e.printStackTrace();
+            jcontext.setVariable("platforms", null);
+        }
         jcontext.setVariable("configuration", Configuration.values());
-        jcontext.setVariable("isAdmin", BuildConfigurationManager.isCurrentUserAdministrator());
+        try {
+            jcontext.setVariable("isAdmin", BuildConfigurationManager.isCurrentUserAdministrator());
+        } catch (JenkinsInstanceNotFoundException e) {
+            jcontext.setVariable("isAdmin", false);
+        }
 
         result.setViewId(id);
 
@@ -68,7 +86,14 @@ public class ViewGenerator {
     private ProjectToBuildView setContextForUserAccessView(JellyContext jcontext)
             throws UnsupportedEncodingException, JellyException {
         ProjectToBuildView result = new ProjectToBuildView();
-        String viewTemplatePath = Jenkins.getInstance().getRootDir() + USERACCESS_VIEW_PATH;
+        String viewTemplatePath = null;
+        try {
+            viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + USERACCESS_VIEW_PATH;
+        } catch (JenkinsInstanceNotFoundException e) {
+            e.printStackTrace();
+            result.setHtml("");
+            return result;
+        }
         viewTemplatePath = viewTemplatePath.replaceAll(" ", HTML_SPACE);
         result.setHtml(launchScript(jcontext, viewTemplatePath));
 
@@ -82,7 +107,7 @@ public class ViewGenerator {
     }
 
     public ProjectToBuildView getUserAccessView(List<UserAccessModel> userConfig)
-            throws UnsupportedEncodingException, JellyException {
+            throws UnsupportedEncodingException, JellyException, JenkinsInstanceNotFoundException {
 
         ProjectToBuildView result = new ProjectToBuildView();
         if (userConfig == null || userConfig.size() == 0) {
@@ -90,7 +115,7 @@ public class ViewGenerator {
             return result;
         }
 
-        String viewTemplatePath = Jenkins.getInstance().getRootDir() + USERACCESS_VIEW_PATH;
+        String viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + USERACCESS_VIEW_PATH;
         viewTemplatePath = viewTemplatePath.replaceAll(" ", HTML_SPACE);
         String html = "";
 
@@ -106,10 +131,10 @@ public class ViewGenerator {
 
 
     public ProjectToBuildView getProjectToBuildlView()
-            throws UnsupportedEncodingException, JellyException {
+            throws UnsupportedEncodingException, JellyException, JenkinsInstanceNotFoundException {
         ProjectToBuildView result = new ProjectToBuildView();
 
-        String viewTemplatePath = Jenkins.getInstance().getRootDir() + PROJECT_TO_BUILD_VIEW;
+        String viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + PROJECT_TO_BUILD_VIEW;
         viewTemplatePath = viewTemplatePath.replaceAll(" ", HTML_SPACE);
 
         JellyContext jcontext = new JellyContext();
@@ -137,7 +162,7 @@ public class ViewGenerator {
     }
 
     public ProjectToBuildView getProjectToBuildlView(List<ProjectToBuildModel> views)
-            throws UnsupportedEncodingException, JellyException {
+            throws UnsupportedEncodingException, JellyException, JenkinsInstanceNotFoundException {
         ProjectToBuildView result = new ProjectToBuildView();
         if (views.size() == 0) {
             result.setHtml(BuildConfigurationManager.STRING_EMPTY);
@@ -145,7 +170,7 @@ public class ViewGenerator {
             return result;
         }
 
-        String viewTemplatePath = Jenkins.getInstance().getRootDir() + PROJECT_TO_BUILD_VIEW;
+        String viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + PROJECT_TO_BUILD_VIEW;
         viewTemplatePath = viewTemplatePath.replaceAll(" ", HTML_SPACE);
         String html = "";
 

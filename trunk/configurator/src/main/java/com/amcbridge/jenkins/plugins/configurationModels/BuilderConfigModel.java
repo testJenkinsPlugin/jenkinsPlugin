@@ -19,7 +19,7 @@ public class BuilderConfigModel {
     @DataBoundConstructor
     public BuilderConfigModel(String builder, String platform, String userConfig,
                               Boolean release, Boolean debug, Boolean other, String builderArgs, String guid) {
-        this.configs = new ArrayList<Configuration>();
+        this.configs = new ArrayList<>();
         this.builder = builder;
         this.platform = platform;
         this.userConfig = userConfig;
