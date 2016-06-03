@@ -15,7 +15,6 @@ import com.amcbridge.jenkins.plugins.serialization.*;
 import com.thoughtworks.xstream.XStream;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
-import jenkins.model.Jenkins;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.*;
@@ -38,10 +37,6 @@ import java.util.regex.Pattern;
 
 public class JobManagerGenerator {
 
-    private static final String BUILDSTEP_SHELL_SCRIPT_CLASS = "hudson.tasks.Shell";
-    private static final String BUILDSTEP_BATCH_SCRIPT_CLASS = "hudson.tasks.BatchFile";
-    public static final String CONFIG_BATCH_TYPE = "batch_type";
-    public static final String CONFIG_SHELL_TYPE = "shell_type";
     public static final String COMMA_SEPARATOR = ", ";
     private static final String JOB_TEMPLATE_PATH = "/plugins/build-configurator/job/config.xml";
     private static final String JOB_FOLDER_PATH = "/jobs/";
@@ -68,17 +63,14 @@ public class JobManagerGenerator {
         correctArtifactPaths(config.getProjectToBuild());
         correctVersionFilesPaths(config.getProjectToBuild());
         correctLocalFolderPaths(config.getProjectToBuild());
+        System.err.println("Error test");
 
         if (isJobExist(jobName)) {
             updateJobXML(jobName, config);
         } else {
-            try {
                 FileInputStream fis = new FileInputStream(getJobXML(config));
                 BuildConfigurationManager.getJenkins().createProjectFromXML(jobName, fis);
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-                throw new IOException("Job not created!", ex);
-            }
+
         }
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
             config.getProjectToBuild().get(i).setArtefacts(prevArtefacts.get(i));
@@ -155,8 +147,31 @@ public class JobManagerGenerator {
         if (doc == null) {
             throw new FileNotFoundException(JOB_TEMPLATE_PATH + " file not found");
         }
-        createJobConfigNodes(doc, config);
-        createPreAndPostScriptsNodes(config, doc);
+        return createJobXMLFile(config, JOB_TEMPLATE_PATH, false);
+    }
+
+
+    private static void updateJobXML(String jobName, BuildConfigurationModel config) throws IOException, TransformerException, SAXException, ParserConfigurationException, XPathExpressionException {
+        AbstractItem item = (AbstractItem) BuildConfigurationManager.getJenkins().getItemByFullName(jobName);
+        if (item == null) {
+            throw new NullPointerException("Jenkins item not found");
+        }
+        String jobPath = JOB_FOLDER_PATH + jobName + "/config.xml";
+
+        File jobUpdateFile = createJobXMLFile(config, jobPath, true);
+        Source streamSource = new StreamSource(jobUpdateFile);
+        item.updateByXml(streamSource);
+        item.save();
+    }
+
+    private static File createJobXMLFile(BuildConfigurationModel config, String pathToJob, boolean isFileForUpdate) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, TransformerException {
+        Document doc = loadTemplate(pathToJob);
+        if (doc == null) {
+            throw new FileNotFoundException(pathToJob + " file not found");
+        }
+        if (!isFileForUpdate) {
+            createJobConfigNodes(doc, config);
+        }
         setJobConfigFileName(doc, config.getProjectName());
         writeJobConfigForBuildServer(config);
 
@@ -168,50 +183,6 @@ public class JobManagerGenerator {
         StreamResult result = new StreamResult(file);
         transformer.transform(source, result);
         return file;
-    }
-
-
-    private static void updateJobXML(String jobName, BuildConfigurationModel config) throws IOException, TransformerException, SAXException, ParserConfigurationException, XPathExpressionException {
-        AbstractItem item = (AbstractItem) BuildConfigurationManager.getJenkins().getItemByFullName(jobName);
-        if (item == null){
-            throw new NullPointerException("Jenkins item not found");
-        }
-        String jobPath = JOB_FOLDER_PATH + jobName + "/config.xml";
-        Document doc = loadTemplate(jobPath);
-        if (doc == null) {
-            throw new FileNotFoundException(JOB_TEMPLATE_PATH + " file not found");
-        }
-
-        createJobConfigNodes(doc, config);
-
-        //removing pre and post scripts (first and last child nodes in <builders> node)
-        Node buildStepNodeJ = doc.getElementsByTagName("builders").item(0);
-        removeJunkElements(buildStepNodeJ.getChildNodes());
-        Node scriptNode = buildStepNodeJ.getFirstChild();
-        Node scriptChildNode = scriptNode.getFirstChild();
-        if (config.getPreScript() != null) {
-            removeScriptNode(scriptNode, scriptChildNode);
-        }
-        scriptNode = buildStepNodeJ.getLastChild();
-        scriptChildNode = scriptNode.getLastChild();
-        if (config.getPostScript() != null) {
-            removeScriptNode(scriptNode, scriptChildNode);
-        }
-        createPreAndPostScriptsNodes(config, doc);
-        setJobConfigFileName(doc, config.getProjectName());
-
-        writeJobConfigForBuildServer(config);
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        DOMSource source = new DOMSource(doc);
-
-        File file = BuildConfigurationManager.getFileToCreateJob();
-        StreamResult result = new StreamResult(file);
-        transformer.transform(source, result);
-
-        Source streamSource = new StreamSource(file);
-        item.updateByXml(streamSource);
-        item.save();
     }
 
     private static void setJobConfigFileName(Document doc, String jobName) throws XPathExpressionException {
@@ -242,13 +213,10 @@ public class JobManagerGenerator {
 
         FileOutputStream fos = new FileOutputStream(userContentPath);
         Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING);
-        try {
-            out.write(XML_TITLE);
-            out.write(paramsXML);
-        } finally {
-            out.close();
-            fos.close();
-        }
+        out.write(XML_TITLE);
+        out.write(paramsXML);
+        out.close();
+        fos.close();
     }
 
 
@@ -272,47 +240,6 @@ public class JobManagerGenerator {
 
     }
 
-    private static void createPreAndPostScriptsNodes(BuildConfigurationModel config, Document doc) {
-        if (config.getScriptType() == null) {
-            config.setScriptType(CONFIG_BATCH_TYPE);
-        }
-
-        String buildStepScriptClass = config.getScriptType().equals(CONFIG_BATCH_TYPE) ? BUILDSTEP_BATCH_SCRIPT_CLASS : BUILDSTEP_SHELL_SCRIPT_CLASS;
-
-        NodeList buildStepNodeList = doc.getElementsByTagName("builders");
-        Element buildStepNode;
-        if (config.getPreScript() != null && !config.getPreScript().equals("")) {
-            buildStepNode = doc.createElement(buildStepScriptClass);
-            createScriptNode(doc, buildStepNode, config.getPreScript());
-            buildStepNodeList.item(0).insertBefore(buildStepNode, buildStepNodeList.item(0).getFirstChild());
-        }
-
-        if (config.getPostScript() != null && !config.getPostScript().equals("")) {
-            buildStepNode = doc.createElement(buildStepScriptClass);
-            createScriptNode(doc, buildStepNode, config.getPostScript());
-            buildStepNodeList.item(0).insertBefore(buildStepNode, null);
-        }
-    }
-
-    private static void removeScriptNode(Node scriptNode, Node scriptChildNode) {
-
-        if (scriptNode != null && (scriptNode.getNodeName().equals(BUILDSTEP_BATCH_SCRIPT_CLASS) || scriptNode.getNodeName().equals(BUILDSTEP_SHELL_SCRIPT_CLASS))) {
-            if (scriptChildNode != null && scriptChildNode.getNodeName().equals("command")) {
-                scriptNode.getParentNode().removeChild(scriptNode);
-            }
-
-        }
-    }
-
-
-    private static void createScriptNode(Document doc, Element buildStepNode, String scriptBody) {
-        //Script  node changed for use same node name before and after update
-        Element commandNode = doc.createElement("command");
-
-        Text scriptBodyNode = doc.createTextNode(scriptBody);
-        commandNode.appendChild(scriptBodyNode);
-        buildStepNode.appendChild(commandNode);
-    }
 
     private static JobElementDescription getSCM(BuildConfigurationModel config) {
         String scm = config.getScm();
@@ -329,25 +256,6 @@ public class JobManagerGenerator {
             jed = new JobNone();
         }
         return jed;
-    }
-
-
-    private static void removeJunkElements(NodeList builderList) {
-        //removing empty text nodes like whitespaces, new line symbols etc.
-        //going deep with recursion
-        for (int i = 0; i < builderList.getLength(); i++) {
-            removeJunkElements(builderList.item(i).getChildNodes());
-        }
-        List<Node> nodesToRemoveList = new LinkedList<>();
-        for (int i = 0; i < builderList.getLength(); i++) {
-            Node node = builderList.item(i);
-            if (node.getNodeType() != Node.ELEMENT_NODE && node.getNodeValue().trim().equals("")) {
-                nodesToRemoveList.add(builderList.item(i));
-            }
-        }
-        for (Node nodeToRemove : nodesToRemoveList) {
-            nodeToRemove.getParentNode().removeChild(nodeToRemove);
-        }
     }
 
 
@@ -391,16 +299,13 @@ public class JobManagerGenerator {
         return docBuilder.parse(input);
     }
 
-    public static Document loadTemplate(String path) {
+    public static Document loadTemplate(String path) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
         Document doc = null;
-        try {
-            docBuilder = docFactory.newDocumentBuilder();
-            doc = docBuilder.parse(BuildConfigurationManager.getJenkins().getRootDir() + path);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        docBuilder = docFactory.newDocumentBuilder();
+        doc = docBuilder.parse(BuildConfigurationManager.getJenkins().getRootDir() + path);
+
         return doc;
     }
 

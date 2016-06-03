@@ -11,6 +11,9 @@ import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.job.JobSCM;
 import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 
 public class JobSubversion implements JobElementDescription {
 
@@ -30,7 +33,7 @@ public class JobSubversion implements JobElementDescription {
         return JobSCM.PARENT_ELEMENT_TAG;
     }
     @Override
-    public String generateXML(BuildConfigurationModel config) throws ParserConfigurationException {
+    public String generateXML(BuildConfigurationModel config) throws ParserConfigurationException, IOException, SAXException {
 
         if (config.getProjectToBuild() == null) {
             return StringUtils.EMPTY;
@@ -96,7 +99,7 @@ public class JobSubversion implements JobElementDescription {
     }
 
     @Override
-    public void appendToXML(BuildConfigurationModel config, Document doc) throws ParserConfigurationException {
+    public void appendToXML(BuildConfigurationModel config, Document doc) throws ParserConfigurationException, IOException, SAXException {
         JobSCM.removeSCM(doc);
         JobSCM.insertSCM(doc, generateXML(config));
     }

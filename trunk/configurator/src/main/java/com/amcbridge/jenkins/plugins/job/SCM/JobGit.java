@@ -8,8 +8,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
+import java.io.IOException;
 
 public class JobGit implements JobElementDescription {
 
@@ -34,7 +37,7 @@ public class JobGit implements JobElementDescription {
     }
 
     @Override
-    public String generateXML(BuildConfigurationModel config) throws XPathExpressionException {
+    public String generateXML(BuildConfigurationModel config) throws XPathExpressionException, IOException, SAXException, ParserConfigurationException {
 
         if (config.getProjectToBuild() == null) {
             return StringUtils.EMPTY;
@@ -94,7 +97,7 @@ public class JobGit implements JobElementDescription {
     }
 
     @Override
-    public void appendToXML(BuildConfigurationModel config, Document doc) throws XPathExpressionException {
+    public void appendToXML(BuildConfigurationModel config, Document doc) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
         JobSCM.removeSCM(doc);
         JobSCM.insertSCM(doc, generateXML(config));
     }
