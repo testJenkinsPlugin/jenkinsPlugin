@@ -1,18 +1,17 @@
-package com.amcbridge.jenkins.plugins.xstreamElements;
+package com.amcbridge.jenkins.plugins.xstreamelements;
 
 import java.io.File;
 import java.util.List;
 
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
-import jenkins.model.Jenkins;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("builders")
 public class BuilderLoader {
 
-    private static final String BUILDER = "/plugins/build-configurator/builder/Builders.xml";
+    private static final String BUILDER = "/plugins/build-configurator/config/Builders.xml";
     List<Builder> builders;
 
     public BuilderLoader() throws JenkinsInstanceNotFoundException {

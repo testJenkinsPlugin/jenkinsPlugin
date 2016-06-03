@@ -6,16 +6,15 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Vector;
 
-import com.amcbridge.jenkins.plugins.configurationModels.UserAccessModel;
+import com.amcbridge.jenkins.plugins.models.UserAccessModel;
 import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
-import com.amcbridge.jenkins.plugins.xstreamElements.BuilderLoader;
-import com.amcbridge.jenkins.plugins.xstreamElements.PlatformLoader;
-import jenkins.model.Jenkins;
+import com.amcbridge.jenkins.plugins.xstreamelements.BuilderLoader;
+import com.amcbridge.jenkins.plugins.xstreamelements.PlatformLoader;
 import org.apache.commons.jelly.JellyContext;
 import org.apache.commons.jelly.JellyException;
 import org.apache.commons.jelly.XMLOutput;
-import com.amcbridge.jenkins.plugins.configurationModels.BuilderConfigModel;
-import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
+import com.amcbridge.jenkins.plugins.models.BuilderConfigModel;
+import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.*;
 

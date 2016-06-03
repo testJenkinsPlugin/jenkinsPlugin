@@ -4,8 +4,8 @@ import hudson.tasks.Mailer;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
+import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescription;
 
 public class JobMailer implements JobElementDescription {
 

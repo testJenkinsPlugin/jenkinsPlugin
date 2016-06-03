@@ -1,4 +1,4 @@
-package com.amcbridge.jenkins.plugins.configurationModels;
+package com.amcbridge.jenkins.plugins.models;
 
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;

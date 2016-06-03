@@ -1,8 +1,8 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
-import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.configurationModels.BuilderConfigModel;
-import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
+import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.models.BuilderConfigModel;
+import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.FormResult;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
@@ -40,7 +40,7 @@ public final class BuildConfigurator implements RootAction {
     private static final String VIEW_GENERATOR = "viewGenerator";
     private static final String PLUGIN_NAME = "Build Configurator";
     private static final String ICON_PATH = "/plugin/build-configurator/icons/system_config_services.png";
-    private static final String DEFAULT_PAGE_URL = "BuildConfigurator";
+    private static final String DEFAULT_PAGE_URL = "buildconfigurator";
 
     public BuildConfigurator() {
         mail = new MailSender();
@@ -222,7 +222,7 @@ public final class BuildConfigurator implements RootAction {
     }
 
     @JavaScriptMethod
-    public ProjectToBuildView loadViews(String projectName)
+    public ProjectToBuildView loadViews(String projectName) //TODO: catch exceptions
             throws JellyException, IOException, JAXBException {
         BuildConfigurationModel conf = BuildConfigurationManager.load(projectName);
 

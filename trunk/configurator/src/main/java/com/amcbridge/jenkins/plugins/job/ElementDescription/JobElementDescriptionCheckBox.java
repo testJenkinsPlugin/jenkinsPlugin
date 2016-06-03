@@ -1,4 +1,4 @@
-package com.amcbridge.jenkins.plugins.job.ElementDescription;
+package com.amcbridge.jenkins.plugins.job.elementdescription;
 
 import org.w3c.dom.Document;
 

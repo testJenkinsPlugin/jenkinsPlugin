@@ -35,7 +35,7 @@
                                          <br/>   </j:if>
                                             </j:if>
 
-            <a href="CreateBuildConfigurator" class="CreateBuildConfigurator">Create new build configuration</a>
+            <a href="create" class="CreateBuildConfigurator">Create new build configuration</a>
 
 
 
@@ -48,7 +48,7 @@
             </table>
             <table id="table" class="config table">
                 <thead>
-                        <tr height="30" bgcolor="#CCCCCC">
+                        <tr height="30" bgcolor="#eee">
                             <th class="project-name-column">Project name</th>
                             <th class="state-column">State</th>
                             <th class="last-update-date-column">Last update date</th>

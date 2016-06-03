@@ -16,7 +16,7 @@
 
 .config tr td, .config tr th {
     font-size: 15px;
-    border: 1px solid #000;
+    border: 1px solid #bbb;
 }
 
 .table {

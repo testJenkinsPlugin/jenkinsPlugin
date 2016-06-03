@@ -17,7 +17,7 @@ public class MailSender implements Runnable {
     private String pass;
     private Integer port;
     private static MessageInfo message;
-    private static final String MAIL_PROPERTIES_FILE_NAME = "/plugins/build-configurator/MailSender.properties";
+    private static final String MAIL_PROPERTIES_FILE_NAME = "/plugins/build-configurator/config/MailSender.properties";
 
     public void sendMail(MessageInfo message) throws AddressException,
             MessagingException {

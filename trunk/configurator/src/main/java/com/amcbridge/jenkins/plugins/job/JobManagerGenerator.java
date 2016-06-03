@@ -1,16 +1,16 @@
 package com.amcbridge.jenkins.plugins.job;
 
-import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.configurationModels.BuilderConfigModel;
-import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
+import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.models.BuilderConfigModel;
+import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.Configuration;
 import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
-import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
-import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescriptionCheckBox;
-import com.amcbridge.jenkins.plugins.job.SCM.JobGit;
-import com.amcbridge.jenkins.plugins.job.SCM.JobNone;
-import com.amcbridge.jenkins.plugins.job.SCM.JobSubversion;
+import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescription;
+import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescriptionCheckBox;
+import com.amcbridge.jenkins.plugins.job.scm.JobGit;
+import com.amcbridge.jenkins.plugins.job.scm.JobNone;
+import com.amcbridge.jenkins.plugins.job.scm.JobSubversion;
 import com.amcbridge.jenkins.plugins.serialization.*;
 import com.thoughtworks.xstream.XStream;
 import hudson.model.AbstractItem;
@@ -31,14 +31,13 @@ import javax.xml.xpath.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class JobManagerGenerator {
 
     public static final String COMMA_SEPARATOR = ", ";
-    private static final String JOB_TEMPLATE_PATH = "/plugins/build-configurator/job/config.xml";
+    private static final String JOB_TEMPLATE_PATH = "/plugins/build-configurator/job/JobTemplate.xml";
     private static final String JOB_FOLDER_PATH = "/jobs/";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
     private static final String XPATH_FILE_TO_COPY = "/project/buildWrappers/com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper/includes/text()";

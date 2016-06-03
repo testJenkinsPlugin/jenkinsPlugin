@@ -1,12 +1,12 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
-import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.configurationModels.UserAccessModel;
+import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.models.UserAccessModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
 import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
-import com.amcbridge.jenkins.plugins.xstreamElements.SCM;
-import com.amcbridge.jenkins.plugins.xstreamElements.SCMLoader;
+import com.amcbridge.jenkins.plugins.xstreamelements.SCM;
+import com.amcbridge.jenkins.plugins.xstreamelements.SCMLoader;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;

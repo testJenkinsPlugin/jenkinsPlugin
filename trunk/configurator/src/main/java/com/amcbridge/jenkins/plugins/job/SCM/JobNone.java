@@ -1,4 +1,4 @@
-package com.amcbridge.jenkins.plugins.job.SCM;
+package com.amcbridge.jenkins.plugins.job.scm;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -7,10 +7,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import hudson.scm.NullSCM;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.job.JobSCM;
-import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
+import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescription;
 
 public class JobNone implements JobElementDescription {
 

@@ -1,7 +1,7 @@
-package com.amcbridge.jenkins.plugins.job.SCM;
+package com.amcbridge.jenkins.plugins.job.scm;
 
-import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
+import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescription;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.job.JobSCM;
 import org.apache.commons.lang.StringUtils;
@@ -57,7 +57,7 @@ public class JobGit implements JobElementDescription {
         int projectsQuantity = config.getProjectToBuild().size();
         int nodesToCopyQuantity = projectsQuantity - 1;
 
-        // copy default SCM node with empty values
+        // copy default scm node with empty values
         for (int nodeIndex = 0; nodeIndex < nodesToCopyQuantity; nodeIndex++) {
             exp = xPath.compile(nodeToCopyExpression);
             Node gitPlNode = (Node) exp.evaluate(doc, XPathConstants.NODE);
