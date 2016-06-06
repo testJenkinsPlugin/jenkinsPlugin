@@ -126,11 +126,11 @@
                     <div>
                     <label class="div-label">Script type</label>
 
-
-                                  <select name="scriptType" id="scriptTypeSelect">
-                                      <option value="batch_type">Windows batch</option>
-                                      <option value="shell_type">Unix shell</option>
-                                 </select>
+                                <select name="scriptType" id="scriptTypeSelect">
+                                  <j:forEach items="${it.getScriptTypes()}" var="script">
+                                       <option value="${script}">${script}</option>
+                                   </j:forEach>
+                               </select>
 
                         <br/>
                         <br/>

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<scriptTypes>
+    <scriptType>
+        <scriptTypeName>Windows batch</scriptTypeName>
+    </scriptType>
+    <scriptType>
+        <scriptTypeName>Unix shell</scriptTypeName>
+    </scriptType>
+    <scriptType>
+        <scriptTypeName>Python</scriptTypeName>
+    </scriptType>
+</scriptTypes>

@@ -11,6 +11,8 @@ import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
 import com.amcbridge.jenkins.plugins.serialization.CredentialItem;
+import com.amcbridge.jenkins.plugins.xstreamelements.ScriptType;
+import com.amcbridge.jenkins.plugins.xstreamelements.ScriptTypeLoader;
 import hudson.XmlFile;
 import hudson.model.Node;
 import hudson.model.User;
@@ -442,5 +444,10 @@ public class BuildConfigurationManager {
             throw new JenkinsInstanceNotFoundException("Jenkins instance not found");
         }
         return Jenkins.getInstance();
+    }
+
+    public static List<ScriptType> getScriptTypes() throws JenkinsInstanceNotFoundException {
+        ScriptTypeLoader loader = new ScriptTypeLoader();
+        return loader.getScriptTypeList();
     }
 }

@@ -12,6 +12,7 @@ import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
 import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
+import com.amcbridge.jenkins.plugins.xstreamelements.ScriptType;
 import hudson.Extension;
 import hudson.model.RootAction;
 import hudson.model.User;
@@ -425,7 +426,15 @@ public final class BuildConfigurator implements RootAction {
         return version;
     }
 
-
+    @JavaScriptMethod
+    public List<ScriptType> getScriptTypes() {
+        try {
+            return BuildConfigurationManager.getScriptTypes();
+        } catch (JenkinsInstanceNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }
 
