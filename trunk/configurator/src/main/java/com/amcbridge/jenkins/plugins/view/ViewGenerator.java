@@ -72,7 +72,10 @@ public class ViewGenerator {
 
     public ProjectToBuildView getBuilderView()
             throws UnsupportedEncodingException, JellyException {
-        return setContextForBuilderView(new JellyContext());
+        JellyContext jcontext = new JellyContext();
+        BuilderConfigModel config = new BuilderConfigModel();
+        jcontext.setVariable("view", config);
+        return setContextForBuilderView(jcontext);
     }
 
     public ProjectToBuildView getBuilderView(BuilderConfigModel config)

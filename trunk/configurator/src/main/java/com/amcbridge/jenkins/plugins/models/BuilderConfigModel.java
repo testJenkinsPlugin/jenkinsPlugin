@@ -1,6 +1,7 @@
 package com.amcbridge.jenkins.plugins.models;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,6 +40,11 @@ public class BuilderConfigModel {
         if (other) {
             configs.add(Configuration.OTHER);
         }
+    }
+
+    public BuilderConfigModel(){
+        configs = new LinkedList<>();
+        configs.add(Configuration.RELEASE);
     }
 
     public List<Configuration> getConfigs() {
