@@ -205,8 +205,6 @@ public class BuildConfigurationManager {
             FileUtils.deleteDirectory(checkFile);
         }
 
-        deleteJob(name);
-
         ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName());
         message.setSubject(config.getProjectName());
         message.setDescription(MessageDescription.DELETE_PERMANENTLY.toString());

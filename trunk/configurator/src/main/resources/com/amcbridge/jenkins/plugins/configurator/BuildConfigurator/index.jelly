@@ -75,7 +75,7 @@
                                     <j:if test="${isAdmin}">
                                         <j:if test="${configs.getState().toString() == 'For Deletion'}">
                                             <j:if test="${h.hasPermission(app.ADMINISTER)}">
-                                                <a href="#" onclick="deletePermanently(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Delete permanently</a>
+                                                <a href="#" onclick="deletePermanently(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Delete configuration permanently</a>
                                                 <a href="#" onclick="restore(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Restore</a>
                                             </j:if>
                                         </j:if>
