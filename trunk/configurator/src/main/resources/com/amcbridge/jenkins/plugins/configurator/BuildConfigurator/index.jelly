@@ -37,8 +37,6 @@
 
             <a href="create" class="CreateBuildConfigurator">Create new build configuration</a>
 
-
-
             <table>
                 <thead>
                     <tr height="10">
@@ -109,6 +107,7 @@
                                 <j:if test="${!isCreator &amp;&amp; configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
                                     <a href="create?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
                                 </j:if>
+                                    <a href="#" onclick='copyConfiguration("${configs.getProjectName()}");' class="edit-link" >Copy</a>
                                 <span></span>
                             </td>
                             <td class="state">${configs.getFullNameCreator()}</td>
@@ -116,6 +115,27 @@
                     </j:forEach>
                 </tbody>
             </table>
+
+            <div id="copyConfig" class="modal display-none">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="close" id="closeCopyConfig">×</span>
+                        <h2 id="copyConfigHeader">Copy configuration</h2>
+                    </div>
+                    <div class="modal-body">
+
+                        <f:form method="post" action="copyConfig" id="copyConfigForm">
+                           <div class="user">
+                               <label>New configuration name </label>
+                               <input type="text" name="newConfigName" id="newConfigName" onchange="isCopyNameCorrect()"></input>
+                               <input type="hidden" name="copyConfigName" id="copyConfigName"/>
+                               <input type="submit" value="Copy" class="button-copy" onclick="return isCopyNameCorrect();"/>
+                           </div>
+                        </f:form>
+                    </div>
+                </div>
+            </div>
+
         </l:main-panel>
     </l:layout>
 </j:jelly>

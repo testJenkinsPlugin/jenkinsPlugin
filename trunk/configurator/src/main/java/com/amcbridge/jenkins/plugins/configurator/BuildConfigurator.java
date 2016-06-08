@@ -76,6 +76,37 @@ public final class BuildConfigurator implements RootAction {
         return BuildConfigurationManager.loadAllConfigurations();
     }
 
+    public void doCopyConfig(final StaplerRequest request,
+                             final StaplerResponse response) {
+        try {
+            JSONObject formAttribute = request.getSubmittedForm();
+            String modelToCopyName = (String) formAttribute.get("copyConfigName");
+            String modelNewName = (String) formAttribute.get("newConfigName");
+
+            User user = User.current();
+            boolean isCopyConfigOk = (modelToCopyName != null) && (!modelToCopyName.isEmpty());
+            boolean isNewConfigOk = (modelNewName != null) && (!modelNewName.isEmpty());
+            if (user != null || isCopyConfigOk || isNewConfigOk) {
+                String username;
+                username = BuildConfigurationManager.getCurrentUserID();
+
+                BuildConfigurationModel modelToCopy = BuildConfigurationManager.load(modelToCopyName);
+                modelToCopy.setCreator(username);
+                modelToCopy.setProjectName(modelNewName);
+                modelToCopy.setState(ConfigurationState.NEW);
+                BuildConfigurationManager.save(modelToCopy);
+            }
+            response.sendRedirect("./");
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                response.sendRedirect("./");
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
     public void doCreateNewConfigurator(final StaplerRequest request,
                                         final StaplerResponse response) throws
             IOException, ServletException, ParserConfigurationException, JAXBException,
