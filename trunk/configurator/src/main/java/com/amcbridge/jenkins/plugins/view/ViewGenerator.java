@@ -10,6 +10,7 @@ import com.amcbridge.jenkins.plugins.models.UserAccessModel;
 import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
 import com.amcbridge.jenkins.plugins.xstreamelements.BuilderLoader;
 import com.amcbridge.jenkins.plugins.xstreamelements.PlatformLoader;
+import jenkins.model.Jenkins;
 import org.apache.commons.jelly.JellyContext;
 import org.apache.commons.jelly.JellyException;
 import org.apache.commons.jelly.XMLOutput;

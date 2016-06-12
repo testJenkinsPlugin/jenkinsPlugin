@@ -115,6 +115,16 @@
                 </label>
                 </div>
 
+                <j:if test="${it.isWsPluginInstalled()}">
+
+                   <div class="div-textinput">
+                    <div class="div-project-name">
+                                           <label>Use workspace cleanup plugin</label>
+                                       </div>
+                        <f:checkbox name="cleanWorkspace" id="cleanWorkspace"  class="check-box" checked="true"/>
+                   </div>
+                </j:if>
+
                 <div id="projectsToBuild">
                 </div>
 

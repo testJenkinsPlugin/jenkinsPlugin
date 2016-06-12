@@ -467,5 +467,13 @@ public final class BuildConfigurator implements RootAction {
         }
     }
 
+    @JavaScriptMethod
+    public boolean isWsPluginInstalled() throws JenkinsInstanceNotFoundException {
+        if (BuildConfigurationManager.getJenkins().getPlugin("ws-cleanup") != null) {
+            return true;
+        }
+        return false;
+    }
+
 }
 

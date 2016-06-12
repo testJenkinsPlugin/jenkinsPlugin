@@ -28,6 +28,7 @@ public class BuildConfigurationModel {
     private String[] buildMachineConfiguration;
     private String comments;
     private List<UserAccessModel> userWithAccess;
+    private boolean cleanWorkspace;
 
     public String getComments() {
         return comments;
@@ -48,6 +49,7 @@ public class BuildConfigurationModel {
         } else {
             creator = BuildConfigurationManager.STRING_EMPTY;
         }
+//        cleanWorkspace = true;
     }
 
     public void initCurrentDate() {
@@ -184,5 +186,13 @@ public class BuildConfigurationModel {
 
     public void setUserWithAccess(List<UserAccessModel> userWithAccess) {
         this.userWithAccess = userWithAccess;
+    }
+
+    public boolean isCleanWorkspace() {
+        return cleanWorkspace;
+    }
+
+    public void setCleanWorkspace(boolean cleanWorkspace) {
+        this.cleanWorkspace = cleanWorkspace;
     }
 }

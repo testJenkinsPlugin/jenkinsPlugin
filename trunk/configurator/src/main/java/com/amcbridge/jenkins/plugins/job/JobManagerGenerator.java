@@ -12,12 +12,14 @@ import com.amcbridge.jenkins.plugins.job.scm.JobGit;
 import com.amcbridge.jenkins.plugins.job.scm.JobNone;
 import com.amcbridge.jenkins.plugins.job.scm.JobSubversion;
 import com.amcbridge.jenkins.plugins.serialization.*;
+import com.amcbridge.jenkins.plugins.serialization.Job;
+import com.amcbridge.jenkins.plugins.serialization.Project;
 import com.thoughtworks.xstream.XStream;
-import hudson.model.AbstractItem;
-import hudson.model.Item;
+import hudson.model.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.*;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -37,12 +39,14 @@ import java.util.regex.Pattern;
 public class JobManagerGenerator {
 
     public static final String COMMA_SEPARATOR = ", ";
-    private static final String JOB_TEMPLATE_PATH = "/plugins/build-configurator/job/JobTemplate.xml";
+    public static final String JOB_TEMPLATE_PATH = "/plugins/build-configurator/job/JobTemplate.xml";
     private static final String JOB_FOLDER_PATH = "/jobs/";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
     private static final String XPATH_FILE_TO_COPY = "/project/buildWrappers/com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper/includes/text()";
+
     private static final String XML_TITLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
+    private JobManagerGenerator(){}
 
     public static String convertToXML(Object obj) {
         XStream xstream = new XStream();
@@ -67,8 +71,9 @@ public class JobManagerGenerator {
         if (isJobExist(jobName)) {
             updateJobXML(jobName, config);
         } else {
-                FileInputStream fis = new FileInputStream(getJobXML(config));
-                BuildConfigurationManager.getJenkins().createProjectFromXML(jobName, fis);
+            File jobFile = createJobXMLFile(config, JOB_TEMPLATE_PATH, false);
+            FileInputStream fis = new FileInputStream(jobFile);
+            BuildConfigurationManager.getJenkins().createProjectFromXML(jobName, fis);
 
         }
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
@@ -139,16 +144,18 @@ public class JobManagerGenerator {
         return false;
     }
 
-    private static File getJobXML(BuildConfigurationModel config)
+  /*  private static File getJobXML(BuildConfigurationModel config)
             throws ParserConfigurationException,
             SAXException, IOException, TransformerException, XPathExpressionException {
-        Document doc = loadTemplate(JOB_TEMPLATE_PATH);
+        *//*Document doc = loadTemplate(JOB_TEMPLATE_PATH);
         if (doc == null) {
             throw new FileNotFoundException(JOB_TEMPLATE_PATH + " file not found");
         }
+*//*
+
         return createJobXMLFile(config, JOB_TEMPLATE_PATH, false);
     }
-
+*/
 
     private static void updateJobXML(String jobName, BuildConfigurationModel config) throws IOException, TransformerException, SAXException, ParserConfigurationException, XPathExpressionException {
         AbstractItem item = (AbstractItem) BuildConfigurationManager.getJenkins().getItemByFullName(jobName);
@@ -168,11 +175,13 @@ public class JobManagerGenerator {
         if (doc == null) {
             throw new FileNotFoundException(pathToJob + " file not found");
         }
+        WsPluginHelper.setWsPluginJobName(doc, config);
         if (!isFileForUpdate) {
             createJobConfigNodes(doc, config);
         }
         setJobConfigFileName(doc, config.getProjectName());
         writeJobConfigForBuildServer(config);
+        WsPluginHelper.wsPluginConfigure(doc,config);
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
@@ -186,7 +195,7 @@ public class JobManagerGenerator {
 
     private static void setJobConfigFileName(Document doc, String jobName) throws XPathExpressionException {
 
-        Node fileNameNode = null;
+        Node fileNameNode;
         XPath xPath = XPathFactory.newInstance().newXPath();
         XPathExpression exp;
             exp = xPath.compile(XPATH_FILE_TO_COPY);
@@ -194,12 +203,11 @@ public class JobManagerGenerator {
             fileNameNode.getTextContent();
             fileNameNode.getNodeValue();
 
-        if (jobName != null && fileNameNode != null) {
+        if (jobName != null) {
             fileNameNode.setTextContent(jobName + ".xml");
         }
 
     }
-
 
     private static void writeJobConfigForBuildServer(BuildConfigurationModel config) throws IOException {
         Job job = buildJob(config);
@@ -301,10 +309,9 @@ public class JobManagerGenerator {
     public static Document loadTemplate(String path) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
-        Document doc = null;
+        Document doc;
         docBuilder = docFactory.newDocumentBuilder();
         doc = docBuilder.parse(BuildConfigurationManager.getJenkins().getRootDir() + path);
-
         return doc;
     }
 

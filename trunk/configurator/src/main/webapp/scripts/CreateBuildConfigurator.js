@@ -93,6 +93,11 @@ var configurator = (function () {
             }
             jQuery("#configEmail").val(t.responseObject().configEmail);
 
+            if(t.responseObject().cleanWorkspace == false){
+                jQuery("#cleanWorkspace").prop('checked', false);
+            
+            }
+
             if (t.responseObject().creator != null) {
                 buildConfiguration.getFullNameCreator(t.responseObject().creator, function (t) {
                     jQuery("#userLabel").html("Created by:  " + t.responseObject());
