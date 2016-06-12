@@ -1,6 +1,7 @@
 package com.amcbridge.jenkins.plugins.xstreamelements;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;

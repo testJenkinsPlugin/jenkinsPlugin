@@ -47,6 +47,9 @@ public class JobSubversion implements JobElementDescription {
         Document doc = JobManagerGenerator.loadTemplate(TEMPLATE_PATH);
         Node node;
         Node importedNode;
+        if(docBuilder == null){
+            throw new NullPointerException("Document builder is null");
+        }
         Document module = docBuilder.newDocument();
         if (doc.getElementsByTagName(MODULE_TAG).getLength() > 0) {
             module.appendChild(module.importNode(doc.getElementsByTagName(MODULE_TAG).item(0), true));

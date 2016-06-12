@@ -5,6 +5,9 @@ import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import com.amcbridge.jenkins.plugins.configurator.BuildConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -12,6 +15,7 @@ public class JobSCM {
 
     public static final String ELEMENT_TAG = "scm";
     public static final String PARENT_ELEMENT_TAG = "project";
+    private static final Logger logger = LoggerFactory.getLogger(JobSCM.class);
 
     public static Document removeSCM(Document doc) {
         Node scm;
@@ -35,7 +39,7 @@ public class JobSCM {
             Node node = doc.importNode(scm.getChildNodes().item(0), true);
             doc.getChildNodes().item(0).appendChild(node);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("SCM error", e);
         }
         return doc;
     }

@@ -3,7 +3,10 @@ package com.amcbridge.jenkins.plugins.job;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import com.amcbridge.jenkins.plugins.configurator.BuildConfigurator;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
@@ -15,6 +18,7 @@ public class JobAssignedNode implements JobElementDescriptionCheckBox {
     private static final String PARENT_ELEMENT_TAG = "project";
     private static final String NODE_SEPARATOR = " || ";
     private static final String CHECK_TAG = "canRoam";
+    private static final Logger logger = LoggerFactory.getLogger(JobAssignedNode.class);
 
     @Override
     public String getElementTag() {
@@ -43,7 +47,7 @@ public class JobAssignedNode implements JobElementDescriptionCheckBox {
             node = doc.createElement(ELEMENT_TAG);
             node.setTextContent(getNodes(config));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Generate XML error", e);
         }
         return JobManagerGenerator.documentToXML(node);
     }

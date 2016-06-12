@@ -13,25 +13,21 @@ import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
 import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
+import com.amcbridge.jenkins.plugins.xstreamelements.ScriptType;
 import hudson.Extension;
 import hudson.model.RootAction;
 import hudson.model.User;
 import net.sf.json.JSONObject;
-import org.apache.commons.jelly.JellyException;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.servlet.ServletException;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @Extension
@@ -42,6 +38,8 @@ public final class BuildConfigurator implements RootAction {
     private static final String PLUGIN_NAME = "Build Configurator";
     private static final String ICON_PATH = "/plugin/build-configurator/icons/system_config_services.png";
     private static final String DEFAULT_PAGE_URL = "buildconfigurator";
+    private static final Logger logger = LoggerFactory.getLogger(BuildConfigurator.class);
+
 
     public BuildConfigurator() {
         mail = new MailSender();
@@ -71,9 +69,14 @@ public final class BuildConfigurator implements RootAction {
         return DEFAULT_PAGE_URL;
     }
 
-    public List<BuildConfigurationModel> getAllConfigurations()
-            throws IOException, ServletException, JAXBException {
-        return BuildConfigurationManager.loadAllConfigurations();
+    @JavaScriptMethod
+    public List<BuildConfigurationModel> getAllConfigurations() {
+        try {
+            return BuildConfigurationManager.loadAllConfigurations();
+        } catch (Exception e) {
+            logger.error("Configurations list problem", e);
+            return new LinkedList<>();
+        }
     }
 
     public void doCopyConfig(final StaplerRequest request,
@@ -98,84 +101,93 @@ public final class BuildConfigurator implements RootAction {
             }
             response.sendRedirect("./");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Copy configuration fail", e);
             try {
                 response.sendRedirect("./");
             } catch (IOException e1) {
-                e1.printStackTrace();
+                logger.error("Copy configuration fail", e1);
             }
         }
     }
 
     public void doCreateNewConfigurator(final StaplerRequest request,
-                                        final StaplerResponse response) throws
-            IOException, ServletException, ParserConfigurationException, JAXBException,
-            MessagingException {
+                                        final StaplerResponse response) {
 
-        JSONObject formAttribute = request.getSubmittedForm();
+        try {
+            JSONObject formAttribute = request.getSubmittedForm();
 
-        String newDefaultCredentials = formAttribute.get("default_credentials") != null ? formAttribute.get("default_credentials").toString() : null;
-        BuildConfigurationModel newConfig = new BuildConfigurationModel();
+            String newDefaultCredentials = formAttribute.get("default_credentials") != null ? formAttribute.get("default_credentials").toString() : null;
+            BuildConfigurationModel newConfig = new BuildConfigurationModel();
 
-        request.bindJSON(newConfig, formAttribute);
+            request.bindJSON(newConfig, formAttribute);
 
-        if (formAttribute.get("build_machine_configuration") != null) {
-            newConfig.setBuildMachineConfiguration(BuildConfigurationManager
-                    .getPath(formAttribute.get("build_machine_configuration").toString()));
-        }
-        newConfig.initCurrentDate();
-        newConfig.setJobUpdate(true);
-        if (newDefaultCredentials != null && !newDefaultCredentials.isEmpty() && isCurrentUserAdministrator()) {
-            BuildConfigurationManager.setDefaultCredentials(newDefaultCredentials);
-        }
-        ConfigurationStatusMessage message
-                = new ConfigurationStatusMessage(newConfig.getProjectName());
-        message.setSubject(newConfig.getProjectName());
+            if (formAttribute.get("build_machine_configuration") != null) {
+                newConfig.setBuildMachineConfiguration(BuildConfigurationManager
+                        .getPath(formAttribute.get("build_machine_configuration").toString()));
+            }
+            newConfig.initCurrentDate();
+            newConfig.setJobUpdate(true);
+            if (newDefaultCredentials != null && !newDefaultCredentials.isEmpty() && isCurrentUserAdministrator()) {
+                BuildConfigurationManager.setDefaultCredentials(newDefaultCredentials);
+            }
+            ConfigurationStatusMessage message
+                    = new ConfigurationStatusMessage(newConfig.getProjectName());
+            message.setSubject(newConfig.getProjectName());
 
-        FormResult type = FormResult.valueOf(formAttribute.get("formType").toString());
+            FormResult type = FormResult.valueOf(formAttribute.get("formType").toString());
 
-        BuildConfigurationModel currentConfig = BuildConfigurationManager
-                .load(newConfig.getProjectName());
+            BuildConfigurationModel currentConfig = BuildConfigurationManager
+                    .load(newConfig.getProjectName());
 
-        switch (type) {
-            case CREATE:
-                newConfig.setState(ConfigurationState.NEW);
-                message.setDescription(MessageDescription.CREATE.toString());
-                break;
-            case EDIT:
-                newConfig.setCreator(currentConfig.getCreator());
-                newConfig.setState(ConfigurationState.UPDATED);
-                message.setDescription(MessageDescription.CHANGE.toString());
-                break;
-            case APPROVED:
-                newConfig.setState(ConfigurationState.APPROVED);
-                newConfig.setCreator(currentConfig.getCreator());
-                newConfig.setJobUpdate(false);
+            switch (type) {
+                case CREATE:
+                    newConfig.setState(ConfigurationState.NEW);
+                    message.setDescription(MessageDescription.CREATE.toString());
+                    break;
+                case EDIT:
+                    newConfig.setCreator(currentConfig.getCreator());
+                    newConfig.setState(ConfigurationState.UPDATED);
+                    message.setDescription(MessageDescription.CHANGE.toString());
+                    break;
+                case APPROVED:
+                    newConfig.setState(ConfigurationState.APPROVED);
+                    newConfig.setCreator(currentConfig.getCreator());
+                    newConfig.setJobUpdate(false);
+                    BuildConfigurationManager.save(newConfig);
+                    message.setDescription(MessageDescription.APPROVE.toString());
+
+                    break;
+                case REJECT:
+                    newConfig = currentConfig;
+                    newConfig.setState(ConfigurationState.REJECTED);
+                    message.setDescription(MessageDescription.REJECT.toString()
+                            + " " + formAttribute.get("rejectionReason").toString());
+                    newConfig.setRejectionReason(formAttribute.get("rejectionReason").toString());
+                    break;
+                default:
+                    break;
+            }
+            if (!BuildConfigurationManager.getUserMailAddress(newConfig).isEmpty()) {
+                message.setCC(BuildConfigurationManager.getUserMailAddress(newConfig));
+            }
+
+            if (isArgsOk(currentConfig, newConfig)) {
                 BuildConfigurationManager.save(newConfig);
-                message.setDescription(MessageDescription.APPROVE.toString());
+                message.setDestinationAddress(getAdminEmails());
+                mail.sendMail(message);
+            }
 
-                break;
-            case REJECT:
-                newConfig = currentConfig;
-                newConfig.setState(ConfigurationState.REJECTED);
-                message.setDescription(MessageDescription.REJECT.toString()
-                        + " " + formAttribute.get("rejectionReason").toString());
-                newConfig.setRejectionReason(formAttribute.get("rejectionReason").toString());
-                break;
-            default:
-                break;
-        }
-        if (!BuildConfigurationManager.getUserMailAddress(newConfig).isEmpty()) {
-            message.setCC(BuildConfigurationManager.getUserMailAddress(newConfig));
-        }
 
-        if (isArgsOk(currentConfig, newConfig)) {
-            BuildConfigurationManager.save(newConfig);
-            message.setDestinationAddress(getAdminEmails());
-            mail.sendMail(message);
-        }
+        } catch (Exception e) {
+            logger.error("Fail creating new configuration", e);
 
-        response.sendRedirect("./");
+        } finally {
+            try {
+                response.sendRedirect("./");
+            } catch (IOException e) {
+                logger.error("Redirect page error", e);
+            }
+        }
     }
 
 
@@ -196,7 +208,7 @@ public final class BuildConfigurator implements RootAction {
 
             if (isConfigCompletelyNew) {
                 for (BuilderConfigModel builderModel : newBuildersList) {
-                    if (!builderModel.getBuilderArgs().equals("")) {
+                    if (!"".equals(builderModel.getBuilderArgs())) {
                         return false;
                     }
                 }
@@ -212,7 +224,7 @@ public final class BuildConfigurator implements RootAction {
                         if (!newBuilder.getBuilderArgs().equals(currentBuilder.getBuilderArgs()))
                             return false;
                     } else {
-                        if (!newBuilder.getBuilderArgs().equals("")) {
+                        if (!"".equals(newBuilder.getBuilderArgs())) {
                             return false;
                         }
                     }
@@ -238,82 +250,92 @@ public final class BuildConfigurator implements RootAction {
 
 
     @JavaScriptMethod
-    public ProjectToBuildView getView()
-            throws UnsupportedEncodingException, JellyException {
-        if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
-            loadCreateNewBuildConfiguration();
-        }
-
+    public ProjectToBuildView getView() {
         try {
+            if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
+                loadCreateNewBuildConfiguration();
+            }
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getProjectToBuildlView();
-        } catch (JenkinsInstanceNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Error creating view", e);
+            return null;
+        }
+
+    }
+
+    @JavaScriptMethod
+    public ProjectToBuildView loadViews(String projectName) {
+        try {
+            BuildConfigurationModel conf = BuildConfigurationManager.load(projectName);
+
+            if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
+                loadCreateNewBuildConfiguration();
+            }
+
+            return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
+                    .getProjectToBuildlView(conf.getProjectToBuild());
+        } catch (Exception e) {
+            logger.error("Error loading views", e);
             return null;
         }
     }
 
     @JavaScriptMethod
-    public ProjectToBuildView loadViews(String projectName) //TODO: catch exceptions
-            throws JellyException, IOException, JAXBException {
-        BuildConfigurationModel conf = BuildConfigurationManager.load(projectName);
-
-        if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
-            loadCreateNewBuildConfiguration();
-        }
-
-        return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
-                .getProjectToBuildlView(conf.getProjectToBuild());
-    }
-
-    @JavaScriptMethod
-    public ProjectToBuildView getUserAccessView()
-            throws UnsupportedEncodingException, JellyException {
-        if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
-            loadCreateNewBuildConfiguration();
-        }
-        return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
-                .getUserAccessView();
-    }
-
-    @JavaScriptMethod
-    public ProjectToBuildView loadUserAccessView(String projectName) throws UnsupportedEncodingException, JellyException {
-                BuildConfigurationModel conf = null;
-                try {
-                    conf = BuildConfigurationManager.load(projectName);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-
-                if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
-            loadCreateNewBuildConfiguration();
-        }
-
+    public ProjectToBuildView getUserAccessView() {
         try {
+            if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
+                loadCreateNewBuildConfiguration();
+            }
+            return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
+                    .getUserAccessView();
+        } catch (Exception e) {
+            logger.error("Error getting users with access", e);
+            return null;
+        }
+    }
+
+    @JavaScriptMethod
+    public ProjectToBuildView loadUserAccessView(String projectName) {
+        try {
+            BuildConfigurationModel conf = BuildConfigurationManager.load(projectName);
+            if (conf == null) {
+                throw new NullPointerException("Configuration not found");
+            }
+            if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
+                loadCreateNewBuildConfiguration();
+            }
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getUserAccessView(conf.getUserWithAccess());
-        } catch (JenkinsInstanceNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Users access problem", e);
+            return null;
+        }
+
+    }
+
+    @JavaScriptMethod
+    public ProjectToBuildView getBuilderView() {
+        try {
+            if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
+                loadCreateNewBuildConfiguration();
+            }
+
+            return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
+                    .getBuilderView();
+        } catch (Exception e) {
+            logger.error("Error getting builder", e);
             return null;
         }
     }
 
     @JavaScriptMethod
-    public ProjectToBuildView getBuilderView()
-            throws UnsupportedEncodingException, JellyException {
-        if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
-            loadCreateNewBuildConfiguration();
+    public void setForDeletion(String name) {
+        try {
+            BuildConfigurationManager.markConfigurationForDeletion(name);
+        } catch (Exception e) {
+            logger.error("Error setting for deletion", e);
         }
-
-        return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
-                .getBuilderView();
-    }
-
-    @JavaScriptMethod
-    public void setForDeletion(String name) throws AddressException,
-            IOException, ParserConfigurationException, JAXBException, MessagingException {
-        BuildConfigurationManager.markConfigurationForDeletion(name);
     }
 
 
@@ -322,7 +344,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             Stapler.getCurrentRequest().getSession().setAttribute(VIEW_GENERATOR, new ViewGenerator());
         } catch (JenkinsInstanceNotFoundException e) {
-            e.printStackTrace();
+            logger.error("Error creating configuration", e);
         }
     }
 
@@ -331,62 +353,85 @@ public final class BuildConfigurator implements RootAction {
         try {
             return !BuildConfigurationManager.isNameUsing(name);
         } catch (JenkinsInstanceNotFoundException e) {
-            e.printStackTrace();
+            logger.error("Error checking existing configuration with this name", e);
             return false;
         }
     }
 
     @JavaScriptMethod
     public String getFullNameCreator(String creator) {
-        User user;
-        if (User.current() != null) {
-            user = User.get(creator);
-            return user.getFullName();
-        } else {
+        try {
+            User user;
+            if (User.current() != null) {
+                user = User.get(creator);
+                return user.getFullName();
+            } else {
+                throw new NullPointerException("user not found");
+            }
+        } catch (Exception e) {
+            logger.error("Creator not found", e);
             return "Error, user not found";
+
         }
     }
 
     @JavaScriptMethod
-    public void deleteConfigurationPermanently(String name)
-            throws AddressException, IOException, MessagingException, JAXBException, InterruptedException, ParserConfigurationException {
-        BuildConfigurationManager.deleteConfigurationPermanently(name);
+    public void deleteConfigurationPermanently(String name) {
+        try {
+            BuildConfigurationManager.deleteConfigurationPermanently(name);
+        } catch (Exception e) {
+            logger.error("Permanent deletion error", e);
+        }
     }
 
     @JavaScriptMethod
-    public void restoreConfiguration(String name)
-            throws AddressException, IOException, MessagingException, JAXBException, ParserConfigurationException {
-        BuildConfigurationManager.restoreConfiguration(name);
+    public void restoreConfiguration(String name) {
+        try {
+            BuildConfigurationManager.restoreConfiguration(name);
+        } catch (Exception e) {
+            logger.error("Error restoring configuration", e);
+        }
     }
 
     @JavaScriptMethod
-    public static Boolean isCurrentUserHasAccess(String name) throws IOException, JAXBException {
-        return BuildConfigurationManager.isCurrentUserHasAccess(name);
+    public static Boolean isCurrentUserHasAccess(String name) {
+        try {
+            return BuildConfigurationManager.isCurrentUserHasAccess(name);
+        } catch (Exception e) {
+            logger.error("Error checking if user has access", e);
+            return false;
+        }
     }
 
     @JavaScriptMethod
     public static Boolean isCurrentUserAdministrator() {
         try {
             return BuildConfigurationManager.isCurrentUserAdministrator();
-        } catch (JenkinsInstanceNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Error checking user permissions", e);
             return false;
         }
     }
 
     @JavaScriptMethod
-    public BuildConfigurationModel getConfiguration(String name) throws IOException, JAXBException {
-        return BuildConfigurationManager.getConfiguration(name);
+    public BuildConfigurationModel getConfiguration(String name) {
+        try {
+            return BuildConfigurationManager.getConfiguration(name);
+        } catch (Exception e) {
+            logger.error("Error getting configuration", e);
+            return null;
+        }
     }
 
-    public static String getAdminEmails() {
+    private static String getAdminEmails() {
         return BuildConfigurationManager.getAdminEmail();
     }
 
     public List<String> getSCM() {
         try {
             return BuildConfigurationManager.getSCM();
-        } catch (JenkinsInstanceNotFoundException e) {
+        } catch (Exception e) {
+            logger.error("Error getting emails", e);
             return new LinkedList<>();
         }
     }
@@ -394,8 +439,8 @@ public final class BuildConfigurator implements RootAction {
     public List<String> getNodesName() {
         try {
             return BuildConfigurationManager.getNodesName();
-        } catch (JenkinsInstanceNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Error getting nodes", e);
             return new LinkedList<>();
         }
     }
@@ -406,70 +451,77 @@ public final class BuildConfigurator implements RootAction {
             BuildConfigurationManager.createJob(name);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error job creating", e);
             return false;
         }
-        // TODO alert user if failure !!!
     }
 
     @JavaScriptMethod
     public Boolean isJobCreated(String name) {
         try {
             return JobManagerGenerator.isJobExist(JobManagerGenerator.validJobName(name));
-        } catch (JenkinsInstanceNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Error while checking job state", e);
             return false;
         }
     }
 
     @JavaScriptMethod
-    public void deleteJob(String name)
-            throws IOException, InterruptedException, ParserConfigurationException, JAXBException {
-        BuildConfigurationManager.deleteJob(name);
+    public void deleteJob(String name) {
+        try {
+
+            BuildConfigurationManager.deleteJob(name);
+        } catch (Exception e) {
+            logger.error("Error job deleting", e);
+        }
     }
 
 
     @JavaScriptMethod
     public boolean isJenkinsEmailConfigOK() {
         Properties prop = new Properties();
-        boolean isEmailPropertiesOK = false;
-        boolean isPortOk = false;
+        boolean isEmailPropertiesOK;
+        boolean isPortOk;
         try (InputStream inputStream = new FileInputStream(MailSender.getMailPropertiesFileName())) {
             prop.load(inputStream);
 
             String host = prop.getProperty("host");
             String from = prop.getProperty("from");
             String pass = prop.getProperty("pass");
-            isEmailPropertiesOK = (host != null && !host.equals("")) && (from != null && !from.equals("")) && (pass != null && !pass.equals(""));
+            isEmailPropertiesOK = (!"".equals(host)) && (!"".equals(from)) && (!"".equals(pass));
             String strPort = prop.getProperty("port");
             isPortOk = (strPort != null) && (strPort.matches("[0-9]+"));
             return isEmailPropertiesOK && isPortOk;
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Error checking email", e);
             return false;
         }
     }
 
     @JavaScriptMethod
     public String getBuildConfiguratorVersion() {
-        String version = this.getClass().getPackage().getImplementationVersion();
-        return version;
+        return this.getClass().getPackage().getImplementationVersion();
     }
 
     @JavaScriptMethod
-    public List<com.amcbridge.jenkins.plugins.xstreamelements.ScriptType> getScriptTypes() {
+    public List<ScriptType> getScriptTypes() {
         try {
             return BuildConfigurationManager.getScriptTypes();
-        } catch (JenkinsInstanceNotFoundException e) {
-            e.printStackTrace();
-            return null;
+        } catch (Exception e) {
+            logger.error("Error getting scripts", e);
+            return new LinkedList<>();
         }
     }
 
     @JavaScriptMethod
-    public boolean isWsPluginInstalled() throws JenkinsInstanceNotFoundException {
-        return WsPluginHelper.isWsPluginInstalled();
+    public boolean isWsPluginInstalled() {
+        try {
+            return WsPluginHelper.isWsPluginInstalled();
+        } catch (Exception e) {
+            logger.error("Error checking if Workspace plugin installed", e);
+            return true;
+        }
     }
 
 }

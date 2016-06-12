@@ -52,7 +52,6 @@ public class WsPluginHelper {
             XPath xPath = XPathFactory.newInstance().newXPath();
             Node pluginNode = (Node) xPath.evaluate(XPATH_WS_CLEANUP_PLUGIN, jobTemplate, XPathConstants.NODE);
             Node buildWrappersNode = doc.getElementsByTagName("buildWrappers").item(0);
-            //TODO: set job name to exclude
             pluginNode = doc.importNode(pluginNode, true);
             buildWrappersNode.appendChild(pluginNode);
         }

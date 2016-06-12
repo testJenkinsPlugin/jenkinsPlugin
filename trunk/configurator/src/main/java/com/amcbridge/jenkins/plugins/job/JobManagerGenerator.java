@@ -1,5 +1,6 @@
 package com.amcbridge.jenkins.plugins.job;
 
+import com.amcbridge.jenkins.plugins.configurator.BuildConfigurator;
 import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.models.BuilderConfigModel;
 import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
@@ -18,6 +19,8 @@ import com.thoughtworks.xstream.XStream;
 import hudson.model.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -43,7 +46,7 @@ public class JobManagerGenerator {
     private static final String JOB_FOLDER_PATH = "/jobs/";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
     private static final String XPATH_FILE_TO_COPY = "/project/buildWrappers/com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper/includes/text()";
-
+    private static final Logger logger = LoggerFactory.getLogger(JobManagerGenerator.class);
     private static final String XML_TITLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
     private JobManagerGenerator(){}
@@ -66,7 +69,6 @@ public class JobManagerGenerator {
         correctArtifactPaths(config.getProjectToBuild());
         correctVersionFilesPaths(config.getProjectToBuild());
         correctLocalFolderPaths(config.getProjectToBuild());
-        System.err.println("Error test");
 
         if (isJobExist(jobName)) {
             updateJobXML(jobName, config);
@@ -334,7 +336,7 @@ public class JobManagerGenerator {
             transformer.transform(source, sr);
             result = writer.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error", e);
         }
         return result;
     }

@@ -2,6 +2,7 @@ package com.amcbridge.jenkins.plugins.view;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Vector;

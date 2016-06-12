@@ -58,7 +58,7 @@ public class BuildConfigurationManager {
     private static final String CONTENT_FOLDER = "userContent";
     public static final String STRING_EMPTY = "";
     private static final MailSender mail = new MailSender();
-    private static final Logger log = LoggerFactory.getLogger(BuildConfigurationManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(BuildConfigurationManager.class);
     private static SCMLoader scmLoader;
     private static String defaultCredentialsPropertiesFileName = "credentialsDefaults.properties";
     private static String credentialsPropertyName = "defaultCredentials";
@@ -112,7 +112,7 @@ public class BuildConfigurationManager {
     }
 
 
-    protected final static XmlFile getConfigFile(String nameProject) throws JenkinsInstanceNotFoundException {
+    private static XmlFile getConfigFile(String nameProject) throws JenkinsInstanceNotFoundException {
         return new XmlFile(Jenkins.XSTREAM, getConfigFileFor("/" + nameProject));
     }
 
@@ -132,7 +132,7 @@ public class BuildConfigurationManager {
         File file = new File(getRootDirectory());
 
         if (!file.exists()) {
-            return new LinkedList<BuildConfigurationModel>();
+            return new LinkedList<>();
         }
 
         File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
@@ -286,22 +286,22 @@ public class BuildConfigurationManager {
         for (SCMDescriptor<?> scm : hudson.scm.SCM.all()) {
             if (isSupportedSCM(scm)) {
                 supportedSCMs.add(scm.getDisplayName());
-                if (scm.getDisplayName().equalsIgnoreCase("git")) {
+                if ("git".equalsIgnoreCase(scm.getDisplayName())) {
                     isGitCatch = true;
-                } else if (scm.getDisplayName().equalsIgnoreCase("subversion")) {
+                } else if ("subversion".equalsIgnoreCase(scm.getDisplayName())) {
                     isSubversionCatch = true;
                 }
             }
         }
         if (isGitCatch) {
-            log.info("+++++ git: plugin was plugged");
+            logger.info("+++++ git: plugin was plugged");
         } else {
-            log.info("----- git: plugin wasn't plugged");
+            logger.info("----- git: plugin wasn't plugged");
         }
         if (isSubversionCatch) {
-            log.info("+++++ subversion: plugin was plugged");
+            logger.info("+++++ subversion: plugin was plugged");
         } else {
-            log.info("----- subversion: plugin wasn't plugged");
+            logger.info("----- subversion: plugin wasn't plugged");
         }
 
         return supportedSCMs;
@@ -351,31 +351,32 @@ public class BuildConfigurationManager {
         if (!path.exists()) {
             path.mkdirs();
         }
-        try (OutputStream output = new FileOutputStream(path + "/" + defaultCredentialsPropertiesFileName);){
+        try (OutputStream output = new FileOutputStream(path + "/" + defaultCredentialsPropertiesFileName);) {
             prop.setProperty(credentialsPropertyName, credentials);
             prop.store(output, null);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error setting credentials as default", e);
         }
     }
 
     public static String getDefaultCredentials() throws JenkinsInstanceNotFoundException {
         Properties prop = new Properties();
         File propertiesFile = new File(getRootDir(), defaultCredentialsPropertiesFileName);
-        String defaultCredentials = null;
+        String defaultCredentials;
         if (!propertiesFile.exists()) {
-            return null;
+            logger.error("Error getting default credentials", new NullPointerException("Credentials file not found"));
+            return "not selected";
         }
 
         try (InputStream input = new FileInputStream(propertiesFile)) {
-            // load a properties file
             prop.load(input);
             defaultCredentials = prop.getProperty(credentialsPropertyName);
 
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.error("Error getting default credentials", ex);
+            return "not selected";
         }
 
         return defaultCredentials;
@@ -431,7 +432,7 @@ public class BuildConfigurationManager {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Parsing credentials file error", e);
         }
         return credentialItemList;
     }

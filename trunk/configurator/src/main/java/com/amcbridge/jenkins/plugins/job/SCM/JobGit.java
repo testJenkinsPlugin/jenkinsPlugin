@@ -24,7 +24,6 @@ public class JobGit implements JobElementDescription {
     private static final String XPATH_RELATIVE_GIT_LOCAL_DIRECTORY_PATH = "/extensions/hudson.plugins.git.extensions.impl.RelativeTargetDirectory/relativeTargetDir";
 
     private static final String TEMPLATE_PATH = "/plugins/build-configurator/job/scm/git.xml";
-    private static final Logger log = Logger.getLogger(JobGit.class);
 
     @Override
     public String getElementTag() {
