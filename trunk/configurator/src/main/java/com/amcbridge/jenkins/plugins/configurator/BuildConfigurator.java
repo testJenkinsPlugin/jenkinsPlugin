@@ -1,5 +1,6 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
+import com.amcbridge.jenkins.plugins.job.WsPluginHelper;
 import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.models.BuilderConfigModel;
 import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
@@ -12,7 +13,6 @@ import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
 import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
-import com.amcbridge.jenkins.plugins.xstreamelements.ScriptType;
 import hudson.Extension;
 import hudson.model.RootAction;
 import hudson.model.User;
@@ -458,7 +458,7 @@ public final class BuildConfigurator implements RootAction {
     }
 
     @JavaScriptMethod
-    public List<ScriptType> getScriptTypes() {
+    public List<com.amcbridge.jenkins.plugins.xstreamelements.ScriptType> getScriptTypes() {
         try {
             return BuildConfigurationManager.getScriptTypes();
         } catch (JenkinsInstanceNotFoundException e) {
@@ -469,10 +469,7 @@ public final class BuildConfigurator implements RootAction {
 
     @JavaScriptMethod
     public boolean isWsPluginInstalled() throws JenkinsInstanceNotFoundException {
-        if (BuildConfigurationManager.getJenkins().getPlugin("ws-cleanup") != null) {
-            return true;
-        }
-        return false;
+        return WsPluginHelper.isWsPluginInstalled();
     }
 
 }
