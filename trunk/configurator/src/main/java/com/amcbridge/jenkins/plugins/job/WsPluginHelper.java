@@ -38,7 +38,6 @@ public class WsPluginHelper {
         }
     }
 
-    // config set to clean WS
     private static void createWsPluginNode(Document doc, BuildConfigurationModel config) throws XPathExpressionException, IOException, SAXException, ParserConfigurationException {
         if (isWsPluginIncluded(doc)) {
             if (isExcludePatternIncluded(doc, config.getProjectName())) {
@@ -48,12 +47,7 @@ public class WsPluginHelper {
 
             }
         } else {
-            Document jobTemplate = loadJobTemplate(config);
-            XPath xPath = XPathFactory.newInstance().newXPath();
-            Node pluginNode = (Node) xPath.evaluate(XPATH_WS_CLEANUP_PLUGIN, jobTemplate, XPathConstants.NODE);
-            Node buildWrappersNode = doc.getElementsByTagName("buildWrappers").item(0);
-            pluginNode = doc.importNode(pluginNode, true);
-            buildWrappersNode.appendChild(pluginNode);
+            insertWsCleanupPlugin(doc, config);
         }
 
     }

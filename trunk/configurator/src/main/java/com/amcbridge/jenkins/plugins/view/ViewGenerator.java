@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Vector;
 
+import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.models.UserAccessModel;
 import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
 import com.amcbridge.jenkins.plugins.xstreamelements.BuilderLoader;
@@ -19,6 +20,8 @@ import com.amcbridge.jenkins.plugins.models.BuilderConfigModel;
 import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ViewGenerator {
 
@@ -26,6 +29,7 @@ public class ViewGenerator {
     private static final String BUILDER_VIEW = "/plugins/build-configurator/view/BuilderView.xml";
     private static final String HTML_SPACE = "%20";
     private static final String USERACCESS_VIEW_PATH = "/plugins/build-configurator/view/UserAccessView.xml";
+    private static final Logger logger = LoggerFactory.getLogger(ViewGenerator.class);
 
     private Integer id;
     private BuilderLoader builderLoader;
@@ -43,7 +47,7 @@ public class ViewGenerator {
         try {
             viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + BUILDER_VIEW;
         } catch (JenkinsInstanceNotFoundException e) {
-            e.printStackTrace();
+            logger.error("Error setting context for builder", e);
             result.setHtml("");
             return result;
         }
@@ -52,12 +56,8 @@ public class ViewGenerator {
         id++;
         jcontext.setVariable("builders", builderLoader.getBuilders());
 
-        try {
-            jcontext.setVariable("platforms", (new PlatformLoader()).getPlatformList());
-        } catch (JenkinsInstanceNotFoundException e) {
-            e.printStackTrace();
-            jcontext.setVariable("platforms", null);
-        }
+        jcontext.setVariable("platforms", (new PlatformLoader()).getPlatformList());
+
         jcontext.setVariable("configuration", Configuration.values());
         try {
             jcontext.setVariable("isAdmin", BuildConfigurationManager.isCurrentUserAdministrator());
@@ -94,7 +94,7 @@ public class ViewGenerator {
         try {
             viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + USERACCESS_VIEW_PATH;
         } catch (JenkinsInstanceNotFoundException e) {
-            e.printStackTrace();
+            logger.error("Jenkins instance not found", e);
             result.setHtml("");
             return result;
         }
@@ -143,7 +143,7 @@ public class ViewGenerator {
 
         JellyContext jcontext = new JellyContext();
 
-        Vector<Integer> sourceId = new Vector<Integer>();
+        Vector<Integer> sourceId = new Vector<>();
         jcontext.setVariable("divID", id);
         result.setViewId(id);
 
@@ -188,7 +188,7 @@ public class ViewGenerator {
         jcontext.setVariable("credentialsList", ProjectToBuildModel.getCredentialsList());
         jcontext.setVariable("isAdmin", BuildConfigurationManager.isCurrentUserAdministrator());
         for (int i = 0; i < views.size(); i++) {
-            sourceId = new Vector<Integer>();
+            sourceId = new Vector<>();
 
             jcontext.setVariable("divID", id);
 

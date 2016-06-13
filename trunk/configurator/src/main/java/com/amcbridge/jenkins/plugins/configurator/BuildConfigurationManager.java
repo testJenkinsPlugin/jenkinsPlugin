@@ -365,14 +365,12 @@ public class BuildConfigurationManager {
         File propertiesFile = new File(getRootDir(), defaultCredentialsPropertiesFileName);
         String defaultCredentials;
         if (!propertiesFile.exists()) {
-            logger.error("Error getting default credentials", new NullPointerException("Credentials file not found"));
             return "not selected";
         }
 
         try (InputStream input = new FileInputStream(propertiesFile)) {
             prop.load(input);
             defaultCredentials = prop.getProperty(credentialsPropertyName);
-
 
         } catch (IOException ex) {
             logger.error("Error getting default credentials", ex);

@@ -8,20 +8,16 @@ import javax.mail.*;
 import javax.mail.internet.*;
 
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
-import com.amcbridge.jenkins.plugins.configurator.BuildConfigurator;
 import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
 import jenkins.model.Jenkins;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MailSender implements Runnable {
     private String host;
     private String from;
     private String pass;
     private Integer port;
-    private MessageInfo message;
+    private static MessageInfo message;
     private static final String MAIL_PROPERTIES_FILE_NAME = "/plugins/build-configurator/config/MailSender.properties";
-    private static final Logger logger = LoggerFactory.getLogger(MailSender.class);
 
     public void sendMail(MessageInfo message) throws AddressException,
             MessagingException {
@@ -40,7 +36,7 @@ public class MailSender implements Runnable {
             pass = prop.getProperty("pass");
             port = Integer.parseInt(prop.getProperty("port"));
         } catch (Exception ex) {
-            logger.error("Error loading email properties", ex);
+            ex.printStackTrace();
         }
     }
 
@@ -51,7 +47,7 @@ public class MailSender implements Runnable {
     @Override
     public void run() {
         try {
-            MessageInfo messageToSend = this.message;
+            MessageInfo message = this.message;
             Boolean isRecepients = false;
             Properties props = System.getProperties();
             props.put("mail.smtp.host", host);
@@ -61,31 +57,31 @@ public class MailSender implements Runnable {
             Session session = Session.getDefaultInstance(props, null);
             MimeMessage mMessage = new MimeMessage(session);
             mMessage.setFrom(new InternetAddress(from));
-            if (messageToSend.getCC() != null && !messageToSend.getCC().isEmpty()) {
-                if (messageToSend.getCC().contains(",")) {
-                    InternetAddress[] address = InternetAddress.parse(messageToSend.getCC().trim());
+            if (message.getCC() != null && !message.getCC().isEmpty()) {
+                if (message.getCC().contains(",")) {
+                    InternetAddress[] address = InternetAddress.parse(message.getCC().trim());
                     mMessage.setRecipients(Message.RecipientType.CC, address);
                 } else {
-                    InternetAddress to_address = new InternetAddress(messageToSend.getCC().trim());
+                    InternetAddress to_address = new InternetAddress(message.getCC().trim());
                     mMessage.addRecipient(Message.RecipientType.CC, to_address);
                 }
                 isRecepients = true;
             }
-            if (messageToSend.getDestinationAddress() != null && messageToSend.getDestinationAddress().contains("@")
-                    && !messageToSend.getDestinationAddress().trim().contains(" ")) {
-                mMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(messageToSend.getDestinationAddress()));
+            if (message.getDestinationAddress() != null && message.getDestinationAddress().contains("@")
+                    && !message.getDestinationAddress().trim().contains(" ")) {
+                mMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(message.getDestinationAddress()));
                 isRecepients = true;
             }
             if (isRecepients) {
-                mMessage.setSubject(messageToSend.getSubject(), BuildConfigurationManager.ENCODING);
-                mMessage.setText(messageToSend.getMassageText(), BuildConfigurationManager.ENCODING);
+                mMessage.setSubject(message.getSubject(), BuildConfigurationManager.ENCODING);
+                mMessage.setText(message.getMassageText(), BuildConfigurationManager.ENCODING);
                 Transport transport = session.getTransport("smtp");
                 transport.connect(host, from, pass);
                 transport.sendMessage(mMessage, mMessage.getAllRecipients());
                 transport.close();
             }
         } catch (MessagingException e) {
-            logger.error("Error sending mail", e);
+            e.printStackTrace();
         }
     }
 
