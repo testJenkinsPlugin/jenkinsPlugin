@@ -112,6 +112,24 @@ public class BuildConfigurationManager {
     }
 
 
+            //TODO: remove code duplication
+
+    public static void saveForDiff(BuildConfigurationModel config) throws IOException {
+        if (config.getProjectName().isEmpty()) {
+            deleteFiles(config.getScripts(), getUserContentFolder());
+            return;
+        }
+
+        File checkFile = new File(getRootDirectory() + config.getProjectName() + "/diff/");
+        if (!checkFile.exists()) {
+            checkFile.mkdirs();
+        }
+
+        XmlFile fileWriter = getConfigFile(config.getProjectName() + "/diff");
+        fileWriter.write(config);
+    }
+
+
     private static XmlFile getConfigFile(String nameProject) throws JenkinsInstanceNotFoundException {
         return new XmlFile(Jenkins.XSTREAM, getConfigFileFor("/" + nameProject));
     }
@@ -388,6 +406,9 @@ public class BuildConfigurationManager {
 
         try {
             File fXmlFile = new File(fileName);
+            if (!fXmlFile.exists()){
+                return new LinkedList<>();
+            }
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(fXmlFile);

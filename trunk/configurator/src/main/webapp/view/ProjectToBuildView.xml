@@ -8,12 +8,23 @@
          xmlns:i="jelly:fmt"
          xmlns:p="/lib/hudson/project"
 >
-    <div id="${divID}" name="projectToBuild">
+    <div id="${divID}" name="projectToBuild${projectSuffix}">
 
         <label onclick="configurator.closeElement(this)" class="close-project-to-build" name="closeProject">X</label>
+        <j:if test="${viewStatus.equals('DELETED')}">
+            <label class="projectToBuild_status_deleted">DELETED! </label>
+        </j:if>
 
+        <j:if test="${viewStatus.equals('NEW')}">
+            <label class="projectToBuild_status_new">NEW! </label>
+        </j:if>
         <div class="div-textinput">
-                    <label>Project url:</label>
+            <j:if test="${view_old != null and view_old.getProjectUrl() != null}">
+                <label class="diff_value">"${view_old.getProjectUrl()}"</label>
+                <br/>
+            </j:if>
+
+            <label>Project url:</label>
                 <div>
                     <input type="text" name="projectUrl" onblur="configurator.checkURL(this)" value="${view.getProjectUrl()}" class="textbox"/>
                 </div>
@@ -22,8 +33,13 @@
                     Not correct url
                 </div>
         </div>
+
         <div class="div-textinput">
-                <label>Credentials:</label>
+            <j:if test="${view_old != null and view_old.getCredentials() != null}">
+                <label class="diff_value">"${view_old.getCredentialsNameById(view_old.getCredentials())}"</label>
+                <br/>
+            </j:if>
+            <label>Credentials:</label>
             <div>
                 <select name="credentials"
                         value="${view.getCredentials()}"
@@ -54,14 +70,26 @@
                 </j:if>
             </div>
         </div>
+
+
         <div class="div-textinput">
-                <label>Branch name:</label>
+            <j:if test="${view_old != null and view_old.getBranchName() != null}">
+                <label class="diff_value">"${view_old.getBranchName()}"</label>
+                <br/>
+            </j:if>
+            <label>Branch name:</label>
             <div>
                 <input type="text" name="branchName" value="${view.getBranchName()}" class="textbox"/>
             </div>
         </div>
+
         <div class="div-textinput">
-                <label>Local module directory (optional):</label>
+            <j:if test="${view_old != null and view_old.getLocalDirectoryPath() != null}">
+                <label class="diff_value"> "${view_old.getLocalDirectoryPath()}" </label>
+                <br/>
+            </j:if>
+
+            <label>Local module directory (optional):</label>
             <div>
                 <input type="text" onblur="configurator.checkPath(this)" value="${view.getLocalDirectoryPath()}" name="localDirectoryPath" class="textbox"/>
                 <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(this)" class="image" name="localDirectoryPath-help"/>
@@ -80,6 +108,13 @@
         </div>
 
         <div class="div-textinput">
+
+            <j:if test="${view_old != null and view_old.getFileToBuild() != null}">
+                <label class="diff_value">"${view_old.getFileToBuild()}"</label>
+                <br/>
+            </j:if>
+
+
                 <label>Project to build:</label>
             <div>
                 <input type="text" name="fileToBuild" onblur="configurator.checkPTB(this)" value="${view.getFileToBuild()}" class="textbox"/>
@@ -101,6 +136,14 @@
 
 
         <div class="div-project-to-build">
+            <j:if test="${view_old != null and view_old.getArtefacts() != null}">
+                <j:forEach items="${view_old.getArtefacts()}" var="artifact" indexVar="i">
+                    <label class="diff_value">"${artifact}"</label>
+                    <br/>
+                </j:forEach>
+                <br/>
+            </j:if>
+
             <div class="project-to-build-label">
                 <label class="div-file-chooser-label">Path to artifacts:</label>
             </div>
@@ -137,6 +180,13 @@
         </div>
 
         <div  class="div-project-version-file">
+            <j:if test="${view_old != null and view_old.getVersionFiles() != null}">
+                <j:forEach items="${view_old.getVersionFiles()}" var="versionFile" indexVar="i">
+                    <label class="diff_value">"${versionFile}"</label>
+                    <br/>
+                </j:forEach>
+                <br/>
+            </j:if>
 
             <j:if test="${view.IsVersionFiles()}">
                 <div class="project-to-build-label">
@@ -191,12 +241,20 @@
            </div> </j:if>
         </div>
 
+         <input type="hidden" name="guid" value = "${view.getGuid()}"/>
+
+
         <div class="builders">
-            <j:forEach items="${view.getBuilders()}" var="build" indexVar="i">
-                ${generator.getBuilderView(build).getHtml()}
-            </j:forEach>
+          <!--  <j:forEach items="${view.getBuilders()}" var="build" indexVar="i">
+                ${generator.getBuilderView(build, view.getGuid()).getHtml()}
+            </j:forEach>-->
+            <!--<j:if test = "true == true">-->
+            <!--${generator.getAllBuildersView(view, view.getGuid()).getHtml()}-->
+            ${generator.getBuildersView(view, configState, oldBuildersModels).getHtml()}
+<!--</j:if>-->
             <span></span>
         </div>
+
 
         <div class="div-add-view">
             <input type="button" onClick="configurator.addBuilder('#' + ${divID})" value="Add Builder"/>

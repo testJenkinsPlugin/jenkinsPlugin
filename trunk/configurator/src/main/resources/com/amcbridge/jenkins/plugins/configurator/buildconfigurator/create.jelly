@@ -51,8 +51,10 @@
                     <label id="projectErrorText"></label>
                 </div>
 
+                 <label compare="true" id="typeSCM_old" class="diff_value_header display-none">SCM: </label>
                 <div class="div-textinput">
                     <div class="div-project-name">
+
                         <label>SCM:</label>
                     </div>
 
@@ -81,7 +83,9 @@
                     </div>
                 </j:if>
 
+                <label compare="true" id="isEmail_old" class="diff_value_header display-none"></label>
                 <div class="div-textinput">
+
                     <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="configurator.emailCheckBoxChange(this)" title="Job E-mails notifications"/>
                     <input type="text" field="email" onblur="configurator.validateMail(this)" name="email" disabled="false" id="email" class="email-notification"/>
                     <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.emailHelp(name)" name="email-help" class="image"/>
@@ -96,9 +100,11 @@
                       Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build. E-mail will be sent when a build fails, becomes unstable or returns to stable.
                 </lebel>
                 </div>
-
+<label compare="true" id="configEmail_old" class="diff_value_header display-none"></label>
                 <div class="div-textinput">
+
                     <div class="div-project-name">
+                    <label compare="true" id="configEmail_old" class="display-none">Config Email</label>
                         <label>Configuration E-mails notifications</label>
                     </div>
                     <input type="text" field="email" onblur="configurator.validateMail(this);" name="configEmail" id="configEmail" class="textbox"/>
@@ -119,6 +125,7 @@
 
                    <div class="div-textinput">
                     <div class="div-project-name">
+                    <label compare="true" id="cleanWorkspace"></label>
                                            <label>Use workspace cleanup plugin</label>
                                        </div>
                         <f:checkbox name="cleanWorkspace" id="cleanWorkspace"  class="check-box" checked="true"/>
@@ -127,6 +134,9 @@
 
                 <div id="projectsToBuild">
                 </div>
+
+                <div id="projectsToBuildDeleted">
+                                </div>
 
                 <div class="div-add-view">
                     <input type="button" onClick="configurator.addView()" id="addProjectToBuild" value="Add project to build"/>
@@ -145,16 +155,42 @@
                         <br/>
                         <br/>
                     </div>
+
+
                 <div>
-                    <label class="div-label">Prebuild script comments:</label>
+                                    <label class="div-label"></label>
 
 
-                    <textarea rows="10" cols="60" id="preScript" name="preScript" onblur="configurator.validatePrebuildScript(id)">
+                                    <textarea rows="10" cols="60" id="preScript_old" class="display-none">
+                                    </textarea>
+                                </div>
+                                <br/>
+
+
+
+
+                <div>
+                    <label class="div-label">Prebuild script:</label>
+
+
+                    <textarea rows="10" cols="60" id="preScript" name="preScript" >
                     </textarea>
                 </div>
                 <br/>
+
+
+                 <div>
+                 <label class="div-label"></label>
+                                    <textarea rows="10" cols="60" id="postScript_old" class = "display-none">
+                                    </textarea>
+                                </div>
+                                <br/>
+
+
+
+
                 <div>
-                    <label class="div-label">Postbuild script comments:</label>
+                    <label class="div-label">Postbuild script:</label>
                     <textarea rows="10" cols="60" id="postScript" name="postScript" onblur="configurator.validatePostbuildScript(id)">
                     </textarea>
                 </div>
@@ -176,8 +212,6 @@
                         <input type="text" id="addUserField"  class="add-user-field"/>
                         <input type="button" class="add-button" id="addUserButton" onclick="configurator.addNewUserAccess();" value="+"/>
                     </div>
-                
-
 
                 <div id="usersList">
                 </div>

@@ -103,6 +103,56 @@ var configurator = (function () {
                     jQuery("#userLabel").html("Created by:  " + t.responseObject());
                 })
             }
+            if(t.responseObject().state != 'APPROVED'){
+                setDiffContent(name);
+            }
+        })
+    }
+
+    function setDiffContent(name){
+        buildConfiguration.getDiffConfiguration(name, function (t) {
+            jQuery("#preScript_old").prop('disabled', true);
+            jQuery("#postScript_old").prop('disabled', true);
+          
+            if (t.responseObject() == null){
+                return;
+            }
+            var scm = t.responseObject().scm;
+            var preScript = t.responseObject().preScript;
+            var postScript = t.responseObject().postScript;
+            var email = t.responseObject().email;
+            var configEmail = t.responseObject().configEmail;
+         
+
+            if(scm != null){
+                jQuery("#typeSCM_old").text(scm);
+                jQuery("#typeSCM_old").removeClass('display-none');
+            }
+            
+            if(email){
+                jQuery("#isEmail_old").text(email);
+                jQuery("#isEmail_old").removeClass('display-none');
+            }
+
+            if(configEmail){
+                jQuery("#configEmail_old").text(configEmail);
+                jQuery("#configEmail_old").removeClass('display-none');
+            }
+
+
+            if(preScript != null){
+                jQuery("#preScript_old").text(preScript);
+                 jQuery("#preScript_old").removeClass('display-none');
+            }
+            if(postScript != null){
+                jQuery("#postScript_old").text(postScript);
+                  jQuery("#postScript_old").removeClass('display-none');
+            }
+
+             if(postScript != null){
+                            jQuery("#postScript_old").text(postScript);
+                              jQuery("#postScript_old").removeClass('display-none');
+                        }
         })
     }
 
@@ -209,13 +259,29 @@ var configurator = (function () {
     var loadViews = function (projectName) {
         buildConfiguration.loadViews(projectName,
             function (t) {
+                if (t.responseObject().html.length != 0) {
+                    var iDiv = document.createElement("div");
+                    iDiv.innerHTML = t.responseObject().html;
+                    document.getElementById("projectsToBuild").appendChild(iDiv);
+                    projectNumber = iDiv.childNodes.length;
+                    /*loadDeletedViews(projectName);*/
+                }
+                
+                return;
+            });
+    }
+
+        var loadDeletedViews = function (projectName) {
+        buildConfiguration.loadDeletedViews(projectName,
+            function (t) {
                 if (t.responseObject().html.length == 0) {
                     return;
                 }
                 var iDiv = document.createElement("div");
                 iDiv.innerHTML = t.responseObject().html;
-                document.getElementById("projectsToBuild").appendChild(iDiv);
+                document.getElementById("projectsToBuildDeleted").appendChild(iDiv);
                 projectNumber = iDiv.childNodes.length;
+                return;
             });
     }
 

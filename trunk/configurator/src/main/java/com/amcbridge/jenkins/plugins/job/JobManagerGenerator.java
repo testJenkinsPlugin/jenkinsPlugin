@@ -407,7 +407,7 @@ public class JobManagerGenerator {
     private static List<Config> createJobConfigurations(ProjectToBuildModel projectModel) {
         List<Config> configurations = null;
         if (projectModel.getBuilders() != null) {
-            configurations = new ArrayList<>(projectModel.getBuilders().length);
+            configurations = new ArrayList<>(projectModel.getBuilders().size());
             for (BuilderConfigModel builderModel : projectModel.getBuilders()) {
                 Config newConfig;
                 if (builderModel.getConfigs().isEmpty()) {

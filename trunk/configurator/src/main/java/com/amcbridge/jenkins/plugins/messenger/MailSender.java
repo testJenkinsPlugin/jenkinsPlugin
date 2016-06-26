@@ -8,8 +8,11 @@ import javax.mail.*;
 import javax.mail.internet.*;
 
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
+import com.amcbridge.jenkins.plugins.configurator.BuildConfigurator;
 import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
 import jenkins.model.Jenkins;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MailSender implements Runnable {
     private String host;
@@ -18,6 +21,7 @@ public class MailSender implements Runnable {
     private Integer port;
     private static MessageInfo message;
     private static final String MAIL_PROPERTIES_FILE_NAME = "/plugins/build-configurator/config/MailSender.properties";
+    private static final Logger logger = LoggerFactory.getLogger(BuildConfigurator.class);
 
     public void sendMail(MessageInfo message) throws AddressException,
             MessagingException {
@@ -36,7 +40,7 @@ public class MailSender implements Runnable {
             pass = prop.getProperty("pass");
             port = Integer.parseInt(prop.getProperty("port"));
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("Error loading mail properties", ex);
         }
     }
 
@@ -81,7 +85,7 @@ public class MailSender implements Runnable {
                 transport.close();
             }
         } catch (MessagingException e) {
-            e.printStackTrace();
+            logger.error("Error sending mail", e);
         }
     }
 

@@ -138,11 +138,13 @@ public final class BuildConfigurator implements RootAction {
 
             BuildConfigurationModel currentConfig = BuildConfigurationManager
                     .load(newConfig.getProjectName());
+            boolean saveForDiff = true;
 
             switch (type) {
                 case CREATE:
                     newConfig.setState(ConfigurationState.NEW);
                     message.setDescription(MessageDescription.CREATE.toString());
+                    saveForDiff = false;
                     break;
                 case EDIT:
                     newConfig.setCreator(currentConfig.getCreator());
@@ -155,7 +157,6 @@ public final class BuildConfigurator implements RootAction {
                     newConfig.setJobUpdate(false);
                     BuildConfigurationManager.save(newConfig);
                     message.setDescription(MessageDescription.APPROVE.toString());
-
                     break;
                 case REJECT:
                     newConfig = currentConfig;
@@ -173,6 +174,9 @@ public final class BuildConfigurator implements RootAction {
 
             if (isArgsOk(currentConfig, newConfig)) {
                 BuildConfigurationManager.save(newConfig);
+                if (isCurrentUserAdministrator() && saveForDiff) {
+                    BuildConfigurationManager.saveForDiff(newConfig);
+                }
                 message.setDestinationAddress(getAdminEmails());
                 mail.sendMail(message);
             }
@@ -238,6 +242,13 @@ public final class BuildConfigurator implements RootAction {
         return true;
     }
 
+    //TODO: check users
+  /*  private boolean isUsersAccessChangedOk(BuildConfigurationModel modelNew, BuildConfigurationModel modelOld){
+        List usersAccessNew = modelNew.getUserWithAccess();
+        List usersAccessOld = modelNew.getUserWithAccess();
+
+    }
+*/
     private Map<UUID, BuilderConfigModel> getBuildersMap(BuildConfigurationModel configs) {
         Map<UUID, BuilderConfigModel> buildersMap = new HashMap<>();
         for (ProjectToBuildModel projectModel : configs.getProjectToBuild()) {
@@ -269,12 +280,14 @@ public final class BuildConfigurator implements RootAction {
         try {
             BuildConfigurationModel conf = BuildConfigurationManager.load(projectName);
 
+            BuildConfigurationModel confDiff = BuildConfigurationManager.load(projectName + "/diff");
+
             if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
                 loadCreateNewBuildConfiguration();
             }
 
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
-                    .getProjectToBuildlView(conf.getProjectToBuild());
+                    .getProjectToBuildlView(conf, confDiff);
         } catch (Exception e) {
             logger.error("Error loading views", e);
             return null;
@@ -299,6 +312,7 @@ public final class BuildConfigurator implements RootAction {
     public ProjectToBuildView loadUserAccessView(String projectName) {
         try {
             BuildConfigurationModel conf = BuildConfigurationManager.load(projectName);
+            BuildConfigurationModel confDiff = BuildConfigurationManager.load(projectName + "/diff");
             if (conf == null) {
                 throw new NullPointerException("Configuration not found");
             }
@@ -306,7 +320,7 @@ public final class BuildConfigurator implements RootAction {
                 loadCreateNewBuildConfiguration();
             }
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
-                    .getUserAccessView(conf.getUserWithAccess());
+                    .getUserAccessView(conf, confDiff);
         } catch (Exception e) {
             logger.error("Users access problem", e);
             return null;
@@ -417,6 +431,19 @@ public final class BuildConfigurator implements RootAction {
     public BuildConfigurationModel getConfiguration(String name) {
         try {
             return BuildConfigurationManager.getConfiguration(name);
+        } catch (Exception e) {
+            logger.error("Error getting configuration", e);
+            return null;
+        }
+    }
+
+    @JavaScriptMethod
+    public BuildConfigurationModel getDiffConfiguration(String name) {
+          try {
+            if (isCurrentUserAdministrator()) {
+                return BuildConfigurationManager.getConfiguration(name + "/diff");
+             }
+            return null;
         } catch (Exception e) {
             logger.error("Error getting configuration", e);
             return null;

@@ -124,16 +124,24 @@
     margin-left: 25px;
 }
 
-.builders {
+.builders, .deleted_builders {
     width: 500px;
 }
+    .deleted_builders{
+        color: brown;
+    }
 
-.builders-group {
+
+div[name='builders'], div[name='builders_deleted'] {
     margin-top: 20px;
     width: 590px;
     border: 3px solid rgba(128, 128, 128, 0.39);
-    height: 130px;
+    /* height: 130px; */
+    /* display: table; */
 }
+    div[name='builders_deleted']{
+         border: 3px solid red;
+    }
 
 .div-project-to-build {
     margin-top: 15px;
@@ -171,10 +179,13 @@
         float: none;
         width: 500px;
         display: inline-block;
+        margin-bottom: 10px;
     }
 
     .args{
         width: 400px;
+        float: none;
+        margin-bottom: 10px;
     }
         .args input{
             width: 360;
@@ -193,12 +204,15 @@
 }
 
 
-div [name='projectToBuild']{
+div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     margin-top: 35px;
     width: 655px;
     border: 3px solid rgba(128, 128, 128, 0.79);
     padding-left: 30px;
 }
+    div[name='projectToBuild_deleted']{
+         border: 3px solid red;
+    }
 
 
 .div-file-chooser-label {
@@ -455,3 +469,31 @@ div [name='projectToBuild']{
     display: inline-block;
     font-size: 16px;
 }
+.diff_value{
+    margin-left: 150;
+    color:brown;
+}
+
+.diff_value_header{
+    margin-left: 210;
+    color: brown;
+
+}
+.projectToBuild_status_new, .projectToBuild_status_deleted{
+    float: right; 
+    margin-top: 10; 
+    margin-right: 50; 
+    color: green;
+}
+    .projectToBuild_status_deleted{
+        color: brown;
+    }
+
+.userStatus_new, .userStatus_deleted{
+    float: right; 
+    color: brown;
+}
+    .userStatus_deleted{
+        float: right; 
+        color: green;
+    }
