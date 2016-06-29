@@ -132,6 +132,16 @@
                    </div>
                 </j:if>
 
+
+                <div class="div-textinput">
+                    <div class="div-project-name">
+
+                        <label>Don't use build server</label>
+                    </div>
+                    <f:checkbox name="dontUseBuildServer" id="dontUseBuildServer"  class="check-box" checked="false"/>
+                </div>
+
+
                 <div id="projectsToBuild">
                 </div>
 

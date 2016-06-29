@@ -46,6 +46,15 @@ public class JobManagerGenerator {
     private static final String JOB_FOLDER_PATH = "/jobs/";
     private static final int[] SPECIAL_SYMBOLS = {40, 41, 43, 45, 95};
     private static final String XPATH_FILE_TO_COPY = "/project/buildWrappers/com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper/includes/text()";
+    private static final String XPATH_BUILDERS = "/project/builders/*";
+    private static final String BATCH_COMMAND_TEXT = "java -jar \"%BUILDER_PATH%\\buildserver.jar\" -nodeName \"%NODE_NAME%\" -jobName \"%JOB_NAME%\" -workspace \"%WORKSPACE%\" -jenkinsHome \"%JENKINS_HOME%\"";
+    private static final String BATCH_LABEL_TEXT = "${ENV,var=\"OS\"}";
+    private static final String BATCH_EXPRESSION_TEXT = "(?i)Windows.*";
+    private static final String SHELL_COMMAND_TEXT = "java -jar \"$BUILDER_PATH/buildserver.jar\" -nodeName \"$NODE_NAME\" -jobName \"$JOB_NAME\" -workspace \"$WORKSPACE\" -jenkinsHome $JENKINS_HOME";
+    private static final String SHELL_LABEL_TEXT = "${ENV,var=\"OS\"}";
+    private static final String SHELL_EXPRESSION_TEXT = "(?i)Windows.*";
+
+
     private static final Logger logger = LoggerFactory.getLogger(JobManagerGenerator.class);
     private static final String XML_TITLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
@@ -178,8 +187,17 @@ public class JobManagerGenerator {
             throw new FileNotFoundException(pathToJob + " file not found");
         }
         WsPluginHelper.setWsPluginJobName(doc, config);
+
+        if (config.isDontUseBuildServer()) {
+            removeBuildersRunScript(doc);
+        }
         if (!isFileForUpdate) {
             createJobConfigNodes(doc, config);
+
+        } else {
+            if (!config.isDontUseBuildServer()) {
+                importScriptNode(loadTemplate(JOB_TEMPLATE_PATH), doc);
+            }
         }
         setJobConfigFileName(doc, config.getProjectName());
         writeJobConfigForBuildServer(config);
@@ -193,6 +211,108 @@ public class JobManagerGenerator {
         StreamResult result = new StreamResult(file);
         transformer.transform(source, result);
         return file;
+    }
+
+    private static void importScriptNode(Document jobTemplate, Document copyToDoc) throws XPathExpressionException, IOException, SAXException, ParserConfigurationException {
+
+
+        Node batchScriptNode = getBuildersScriptNode(jobTemplate, BATCH_EXPRESSION_TEXT, BATCH_LABEL_TEXT, BATCH_COMMAND_TEXT);
+        Node shellScriptNode = getBuildersScriptNode(jobTemplate, SHELL_EXPRESSION_TEXT, SHELL_LABEL_TEXT, SHELL_COMMAND_TEXT);
+
+        removeBuildersRunScript(copyToDoc);
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        XPathExpression exp;
+
+        exp = xPath.compile("/project/builders[last()]");
+        Node builderNode = (Node) exp.evaluate(copyToDoc, XPathConstants.NODE);
+        batchScriptNode = copyToDoc.importNode(batchScriptNode, true);
+        shellScriptNode = copyToDoc.importNode(shellScriptNode, true);
+
+        builderNode.insertBefore(batchScriptNode,null);
+        builderNode.insertBefore(shellScriptNode,null);
+
+
+    }
+
+    private static void removeBuildersRunScript(Document doc) throws XPathExpressionException {
+        Node batchScriptNode = getBuildersScriptNode(doc, BATCH_EXPRESSION_TEXT, BATCH_LABEL_TEXT, BATCH_COMMAND_TEXT);
+        Node shellScriptNode = getBuildersScriptNode(doc, SHELL_EXPRESSION_TEXT, SHELL_LABEL_TEXT, SHELL_COMMAND_TEXT);
+        if (shellScriptNode != null) {
+            shellScriptNode.getParentNode().removeChild(shellScriptNode);
+        }
+        if (batchScriptNode != null) {
+            batchScriptNode.getParentNode().removeChild(batchScriptNode);
+        }
+    }
+
+    private static NodeList getBuildersNodeList(Document doc) throws XPathExpressionException {
+        NodeList buildersList;
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        XPathExpression exp;
+        exp = xPath.compile(XPATH_BUILDERS);
+
+        buildersList = (NodeList) exp.evaluate(doc, XPathConstants.NODESET);
+
+        return buildersList;
+    }
+
+    private static Node getBuildersScriptNode(Document doc, String expressionText, String labelText, String scriptText) throws XPathExpressionException {
+        Node buildersScriptNode = null;
+        NodeList buildersList;
+        boolean expression = false;
+        boolean label = false;
+        boolean script = false;
+        try {
+            buildersList = getBuildersNodeList(doc);
+        } catch (NullPointerException e) {
+            return null;
+        }
+        for (int i = 0; i < buildersList.getLength(); i++) {
+
+            //project/builders/org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder
+            if (buildersList.item(i).getNodeName().equals("org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder")) {
+                buildersScriptNode = buildersList.item(i);
+
+                NodeList singleBuilderChildNodesList = buildersList.item(i).getChildNodes();
+                //project/builders/org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder/buildStep
+                for (int j = 0; j < singleBuilderChildNodesList.getLength(); j++) {
+                    if (singleBuilderChildNodesList.item(j).getNodeName().equals("condition")) {
+                        NodeList conditionsList = singleBuilderChildNodesList.item(j).getChildNodes();
+                        for (int condition = 0; condition < conditionsList.getLength(); condition++) {
+                            if (conditionsList.item(condition).getNodeName().equals("expression")) {
+                                NodeList expressionList = conditionsList.item(condition).getChildNodes();
+                                for (int expressionIndex = 0; expressionIndex < expressionList.getLength(); expressionIndex++) {
+                                    if (expressionList.item(expressionIndex).getTextContent().equals(expressionText)) {
+                                        expression = true;
+                                    }
+                                }
+                            } else if (conditionsList.item(condition).getNodeName().equals("label")) {
+                                NodeList labelList = conditionsList.item(condition).getChildNodes();
+                                for (int labelIndex = 0; labelIndex < labelList.getLength(); labelIndex++) {
+                                    if (labelList.item(labelIndex).getTextContent().equals(labelText)) {
+                                        label = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (singleBuilderChildNodesList.item(j).getNodeName().equals("buildStep")) {
+                        NodeList buildStepNodeList = singleBuilderChildNodesList.item(j).getChildNodes();
+                        //project/builders/org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder/buildStep/command
+                        for (int k = 0; k < buildStepNodeList.getLength(); k++) {
+                            if (buildStepNodeList.item(k).getNodeName().equals("command") && buildStepNodeList.item(k).getTextContent().equals(scriptText)) {
+                                script = true;
+                            }
+                        }
+                    }
+                }
+            }
+            if (expression && label && script) {
+                return buildersScriptNode;
+            }
+        }
+        return null;
     }
 
     private static void setJobConfigFileName(Document doc, String jobName) throws XPathExpressionException {

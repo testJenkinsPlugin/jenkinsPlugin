@@ -30,6 +30,7 @@ public class BuildConfigurationModel {
     private String comments;
     private List<UserAccessModel> userWithAccess;
     private boolean cleanWorkspace;
+    private boolean dontUseBuildServer;
 
     public String getComments() {
         return comments;
@@ -197,14 +198,12 @@ public class BuildConfigurationModel {
         this.cleanWorkspace = cleanWorkspace;
     }
 
-    public String getUsersAsString() {
-        StringBuilder users = new StringBuilder("");
-        if (userWithAccess != null) {
-            for (UserAccessModel user : userWithAccess) {
-                users.append(user.getUserName()).append(";");
-            }
-        }
-        return users.toString();
+    public boolean isDontUseBuildServer() {
+        return dontUseBuildServer;
+    }
+
+    public void setDontUseBuildServer(boolean dontUseBuildServer) {
+        this.dontUseBuildServer = dontUseBuildServer;
     }
 
     @Override

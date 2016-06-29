@@ -103,6 +103,11 @@ var configurator = (function () {
                     jQuery("#userLabel").html("Created by:  " + t.responseObject());
                 })
             }
+            var dontUseBuildServer = t.responseObject().dontUseBuildServer;
+            if(dontUseBuildServer != null && dontUseBuildServer == true){
+                jQuery('#dontUseBuildServer').prop('checked', true);
+            }
+
             if(t.responseObject().state != 'APPROVED'){
                 setDiffContent(name);
             }
