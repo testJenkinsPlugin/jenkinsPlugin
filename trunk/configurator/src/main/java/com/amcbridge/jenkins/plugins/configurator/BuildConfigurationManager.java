@@ -1,15 +1,18 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
-import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.configurationModels.UserAccessModel;
+import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.models.UserAccessModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
-import com.amcbridge.jenkins.plugins.xstreamElements.SCM;
-import com.amcbridge.jenkins.plugins.xstreamElements.SCMLoader;
+import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
+import com.amcbridge.jenkins.plugins.xstreamelements.SCM;
+import com.amcbridge.jenkins.plugins.xstreamelements.SCMLoader;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
 import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
 import com.amcbridge.jenkins.plugins.serialization.CredentialItem;
+import com.amcbridge.jenkins.plugins.xstreamelements.ScriptType;
+import com.amcbridge.jenkins.plugins.xstreamelements.ScriptTypeLoader;
 import hudson.XmlFile;
 import hudson.model.Node;
 import hudson.model.User;
@@ -38,8 +41,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -53,40 +58,41 @@ public class BuildConfigurationManager {
     private static final String CONTENT_FOLDER = "userContent";
     public static final String STRING_EMPTY = "";
     private static final MailSender mail = new MailSender();
-    private static final Logger log = LoggerFactory.getLogger(BuildConfigurationManager.class);
-    private static final SCMLoader scmLoader = new SCMLoader();
+    private static final Logger logger = LoggerFactory.getLogger(BuildConfigurationManager.class);
+    private static SCMLoader scmLoader;
     private static String defaultCredentialsPropertiesFileName = "credentialsDefaults.properties";
     private static String credentialsPropertyName = "defaultCredentials";
 
     public static String getCurrentUserID() {
-        if (User.current() != null) {
-            return User.current().getId();
+        User user = User.current();
+        if (user != null) {
+            return user.getId();
         } else {
             return STRING_EMPTY;
         }
     }
 
-    public static File getConfigFileFor(String id) {
+    public static File getConfigFileFor(String id) throws JenkinsInstanceNotFoundException {
         return new File(new File(getRootDir(), id), CONFIG_FILE_NAME);
     }
 
 
-    public static File getFileToCreateJob() {
+    public static File getFileToCreateJob() throws JenkinsInstanceNotFoundException {
         return new File(getRootDir() + "/" + CONFIG_JOB_FILE_NAME);
     }
 
-    static File getRootDir() {
-        return new File(Jenkins.getInstance().getRootDir(),
+    static File getRootDir() throws JenkinsInstanceNotFoundException {
+        return new File(BuildConfigurationManager.getJenkins().getRootDir(),
                 BUILD_CONFIGURATOR_DIRECTORY_NAME);
     }
 
-    public static String getRootDirectory() {
-        return Jenkins.getInstance().getRootDir() + "/"
+    public static String getRootDirectory() throws JenkinsInstanceNotFoundException {
+        return BuildConfigurationManager.getJenkins().getRootDir() + "/"
                 + BUILD_CONFIGURATOR_DIRECTORY_NAME;
     }
 
-    public static String getUserContentFolder() {
-        return Jenkins.getInstance().getRootDir() + "/" + CONTENT_FOLDER;
+    public static String getUserContentFolder() throws JenkinsInstanceNotFoundException {
+        return BuildConfigurationManager.getJenkins().getRootDir() + "/" + CONTENT_FOLDER;
     }
 
     public static void save(BuildConfigurationModel config) throws IOException,
@@ -106,7 +112,25 @@ public class BuildConfigurationManager {
     }
 
 
-    protected final static XmlFile getConfigFile(String nameProject) {
+            //TODO: remove code duplication
+
+    public static void saveForDiff(BuildConfigurationModel config) throws IOException {
+        if (config.getProjectName().isEmpty()) {
+            deleteFiles(config.getScripts(), getUserContentFolder());
+            return;
+        }
+
+        File checkFile = new File(getRootDirectory() + config.getProjectName() + "/diff/");
+        if (!checkFile.exists()) {
+            checkFile.mkdirs();
+        }
+
+        XmlFile fileWriter = getConfigFile(config.getProjectName() + "/diff");
+        fileWriter.write(config);
+    }
+
+
+    private static XmlFile getConfigFile(String nameProject) throws JenkinsInstanceNotFoundException {
         return new XmlFile(Jenkins.XSTREAM, getConfigFileFor("/" + nameProject));
     }
 
@@ -122,11 +146,11 @@ public class BuildConfigurationManager {
 
     public static List<BuildConfigurationModel> loadAllConfigurations()
             throws IOException, ServletException, JAXBException {
-        List<BuildConfigurationModel> configs = new ArrayList<BuildConfigurationModel>();
+        List<BuildConfigurationModel> configs = new ArrayList<>();
         File file = new File(getRootDirectory());
 
         if (!file.exists()) {
-            return null;
+            return new LinkedList<>();
         }
 
         File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
@@ -186,7 +210,7 @@ public class BuildConfigurationManager {
     }
 
 
-    public static Boolean isNameUsing(String name) {
+    public static Boolean isNameUsing(String name) throws JenkinsInstanceNotFoundException {
         File checkName = new File(getRootDirectory() + "/" + name);
         return checkName.exists();
     }
@@ -198,8 +222,6 @@ public class BuildConfigurationManager {
         if (checkFile.exists()) {
             FileUtils.deleteDirectory(checkFile);
         }
-
-        deleteJob(name);
 
         ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName());
         message.setSubject(config.getProjectName());
@@ -227,18 +249,18 @@ public class BuildConfigurationManager {
         return isUserInAccessList || isCurrentUserCreator;
     }
 
-    public static String[] getPath(String value) {
-        if (value == null || value.equals(STRING_EMPTY)) {
+    public static String[] getPath(String path) {
+        if (path == null || path.equals(STRING_EMPTY)) {
             return new String[0];
         }
-        if (value.lastIndexOf(';') == value.length() - 1) {
-            value = value.substring(0, value.lastIndexOf(';'));
+        if (path.lastIndexOf(';') == path.length() - 1) {
+            path = path.substring(0, path.lastIndexOf(';'));
         }
-        return value.split(";");
+        return path.split(";");
     }
 
-    public static Boolean isCurrentUserAdministrator() {
-        Jenkins inst = Jenkins.getInstance();
+    public static Boolean isCurrentUserAdministrator() throws JenkinsInstanceNotFoundException {
+        Jenkins inst = BuildConfigurationManager.getJenkins();
         Permission permission = Jenkins.ADMINISTER;
 
         if (inst != null) {
@@ -251,7 +273,7 @@ public class BuildConfigurationManager {
                     return ((AccessControlled) o).hasPermission(permission);
                 }
             }
-            return Jenkins.getInstance().hasPermission(permission);
+            return BuildConfigurationManager.getJenkins().hasPermission(permission);
         }
     }
 
@@ -260,8 +282,7 @@ public class BuildConfigurationManager {
         if (!isCurrentUserHasAccess(name)) {
             return null;
         }
-        BuildConfigurationModel currentConfig = load(name);
-        return currentConfig;
+        return load(name);
     }
 
     public static String getAdminEmail() {
@@ -276,35 +297,36 @@ public class BuildConfigurationManager {
         return StringUtils.EMPTY;
     }
 
-    public static List<String> getSCM() {
-        List<String> supportedSCMs = new ArrayList<String>();
+    public static List<String> getSCM() throws JenkinsInstanceNotFoundException {
+        List<String> supportedSCMs = new ArrayList<>();
         boolean isGitCatch = false;
         boolean isSubversionCatch = false;
         for (SCMDescriptor<?> scm : hudson.scm.SCM.all()) {
             if (isSupportedSCM(scm)) {
                 supportedSCMs.add(scm.getDisplayName());
-                if (scm.getDisplayName().equalsIgnoreCase("git")) {
+                if ("git".equalsIgnoreCase(scm.getDisplayName())) {
                     isGitCatch = true;
-                } else if (scm.getDisplayName().equalsIgnoreCase("subversion")) {
+                } else if ("subversion".equalsIgnoreCase(scm.getDisplayName())) {
                     isSubversionCatch = true;
                 }
             }
         }
         if (isGitCatch) {
-            log.info("+++++ git: plugin was plugged");
+            logger.info("+++++ git: plugin was plugged");
         } else {
-            log.info("----- git: plugin wasn't plugged");
+            logger.info("----- git: plugin wasn't plugged");
         }
         if (isSubversionCatch) {
-            log.info("+++++ subversion: plugin was plugged");
+            logger.info("+++++ subversion: plugin was plugged");
         } else {
-            log.info("----- subversion: plugin wasn't plugged");
+            logger.info("----- subversion: plugin wasn't plugged");
         }
 
         return supportedSCMs;
     }
 
-    private static Boolean isSupportedSCM(SCMDescriptor<?> scm) {
+    private static Boolean isSupportedSCM(SCMDescriptor<?> scm) throws JenkinsInstanceNotFoundException {
+        scmLoader = new SCMLoader();
         for (SCM supportSCM : scmLoader.getSCMs()) {
             if (supportSCM.getKey().equalsIgnoreCase(scm.getDisplayName())) {
                 return true;
@@ -313,9 +335,9 @@ public class BuildConfigurationManager {
         return false;
     }
 
-    public static List<String> getNodesName() {
-        List<String> nodeNames = new ArrayList<String>();
-        for (Node node : Jenkins.getInstance().getNodes()) {
+    public static List<String> getNodesName() throws JenkinsInstanceNotFoundException {
+        List<String> nodeNames = new ArrayList<>();
+        for (Node node : BuildConfigurationManager.getJenkins().getNodes()) {
             nodeNames.add(node.getNodeName());
         }
         return nodeNames;
@@ -323,7 +345,7 @@ public class BuildConfigurationManager {
 
     public static void createJob(String name)
             throws IOException, ParserConfigurationException,
-            SAXException, TransformerException, JAXBException {
+            SAXException, TransformerException, JAXBException, XPathExpressionException {
         BuildConfigurationModel config = load(name);
         JobManagerGenerator.createJob(config);
         config.setJobUpdate(true);
@@ -334,68 +356,43 @@ public class BuildConfigurationManager {
             throws IOException, InterruptedException, ParserConfigurationException, JAXBException {
         JobManagerGenerator.deleteJob(name);
         BuildConfigurationModel config = BuildConfigurationManager.load(name);
-        if (config.getProjectName() != null) {
-            if (config.getState().equals(ConfigurationState.APPROVED)) {
-                config.setJobUpdate(false);
-                BuildConfigurationManager.save(config);
-            }
+        if (config.getProjectName() != null && config.getState().equals(ConfigurationState.APPROVED)) {
+
+            config.setJobUpdate(false);
+            BuildConfigurationManager.save(config);
         }
     }
 
-    public static void setDefaultCredentials(String credentials) {
+    public static void setDefaultCredentials(String credentials) throws JenkinsInstanceNotFoundException {
         Properties prop = new Properties();
-        OutputStream output = null;
-        try {
-            File path = getRootDir();
-            if (!path.exists()) {
-                path.mkdirs();
-            }
-            output = new FileOutputStream(path + "/" + defaultCredentialsPropertiesFileName);
+        File path = getRootDir();
+        if (!path.exists()) {
+            path.mkdirs();
+        }
+        try (OutputStream output = new FileOutputStream(path + "/" + defaultCredentialsPropertiesFileName);) {
             prop.setProperty(credentialsPropertyName, credentials);
             prop.store(output, null);
 
         } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
+            logger.error("Error setting credentials as default", e);
         }
     }
 
-    public static String getDefaultCredentials() {
+    public static String getDefaultCredentials() throws JenkinsInstanceNotFoundException {
         Properties prop = new Properties();
-        InputStream input = null;
         File propertiesFile = new File(getRootDir(), defaultCredentialsPropertiesFileName);
-        String defaultCredentials = null;
+        String defaultCredentials;
         if (!propertiesFile.exists()) {
-            return null;
+            return "not selected";
         }
 
-        try {
-
-            input = new FileInputStream(propertiesFile);
-
-            // load a properties file
+        try (InputStream input = new FileInputStream(propertiesFile)) {
             prop.load(input);
             defaultCredentials = prop.getProperty(credentialsPropertyName);
 
-
         } catch (IOException ex) {
-            ex.printStackTrace();
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            logger.error("Error getting default credentials", ex);
+            return "not selected";
         }
 
         return defaultCredentials;
@@ -403,12 +400,15 @@ public class BuildConfigurationManager {
 
     public static List<CredentialItem> openCredentials() throws IOException {
 
-        String jenkinsHomePath = Jenkins.getInstance().getRootDir().getPath();
-        List<CredentialItem> credentialItemList = new ArrayList<CredentialItem>();
+        String jenkinsHomePath = BuildConfigurationManager.getJenkins().getRootDir().getPath();
+        List<CredentialItem> credentialItemList = new ArrayList<>();
         String fileName = jenkinsHomePath + "/credentials.xml";
 
         try {
             File fXmlFile = new File(fileName);
+            if (!fXmlFile.exists()){
+                return new LinkedList<>();
+            }
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(fXmlFile);
@@ -451,9 +451,21 @@ public class BuildConfigurationManager {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Parsing credentials file error", e);
         }
         return credentialItemList;
     }
 
+    public static Jenkins getJenkins() throws JenkinsInstanceNotFoundException {
+        Jenkins instance = Jenkins.getInstance();
+        if (instance == null) {
+            throw new JenkinsInstanceNotFoundException("Jenkins instance not found");
+        }
+        return Jenkins.getInstance();
+    }
+
+    public static List<ScriptType> getScriptTypes() throws JenkinsInstanceNotFoundException {
+        ScriptTypeLoader loader = new ScriptTypeLoader();
+        return loader.getScriptTypeList();
+    }
 }

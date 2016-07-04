@@ -10,15 +10,16 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 public class Config {
 
     @XStreamAsAttribute
-    private String builder, platform, userConfig, configuration;
+    private String builder, platform, userConfig, configuration, builderArgs;
 
     public Config() {
     }
 
-    public Config(String configuration, String builder, String platform) {
+    public Config(String configuration, String builder, String platform, String builderArgs) {
         this.builder = builder;
         this.configuration = configuration;
         this.platform = platform;
+        this.builderArgs = builderArgs;
     }
 
     public void setBuilder(String value) {
@@ -53,6 +54,14 @@ public class Config {
         return userConfig;
     }
 
+    public String getBuilderArgs() {
+        return builderArgs;
+    }
+
+    public void setBuilderArgs(String builderArgs) {
+        this.builderArgs = builderArgs;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Config)) {
@@ -64,6 +73,7 @@ public class Config {
                 .append(this.platform, other.platform)
                 .append(this.userConfig, other.userConfig)
                 .append(this.configuration, other.configuration)
+                .append(this.builderArgs, other.builderArgs)
                 .isEquals();
     }
 
@@ -74,6 +84,7 @@ public class Config {
                 .append(this.platform)
                 .append(this.userConfig)
                 .append(this.configuration)
+                .append(this.builderArgs)
                 .toHashCode();
     }
 }

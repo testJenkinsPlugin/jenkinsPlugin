@@ -10,10 +10,19 @@
          xmlns:p="/lib/hudson/project"
          xmlns:g="glide"
 >
-<div name="userWithAccess">
-    <input type="text" name = "userName" class="user-field" value="${userName}"/>
-    <input type="button" value="remove" onclick="configurator.deleteUser(this);"/>
-</div>
+    <div name="userWithAccess${userSuffix}">
+        <!--<label>${viewStatus}</label>-->
+        <input type="text" name="userName" class="user-field" value="${userName}"/>
+        <j:if test="${userStatus.equals('DELETED')}">
+            <label class="userStatus_deleted"> DELETED</label>
+        </j:if>
+        <j:if test="${!userStatus.equals('DELETED')}">
+            <input type="button" value="remove" onclick="configurator.deleteUser(this);"/>
+            <j:if test="${userStatus.equals('NEW')}">
+                <label class="userStatus_new"> NEW</label>
+            </j:if>
+        </j:if>
+    </div>
     <j:forEach items="s" var="config" indexVar="i">
     </j:forEach>
 </j:jelly>

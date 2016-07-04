@@ -1,4 +1,4 @@
-package com.amcbridge.jenkins.plugins.xstreamElements;
+package com.amcbridge.jenkins.plugins.xstreamelements;
 
 public class Platform {
     private String platformName;

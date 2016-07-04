@@ -4,8 +4,8 @@ import hudson.tasks.Mailer;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
+import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescription;
 
 public class JobMailer implements JobElementDescription {
 
@@ -13,14 +13,17 @@ public class JobMailer implements JobElementDescription {
     private static final String PARENT_ELEMENT_TAG = "publishers";
     private static final String RECIPIENT_TAG = "recipients";
 
+    @Override
     public String getElementTag() {
         return ELEMENT_TAG;
     }
 
+    @Override
     public String getParentElementTag() {
         return PARENT_ELEMENT_TAG;
     }
 
+    @Override
     public String generateXML(BuildConfigurationModel config) {
 
         if (config.getEmail().isEmpty()) {
@@ -32,6 +35,7 @@ public class JobMailer implements JobElementDescription {
         return JobManagerGenerator.convertToXML(mailer);
     }
 
+    @Override
     public void appendToXML(BuildConfigurationModel config, Document xml) {
         Node node = xml.getElementsByTagName(RECIPIENT_TAG).item(0);
         String mail;

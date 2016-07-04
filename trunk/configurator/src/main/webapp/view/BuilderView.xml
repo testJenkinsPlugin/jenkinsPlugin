@@ -11,68 +11,108 @@
    xmlns:g="glide"
    >
 
-    <div id="build_${divID}" name="builders" class="builders-group">
-        <label id="close_build_${divID}" onclick="closeButtonClick(this)" class="close-builder">X</label>
 
+    <div name="builders${builderSuffix}" class="builders-group">
+        <label onclick="configurator.closeElement(this)" class="close-builder" name="closeBuilder">X</label>
+        <!--<label>${builderStatus}</label>-->
+        <j:if test="${builderStatus.equals('DELETED')}">
+        <label class="projectToBuild_status_deleted">DELETED! </label>
+    </j:if>
+        <j:if test="${builderStatus.equals('NEW')}">
+            <label class="projectToBuild_status_new">NEW! </label>
+        </j:if>
         <div class="div-drop-down">
+            <j:if test="${view_old_builder != null and view_old_builder.getBuilder() != null}">
+                <label style=" float: right; color: brown;">${view_old_builder.getBuilder()}</label>
+                <br/>
+            </j:if>
             <label>Builder:</label>
-            <select id="builder_${divID}" name="builder">
-                
+            <select name="builder" style="float: right;">
+
                 <j:forEach items="${builders}" var="build" indexVar="i">
                     <j:if test="${build.getValue() == view.getBuilder()}">
-                        <option id="${build.getKey()+'_'+divID}" name="${build.getKey()+'_'+divID}" selected="selected" value="${build.getValue()}">${build.getValue()}</option>
+                        <option selected="selected" value="${build.getValue()}">${build.getValue()}</option>
                     </j:if>
                     <j:if test="${build.getValue() != view.getBuilder()}">
-                        <option id="${build.getKey()+'_'+divID}" name="${build.getKey()+'_'+divID}" value="${build.getValue()}">${build.getValue()}</option>
+                        <option value="${build.getValue()}">${build.getValue()}</option>
                     </j:if>
                 </j:forEach>
             </select>
         </div>
 
         <div class="div-drop-down">
+            <j:if test="${view_old_builder != null and view_old_builder.getPlatform() != null}">
+                <label style="float: right; color: brown;">${view_old_builder.getPlatform()}</label>
+                <br/>
+            </j:if>
             <label>Platform:</label>
-            <select id="platform_${divID}" name="platform">
+            <select name="platform" style="float: right;">
                 <j:forEach items="${platforms}" var="platform" indexVar="i">
                     <j:if test="${platform == view.getPlatform()}">
-                        <option id="${platform.name()+'_'+divID}" name="${platform.name()+'_'+divID}" selected="selected" value="${platform}">${platform}</option>
+                        <option selected="selected" value="${platform}">${platform}</option>
                     </j:if>
                     <j:if test="${platform != view.getPlatform()}">
-                        <option id="${platform.name()+'_'+divID}" name="${platform.name()+'_'+divID}" value="${platform}">${platform}</option>
+                        <option value="${platform}">${platform}</option>
                     </j:if>
                 </j:forEach>
             </select>
         </div>
-
-        <div class="div-drop-down">
-            <div class="div-configuration">
+<br/>
+        <div class="builder-config">
+            <j:if test="${view_old_builder != null}">
+                <label>${view_old_builder.getConfigurationsAsString()}</label>
+                <br/>
+            </j:if>
                 <label>Configuration:</label>
-            </div>
 
             <j:if test="${view.isConfigChecked('RELEASE')}">
-                <input type="checkbox" id="release" checked="checked" name="release"/>Release
+                <input type="checkbox" checked="checked" name="release"/>Release
             </j:if>
             <j:if test="${!view.isConfigChecked('RELEASE')}">
-                <input type="checkbox" id="release" name="release"/>Release
+                <input type="checkbox" name="release"/>Release
             </j:if>
-            <br/>
 
             <j:if test="${view.isConfigChecked('DEBUG')}">
-                <input type="checkbox" id="debug" checked="checked" name="debug"/>Debug
+                <input type="checkbox" checked="checked" name="debug"/>Debug
             </j:if>
             <j:if test="${!view.isConfigChecked('DEBUG')}">
-                <input type="checkbox" id="debug" name="debug"/>Debug
+                <input type="checkbox" name="debug"/>Debug
             </j:if>
-            <br/>
+
 
             <j:if test="${view.isConfigChecked('OTHER')}">
-                <input type="checkbox" id="Other_${divID}" name="other" checked="checked" onclick="otherCheckBoxChange(this)"/>Other
-                <input type="text" id="userConfig_${divID}" name="userConfig" value="${view.getUserConfig()}" class="othet-config" field="userConfig_${divID}"/>
+                <input type="checkbox" name="other" checked="checked" onclick="configurator.disableOtherConfig(this)"/>Other
+                <input type="text" name="userConfig" value="${view.getUserConfig()}" field="userConfig_${divID}"/>
             </j:if>
             <j:if test="${!view.isConfigChecked('OTHER')}">
-                <input type="checkbox" id="Other_${divID}" name="other" onclick="otherCheckBoxChange(this)"/>Other
-                <input type="text" id="userConfig_${divID}" name="userConfig" disabled="false" class="othet-config" field="userConfig_${divID}"/>
+                <input type="checkbox" name="other" onclick="configurator.disableOtherConfig(this)"/>Other
+                <input type="text" name="userConfig"  class="hidden" field="userConfig_${divID}"/>
             </j:if>
         </div>
+<br/>
+
+        <j:if test="${isAdmin}">
+            <div class="args">
+                <label>Command line args:</label><br/>
+
+                <j:if test="${view_old_builder != null and view_old_builder.getBuilderArgs() != null}">
+                <label style="color: brown;" >"${view_old_builder.getBuilderArgs()}"</label>
+                <br/>
+            </j:if>
+                <input type="text" name="builderArgs" value = "${view.getBuilderArgs()}"/>
+                <input type="hidden" name="guid" value = "${view.getGuid()}"/>
+            </div>
+        </j:if>
+
+        <j:if test="${!isAdmin}">
+            <div class="args display-none">
+                <label>Command line args:</label><br/>
+                <input type="text" name="builderArgs" value = "${view.getBuilderArgs()}"/>
+                <input type="hidden" name="guid" value = "${view.getGuid()}"/>
+
+            </div>
+        </j:if>
+
     </div>
     <j:forEach items="s" var="config" indexVar="i">
     </j:forEach>

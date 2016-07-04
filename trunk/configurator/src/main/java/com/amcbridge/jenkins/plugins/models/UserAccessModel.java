@@ -1,4 +1,4 @@
-package com.amcbridge.jenkins.plugins.configurationModels;
+package com.amcbridge.jenkins.plugins.models;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 

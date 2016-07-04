@@ -76,3 +76,40 @@ function deleteJob(name)
     document.getElementById("helpReject").innerHTML = "Are you sure you want delete '" + name + "' job?";
     nameAction = name+"?deleteJob"; 
 }
+
+function copyConfiguration(configToCopyName) {
+   
+
+    
+    var closeBtn = jQuery('#closeCopyConfig');
+    var copyConfigBkgnd = jQuery('#copyConfig');
+
+    jQuery('#copyConfigName').val(configToCopyName);
+    jQuery('#copyConfigHeader').text('Copy configuration: \"' + configToCopyName + '\"');
+
+    jQuery(copyConfigBkgnd).removeClass('display-none');
+    jQuery(closeBtn).click(function() {
+        jQuery(copyConfigBkgnd).addClass('display-none');
+    });
+
+    window.onclick = function(event) {
+        if (event.target == jQuery(copyConfigBkgnd)[0]) {
+            jQuery(copyConfigBkgnd).addClass('display-none');
+        }
+    }
+
+}
+
+function isCopyNameCorrect() {
+
+    var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|\.\ ]*$/i;
+    var copyName = jQuery('#newConfigName')[0];
+    if (!regPath.test(copyName.value) || (copyName.value.length == 0)) {
+        jQuery(copyName).addClass('wrong');
+        return false;
+    } else {
+        jQuery(copyName).removeClass('wrong');
+        return true;
+    }
+
+}

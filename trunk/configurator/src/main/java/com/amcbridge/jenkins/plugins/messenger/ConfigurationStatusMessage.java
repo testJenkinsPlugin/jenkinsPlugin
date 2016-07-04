@@ -4,7 +4,11 @@ import org.apache.commons.lang.StringUtils;
 
 public class ConfigurationStatusMessage implements MessageInfo {
 
-    private String subject, sendTo, sendCC, description, projectName;
+    private String subject;
+    private String sendTo;
+    private String sendCC;
+    private String description;
+    private String projectName;
 
     public ConfigurationStatusMessage(String subject,
                                       String sendTo, String sendCC, String description, String projectName) {
@@ -27,6 +31,7 @@ public class ConfigurationStatusMessage implements MessageInfo {
         projectName = value;
     }
 
+    @Override
     public String getSubject() {
         return subject;
     }
@@ -35,6 +40,7 @@ public class ConfigurationStatusMessage implements MessageInfo {
         subject = value;
     }
 
+    @Override
     public String getDestinationAddress() {
         return sendTo;
     }
@@ -43,6 +49,7 @@ public class ConfigurationStatusMessage implements MessageInfo {
         sendTo = value;
     }
 
+    @Override
     public String getCC() {
         return sendCC;
     }
@@ -59,6 +66,7 @@ public class ConfigurationStatusMessage implements MessageInfo {
         description = value;
     }
 
+    @Override
     public String getMassageText() {
         return projectName + " - " + description;
     }

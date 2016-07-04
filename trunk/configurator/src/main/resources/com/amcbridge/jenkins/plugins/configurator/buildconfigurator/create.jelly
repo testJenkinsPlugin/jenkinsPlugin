@@ -1,0 +1,244 @@
+<?jelly escape-by-default='true' encoding='UTF-8'?>
+
+<j:jelly xmlns:j="jelly:core"
+   xmlns:st="jelly:stapler"
+   xmlns:d="jelly:define"
+   xmlns:l="/lib/layout"
+   xmlns:t="/lib/hudson"
+   xmlns:f="/lib/form"
+   xmlns:i="jelly:fmt"
+   xmlns:p="/lib/hudson/project"
+   xmlns:g="glide"
+   >
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <st:bind value="${it}" var="buildConfiguration"/>
+  <script type="text/javascript" src="../plugin/build-configurator/scripts/CreateBuildConfigurator.js"></script>
+  <link rel="stylesheet" href="../plugin/build-configurator/css/style.css" type="text/css"/>
+
+  <l:layout>
+        <st:include page="sidepanel.jelly" it="${app}"/>
+        <l:main-panel>
+            <div id="overlay" class="overlay display-none">
+                <div id="rejectDiv" class="reject-div display-none">
+                        <label class="reject-label">Please type reasons of rejection: </label>
+                        <input type="text" id="textReject" name="textReject" class="textReject"/>
+                        <input type="button" onClick="configurator.OkReject()" id="OkReject" class="button-reject" value="OK"/>
+                        <input type="button" onClick="configurator.CancelReject()" id="CancelReject" class="button-reject" value="Cancel"/>
+                </div>
+            </div>
+            <div id="fieldHelpView" class="">
+                <div id="fieldHelp" class="field-help-error display-none">
+                </div>
+            </div>
+            <div class="title-header">
+            <h1 class="header" id="titlePage">Create new build configuration</h1>
+            <label id="reasonLabel" class="reason"></label>
+            </div>
+            <f:form method="post" action="createNewConfigurator" name="createNewConfigurator" id="createNewConfigurator">
+                <div class="user">
+                    <label id="userLabel"></label>
+                </div>
+
+                <div class="div-textinput">
+                    <div class="div-project-name">
+                        <label>Project Name</label>
+                    </div>
+                    <input type="text" id="projectName" onblur="configurator.validateProject(this);" name="projectName" class="textbox"/>
+                </div>
+                <div id="projectError" class="error-block display-none" style="margin-left: 205px;">
+                    <img src="../images/16x16/error.png"/>
+                    <label id="projectErrorText"></label>
+                </div>
+
+                 <label compare="true" id="typeSCM_old" class="diff_value_header display-none">SCM: </label>
+                <div class="div-textinput">
+                    <div class="div-project-name">
+
+                        <label>SCM:</label>
+                    </div>
+
+                    <div class="div-url-type">
+                        <select name="scm" id="typeSCM" class="div-drop-down-list-item">
+                            <j:forEach items="${it.getSCM()}" var="sct">
+                                <option value="${sct}">${sct}</option>
+                            </j:forEach>
+                        </select>
+                    </div>
+                </div>
+
+                <j:if test ="${it.getNodesName().size() > 0}">
+                    <div class="div-build-machine-config">
+                        <div style="float:left">
+                        	<label>Build machine configuration:</label>
+                        	<input type="hidden" id="build_machine_configuration" name="build_machine_configuration" value=""/>
+                        </div>
+
+                        <div class="div-radiogroup">
+                        	<j:forEach items="${it.getNodesName()}" var="node">
+                            	<f:checkbox name="node" id="${node}" value="${node}" title="${node}" onclick="configurator.bMCChange(this)"/>
+                            	<br/>
+                        	</j:forEach>
+                    	</div>
+                    </div>
+                </j:if>
+
+                <label compare="true" id="isEmail_old" class="diff_value_header display-none"></label>
+                <div class="div-textinput">
+
+                    <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="configurator.emailCheckBoxChange(this)" title="Job E-mails notifications"/>
+                    <input type="text" field="email" onblur="configurator.validateMail(this)" name="email" disabled="false" id="email" class="email-notification"/>
+                    <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.emailHelp(name)" name="email-help" class="image"/>
+                </div>
+                <div id="email_Error" class="error-block display-none" style="margin-left: 205px;">
+                    <img src="../images/16x16/error.png"/>
+                    Not correct e-mail
+                </div>
+
+                <div id="email-help-block" class="help-view display-none">
+                <lebel id="email-help-text" class="helptext display-none">
+                      Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build. E-mail will be sent when a build fails, becomes unstable or returns to stable.
+                </lebel>
+                </div>
+<label compare="true" id="configEmail_old" class="diff_value_header display-none"></label>
+                <div class="div-textinput">
+
+                    <div class="div-project-name">
+                    <label compare="true" id="configEmail_old" class="display-none">Config Email</label>
+                        <label>Configuration E-mails notifications</label>
+                    </div>
+                    <input type="text" field="email" onblur="configurator.validateMail(this);" name="configEmail" id="configEmail" class="textbox"/>
+                    <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.emailHelp(name)" name="configEmail-help" class="image"/>
+                </div>
+                <div id="configEmail_Error" class="error-block display-none" style="margin-left: 205px;">
+                    <img src="../images/16x16/error.png"/>
+                    Not correct e-mail
+                </div>
+
+                <div id="configEmail-help-block" class="help-view display-none">
+                <label id="configEmail-help-text" class="helptext display-none">
+                     Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when configuration state changes.
+                </label>
+                </div>
+
+                <j:if test="${it.isWsPluginInstalled()}">
+
+                   <div class="div-textinput">
+                    <div class="div-project-name">
+                    <label compare="true" id="cleanWorkspace"></label>
+                                           <label>Use workspace cleanup plugin</label>
+                                       </div>
+                        <f:checkbox name="cleanWorkspace" id="cleanWorkspace"  class="check-box" checked="true"/>
+                   </div>
+                </j:if>
+
+
+                <div class="div-textinput">
+                    <div class="div-project-name">
+
+                        <label>Don't use build server</label>
+                    </div>
+                    <f:checkbox name="dontUseBuildServer" id="dontUseBuildServer"  class="check-box" checked="false"/>
+                </div>
+
+
+                <div id="projectsToBuild">
+                </div>
+
+                <div id="projectsToBuildDeleted">
+                                </div>
+
+                <div class="div-add-view">
+                    <input type="button" onClick="configurator.addView()" id="addProjectToBuild" value="Add project to build"/>
+                    <label id="label-add-view" class="label-add-view">You should create one project to build</label>
+                </div>
+
+                    <div>
+                    <label class="div-label">Script type</label>
+
+                                <select name="scriptType" id="scriptTypeSelect">
+                                  <j:forEach items="${it.getScriptTypes()}" var="script">
+                                       <option value="${script}">${script}</option>
+                                   </j:forEach>
+                               </select>
+
+                        <br/>
+                        <br/>
+                    </div>
+
+
+                <div>
+                                    <label class="div-label"></label>
+
+
+                                    <textarea rows="10" cols="60" id="preScript_old" class="display-none">
+                                    </textarea>
+                                </div>
+                                <br/>
+
+
+
+
+                <div>
+                    <label class="div-label">Prebuild script:</label>
+
+
+                    <textarea rows="10" cols="60" id="preScript" name="preScript" >
+                    </textarea>
+                </div>
+                <br/>
+
+
+                 <div>
+                 <label class="div-label"></label>
+                                    <textarea rows="10" cols="60" id="postScript_old" class = "display-none">
+                                    </textarea>
+                                </div>
+                                <br/>
+
+
+
+
+                <div>
+                    <label class="div-label">Postbuild script:</label>
+                    <textarea rows="10" cols="60" id="postScript" name="postScript" onblur="configurator.validatePostbuildScript(id)">
+                    </textarea>
+                </div>
+                <br/>
+                
+
+
+                <div>
+                    <f:checkbox class="div-label" id="isComment" onclick="configurator.commentCheckboxChange(this)" type="checkbox" title="Comments"/>
+                          <br/>    
+                          <label class="div-label"/>     
+                    <textarea rows="10" cols="60" id="comments" name="comments"></textarea>
+                </div>
+                <br/>
+
+                    <div>
+                       <label>User's with access to configuration:</label><br/><br/>
+                        <label class="div-label">add user:</label>
+                        <input type="text" id="addUserField"  class="add-user-field"/>
+                        <input type="button" class="add-button" id="addUserButton" onclick="configurator.addNewUserAccess();" value="+"/>
+                    </div>
+
+                <div id="usersList">
+                </div>
+
+                <div class="button-container">
+                    <input type="submit" onclick="return configurator.isValidForm();" class="button confirm" name="save" id="save" value="Save"/>
+                    <span class="span"></span>
+                    <input type="button" onclick="configurator.rejectDiv();" class="button reject" name="reject" id="reject" value="Reject"/>
+                    <input type="submit" onclick="return configurator.rejectionSubmit();" class="display-none" name="rejectSubmit" id="rejectSubmit"/>
+                    <span id="spanReject" class="span"></span>
+                    <input type = "button" id="cancelButton" class="button confirm" value="Cancel"/>
+                    <input type="hidden" name="formResultHidden" id="formResultHidden"/>
+                    <input type="hidden" name="formType" id="formType"/>
+                    <input type="hidden" id="rejectionReason" name="rejectionReason" value=""/>
+                    <input type="hidden" id="def_cred" name="default_credentials" value="${it.getDefaultUserCredentials()}"/>
+                </div>
+            </f:form>
+        </l:main-panel>
+    </l:layout>
+</j:jelly>

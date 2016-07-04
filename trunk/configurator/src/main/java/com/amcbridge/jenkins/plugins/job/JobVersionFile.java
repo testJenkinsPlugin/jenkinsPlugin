@@ -4,9 +4,9 @@ import hudson.plugins.descriptionsetter.DescriptionSetterPublisher;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import com.amcbridge.jenkins.plugins.configurationModels.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.configurationModels.ProjectToBuildModel;
-import com.amcbridge.jenkins.plugins.job.ElementDescription.JobElementDescription;
+import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
+import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescription;
 
 public class JobVersionFile implements JobElementDescription {
 
@@ -15,25 +15,29 @@ public class JobVersionFile implements JobElementDescription {
     private static final String REGEXP_TAG = "regexp";
     private static final String EXPRESSION = "\\[getting of version of the build started by hudson\\] (.*)";
 
+    @Override
     public String getElementTag() {
         return ELEMENT_TAG;
     }
 
+    @Override
     public String getParentElementTag() {
         return PARENT_ELEMENT_TAG;
     }
 
+    @Override
     public String generateXML(BuildConfigurationModel config) {
 
-        if (!isVersionFileSet(config)) {
+      /*  if (!isVersionFileSet(config)) {
             return StringUtils.EMPTY;
-        }
+        }*/
 
         DescriptionSetterPublisher dsp
                 = new DescriptionSetterPublisher(EXPRESSION, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, false);
         return JobManagerGenerator.convertToXML(dsp);
     }
 
+    @Override
     public void appendToXML(BuildConfigurationModel config, Document xml) {
 
         if (!isVersionFileSet(config)) {

@@ -13,7 +13,7 @@
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <st:bind value="${it}" var="buildConfiguration"/>
   <script src="../plugin/build-configurator/scripts/index.js"/>
-  <link rel="stylesheet" href="../plugin/build-configurator/css/style_3.css" type="text/css"/>
+  <link rel="stylesheet" href="../plugin/build-configurator/css/style.css" type="text/css"/>
 
     <l:layout>
         <st:include page="sidepanel.jelly" it="${app}" />
@@ -35,9 +35,7 @@
                                          <br/>   </j:if>
                                             </j:if>
 
-            <a href="CreateBuildConfiguratorRefactor" class="CreateBuildConfiguratorRefactor">Create new build configuration</a>
-
-
+            <a href="create" class="CreateBuildConfigurator">Create new build configuration</a>
 
             <table>
                 <thead>
@@ -48,7 +46,7 @@
             </table>
             <table id="table" class="config table">
                 <thead>
-                        <tr height="30" bgcolor="#CCCCCC">
+                        <tr height="30" bgcolor="#eee">
                             <th class="project-name-column">Project name</th>
                             <th class="state-column">State</th>
                             <th class="last-update-date-column">Last update date</th>
@@ -77,12 +75,12 @@
                                     <j:if test="${isAdmin}">
                                         <j:if test="${configs.getState().toString() == 'For Deletion'}">
                                             <j:if test="${h.hasPermission(app.ADMINISTER)}">
-                                                <a href="#" onclick="deletePermanently(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Delete permanently</a>
+                                                <a href="#" onclick="deletePermanently(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Delete configuration permanently</a>
                                                 <a href="#" onclick="restore(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Restore</a>
                                             </j:if>
                                         </j:if>
                                         <j:if test="${configs.getState().toString() != 'For Deletion'}">
-                                            <a href="CreateBuildConfiguratorRefactor?name=${configs.getProjectName()}&amp;type=ApproveReject" class="approve-reject-link">Approve/Reject</a>
+                                            <a href="create?name=${configs.getProjectName()}&amp;type=ApproveReject" class="approve-reject-link">Approve/Reject</a>
                                         </j:if>
                                     </j:if>
                                 </j:if>
@@ -103,12 +101,13 @@
                                 </j:if>
 
                                 <j:if test="${(isCreator || h.hasPermission(app.ADMINISTER)) &amp;&amp; configs.getState().toString() != 'For Deletion'}">
-                                    <a href="CreateBuildConfiguratorRefactor?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
+                                    <a href="create?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
                                     <a href="#" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
                                 </j:if>
                                 <j:if test="${!isCreator &amp;&amp; configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
-                                    <a href="CreateBuildConfiguratorRefactor?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
+                                    <a href="create?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
                                 </j:if>
+                                    <a href="#" onclick='copyConfiguration("${configs.getProjectName()}");' class="edit-link" >Copy</a>
                                 <span></span>
                             </td>
                             <td class="state">${configs.getFullNameCreator()}</td>
@@ -116,6 +115,27 @@
                     </j:forEach>
                 </tbody>
             </table>
+
+            <div id="copyConfig" class="modal display-none">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="close" id="closeCopyConfig">×</span>
+                        <h2 id="copyConfigHeader">Copy configuration</h2>
+                    </div>
+                    <div class="modal-body">
+
+                        <f:form method="post" action="copyConfig" id="copyConfigForm">
+                           <div class="user">
+                               <label>New configuration name </label>
+                               <input type="text" name="newConfigName" id="newConfigName" onchange="isCopyNameCorrect()"></input>
+                               <input type="hidden" name="copyConfigName" id="copyConfigName"/>
+                               <input type="submit" value="Copy" class="button-copy" onclick="return isCopyNameCorrect();"/>
+                           </div>
+                        </f:form>
+                    </div>
+                </div>
+            </div>
+
         </l:main-panel>
     </l:layout>
 </j:jelly>
