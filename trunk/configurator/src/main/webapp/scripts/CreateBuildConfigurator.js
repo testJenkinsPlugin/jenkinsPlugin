@@ -93,7 +93,8 @@ var configurator = (function () {
             }
             jQuery("#configEmail").val(t.responseObject().configEmail);
 
-            if(t.responseObject().cleanWorkspace == false){
+            var cleanWorkspace = t.responseObject().cleanWorkspace;
+            if(cleanWorkspace != null &&  cleanWorkspace == false){
                 jQuery("#cleanWorkspace").prop('checked', false);
             
             }
@@ -119,15 +120,20 @@ var configurator = (function () {
             jQuery("#preScript_old").prop('disabled', true);
             jQuery("#postScript_old").prop('disabled', true);
           
-            if (t.responseObject() == null){
+            if (t.responseObject() == null || t.responseObject().projectName == ""){
                 return;
             }
+
+
+            var projectName = t.responseObject().projectName;
             var scm = t.responseObject().scm;
             var preScript = t.responseObject().preScript;
             var postScript = t.responseObject().postScript;
             var email = t.responseObject().email;
             var configEmail = t.responseObject().configEmail;
-         
+            var dontUseBuildServer = t.responseObject().dontUseBuildServer;
+            var cleanWorkspace = t.responseObject().cleanWorkspace;
+
 
             if(scm != null){
                 jQuery("#typeSCM_old").text(scm);
@@ -151,13 +157,35 @@ var configurator = (function () {
             }
             if(postScript != null){
                 jQuery("#postScript_old").text(postScript);
-                  jQuery("#postScript_old").removeClass('display-none');
+                jQuery("#postScript_old").removeClass('display-none');
             }
 
              if(postScript != null){
-                            jQuery("#postScript_old").text(postScript);
-                              jQuery("#postScript_old").removeClass('display-none');
-                        }
+                jQuery("#postScript_old").text(postScript);
+                jQuery("#postScript_old").removeClass('display-none');
+            }
+            if(cleanWorkspace != null){
+                jQuery('#cleanWorkspace_old').text('some text')
+                jQuery('#cleanWorkspace_old').removeClass('display-none')
+            }
+            if(dontUseBuildServer != null){
+                if(dontUseBuildServer==true){
+                    jQuery('#dontUseBuildServer_old').text('checked');
+                }
+                else{
+                    jQuery('#dontUseBuildServer_old').text('unchecked');
+                }
+                jQuery('#dontUseBuildServer_old').removeClass('display-none');
+            }
+             if(cleanWorkspace != null){
+                if(cleanWorkspace==true){
+                    jQuery('#cleanWorkspace_old').text('checked');
+                }
+                else{
+                    jQuery('#cleanWorkspace_old').text('unchecked');
+                }
+                jQuery('#cleanWorkspace_old').removeClass('display-none');
+            }
         })
     }
 
