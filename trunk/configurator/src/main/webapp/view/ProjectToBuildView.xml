@@ -180,13 +180,18 @@
         </div>
 
         <div  class="div-project-version-file">
-            <j:if test="${view_old != null and view_old.getVersionFiles() != null}">
+            <j:if test="${view_old != null and view_old.getVersionFiles() != null and view_old.IsVersionFiles()}">
                 <j:forEach items="${view_old.getVersionFiles()}" var="versionFile" indexVar="i">
                     <label class="diff_value">"${versionFile}"</label>
                     <br/>
                 </j:forEach>
                 <br/>
             </j:if>
+            <j:if test="${view_old != null and !view_old.IsVersionFiles()}">
+                    <label class="diff_value">Version files disabled</label>
+                    <br/>
+            </j:if>
+
 
             <j:if test="${view.IsVersionFiles()}">
                 <div class="project-to-build-label">

@@ -83,7 +83,7 @@
                     </div>
                 </j:if>
 
-                <label compare="true" id="isEmail_old" class="diff_value_header display-none"></label>
+                <label id="isEmail_old" class="diff_value_header display-none"></label>
                 <div class="div-textinput">
 
                     <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="configurator.emailCheckBoxChange(this)" title="Job E-mails notifications"/>
@@ -120,19 +120,18 @@
                      Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when configuration state changes.
                 </label>
                 </div>
-
+<label id="cleanWorkspace_old" class="diff_value_header display-none"></label>
                 <j:if test="${it.isWsPluginInstalled()}">
 
                    <div class="div-textinput">
                     <div class="div-project-name">
-                    <label compare="true" id="cleanWorkspace"></label>
                                            <label>Use workspace cleanup plugin</label>
                                        </div>
                         <f:checkbox name="cleanWorkspace" id="cleanWorkspace"  class="check-box" checked="true"/>
                    </div>
                 </j:if>
 
-
+                <label id="dontUseBuildServer_old" class="diff_value_header display-none"></label>
                 <div class="div-textinput">
                     <div class="div-project-name">
 
