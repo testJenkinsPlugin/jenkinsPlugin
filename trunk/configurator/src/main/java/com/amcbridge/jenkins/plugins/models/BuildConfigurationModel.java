@@ -6,6 +6,7 @@ import hudson.model.User;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +30,6 @@ public class BuildConfigurationModel {
     private String comments;
     private List<UserAccessModel> userWithAccess;
     private boolean cleanWorkspace;
-    private boolean dontUseBuildServer;
 
     public BuildConfigurationModel() {
         initCreator();
