@@ -1,6 +1,5 @@
 package com.amcbridge.jenkins.plugins.job;
 
-import com.amcbridge.jenkins.plugins.configurator.BuildConfigurator;
 import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.models.BuilderConfigModel;
 import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
@@ -121,11 +120,10 @@ public class JobManagerGenerator {
         String pathPrefix = "";
         if (projectModel.getLocalDirectoryPath() == null || projectModel.getLocalDirectoryPath().isEmpty()) {
             pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/') + 1);
-        } else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath())) {
-            if (!projectModel.getLocalDirectoryPath().equals(".")) // No need to add prefix for workspace direct checkout
-            {
+        } else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath()) &&
+                !".".equals(projectModel.getLocalDirectoryPath())) // No need to add prefix for workspace direct checkout
+        {
                 pathPrefix = projectModel.getLocalDirectoryPath();
-            }
         }
         if (!(pathPrefix.isEmpty() || pathPrefix.endsWith("/"))) {
             pathPrefix += "/";
@@ -154,19 +152,6 @@ public class JobManagerGenerator {
         }
         return false;
     }
-
-  /*  private static File getJobXML(BuildConfigurationModel config)
-            throws ParserConfigurationException,
-            SAXException, IOException, TransformerException, XPathExpressionException {
-        *//*Document doc = loadTemplate(JOB_TEMPLATE_PATH);
-        if (doc == null) {
-            throw new FileNotFoundException(JOB_TEMPLATE_PATH + " file not found");
-        }
-*//*
-
-        return createJobXMLFile(config, JOB_TEMPLATE_PATH, false);
-    }
-*/
 
     private static void updateJobXML(String jobName, BuildConfigurationModel config) throws IOException, TransformerException, SAXException, ParserConfigurationException, XPathExpressionException {
         AbstractItem item = (AbstractItem) BuildConfigurationManager.getJenkins().getItemByFullName(jobName);
@@ -265,28 +250,29 @@ public class JobManagerGenerator {
         try {
             buildersList = getBuildersNodeList(doc);
         } catch (NullPointerException e) {
+            logger.error("Error getting builders script node", e);
             return null;
         }
         for (int i = 0; i < buildersList.getLength(); i++) {
 
             //project/builders/org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder
-            if (buildersList.item(i).getNodeName().equals("org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder")) {
+            if ("org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder".equals(buildersList.item(i).getNodeName())) {
                 buildersScriptNode = buildersList.item(i);
 
                 NodeList singleBuilderChildNodesList = buildersList.item(i).getChildNodes();
                 //project/builders/org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder/buildStep
                 for (int j = 0; j < singleBuilderChildNodesList.getLength(); j++) {
-                    if (singleBuilderChildNodesList.item(j).getNodeName().equals("condition")) {
+                    if ("condition".equals(singleBuilderChildNodesList.item(j).getNodeName())) {
                         NodeList conditionsList = singleBuilderChildNodesList.item(j).getChildNodes();
                         for (int condition = 0; condition < conditionsList.getLength(); condition++) {
-                            if (conditionsList.item(condition).getNodeName().equals("expression")) {
+                            if ("expression".equals(conditionsList.item(condition).getNodeName())) {
                                 NodeList expressionList = conditionsList.item(condition).getChildNodes();
                                 for (int expressionIndex = 0; expressionIndex < expressionList.getLength(); expressionIndex++) {
                                     if (expressionList.item(expressionIndex).getTextContent().equals(expressionText)) {
                                         expression = true;
                                     }
                                 }
-                            } else if (conditionsList.item(condition).getNodeName().equals("label")) {
+                            } else if ("label".equals(conditionsList.item(condition).getNodeName())) {
                                 NodeList labelList = conditionsList.item(condition).getChildNodes();
                                 for (int labelIndex = 0; labelIndex < labelList.getLength(); labelIndex++) {
                                     if (labelList.item(labelIndex).getTextContent().equals(labelText)) {
@@ -297,11 +283,11 @@ public class JobManagerGenerator {
                         }
                     }
 
-                    if (singleBuilderChildNodesList.item(j).getNodeName().equals("buildStep")) {
+                    if ("buildStep".equals(singleBuilderChildNodesList.item(j).getNodeName())) {
                         NodeList buildStepNodeList = singleBuilderChildNodesList.item(j).getChildNodes();
                         //project/builders/org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder/buildStep/command
                         for (int k = 0; k < buildStepNodeList.getLength(); k++) {
-                            if (buildStepNodeList.item(k).getNodeName().equals("command") && buildStepNodeList.item(k).getTextContent().equals(scriptText)) {
+                            if ("command".equals(buildStepNodeList.item(k).getNodeName()) && buildStepNodeList.item(k).getTextContent().equals(scriptText)) {
                                 script = true;
                             }
                         }
@@ -377,9 +363,9 @@ public class JobManagerGenerator {
             jed = new JobNone();
             return jed;
         }
-        if (scm.equalsIgnoreCase("subversion")) {
+        if ("subversion".equalsIgnoreCase(scm)) {
             jed = new JobSubversion();
-        } else if (scm.equalsIgnoreCase("git")) {
+        } else if ("git".equalsIgnoreCase(scm)) {
             jed = new JobGit();
         } else {
             jed = new JobNone();
@@ -462,12 +448,13 @@ public class JobManagerGenerator {
     }
 
     public static String validJobName(String name) {
-        for (char ch : name.toCharArray()) {
+        String fixedName = name;
+        for (char ch : fixedName.toCharArray()) {
             if (!Character.isLetterOrDigit(ch) && !ArrayUtils.contains(SPECIAL_SYMBOLS, ch)) {
-                name = name.replace(ch, '_');
+                fixedName = fixedName.replace(ch, '_');
             }
         }
-        return name;
+        return fixedName;
     }
 
     public static void deleteJob(String name) throws IOException, InterruptedException {
@@ -509,7 +496,7 @@ public class JobManagerGenerator {
                     versionFiles.setIsVersionFile(true);
                 }
 
-                String localDirectory = projectModel.getLocalDirectoryPath().equals("") ? null : projectModel.getLocalDirectoryPath();
+                String localDirectory = "".equals(projectModel.getLocalDirectoryPath()) ? null : projectModel.getLocalDirectoryPath();
                 List<Config> configurations = createJobConfigurations(projectModel);
 
                 newProject.setRepository(repo);
@@ -534,7 +521,7 @@ public class JobManagerGenerator {
                     newConfig = new Config();
                     newConfig.setBuilder(builderModel.getBuilder());
                     newConfig.setPlatform(builderModel.getPlatform());
-                    if(builderModel.getBuilderArgs()!=null && !builderModel.getBuilderArgs().equals("")){
+                    if(builderModel.getBuilderArgs()!=null && !"".equals(builderModel.getBuilderArgs())){
                         newConfig.setBuilderArgs(builderModel.getBuilderArgs());
                     }
                     configurations.add(newConfig);

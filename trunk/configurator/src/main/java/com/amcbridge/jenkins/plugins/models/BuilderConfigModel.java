@@ -26,7 +26,7 @@ public class BuilderConfigModel {
         this.userConfig = userConfig;
         this.builderArgs = builderArgs;
 
-        if (guid == null || guid.equals("")) {
+        if (guid == null || "".equals(guid)) {
             this.guid = UUID.randomUUID();
         } else {
             this.guid = UUID.fromString(guid);
@@ -114,30 +114,4 @@ public class BuilderConfigModel {
         return stringBuilder.toString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        BuilderConfigModel that = (BuilderConfigModel) o;
-
-        if (builder != null ? !builder.equals(that.builder) : that.builder != null) return false;
-        if (platform != null ? !platform.equals(that.platform) : that.platform != null) return false;
-        if (userConfig != null ? !userConfig.equals(that.userConfig) : that.userConfig != null) return false;
-        if (configs != null ? !configs.equals(that.configs) : that.configs != null) return false;
-        if (builderArgs != null ? !builderArgs.equals(that.builderArgs) : that.builderArgs != null) return false;
-        return guid != null ? guid.equals(that.guid) : that.guid == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = builder != null ? builder.hashCode() : 0;
-        result = 31 * result + (platform != null ? platform.hashCode() : 0);
-        result = 31 * result + (userConfig != null ? userConfig.hashCode() : 0);
-        result = 31 * result + (configs != null ? configs.hashCode() : 0);
-        result = 31 * result + (builderArgs != null ? builderArgs.hashCode() : 0);
-        result = 31 * result + (guid != null ? guid.hashCode() : 0);
-        return result;
-    }
 }

@@ -58,7 +58,7 @@ public class BuildConfigurationManager {
     private static final String CONTENT_FOLDER = "userContent";
     public static final String STRING_EMPTY = "";
     private static final MailSender mail = new MailSender();
-    private static final Logger logger = LoggerFactory.getLogger(BuildConfigurationManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BuildConfigurationManager.class);
     private static SCMLoader scmLoader;
     private static String defaultCredentialsPropertiesFileName = "credentialsDefaults.properties";
     private static String credentialsPropertyName = "defaultCredentials";
@@ -95,7 +95,7 @@ public class BuildConfigurationManager {
         return BuildConfigurationManager.getJenkins().getRootDir() + "/" + CONTENT_FOLDER;
     }
 
-    public static void save(BuildConfigurationModel config) throws IOException,
+    static void save(BuildConfigurationModel config) throws IOException,
             ParserConfigurationException, JAXBException {
         if (config.getProjectName().isEmpty()) {
             deleteFiles(config.getScripts(), getUserContentFolder());
@@ -144,7 +144,7 @@ public class BuildConfigurationManager {
         return result;
     }
 
-    public static List<BuildConfigurationModel> loadAllConfigurations()
+    static List<BuildConfigurationModel> loadAllConfigurations()
             throws IOException, ServletException, JAXBException {
         List<BuildConfigurationModel> configs = new ArrayList<>();
         File file = new File(getRootDirectory());
@@ -163,7 +163,7 @@ public class BuildConfigurationManager {
         return configs;
     }
 
-    public static void deleteFiles(String[] files, String pathFolder) {
+    private static void deleteFiles(String[] files, String pathFolder) {
         File file;
         for (String strFile : files) {
             if (strFile.isEmpty()) {
@@ -174,7 +174,7 @@ public class BuildConfigurationManager {
         }
     }
 
-    public static void markConfigurationForDeletion(String name)
+    static void markConfigurationForDeletion(String name)
             throws IOException, ParserConfigurationException,
             JAXBException, MessagingException {
         BuildConfigurationModel config = load(name);
@@ -194,7 +194,7 @@ public class BuildConfigurationManager {
         mail.sendMail(message);
     }
 
-    public static void restoreConfiguration(String name) throws IOException, ParserConfigurationException,
+    static void restoreConfiguration(String name) throws IOException, ParserConfigurationException,
             JAXBException, MessagingException {
         BuildConfigurationModel config = load(name);
         config.setState(ConfigurationState.UPDATED);
@@ -215,7 +215,7 @@ public class BuildConfigurationManager {
         return checkName.exists();
     }
 
-    public static void deleteConfigurationPermanently(String name) throws IOException,
+    static void deleteConfigurationPermanently(String name) throws IOException,
             MessagingException, JAXBException, InterruptedException, ParserConfigurationException {
         File checkFile = new File(getRootDirectory() + "/" + name);
         BuildConfigurationModel config = load(name);
@@ -233,7 +233,7 @@ public class BuildConfigurationManager {
         mail.sendMail(message);
     }
 
-    public static Boolean isCurrentUserHasAccess(String name) throws IOException {
+    static Boolean isCurrentUserHasAccess(String name) throws IOException {
         boolean isUserAdmin = isCurrentUserAdministrator();
         boolean isUserInAccessList = false;
 
@@ -250,13 +250,14 @@ public class BuildConfigurationManager {
     }
 
     public static String[] getPath(String path) {
-        if (path == null || path.equals(STRING_EMPTY)) {
+        String fixedPath = path;
+        if (fixedPath == null || fixedPath.equals(STRING_EMPTY)) {
             return new String[0];
         }
-        if (path.lastIndexOf(';') == path.length() - 1) {
-            path = path.substring(0, path.lastIndexOf(';'));
+        if (fixedPath.lastIndexOf(';') == fixedPath.length() - 1) {
+            fixedPath = fixedPath.substring(0, fixedPath.lastIndexOf(';'));
         }
-        return path.split(";");
+        return fixedPath.split(";");
     }
 
     public static Boolean isCurrentUserAdministrator() throws JenkinsInstanceNotFoundException {
@@ -277,7 +278,7 @@ public class BuildConfigurationManager {
         }
     }
 
-    public static BuildConfigurationModel getConfiguration(String name) throws IOException, JAXBException {
+    static BuildConfigurationModel getConfiguration(String name) throws IOException, JAXBException {
 
         if (!isCurrentUserHasAccess(name)) {
             return null;
@@ -312,14 +313,14 @@ public class BuildConfigurationManager {
             }
         }
         if (isGitCatch) {
-            logger.info("+++++ git: plugin was plugged");
+            LOGGER.info("+++++ git: plugin was plugged");
         } else {
-            logger.info("----- git: plugin wasn't plugged");
+            LOGGER.info("----- git: plugin wasn't plugged");
         }
         if (isSubversionCatch) {
-            logger.info("+++++ subversion: plugin was plugged");
+            LOGGER.info("+++++ subversion: plugin was plugged");
         } else {
-            logger.info("----- subversion: plugin wasn't plugged");
+            LOGGER.info("----- subversion: plugin wasn't plugged");
         }
 
         return supportedSCMs;
@@ -343,7 +344,7 @@ public class BuildConfigurationManager {
         return nodeNames;
     }
 
-    public static void createJob(String name)
+    static void createJob(String name)
             throws IOException, ParserConfigurationException,
             SAXException, TransformerException, JAXBException, XPathExpressionException {
         BuildConfigurationModel config = load(name);
@@ -352,7 +353,7 @@ public class BuildConfigurationManager {
         save(config);
     }
 
-    public static void deleteJob(String name)
+    static void deleteJob(String name)
             throws IOException, InterruptedException, ParserConfigurationException, JAXBException {
         JobManagerGenerator.deleteJob(name);
         BuildConfigurationModel config = BuildConfigurationManager.load(name);
@@ -374,7 +375,7 @@ public class BuildConfigurationManager {
             prop.store(output, null);
 
         } catch (IOException e) {
-            logger.error("Error setting credentials as default", e);
+            LOGGER.error("Error setting credentials as default", e);
         }
     }
 
@@ -391,7 +392,7 @@ public class BuildConfigurationManager {
             defaultCredentials = prop.getProperty(credentialsPropertyName);
 
         } catch (IOException ex) {
-            logger.error("Error getting default credentials", ex);
+            LOGGER.error("Error getting default credentials", ex);
             return "not selected";
         }
 
@@ -425,25 +426,21 @@ public class BuildConfigurationManager {
                         if (curNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
                             Element curElement = (Element) curNode;
                             CredentialItem crItem = new CredentialItem();
-                            if (curElement.getElementsByTagName("scope").item(0) != null) {
-                                if (curElement.getElementsByTagName("scope").item(0).getTextContent() != null) {
+                            if (curElement.getElementsByTagName("scope").item(0) != null &&
+                                    curElement.getElementsByTagName("scope").item(0).getTextContent() != null) {
                                     crItem.setScope(curElement.getElementsByTagName("scope").item(0).getTextContent());
-                                }
                             }
-                            if (curElement.getElementsByTagName("id").item(0) != null) {
-                                if (curElement.getElementsByTagName("id").item(0).getTextContent() != null) {
+                            if (curElement.getElementsByTagName("id").item(0) != null &&
+                                    curElement.getElementsByTagName("id").item(0).getTextContent() != null) {
                                     crItem.setId(curElement.getElementsByTagName("id").item(0).getTextContent());
-                                }
                             }
-                            if (curElement.getElementsByTagName("username").item(0) != null) {
-                                if (curElement.getElementsByTagName("username").item(0).getTextContent() != null) {
+                            if (curElement.getElementsByTagName("username").item(0) != null &&
+                                    curElement.getElementsByTagName("username").item(0).getTextContent() != null) {
                                     crItem.setUsername(curElement.getElementsByTagName("username").item(0).getTextContent());
-                                }
                             }
-                            if (curElement.getElementsByTagName("description").item(0) != null) {
-                                if (curElement.getElementsByTagName("description").item(0).getTextContent() != null) {
+                            if (curElement.getElementsByTagName("description").item(0) != null &&
+                                    curElement.getElementsByTagName("description").item(0).getTextContent() != null) {
                                     crItem.setDescription(curElement.getElementsByTagName("description").item(0).getTextContent());
-                                }
                             }
                             credentialItemList.add(crItem);
                         }
@@ -451,7 +448,7 @@ public class BuildConfigurationManager {
                 }
             }
         } catch (Exception e) {
-            logger.error("Parsing credentials file error", e);
+            LOGGER.error("Parsing credentials file error", e);
         }
         return credentialItemList;
     }

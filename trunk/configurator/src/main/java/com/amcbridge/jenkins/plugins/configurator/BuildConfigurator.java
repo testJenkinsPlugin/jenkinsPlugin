@@ -38,7 +38,7 @@ public final class BuildConfigurator implements RootAction {
     private static final String PLUGIN_NAME = "Build Configurator";
     private static final String ICON_PATH = "/plugin/build-configurator/icons/system_config_services.png";
     private static final String DEFAULT_PAGE_URL = "buildconfigurator";
-    private static final Logger logger = LoggerFactory.getLogger(BuildConfigurator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BuildConfigurator.class);
 
 
     public BuildConfigurator() {
@@ -74,7 +74,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.loadAllConfigurations();
         } catch (Exception e) {
-            logger.error("Configurations list problem", e);
+            LOGGER.error("Configurations list problem", e);
             return new LinkedList<>();
         }
     }
@@ -101,11 +101,11 @@ public final class BuildConfigurator implements RootAction {
             }
             response.sendRedirect("./");
         } catch (Exception e) {
-            logger.error("Copy configuration fail", e);
+            LOGGER.error("Copy configuration fail", e);
             try {
                 response.sendRedirect("./");
             } catch (IOException e1) {
-                logger.error("Copy configuration fail", e1);
+                LOGGER.error("Copy configuration fail", e1);
             }
         }
     }
@@ -183,13 +183,13 @@ public final class BuildConfigurator implements RootAction {
 
 
         } catch (Exception e) {
-            logger.error("Fail creating new configuration", e);
+            LOGGER.error("Fail creating new configuration", e);
 
         } finally {
             try {
                 response.sendRedirect("./");
             } catch (IOException e) {
-                logger.error("Redirect page error", e);
+                LOGGER.error("Redirect page error", e);
             }
         }
     }
@@ -269,7 +269,7 @@ public final class BuildConfigurator implements RootAction {
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getProjectToBuildlView();
         } catch (Exception e) {
-            logger.error("Error creating view", e);
+            LOGGER.error("Error creating view", e);
             return null;
         }
 
@@ -289,7 +289,7 @@ public final class BuildConfigurator implements RootAction {
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getProjectToBuildlView(conf, confDiff);
         } catch (Exception e) {
-            logger.error("Error loading views", e);
+            LOGGER.error("Error loading views", e);
             return null;
         }
     }
@@ -303,7 +303,7 @@ public final class BuildConfigurator implements RootAction {
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getUserAccessView();
         } catch (Exception e) {
-            logger.error("Error getting users with access", e);
+            LOGGER.error("Error getting users with access", e);
             return null;
         }
     }
@@ -322,7 +322,7 @@ public final class BuildConfigurator implements RootAction {
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getUserAccessView(conf, confDiff);
         } catch (Exception e) {
-            logger.error("Users access problem", e);
+            LOGGER.error("Users access problem", e);
             return null;
         }
 
@@ -338,7 +338,7 @@ public final class BuildConfigurator implements RootAction {
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getBuilderView();
         } catch (Exception e) {
-            logger.error("Error getting builder", e);
+            LOGGER.error("Error getting builder", e);
             return null;
         }
     }
@@ -348,7 +348,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             BuildConfigurationManager.markConfigurationForDeletion(name);
         } catch (Exception e) {
-            logger.error("Error setting for deletion", e);
+            LOGGER.error("Error setting for deletion", e);
         }
     }
 
@@ -358,7 +358,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             Stapler.getCurrentRequest().getSession().setAttribute(VIEW_GENERATOR, new ViewGenerator());
         } catch (JenkinsInstanceNotFoundException e) {
-            logger.error("Error creating configuration", e);
+            LOGGER.error("Error creating configuration", e);
         }
     }
 
@@ -367,7 +367,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return !BuildConfigurationManager.isNameUsing(name);
         } catch (JenkinsInstanceNotFoundException e) {
-            logger.error("Error checking existing configuration with this name", e);
+            LOGGER.error("Error checking existing configuration with this name", e);
             return false;
         }
     }
@@ -383,7 +383,7 @@ public final class BuildConfigurator implements RootAction {
                 throw new NullPointerException("user not found");
             }
         } catch (Exception e) {
-            logger.error("Creator not found", e);
+            LOGGER.error("Creator not found", e);
             return "Error, user not found";
 
         }
@@ -394,7 +394,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             BuildConfigurationManager.deleteConfigurationPermanently(name);
         } catch (Exception e) {
-            logger.error("Permanent deletion error", e);
+            LOGGER.error("Permanent deletion error", e);
         }
     }
 
@@ -403,7 +403,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             BuildConfigurationManager.restoreConfiguration(name);
         } catch (Exception e) {
-            logger.error("Error restoring configuration", e);
+            LOGGER.error("Error restoring configuration", e);
         }
     }
 
@@ -412,7 +412,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.isCurrentUserHasAccess(name);
         } catch (Exception e) {
-            logger.error("Error checking if user has access", e);
+            LOGGER.error("Error checking if user has access", e);
             return false;
         }
     }
@@ -422,7 +422,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.isCurrentUserAdministrator();
         } catch (Exception e) {
-            logger.error("Error checking user permissions", e);
+            LOGGER.error("Error checking user permissions", e);
             return false;
         }
     }
@@ -432,7 +432,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.getConfiguration(name);
         } catch (Exception e) {
-            logger.error("Error getting configuration", e);
+            LOGGER.error("Error getting configuration", e);
             return null;
         }
     }
@@ -445,7 +445,7 @@ public final class BuildConfigurator implements RootAction {
              }
             return null;
         } catch (Exception e) {
-            logger.error("Error getting configuration", e);
+            LOGGER.error("Error getting configuration", e);
             return null;
         }
     }
@@ -458,7 +458,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.getSCM();
         } catch (Exception e) {
-            logger.error("Error getting emails", e);
+            LOGGER.error("Error getting emails", e);
             return new LinkedList<>();
         }
     }
@@ -467,7 +467,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.getNodesName();
         } catch (Exception e) {
-            logger.error("Error getting nodes", e);
+            LOGGER.error("Error getting nodes", e);
             return new LinkedList<>();
         }
     }
@@ -478,7 +478,7 @@ public final class BuildConfigurator implements RootAction {
             BuildConfigurationManager.createJob(name);
             return true;
         } catch (Exception e) {
-            logger.error("Error job creating", e);
+            LOGGER.error("Error job creating", e);
             return false;
         }
     }
@@ -488,7 +488,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return JobManagerGenerator.isJobExist(JobManagerGenerator.validJobName(name));
         } catch (Exception e) {
-            logger.error("Error while checking job state", e);
+            LOGGER.error("Error while checking job state", e);
             return false;
         }
     }
@@ -499,7 +499,7 @@ public final class BuildConfigurator implements RootAction {
 
             BuildConfigurationManager.deleteJob(name);
         } catch (Exception e) {
-            logger.error("Error job deleting", e);
+            LOGGER.error("Error job deleting", e);
         }
     }
 
@@ -521,7 +521,7 @@ public final class BuildConfigurator implements RootAction {
             return isEmailPropertiesOK && isPortOk;
 
         } catch (Exception e) {
-            logger.error("Error checking email", e);
+            LOGGER.error("Error checking email", e);
             return false;
         }
     }
@@ -536,7 +536,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.getScriptTypes();
         } catch (Exception e) {
-            logger.error("Error getting scripts", e);
+            LOGGER.error("Error getting scripts", e);
             return new LinkedList<>();
         }
     }
@@ -546,7 +546,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return WsPluginHelper.isWsPluginInstalled();
         } catch (Exception e) {
-            logger.error("Error checking if Workspace plugin installed", e);
+            LOGGER.error("Error checking if Workspace plugin installed", e);
             return true;
         }
     }

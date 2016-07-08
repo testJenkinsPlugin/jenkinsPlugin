@@ -8,9 +8,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class UserAccessModel {
     private String userName;
 
-    public UserAccessModel() {
-    }
-
     @DataBoundConstructor
     public UserAccessModel(String userName) {
         this.userName = userName;
@@ -24,19 +21,4 @@ public class UserAccessModel {
         this.userName = userName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        UserAccessModel that = (UserAccessModel) o;
-
-        return userName != null ? userName.equals(that.userName) : that.userName == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return userName != null ? userName.hashCode() : 0;
-    }
 }
