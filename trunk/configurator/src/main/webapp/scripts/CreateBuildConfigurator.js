@@ -104,11 +104,7 @@ var configurator = (function () {
                     jQuery("#userLabel").html("Created by:  " + t.responseObject());
                 })
             }
-            var dontUseBuildServer = t.responseObject().dontUseBuildServer;
-            if(dontUseBuildServer != null && dontUseBuildServer == true){
-                jQuery('#dontUseBuildServer').prop('checked', true);
-            }
-
+           
             if(t.responseObject().state != 'APPROVED'){
                 setDiffContent(name);
             }
@@ -131,7 +127,6 @@ var configurator = (function () {
             var postScript = t.responseObject().postScript;
             var email = t.responseObject().email;
             var configEmail = t.responseObject().configEmail;
-            var dontUseBuildServer = t.responseObject().dontUseBuildServer;
             var cleanWorkspace = t.responseObject().cleanWorkspace;
 
 
@@ -168,16 +163,7 @@ var configurator = (function () {
                 jQuery('#cleanWorkspace_old').text('some text')
                 jQuery('#cleanWorkspace_old').removeClass('display-none')
             }
-            if(dontUseBuildServer != null){
-                if(dontUseBuildServer==true){
-                    jQuery('#dontUseBuildServer_old').text('checked');
-                }
-                else{
-                    jQuery('#dontUseBuildServer_old').text('unchecked');
-                }
-                jQuery('#dontUseBuildServer_old').removeClass('display-none');
-            }
-             if(cleanWorkspace != null){
+            if(cleanWorkspace != null){
                 if(cleanWorkspace==true){
                     jQuery('#cleanWorkspace_old').text('checked');
                 }

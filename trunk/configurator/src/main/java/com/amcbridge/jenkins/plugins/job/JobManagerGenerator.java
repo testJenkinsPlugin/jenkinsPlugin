@@ -36,6 +36,7 @@ import javax.xml.xpath.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -183,19 +184,27 @@ public class JobManagerGenerator {
 
     private static File createJobXMLFile(BuildConfigurationModel config, String pathToJob, boolean isFileForUpdate) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, TransformerException {
         Document doc = loadTemplate(pathToJob);
+        boolean useBuildServer = false;
         if (doc == null) {
             throw new FileNotFoundException(pathToJob + " file not found");
         }
         WsPluginHelper.setWsPluginJobName(doc, config);
 
-        if (config.isDontUseBuildServer()) {
+        for (ProjectToBuildModel project: config.getProjectToBuild()){
+            if (project != null && project.getBuilders() != null && !project.getBuilders().isEmpty()){
+                useBuildServer = true;
+                break;
+            }
+        }
+
+        if (!useBuildServer) {
             removeBuildersRunScript(doc);
         }
         if (!isFileForUpdate) {
             createJobConfigNodes(doc, config);
 
         } else {
-            if (!config.isDontUseBuildServer()) {
+            if (useBuildServer) {
                 importScriptNode(loadTemplate(JOB_TEMPLATE_PATH), doc);
             }
         }

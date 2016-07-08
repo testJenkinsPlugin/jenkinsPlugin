@@ -30,7 +30,6 @@ public class BuildConfigurationModel {
     private String comments;
     private List<UserAccessModel> userWithAccess;
     private boolean cleanWorkspace;
-    private boolean dontUseBuildServer;
 
     public String getComments() {
         return comments;
@@ -196,14 +195,6 @@ public class BuildConfigurationModel {
 
     public void setCleanWorkspace(boolean cleanWorkspace) {
         this.cleanWorkspace = cleanWorkspace;
-    }
-
-    public boolean isDontUseBuildServer() {
-        return dontUseBuildServer;
-    }
-
-    public void setDontUseBuildServer(boolean dontUseBuildServer) {
-        this.dontUseBuildServer = dontUseBuildServer;
     }
 
     @Override
