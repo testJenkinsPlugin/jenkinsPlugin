@@ -194,12 +194,4 @@ public class BuildConfigurationModel {
         this.cleanWorkspace = cleanWorkspace;
     }
 
-    public boolean isDontUseBuildServer() {
-        return dontUseBuildServer;
-    }
-
-    public void setDontUseBuildServer(boolean dontUseBuildServer) {
-        this.dontUseBuildServer = dontUseBuildServer;
-    }
-
 }
