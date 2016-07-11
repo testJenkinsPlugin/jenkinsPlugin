@@ -27,11 +27,6 @@ public class JobVersionFile implements JobElementDescription {
 
     @Override
     public String generateXML(BuildConfigurationModel config) {
-
-      /*  if (!isVersionFileSet(config)) {
-            return StringUtils.EMPTY;
-        }*/
-
         DescriptionSetterPublisher dsp
                 = new DescriptionSetterPublisher(EXPRESSION, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, false);
         return JobManagerGenerator.convertToXML(dsp);
