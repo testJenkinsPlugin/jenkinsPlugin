@@ -243,11 +243,9 @@ public class JobManagerGenerator {
             return null;
         }
         for (int i = 0; i < buildersList.getLength(); i++) {
-            //project/builders/org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder
             if ("org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder".equals(buildersList.item(i).getNodeName())) {
                 buildersScriptNode = buildersList.item(i);
                 NodeList singleBuilderChildNodesList = buildersList.item(i).getChildNodes();
-                //project/builders/org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder/buildStep
                 for (int j = 0; j < singleBuilderChildNodesList.getLength(); j++) {
                     if ("condition".equals(singleBuilderChildNodesList.item(j).getNodeName())) {
                         NodeList conditionsList = singleBuilderChildNodesList.item(j).getChildNodes();
@@ -271,7 +269,6 @@ public class JobManagerGenerator {
                     }
                     if ("buildStep".equals(singleBuilderChildNodesList.item(j).getNodeName())) {
                         NodeList buildStepNodeList = singleBuilderChildNodesList.item(j).getChildNodes();
-                        //project/builders/org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder/buildStep/command
                         for (int k = 0; k < buildStepNodeList.getLength(); k++) {
                             if ("command".equals(buildStepNodeList.item(k).getNodeName()) && buildStepNodeList.item(k).getTextContent().equals(scriptText)) {
                                 script = true;
