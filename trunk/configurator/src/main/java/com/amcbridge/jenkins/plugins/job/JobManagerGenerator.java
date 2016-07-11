@@ -35,7 +35,6 @@ import javax.xml.xpath.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -82,7 +81,7 @@ public class JobManagerGenerator {
         if (isJobExist(jobName)) {
             updateJobXML(jobName, config);
         } else {
-            File jobFile = createJobXMLFile(config, JOB_TEMPLATE_PATH, false);
+            File jobFile = getJobXMLFile(config, JOB_TEMPLATE_PATH, false);
             FileInputStream fis = new FileInputStream(jobFile);
             BuildConfigurationManager.getJenkins().createProjectFromXML(jobName, fis);
 
@@ -161,37 +160,32 @@ public class JobManagerGenerator {
         }
         String jobPath = JOB_FOLDER_PATH + jobName + "/config.xml";
 
-        File jobUpdateFile = createJobXMLFile(config, jobPath, true);
+        File jobUpdateFile = getJobXMLFile(config, jobPath, true);
         Source streamSource = new StreamSource(jobUpdateFile);
         item.updateByXml(streamSource);
         item.save();
     }
 
-    private static File createJobXMLFile(BuildConfigurationModel config, String pathToJob, boolean isFileForUpdate) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, TransformerException {
+    private static File getJobXMLFile(BuildConfigurationModel config, String pathToJob, boolean isFileForUpdate) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, TransformerException {
         Document doc = loadTemplate(pathToJob);
         boolean useBuildServer = false;
+
         if (doc == null) {
             throw new FileNotFoundException(pathToJob + " file not found");
         }
         WsPluginHelper.setWsPluginJobName(doc, config);
-
         for (ProjectToBuildModel project: config.getProjectToBuild()){
             if (project != null && project.getBuilders() != null && !project.getBuilders().isEmpty()){
                 useBuildServer = true;
                 break;
             }
         }
-
+        createJobConfigNodes(doc, config);
         if (!useBuildServer) {
             removeBuildersRunScript(doc);
         }
-        if (!isFileForUpdate) {
-            createJobConfigNodes(doc, config);
-
-        } else {
-            if (useBuildServer) {
-                importScriptNode(loadTemplate(JOB_TEMPLATE_PATH), doc);
-            }
+        if (isFileForUpdate && useBuildServer) {
+            importScriptNode(loadTemplate(JOB_TEMPLATE_PATH), doc);
         }
         setJobConfigFileName(doc, config.getProjectName());
         writeJobConfigForBuildServer(config);
