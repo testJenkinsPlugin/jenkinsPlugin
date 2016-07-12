@@ -88,7 +88,7 @@ public class ViewGenerator {
     public ProjectToBuildView getProjectToBuildlView(BuildConfigurationModel configurationModel, BuildConfigurationModel configurationModelCompareWith)
             throws UnsupportedEncodingException, JellyException, JenkinsInstanceNotFoundException {
         List<ProjectToBuildModel> viewsCurrentConfig = configurationModel.getProjectToBuild();
-        boolean showDiffToUser = BuildConfigurationManager.isCurrentUserAdministrator() && !configurationModel.getState().equals(ConfigurationState.APPROVED) &&
+        boolean showDiffToUser = BuildConfigurationManager.isCurrentUserAdministrator() && configurationModel.getState().equals(ConfigurationState.UPDATED) &&
                 !"".equals(configurationModelCompareWith.getProjectName());
         Map<UUID, ProjectToBuildModel> projectsOldMapForProjects = createProjectsMap(configurationModelCompareWith.getProjectToBuild());
 
@@ -135,7 +135,7 @@ public class ViewGenerator {
                 jcontext.setVariable(JCONTEXT_OLD_BUILDERS_MODELS, projectToBuildModelOld.getBuilders());
 
             }
-            if (projectsOldMapForProjects.remove(view.getGuid()) == null) {
+            if (showDiffToUser && projectsOldMapForProjects.remove(view.getGuid()) == null) {
                 jcontext.setVariable(JCONTEXT_VIEW_STATUS, VIEW_STATUS_NEW);
             }
             html.append(launchScript(jcontext, viewTemplatePath));
@@ -182,7 +182,7 @@ public class ViewGenerator {
         StringBuilder strBuilder = new StringBuilder("");
         JellyContext jcontext = new JellyContext();
         Map<UUID, BuilderConfigModel> buildersOldMap = new HashMap<>();
-        boolean showDiffToUser = BuildConfigurationManager.isCurrentUserAdministrator() && !ConfigurationState.APPROVED.equals(configState);
+        boolean showDiffToUser = BuildConfigurationManager.isCurrentUserAdministrator() && ConfigurationState.UPDATED.equals(configState);
         if (oldBuildersModels != null) {
             buildersOldMap = createBuildersMap(oldBuildersModels);
         }
@@ -258,7 +258,7 @@ public class ViewGenerator {
         ProjectToBuildView result = new ProjectToBuildView();
 
         boolean showDiff = currentConfig != null && currentConfig.getState() != null && BuildConfigurationManager.isCurrentUserAdministrator() &&
-                !currentConfig.getState().equals(ConfigurationState.APPROVED);
+                currentConfig.getState().equals(ConfigurationState.UPDATED);
 
         if (currentConfig == null || currentConfig.getUserWithAccess() == null) {
             result.setHtml(BuildConfigurationManager.STRING_EMPTY);
@@ -284,8 +284,6 @@ public class ViewGenerator {
             if (showDiff && !oldUserlist.remove(userModel)) {
                 jcontext.setVariable("userStatus", VIEW_STATUS_NEW);
             }
-
-
             html.append(launchScript(jcontext, viewTemplatePath));
         }
         if (showDiff) {

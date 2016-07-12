@@ -17,7 +17,7 @@
             <label class="userStatus_deleted"> DELETED</label>
         </j:if>
         <j:if test="${!userStatus.equals('DELETED')}">
-            <input type="button" value="remove" onclick="configurator.deleteUser(this);"/>
+            <input type="button" value="remove" class="button-remove" onclick="configurator.deleteUser(this);"/>
             <j:if test="${userStatus.equals('NEW')}">
                 <label class="userStatus_new"> NEW</label>
             </j:if>

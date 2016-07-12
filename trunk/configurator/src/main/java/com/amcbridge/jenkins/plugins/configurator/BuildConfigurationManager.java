@@ -120,7 +120,7 @@ public class BuildConfigurationManager {
             return;
         }
 
-        File checkFile = new File(getRootDirectory() + config.getProjectName() + "/diff/");
+        File checkFile = new File(getRootDirectory() + "/" + config.getProjectName() + "/diff/");
         if (!checkFile.exists()) {
             checkFile.mkdirs();
         }

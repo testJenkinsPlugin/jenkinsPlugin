@@ -138,13 +138,12 @@ public final class BuildConfigurator implements RootAction {
 
             BuildConfigurationModel currentConfig = BuildConfigurationManager
                     .load(newConfig.getProjectName());
-            boolean saveForDiff = true;
+            boolean saveForDiff = false;
 
             switch (type) {
                 case CREATE:
                     newConfig.setState(ConfigurationState.NEW);
                     message.setDescription(MessageDescription.CREATE.toString());
-                    saveForDiff = false;
                     break;
                 case EDIT:
                     newConfig.setCreator(currentConfig.getCreator());
@@ -152,6 +151,7 @@ public final class BuildConfigurator implements RootAction {
                     message.setDescription(MessageDescription.CHANGE.toString());
                     break;
                 case APPROVED:
+                    saveForDiff = true;
                     newConfig.setState(ConfigurationState.APPROVED);
                     newConfig.setCreator(currentConfig.getCreator());
                     newConfig.setJobUpdate(false);
