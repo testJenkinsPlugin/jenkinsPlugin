@@ -1,64 +1,44 @@
 <?xml version="1.0"?>
-<j:jelly xmlns:j="jelly:core"
-         xmlns:st="jelly:stapler"
-         xmlns:d="jelly:define"
-         xmlns:l="/lib/layout"
-         xmlns:t="/lib/hudson"
-         xmlns:f="/lib/form"
-         xmlns:i="jelly:fmt"
-         xmlns:p="/lib/hudson/project"
->
+<j:jelly xmlns:d="jelly:define" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:p="/lib/hudson/project" xmlns:st="jelly:stapler" xmlns:t="/lib/hudson">
     <div id="${divID}" name="projectToBuild${projectSuffix}">
-
-        <label onclick="configurator.closeElement(this)" class="close-project-to-build" name="closeProject">X</label>
+        <label class="close-project-to-build" name="closeProject" onclick="configurator.closeElement(this)">X</label>
         <j:if test="${viewStatus.equals('DELETED')}">
             <label class="projectToBuild_status_deleted">DELETED! </label>
         </j:if>
-
         <j:if test="${viewStatus.equals('NEW')}">
             <label class="projectToBuild_status_new">NEW! </label>
         </j:if>
         <div class="div-textinput">
             <j:if test="${view_old != null and view_old.getProjectUrl() != null}">
-                <label class="diff_value">"${view_old.getProjectUrl()}"</label>
+                <label class="diff_value">&quot;${view_old.getProjectUrl()}&quot;</label>
                 <br/>
             </j:if>
-
             <label>Project url:</label>
-                <div>
-                    <input type="text" name="projectUrl" onblur="configurator.checkURL(this)" value="${view.getProjectUrl()}" class="textbox"/>
-                </div>
-                <div class="error-block display-none" name = "projectUrl-block">
-                    <img src="../images/16x16/error.png"/>
-                    Not correct url
-                </div>
+            <div>
+                <input class="textbox" name="projectUrl" onblur="configurator.checkURL(this)" type="text" value="${view.getProjectUrl()}"/>
+            </div>
+            <div class="error-block display-none" name="projectUrl-block">
+                <img src="../images/16x16/error.png"/>Not correct url</div>
         </div>
-
         <div class="div-textinput">
             <j:if test="${view_old != null and view_old.getCredentials() != null}">
-                <label class="diff_value">"${view_old.getCredentialsNameById(view_old.getCredentials())}"</label>
+                <label class="diff_value">&quot;${view_old.getCredentialsNameById(view_old.getCredentials())}&quot;</label>
                 <br/>
             </j:if>
             <label>Credentials:</label>
             <div>
-                <select name="credentials"
-                        value="${view.getCredentials()}"
-                        class="textbox">
+                <select class="textbox" name="credentials" value="${view.getCredentials()}">
                     <option value="not selected">not selected</option>
                     <j:forEach items="${credentialsList}" var="sct">
-
                         <j:choose>
                             <j:when test="${((view.getCredentials()==null) and userDefaultCredentials!=null and sct.endsWith(userDefaultCredentials))}">
-                                <option value="${userDefaultCredentials}" selected='true'>
-                                    ${view.getCredentialName(sct)}
+                                <option selected="true" value="${userDefaultCredentials}">${view.getCredentialName(sct)}
                                 </option>
                             </j:when>
                             <j:when test="${view.isCredentialSelected(view.getCredentials(),view.getCredentialId(sct))}">
-                                <option value="${view.getCredentialId(sct)}" selected='true'>
-                                    ${view.getCredentialName(sct)}
+                                <option selected="true" value="${view.getCredentialId(sct)}">${view.getCredentialName(sct)}
                                 </option>
                             </j:when>
-
                             <j:otherwise>
                                 <option value="${view.getCredentialId(sct)}">${view.getCredentialName(sct)}</option>
                             </j:otherwise>
@@ -66,217 +46,171 @@
                     </j:forEach>
                 </select>
                 <j:if test="${isAdmin}">
-                <input type="button" id="def_cred_button" onclick="configurator.setCurrentCredentialsAsDefault(this)" value="Set as default"/>
+                    <input id="def_cred_button" onclick="configurator.setCurrentCredentialsAsDefault(this)" type="button" value="Set as default"/>
                 </j:if>
             </div>
         </div>
-
-
         <div class="div-textinput">
             <j:if test="${view_old != null and view_old.getBranchName() != null}">
-                <label class="diff_value">"${view_old.getBranchName()}"</label>
+                <label class="diff_value">&quot;${view_old.getBranchName()}&quot;</label>
                 <br/>
             </j:if>
             <label>Branch name:</label>
             <div>
-                <input type="text" name="branchName" value="${view.getBranchName()}" class="textbox"/>
+                <input class="textbox" name="branchName" type="text" value="${view.getBranchName()}"/>
             </div>
         </div>
-
         <div class="div-textinput">
             <j:if test="${view_old != null and view_old.getLocalDirectoryPath() != null}">
-                <label class="diff_value"> "${view_old.getLocalDirectoryPath()}" </label>
+                <label class="diff_value">&quot;${view_old.getLocalDirectoryPath()}&quot; </label>
                 <br/>
             </j:if>
-
             <label>Local module directory (optional):</label>
             <div>
-                <input type="text" onblur="configurator.checkPath(this)" value="${view.getLocalDirectoryPath()}" name="localDirectoryPath" class="textbox"/>
-                <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(this)" class="image" name="localDirectoryPath-help"/>
+                <input class="textbox" name="localDirectoryPath" onblur="configurator.checkPath(this)" type="text" value="${view.getLocalDirectoryPath()}"/>
+                <img class="image" name="localDirectoryPath-help" onClick="configurator.imageHelp(this)" src="/static/c2e30787/images/16x16/help.png"/>
             </div>
-            <div class="error-block display-none" name = "localDirectoryPath-block">
-                <img src="../images/16x16/error.png"/>
-                Not correct path
-            </div>
-
+            <div class="error-block display-none" name="localDirectoryPath-block">
+                <img src="../images/16x16/error.png"/>Not correct path</div>
         </div>
-
-        <div class="help-view display-none" name = "localDirectoryPath-help-block">
-            <lebel class="helptext display-none" name = "localDirectoryPath-help-text">
-                Specify a local directory (relative to the workspace root) where this module is checked out. If left empty, the last path component of the URL is used as the default, just like the svn CLI. A single period (.) may be used to check out the project directly into the workspace rather than into a subdirectory.
+        <div class="help-view display-none" name="localDirectoryPath-help-block">
+            <lebel class="helptext display-none" name="localDirectoryPath-help-text">Specify a local directory (relative to the workspace root) where this module is checked out. If left empty, the last path component of the URL is used as the default, just like the svn CLI. A single period (.) may be used to check out the project directly into the workspace rather than into a subdirectory.
             </lebel>
         </div>
-
         <div class="div-textinput">
-
             <j:if test="${view_old != null and view_old.getFileToBuild() != null}">
-                <label class="diff_value">"${view_old.getFileToBuild()}"</label>
+                <label class="diff_value">&quot;${view_old.getFileToBuild()}&quot;</label>
                 <br/>
             </j:if>
-
-
-                <label>Project to build:</label>
+            <label>Project to build:</label>
             <div>
-                <input type="text" name="fileToBuild" onblur="configurator.checkPTB(this)" value="${view.getFileToBuild()}" class="textbox"/>
-                <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(this)" class="image" name="fileToBuild-help"/>
+                <input class="textbox" name="fileToBuild" onblur="configurator.checkPTB(this)" type="text" value="${view.getFileToBuild()}"/>
+                <img class="image" name="fileToBuild-help" onClick="configurator.imageHelp(this)" src="/static/c2e30787/images/16x16/help.png"/>
             </div>
-            <div class="error-block display-none" name = "fileToBuild-block">
-                <img src="../images/16x16/error.png"/>
-                Not correct file name
-            </div>
-
-
+            <div class="error-block display-none" name="fileToBuild-block">
+                <img src="../images/16x16/error.png"/>Not correct file name</div>
         </div>
-
         <div class="help-view display-none" name="fileToBuild-help-block">
-            <lebel class="helptext display-none" name="fileToBuild-help-text">
-                Project file name (with extension)
+            <lebel class="helptext display-none" name="fileToBuild-help-text">Project file name (with extension)
             </lebel>
         </div>
-
-
         <div class="div-project-to-build">
             <j:if test="${view_old != null and view_old.getArtefacts() != null}">
-                <j:forEach items="${view_old.getArtefacts()}" var="artifact" indexVar="i">
-                    <label class="diff_value">"${artifact}"</label>
+                <j:forEach indexVar="i" items="${view_old.getArtefacts()}" var="artifact">
+                    <label class="diff_value">&quot;${artifact}&quot;</label>
                     <br/>
                 </j:forEach>
                 <br/>
             </j:if>
-
             <div class="project-to-build-label">
                 <label class="div-file-chooser-label">Path to artifacts:</label>
             </div>
             <div>
-                <input type="text" name="pathToArtefacts" onblur="configurator.checkPath(this)" class="textbox"/>
-                <input type="button" onclick="configurator.addArtifactPath(this)" class="add-button" value="+" name = "addProject"/>
-                <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(this)" class="image" name="pathToArtefacts-help"/>
+                <input class="textbox" name="pathToArtefacts" onblur="configurator.checkPath(this)" type="text"/>
+                <input class="add-button" name="addProject" onclick="configurator.addArtifactPath(this)" type="button" value="+"/>
+                <img class="image" name="pathToArtefacts-help" onClick="configurator.imageHelp(this)" src="/static/c2e30787/images/16x16/help.png"/>
             </div>
-            <div error="artifact_error" class="error-block display-none" name="pathToArtefacts-block">
+            <div class="error-block display-none" error="artifact_error" name="pathToArtefacts-block">
                 <img src="../images/16x16/error.png"/>
-                <label error="artifact_error_exp" > Not correct path</label>
+                <label error="artifact_error_exp">Not correct path</label>
             </div>
             <div class="help-view display-none" name="pathToArtefacts-help-block">
-                <lebel class="helptext display-none" name="pathToArtefacts-help-text">
-                    You can use wildcards like 'module/dist/**/*.zip'. See 
-                    <a href="http://ant.apache.org/manual/Types/fileset.html">
-                        the includes attribute of Ant fileset </a>for the exact format. The base directory is the workspace. You can only archive files that are located in your workspace.
-                </lebel>
+                <lebel class="helptext display-none" name="pathToArtefacts-help-text">You can use wildcards like 'module/dist/**/*.zip'. See 
+                    
+                    
+                    
+                    <a href="http://ant.apache.org/manual/Types/fileset.html">the includes attribute of Ant fileset </a>
+                    for the exact format. The base directory is the workspace. You can only archive files that are located in your workspace.</lebel>
             </div>
             <div class="div-legend">
                 <fieldset>
                     <legend>Artifacts</legend>
-                    <select id="files_${sourceId[1]}" name="artefacts_group" class="select" onkeydown="configurator.deleteFromSelect(this, event)" size="3">
-                        <j:set var="forHidden" value=""/>
-                        <j:forEach items="${view.getArtefacts()}" var="art" indexVar="i">
+                    <select class="select" id="files_${sourceId[1]}" name="artefacts_group" onkeydown="configurator.deleteFromSelect(this, event)" size="3">
+                        <j:set value="" var="forHidden"/>
+                        <j:forEach indexVar="i" items="${view.getArtefacts()}" var="art">
                             <option value="${art}">${art}</option>
-                            <j:set var="forHidden" value="${forHidden+art+';'}"/>
+                            <j:set value="${forHidden+art+';'}" var="forHidden"/>
                         </j:forEach>
                     </select>
                 </fieldset>
-
-                <input type="hidden" name="artefacts" value="${forHidden}"/>
+                <input name="artefacts" type="hidden" value="${forHidden}"/>
             </div>
         </div>
-
-        <div  class="div-project-version-file">
+        <div class="div-project-version-file">
             <j:if test="${view_old != null and view_old.getVersionFiles() != null and view_old.IsVersionFiles()}">
-                <j:forEach items="${view_old.getVersionFiles()}" var="versionFile" indexVar="i">
-                    <label class="diff_value">"${versionFile}"</label>
+                <j:forEach indexVar="i" items="${view_old.getVersionFiles()}" var="versionFile">
+                    <label class="diff_value">&quot;${versionFile}&quot;</label>
                     <br/>
                 </j:forEach>
                 <br/>
             </j:if>
             <j:if test="${view_old != null and !view_old.IsVersionFiles()}">
-                    <label class="diff_value">Version files disabled</label>
-                    <br/>
+                <label class="diff_value">Version files disabled</label>
+                <br/>
             </j:if>
-
-
             <j:if test="${view.IsVersionFiles()}">
                 <div class="project-to-build-label">
-                    <input type="checkbox" class="check-box" name="isVersionFiles" checked="checked" onclick="configurator.versionFileCheckBoxChange(this)" />
+                    <input checked="checked" class="check-box" name="isVersionFiles" onclick="configurator.versionFileCheckBoxChange(this)" type="checkbox"/>
                     <label class="div-label">Version Files</label>
                 </div>
-                <input type="text" name="versionFilesPath" onblur="configurator.checkPath(this)" class="textbox"/>
-                <input type="button" onclick="configurator.addPathFiles(this)" class="add-button"  value="+" name = "addVersion"/>
+                <input class="textbox" name="versionFilesPath" onblur="configurator.checkPath(this)" type="text"/>
+                <input class="add-button" name="addVersion" onclick="configurator.addPathFiles(this)" type="button" value="+"/>
             </j:if>
             <j:if test="${!view.IsVersionFiles()}">
                 <div class="project-to-build-label">
-                    <input type="checkbox" class="check-box" name="isVersionFiles" onclick="configurator.versionFileCheckBoxChange(this)" />
+                    <input class="check-box" name="isVersionFiles" onclick="configurator.versionFileCheckBoxChange(this)" type="checkbox"/>
                     <label class="div-label">Version Files</label>
-
                 </div>
-                <input type="text" name="versionFilesPath" onblur="configurator.checkPath(this)" class="textbox hidden"/>
-                <input type="button" onclick="configurator.addPathFiles(this)" class="add-button hidden"  value="+" name = "addVersion" />
-                <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(this)" class="image" name="versionFiles-help"/>
+                <input class="textbox hidden" name="versionFilesPath" onblur="configurator.checkPath(this)" type="text"/>
+                <input class="add-button hidden" name="addVersion" onclick="configurator.addPathFiles(this)" type="button" value="+"/>
+                <img class="image" name="versionFiles-help" onClick="configurator.imageHelp(this)" src="/static/c2e30787/images/16x16/help.png"/>
             </j:if>
-            <div error="v_files_error" class="error-block display-none" name="versionFilesPath-block">
+            <div class="error-block display-none" error="v_files_error" name="versionFilesPath-block">
                 <img src="../images/16x16/error.png"/>
-                <label error="v_files_error_exp"> Not correct path</label>
+                <label error="v_files_error_exp">Not correct path</label>
             </div>
-
             <div class="help-view display-none" name="versionFiles-help-block">
-                <lebel class="helptext display-none" name="versionFiles-help-text">
-                    If configured, build description will be based on the version from version file, otherwise on git hash or svn revision.
+                <lebel class="helptext display-none" name="versionFiles-help-text">If configured, build description will be based on the version from version file, otherwise on git hash or svn revision.
                 </lebel>
             </div>
-
-
-
             <j:if test="${view.IsVersionFiles()}">
                 <div class="div-legend" dir="fieldSetDiv">
                     <fieldset>
                         <legend>Version Files</legend>
-                        <select id="files_${sourceId[2]}" name="vFiles"  class="select" onkeydown="configurator.deleteFromSelect(this, event)" size="3">
-                            <j:set var="forHidden" value=""/>
-                            <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
+                        <select class="select" id="files_${sourceId[2]}" name="vFiles" onkeydown="configurator.deleteFromSelect(this, event)" size="3">
+                            <j:set value="" var="forHidden"/>
+                            <j:forEach indexVar="i" items="${view.getVersionFiles()}" var="vf">
                                 <option value="${vf}">${vf}</option>
-                                <j:set var="forHidden" value="${forHidden+vf+';'}"/>
+                                <j:set value="${forHidden+vf+';'}" var="forHidden"/>
                             </j:forEach>
                         </select>
                     </fieldset>
-                 <input type="hidden" name="versionFiles" value="${forHidden}"/>
-
-           </div> </j:if>
+                    <input name="versionFiles" type="hidden" value="${forHidden}"/>
+                </div>
+            </j:if>
             <j:if test="${!view.IsVersionFiles()}">
                 <div class="div-legend display-none" dir="fieldSetDiv">
                     <fieldset>
                         <legend>Version Files</legend>
-                        <select id="files_${sourceId[2]}" name="vFiles"  class="select hidden" onkeydown="configurator.deleteFromSelect(this, event)" size="3">
-                            <j:set var="forHidden" value=""/>
-                            <j:forEach items="${view.getVersionFiles()}" var="vf" indexVar="i">
+                        <select class="select hidden" id="files_${sourceId[2]}" name="vFiles" onkeydown="configurator.deleteFromSelect(this, event)" size="3">
+                            <j:set value="" var="forHidden"/>
+                            <j:forEach indexVar="i" items="${view.getVersionFiles()}" var="vf">
                                 <option value="${vf}">${vf}</option>
-                                <j:set var="forHidden" value="${forHidden+vf+';'}"/>
+                                <j:set value="${forHidden+vf+';'}" var="forHidden"/>
                             </j:forEach>
                         </select>
                     </fieldset>
-                  <input type="hidden" name="versionFiles" value="${forHidden}" />
-
-           </div> </j:if>
+                    <input name="versionFiles" type="hidden" value="${forHidden}"/>
+                </div>
+            </j:if>
         </div>
-
-         <input type="hidden" name="guid" value = "${view.getGuid()}"/>
-
-
-        <div class="builders">
-          <!--  <j:forEach items="${view.getBuilders()}" var="build" indexVar="i">
-                ${generator.getBuilderView(build, view.getGuid()).getHtml()}
-            </j:forEach>-->
-            <!--<j:if test = "true == true">-->
-            <!--${generator.getAllBuildersView(view, view.getGuid()).getHtml()}-->
-            ${generator.getBuildersView(view, configState, oldBuildersModels).getHtml()}
-<!--</j:if>-->
-            <span></span>
-        </div>
-
-
+        <input name="guid" type="hidden" value="${view.getGuid()}"/>
+        <div class="builders">${generator.getBuildersView(view, configState, oldBuildersModels).getHtml()}
+            
+            <span/></div>
         <div class="div-add-view">
-            <input type="button" onClick="configurator.addBuilder('#' + ${divID})" value="Add Builder"/>
+            <input onClick="configurator.addBuilder('#' + ${divID})" type="button" value="Add Builder"/>
         </div>
-        
-    </div>         
-
-    <j:forEach items="s" var="config" indexVar="i">
-    </j:forEach>
+    </div>
+    <j:forEach indexVar="i" items="s" var="config"/>
 </j:jelly>
