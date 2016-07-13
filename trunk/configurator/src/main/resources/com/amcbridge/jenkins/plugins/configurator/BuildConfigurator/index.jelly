@@ -115,9 +115,10 @@
                                 <label>New configuration name </label>
                                 <input id="newConfigName" name="newConfigName" onchange="isCopyNameCorrect()" type="text"/>
                                 <input id="copyConfigName" name="copyConfigName" type="hidden"/>
-                                <input class="button-copy" onclick="return isCopyNameCorrect();" type="submit" value="Copy"/>
+                                <input class="button-copy" id="copyButton" onclick="return isCopyNameCorrect();" type="submit" value="Copy"/>
                             </div>
                         </f:form>
+                        <div id="copyHelpDiv" class="rejected display-none"/>
                     </div>
                 </div>
             </div>

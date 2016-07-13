@@ -101,15 +101,32 @@ function copyConfiguration(configToCopyName) {
 }
 
 function isCopyNameCorrect() {
-
     var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|\.\ ]*$/i;
     var copyName = jQuery('#newConfigName')[0];
+   
     if (!regPath.test(copyName.value) || (copyName.value.length == 0)) {
         jQuery(copyName).addClass('wrong');
+        jQuery("#copyHelpDiv").html("Wrong name");
+        jQuery('#copyHelpDiv').removeClass('display-none');
         return false;
-    } else {
-        jQuery(copyName).removeClass('wrong');
-        return true;
+    } 
+    else {
+        jQuery('#copyHelpDiv').addClass('display-none');
     }
+    
+    buildConfiguration.isNameFree(copyName.value, function (t) {
+        if (t.responseObject() != false) {
+            jQuery('#copyHelpDiv').addClass('display-none');
+            jQuery(copyName).removeClass('wrong');
+            jQuery("#copyButton").prop('onclick', null);
+            jQuery("#copyButton").click();
+            }
+            else {
+                jQuery("#copyHelpDiv").html("Configuration with name '" + copyName.value + "' already exists. Please select another name.");
+                jQuery('#copyHelpDiv').removeClass('display-none');
+                jQuery(copyName).addClass('wrong');
+            }
+    });
 
+return false;
 }
