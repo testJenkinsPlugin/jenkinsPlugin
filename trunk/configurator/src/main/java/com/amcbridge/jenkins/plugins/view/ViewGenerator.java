@@ -31,7 +31,23 @@ public class ViewGenerator {
     private static final String HTML_DIV_NAME_NORMAL_SUFFIX = "";
     private static final String HTML_DIV_NAME_DELETED_SUFFIX = "_deleted";
 
-    private static final Logger logger = LoggerFactory.getLogger(ViewGenerator.class);
+    private static final String JCONTEXT_SOURCE_ID = "sourceId";
+    private static final String JCONTEXT_DIV_ID = "divID";
+    private static final String JCONTEXT_BUILDERS = "builders";
+    private static final String JCONTEXT_PLATFORMS = "platforms";
+    private static final String JCONTEXT_CONFIGURATION = "configuration";
+    private static final String JCONTEXT_CREDENTIALS_LIST = "credentialsList";
+    private static final String JCONTEXT_VIEW = "view";
+    private static final String JCONTEXT_VIEW_OLD = "view_old";
+    private static final String JCONTEXT_IS_ADMIN = "isAdmin";
+    private static final String JCONTEXT_VIEW_STATUS = "viewStatus";
+    private static final String JCONTEXT_DEF_CRED = "userDefaultCredentials";
+    private static final String JCONTEXT_OLD_BUILDERS_MODELS = "oldBuildersModels";
+    private static final String JCONTEXT_PROJECT_SUFFIX = "projectSuffix";
+    private static final String JCONTEXT_BUILDER_SUFFIX = "builderSuffix";
+    private static final String JCONTEXT_BUILDER_STATUS = "builderStatus";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ViewGenerator.class);
     private Integer id;
     private BuilderLoader builderLoader;
 
@@ -46,24 +62,24 @@ public class ViewGenerator {
         ProjectToBuildView result = new ProjectToBuildView();
         String viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + PROJECT_TO_BUILD_VIEW;
         JellyContext jcontext = new JellyContext();
-        Vector<Integer> sourceId = new Vector<>();
+        List <Integer> sourceId = new LinkedList<>();
 
         viewTemplatePath = viewTemplatePath.replaceAll(" ", HTML_SPACE);
-        jcontext.setVariable("divID", id);
+        jcontext.setVariable(JCONTEXT_DIV_ID, id);
         result.setViewId(id);
         for (Configuration sourceControl : Configuration.values()) {
             sourceId.add(id);
             id++;
         }
 
-        jcontext.setVariable("sourceId", sourceId);
-        jcontext.setVariable("builders", builderLoader.getBuilders());
-        jcontext.setVariable("platforms", (new PlatformLoader()).getPlatformList());
-        jcontext.setVariable("configuration", Configuration.values());
-        jcontext.setVariable("credentialsList", ProjectToBuildModel.getCredentialsList());
-        jcontext.setVariable("view", new ProjectToBuildModel());
-        jcontext.setVariable("userDefaultCredentials", BuildConfigurationManager.getDefaultCredentials());
-        jcontext.setVariable("isAdmin", BuildConfigurationManager.isCurrentUserAdministrator());
+        jcontext.setVariable(JCONTEXT_SOURCE_ID, sourceId);
+        jcontext.setVariable(JCONTEXT_BUILDERS, builderLoader.getBuilders());
+        jcontext.setVariable(JCONTEXT_PLATFORMS, (new PlatformLoader()).getPlatformList());
+        jcontext.setVariable(JCONTEXT_CONFIGURATION, Configuration.values());
+        jcontext.setVariable(JCONTEXT_CREDENTIALS_LIST, ProjectToBuildModel.getCredentialsList());
+        jcontext.setVariable(JCONTEXT_VIEW, new ProjectToBuildModel());
+        jcontext.setVariable(JCONTEXT_DEF_CRED, BuildConfigurationManager.getDefaultCredentials());
+        jcontext.setVariable(JCONTEXT_IS_ADMIN, BuildConfigurationManager.isCurrentUserAdministrator());
 
         result.setHtml(launchScript(jcontext, viewTemplatePath));
         return result;
@@ -72,12 +88,12 @@ public class ViewGenerator {
     public ProjectToBuildView getProjectToBuildlView(BuildConfigurationModel configurationModel, BuildConfigurationModel configurationModelCompareWith)
             throws UnsupportedEncodingException, JellyException, JenkinsInstanceNotFoundException {
         List<ProjectToBuildModel> viewsCurrentConfig = configurationModel.getProjectToBuild();
-        boolean showDiffToUser = BuildConfigurationManager.isCurrentUserAdministrator() && !configurationModel.getState().equals(ConfigurationState.APPROVED) &&
+        boolean showDiffToUser = BuildConfigurationManager.isCurrentUserAdministrator() && configurationModel.getState().equals(ConfigurationState.UPDATED) &&
                 !"".equals(configurationModelCompareWith.getProjectName());
         Map<UUID, ProjectToBuildModel> projectsOldMapForProjects = createProjectsMap(configurationModelCompareWith.getProjectToBuild());
 
         ProjectToBuildView result = new ProjectToBuildView();
-        if (viewsCurrentConfig.size() == 0) {
+        if (viewsCurrentConfig.isEmpty()) {
             result.setHtml(BuildConfigurationManager.STRING_EMPTY);
             result.setViewId(0);
             return result;
@@ -89,58 +105,58 @@ public class ViewGenerator {
         StringBuilder html = new StringBuilder("");
 
         JellyContext jcontext = new JellyContext();
-        Vector<Integer> sourceId;
+        List<Integer> sourceId;
 
         jcontext.setVariable("generator", this);
-        jcontext.setVariable("builders", builderLoader.getBuilders());
-        jcontext.setVariable("platforms", (new PlatformLoader()).getPlatformList());
-        jcontext.setVariable("configuration", Configuration.values());
-        jcontext.setVariable("credentialsList", ProjectToBuildModel.getCredentialsList());
-        jcontext.setVariable("isAdmin", BuildConfigurationManager.isCurrentUserAdministrator());
+        jcontext.setVariable(JCONTEXT_BUILDERS, builderLoader.getBuilders());
+        jcontext.setVariable(JCONTEXT_PLATFORMS, (new PlatformLoader()).getPlatformList());
+        jcontext.setVariable(JCONTEXT_CONFIGURATION, Configuration.values());
+        jcontext.setVariable(JCONTEXT_CREDENTIALS_LIST, ProjectToBuildModel.getCredentialsList());
+        jcontext.setVariable(JCONTEXT_IS_ADMIN, BuildConfigurationManager.isCurrentUserAdministrator());
         for (ProjectToBuildModel view : viewsCurrentConfig) {
-            sourceId = new Vector<>();
-            jcontext.setVariable("divID", id);
+            sourceId = new LinkedList<>();
+            jcontext.setVariable(JCONTEXT_DIV_ID, id);
             for (Configuration conf : Configuration.values()) {
                 sourceId.add(id);
                 id++;
             }
-            jcontext.setVariable("view_old", null);
-            jcontext.setVariable("oldBuildersModels", null);
-            jcontext.setVariable("viewStatus", null);
+            jcontext.setVariable(JCONTEXT_VIEW_OLD, null);
+            jcontext.setVariable(JCONTEXT_OLD_BUILDERS_MODELS, null);
+            jcontext.setVariable(JCONTEXT_VIEW_STATUS, null);
 
-            jcontext.setVariable("projectSuffix", HTML_DIV_NAME_NORMAL_SUFFIX);
-            jcontext.setVariable("view", view);
-            jcontext.setVariable("sourceId", sourceId);
+            jcontext.setVariable(JCONTEXT_PROJECT_SUFFIX, HTML_DIV_NAME_NORMAL_SUFFIX);
+            jcontext.setVariable(JCONTEXT_VIEW, view);
+            jcontext.setVariable(JCONTEXT_SOURCE_ID, sourceId);
             ProjectToBuildModel projectToBuildModelOld = projectsOldMapForProjects.get(view.getGuid());
             //setting diff fields
             if (showDiffToUser && projectToBuildModelOld != null) {
-                jcontext.setVariable("view_old", projectToBuildModelOld);
+                jcontext.setVariable(JCONTEXT_VIEW_OLD, projectToBuildModelOld);
                 jcontext.setVariable("configState", configurationModel.getState());
-                jcontext.setVariable("oldBuildersModels", projectToBuildModelOld.getBuilders());
+                jcontext.setVariable(JCONTEXT_OLD_BUILDERS_MODELS, projectToBuildModelOld.getBuilders());
 
             }
-            if (projectsOldMapForProjects.remove(view.getGuid()) == null) {
-                jcontext.setVariable("viewStatus", VIEW_STATUS_NEW);
+            if (showDiffToUser && projectsOldMapForProjects.remove(view.getGuid()) == null) {
+                jcontext.setVariable(JCONTEXT_VIEW_STATUS, VIEW_STATUS_NEW);
             }
             html.append(launchScript(jcontext, viewTemplatePath));
         }
         // Getting deleted projects
         if (showDiffToUser) {
-            jcontext.setVariable("view_old", null);
+            jcontext.setVariable(JCONTEXT_VIEW_OLD, null);
             for (Map.Entry<UUID, ProjectToBuildModel> projectEntry : projectsOldMapForProjects.entrySet()) {
-                jcontext.setVariable("oldBuildersModels", null);
+                jcontext.setVariable(JCONTEXT_OLD_BUILDERS_MODELS, null);
                 sourceId = new Vector<>();
-                jcontext.setVariable("divID", id);
+                jcontext.setVariable(JCONTEXT_DIV_ID, id);
                 for (Configuration conf : Configuration.values()) {
                     sourceId.add(id);
                     id++;
                 }
                 ProjectToBuildModel view = projectEntry.getValue();
-                jcontext.setVariable("view", view);
-                jcontext.setVariable("viewStatus", VIEW_STATUS_DELETED);
-                jcontext.setVariable("projectSuffix", HTML_DIV_NAME_DELETED_SUFFIX);
-                jcontext.setVariable("sourceId", sourceId);
-                jcontext.setVariable("oldBuildersModels", view.getBuilders());
+                jcontext.setVariable(JCONTEXT_VIEW, view);
+                jcontext.setVariable(JCONTEXT_VIEW_STATUS, VIEW_STATUS_DELETED);
+                jcontext.setVariable(JCONTEXT_PROJECT_SUFFIX, HTML_DIV_NAME_DELETED_SUFFIX);
+                jcontext.setVariable(JCONTEXT_SOURCE_ID, sourceId);
+                jcontext.setVariable(JCONTEXT_OLD_BUILDERS_MODELS, view.getBuilders());
                 html.append(launchScript(jcontext, viewTemplatePath));
             }
         }
@@ -155,8 +171,8 @@ public class ViewGenerator {
             throws UnsupportedEncodingException, JellyException {
         JellyContext jcontext = new JellyContext();
         BuilderConfigModel config = new BuilderConfigModel();
-        jcontext.setVariable("view", config);
-        jcontext.setVariable("builderSuffix", HTML_DIV_NAME_NORMAL_SUFFIX);
+        jcontext.setVariable(JCONTEXT_VIEW, config);
+        jcontext.setVariable(JCONTEXT_BUILDER_SUFFIX, HTML_DIV_NAME_NORMAL_SUFFIX);
         return new ProjectToBuildView(setContextForBuilderView(jcontext), id);
     }
 
@@ -166,22 +182,22 @@ public class ViewGenerator {
         StringBuilder strBuilder = new StringBuilder("");
         JellyContext jcontext = new JellyContext();
         Map<UUID, BuilderConfigModel> buildersOldMap = new HashMap<>();
-        boolean showDiffToUser = BuildConfigurationManager.isCurrentUserAdministrator() && !ConfigurationState.APPROVED.equals(configState);
+        boolean showDiffToUser = BuildConfigurationManager.isCurrentUserAdministrator() && ConfigurationState.UPDATED.equals(configState);
         if (oldBuildersModels != null) {
             buildersOldMap = createBuildersMap(oldBuildersModels);
         }
         if (currentBuildersModels != null) {
             for (BuilderConfigModel builder : currentBuildersModels) {
-                jcontext.setVariable("builderStatus", null);
+                jcontext.setVariable(JCONTEXT_BUILDER_STATUS, null);
                 jcontext.setVariable("view_old_builder", null);
-                jcontext.setVariable("view", builder);
-                jcontext.setVariable("builderSuffix", HTML_DIV_NAME_NORMAL_SUFFIX);
+                jcontext.setVariable(JCONTEXT_VIEW, builder);
+                jcontext.setVariable(JCONTEXT_BUILDER_SUFFIX, HTML_DIV_NAME_NORMAL_SUFFIX);
                 if (showDiffToUser) {
                     if (!buildersOldMap.containsKey(builder.getGuid())) {
-                        jcontext.setVariable("builderStatus", VIEW_STATUS_NEW);
+                        jcontext.setVariable(JCONTEXT_BUILDER_STATUS, VIEW_STATUS_NEW);
                     } else {
                         jcontext.setVariable("view_old_builder", buildersOldMap.get(builder.getGuid()));
-                        jcontext.setVariable("builderStatus", "");
+                        jcontext.setVariable(JCONTEXT_BUILDER_STATUS, "");
                     }
                 }
                 buildersOldMap.remove(builder.getGuid());
@@ -192,14 +208,14 @@ public class ViewGenerator {
         //Getting deleted builders
         if (showDiffToUser) {
             for (Map.Entry<UUID, BuilderConfigModel> entrySet: buildersOldMap.entrySet()) {
-                jcontext.setVariable("view", entrySet.getValue());
-                jcontext.setVariable("builderStatus", VIEW_STATUS_DELETED);
-                jcontext.setVariable("builderSuffix", HTML_DIV_NAME_DELETED_SUFFIX);
+                jcontext.setVariable(JCONTEXT_VIEW, entrySet.getValue());
+                jcontext.setVariable(JCONTEXT_BUILDER_STATUS, VIEW_STATUS_DELETED);
+                jcontext.setVariable(JCONTEXT_BUILDER_SUFFIX, HTML_DIV_NAME_DELETED_SUFFIX);
                 strBuilder.append(setContextForBuilderView(jcontext));
 
             }
         }
-        return (new ProjectToBuildView(strBuilder.toString(), id));
+        return new ProjectToBuildView(strBuilder.toString(), id);
 
     }
 
@@ -210,19 +226,20 @@ public class ViewGenerator {
         try {
             viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + BUILDER_VIEW;
         } catch (JenkinsInstanceNotFoundException e) {
-            logger.error("Error setting context for builder", e);
+            LOGGER.error("Error setting context for builder", e);
             return "";
         }
         viewTemplatePath = viewTemplatePath.replaceAll(" ", HTML_SPACE);
-        jcontext.setVariable("divID", id);
+        jcontext.setVariable(JCONTEXT_DIV_ID, id);
         id++;
-        jcontext.setVariable("builders", builderLoader.getBuilders());
-        jcontext.setVariable("platforms", (new PlatformLoader()).getPlatformList());
-        jcontext.setVariable("configuration", Configuration.values());
+        jcontext.setVariable(JCONTEXT_BUILDERS, builderLoader.getBuilders());
+        jcontext.setVariable(JCONTEXT_PLATFORMS, (new PlatformLoader()).getPlatformList());
+        jcontext.setVariable(JCONTEXT_CONFIGURATION, Configuration.values());
         try {
-            jcontext.setVariable("isAdmin", BuildConfigurationManager.isCurrentUserAdministrator());
+            jcontext.setVariable(JCONTEXT_IS_ADMIN, BuildConfigurationManager.isCurrentUserAdministrator());
         } catch (JenkinsInstanceNotFoundException e) {
-            jcontext.setVariable("isAdmin", false);
+            LOGGER.error("Error detecting if user is administrator", e);
+            jcontext.setVariable(JCONTEXT_IS_ADMIN, false);
         }
 
         return launchScript(jcontext, viewTemplatePath);
@@ -241,7 +258,7 @@ public class ViewGenerator {
         ProjectToBuildView result = new ProjectToBuildView();
 
         boolean showDiff = currentConfig != null && currentConfig.getState() != null && BuildConfigurationManager.isCurrentUserAdministrator() &&
-                !currentConfig.getState().equals(ConfigurationState.APPROVED);
+                currentConfig.getState().equals(ConfigurationState.UPDATED);
 
         if (currentConfig == null || currentConfig.getUserWithAccess() == null) {
             result.setHtml(BuildConfigurationManager.STRING_EMPTY);
@@ -267,8 +284,6 @@ public class ViewGenerator {
             if (showDiff && !oldUserlist.remove(userModel)) {
                 jcontext.setVariable("userStatus", VIEW_STATUS_NEW);
             }
-
-
             html.append(launchScript(jcontext, viewTemplatePath));
         }
         if (showDiff) {
@@ -290,7 +305,7 @@ public class ViewGenerator {
         try {
             viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + USER_ACCESS_VIEW_PATH;
         } catch (JenkinsInstanceNotFoundException e) {
-            logger.error("Jenkins instance not found", e);
+            LOGGER.error("Jenkins instance not found", e);
             result.setHtml("");
             return result;
         }

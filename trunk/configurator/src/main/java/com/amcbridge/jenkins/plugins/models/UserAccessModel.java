@@ -2,14 +2,8 @@ package com.amcbridge.jenkins.plugins.models;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-/**
- * Created by OKravets on 5/10/2016.
- */
 public class UserAccessModel {
     private String userName;
-
-    public UserAccessModel() {
-    }
 
     @DataBoundConstructor
     public UserAccessModel(String userName) {
@@ -26,11 +20,13 @@ public class UserAccessModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserAccessModel that = (UserAccessModel) o;
-
         return userName != null ? userName.equals(that.userName) : that.userName == null;
 
     }

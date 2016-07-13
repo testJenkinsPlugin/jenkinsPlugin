@@ -17,6 +17,8 @@ public class JobSCM {
     public static final String PARENT_ELEMENT_TAG = "project";
     private static final Logger logger = LoggerFactory.getLogger(JobSCM.class);
 
+    private JobSCM(){}
+
     public static Document removeSCM(Document doc) {
         Node scm;
         if (doc.getElementsByTagName(ELEMENT_TAG).getLength() > 0) {

@@ -14,7 +14,11 @@ public class JobVersionFile implements JobElementDescription {
     private static final String PARENT_ELEMENT_TAG = "publishers";
     private static final String REGEXP_TAG = "regexp";
     private static final String EXPRESSION = "\\[getting of version of the build started by hudson\\] (.*)";
+    private String regExp;
 
+    public JobVersionFile(String regExp){
+        this.regExp = regExp;
+    }
     @Override
     public String getElementTag() {
         return ELEMENT_TAG;
@@ -27,24 +31,15 @@ public class JobVersionFile implements JobElementDescription {
 
     @Override
     public String generateXML(BuildConfigurationModel config) {
-
-      /*  if (!isVersionFileSet(config)) {
-            return StringUtils.EMPTY;
-        }*/
-
         DescriptionSetterPublisher dsp
-                = new DescriptionSetterPublisher(EXPRESSION, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, false);
+                = new DescriptionSetterPublisher(generateExpression(), StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, false);
         return JobManagerGenerator.convertToXML(dsp);
     }
 
     @Override
     public void appendToXML(BuildConfigurationModel config, Document xml) {
-
-        if (!isVersionFileSet(config)) {
-            return;
-        }
         Node node = xml.getElementsByTagName(REGEXP_TAG).item(0);
-        node.setTextContent(EXPRESSION);
+        node.setTextContent(generateExpression());
     }
 
     private Boolean isVersionFileSet(BuildConfigurationModel config) {
@@ -60,4 +55,11 @@ public class JobVersionFile implements JobElementDescription {
         return false;
     }
 
+    private String generateExpression() {
+        String expression = regExp;
+        if (regExp == null || "".equals(regExp)) {
+            expression = EXPRESSION;
+        }
+        return expression;
+    }
 }

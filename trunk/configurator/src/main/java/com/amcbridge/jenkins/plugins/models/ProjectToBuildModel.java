@@ -14,16 +14,18 @@ import java.util.logging.Logger;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 public class ProjectToBuildModel {
-    private String projectUrl, fileToBuild, localDirectoryPath, branchName, credentials;
+    private String projectUrl;
+    private String fileToBuild;
+    private String localDirectoryPath;
+    private String branchName;
+    private String credentials;
     private Boolean isVersionFiles;
     private List<BuilderConfigModel> builders;
-    private String[] artefacts, versionFiles;
+    private String[] artefacts;
+    private String[] versionFiles;
     private UUID guid;
 
-    public ProjectToBuildModel() {
-    }
-
-
+    public ProjectToBuildModel(){}
     @DataBoundConstructor
     public ProjectToBuildModel(String projectUrl, String credentials, String branchName, String fileToBuild,
                                String artefacts, String versionFiles, String localDirectoryPath,
@@ -38,7 +40,7 @@ public class ProjectToBuildModel {
         this.isVersionFiles = isVersionFiles;
         this.builders = builders;
 
-        if (guid == null || guid.equals("")) {
+        if (guid == null || "".equals(guid)) {
             this.guid = UUID.randomUUID();
         } else {
             this.guid = UUID.fromString(guid);
@@ -84,7 +86,7 @@ public class ProjectToBuildModel {
     }
 
     public static String getCredentialsNameById(String credentialsId){
-        if(credentialsId.equals("not selected")){
+        if("not selected".equals(credentialsId)){
             return credentialsId;
         }
         List<String> credentialsList = getCredentialsList();
@@ -189,42 +191,4 @@ public class ProjectToBuildModel {
         this.guid = guid;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ProjectToBuildModel that = (ProjectToBuildModel) o;
-
-        if (projectUrl != null ? !projectUrl.equals(that.projectUrl) : that.projectUrl != null) return false;
-        if (fileToBuild != null ? !fileToBuild.equals(that.fileToBuild) : that.fileToBuild != null) return false;
-        if (localDirectoryPath != null ? !localDirectoryPath.equals(that.localDirectoryPath) : that.localDirectoryPath != null)
-            return false;
-        if (branchName != null ? !branchName.equals(that.branchName) : that.branchName != null) return false;
-        if (credentials != null ? !credentials.equals(that.credentials) : that.credentials != null) return false;
-        if (isVersionFiles != null ? !isVersionFiles.equals(that.isVersionFiles) : that.isVersionFiles != null)
-            return false;
-        if (builders != null ? !builders.equals(that.builders) : that.builders != null) return false;
-        // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        if (!Arrays.equals(artefacts, that.artefacts)) return false;
-        // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        if (!Arrays.equals(versionFiles, that.versionFiles)) return false;
-        return guid != null ? guid.equals(that.guid) : that.guid == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = projectUrl != null ? projectUrl.hashCode() : 0;
-        result = 31 * result + (fileToBuild != null ? fileToBuild.hashCode() : 0);
-        result = 31 * result + (localDirectoryPath != null ? localDirectoryPath.hashCode() : 0);
-        result = 31 * result + (branchName != null ? branchName.hashCode() : 0);
-        result = 31 * result + (credentials != null ? credentials.hashCode() : 0);
-        result = 31 * result + (isVersionFiles != null ? isVersionFiles.hashCode() : 0);
-        result = 31 * result + (builders != null ? builders.hashCode() : 0);
-        result = 31 * result + Arrays.hashCode(artefacts);
-        result = 31 * result + Arrays.hashCode(versionFiles);
-        result = 31 * result + (guid != null ? guid.hashCode() : 0);
-        return result;
-    }
 }

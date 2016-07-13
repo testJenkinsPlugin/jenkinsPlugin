@@ -1,141 +1,126 @@
 <?jelly escape-by-default='true'?>
-
-<j:jelly xmlns:j="jelly:core"
-   xmlns:st="jelly:stapler"
-   xmlns:d="jelly:define"
-   xmlns:l="/lib/layout"
-   xmlns:t="/lib/hudson"
-   xmlns:f="/lib/form"
-   xmlns:i="jelly:fmt"
-   xmlns:p="/lib/hudson/project"
-   >
-
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <st:bind value="${it}" var="buildConfiguration"/>
-  <script src="../plugin/build-configurator/scripts/index.js"/>
-  <link rel="stylesheet" href="../plugin/build-configurator/css/style.css" type="text/css"/>
-
+<j:jelly xmlns:d="jelly:define" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:p="/lib/hudson/project" xmlns:st="jelly:stapler" xmlns:t="/lib/hudson">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"/>
+    <st:bind value="${it}" var="buildConfiguration"/>
+    <script src="../plugin/build-configurator/scripts/index.js"/>
+    <link href="../plugin/build-configurator/css/style.css" rel="stylesheet" type="text/css"/>
     <l:layout>
-        <st:include page="sidepanel.jelly" it="${app}" />
-        <j:set var="isAdmin" value="${it.isCurrentUserAdministrator()}"/>
+        <st:include it="${app}" page="sidepanel.jelly"/>
+        <j:set value="${it.isCurrentUserAdministrator()}" var="isAdmin"/>
         <l:main-panel>
-            <div id="overlay" class="div-none">
-                <div id="rejectDiv" class="div-none">
+            <div class="div-none" id="overlay">
+                <div class="div-none" id="rejectDiv">
                     <label class="reject-label" id="helpReject">Please type reasons of rejection: </label>
                     <div>
-                    <input type="button" onClick="OkReject()" id="OkReject" class="button-reject" value="OK"/>
-                    <input type="button" onClick="CancelReject()" id="CancelReject" class="button-reject" value="Cancel"/>
+                        <input class="button-reject" id="OkReject" onClick="OkReject()" type="button" value="OK"/>
+                        <input class="button-reject" id="CancelReject" onClick="CancelReject()" type="button" value="Cancel"/>
                     </div>
                 </div>
             </div>
-            <h1>Configurations</h1>  <div class="version">ver ${it.getBuildConfiguratorVersion()}</div>
+            <h1>Configurations</h1>
+            <div class="version">ver ${it.getBuildConfiguratorVersion()}</div>
             <j:if test="${isAdmin}">
-            <j:if test="${!it.isJenkinsEmailConfigOK()}">
-                                                <label class="wrong-email">Please, set correct email properties to receive email notifications from Jenkins</label>
-                                         <br/>   </j:if>
-                                            </j:if>
-
-            <a href="create" class="CreateBuildConfigurator">Create new build configuration</a>
-
+                <j:if test="${!it.isJenkinsEmailConfigOK()}">
+                    <label class="wrong-email">Please, set correct email properties to receive email notifications from Jenkins</label>
+                    <br/>
+                </j:if>
+            </j:if>
+            <a class="CreateBuildConfigurator" href="create">Create new build configuration</a>
             <table>
                 <thead>
                     <tr height="10">
-                        <td></td>
+                        <td/>
                     </tr>
                 </thead>
             </table>
-            <table id="table" class="config table">
+            <table class="config table" id="table">
                 <thead>
-                        <tr height="30" bgcolor="#eee">
-                            <th class="project-name-column">Project name</th>
-                            <th class="state-column">State</th>
-                            <th class="last-update-date-column">Last update date</th>
-                            <th class="action-column">Action</th>
-                            <th class="user-name">Username</th>
-                        </tr>
+                    <tr bgcolor="#eee" height="30">
+                        <th class="project-name-column">Project name</th>
+                        <th class="state-column">State</th>
+                        <th class="last-update-date-column">Last update date</th>
+                        <th class="action-column">Action</th>
+                        <th class="user-name">Username</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    <j:forEach items="${it.getAllConfigurations()}" var="configs" indexVar="i">
-                        <j:set var="isCreator" value="${it.isCurrentUserHasAccess(configs.getProjectName())}"/>
+                    <j:forEach indexVar="i" items="${it.getAllConfigurations()}" var="configs">
+                        <j:set value="${it.isCurrentUserHasAccess(configs.getProjectName())}" var="isCreator"/>
                         <tr height="25">
-                             <j:choose>
+                            <j:choose>
                                 <j:when test="${it.isJobCreated(configs.getProjectName())}">
-                                    <td class="projectName"><a href="../job/${configs.getProjectName()}">${configs.getProjectName()}</a></td>
+                                    <td class="projectName">
+                                        <a href="../job/${configs.getProjectName()}">${configs.getProjectName()}</a>
+                                    </td>
                                 </j:when>
                                 <j:otherwise>
-                                    <td class="projectName"><a href="#">${configs.getProjectName()}</a></td>
+                                    <td class="projectName">
+                                        <a href="#">${configs.getProjectName()}</a>
+                                    </td>
                                 </j:otherwise>
-                             </j:choose>
+                            </j:choose>
                             <td class="state">
-                                <label id="${configs.getState().toString()}" class="${configs.getState().getCSSClassName()}">${configs.getState().toString()}</label>
+                                <label class="${configs.getState().getCSSClassName()}" id="${configs.getState().toString()}">${configs.getState().toString()}</label>
                             </td>
                             <td class="state">${configs.getDate()}</td>
                             <td>
-                                <j:if test ="${configs.getState().toString() != 'Approved' &amp;&amp; configs.getState().toString() != 'Rejected'}">
+                                <j:if test="${configs.getState().toString() != 'Approved' &amp;&amp; configs.getState().toString() != 'Rejected'}">
                                     <j:if test="${isAdmin}">
                                         <j:if test="${configs.getState().toString() == 'For Deletion'}">
                                             <j:if test="${h.hasPermission(app.ADMINISTER)}">
-                                                <a href="#" onclick="deletePermanently(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Delete configuration permanently</a>
-                                                <a href="#" onclick="restore(this.name); return false;" name="${configs.getProjectName()}" class="approve-reject-link">Restore</a>
+                                                <a class="approve-reject-link" href="#" name="${configs.getProjectName()}" onclick="deletePermanently(this.name); return false;">Delete configuration permanently</a>
+                                                <a class="approve-reject-link" href="#" name="${configs.getProjectName()}" onclick="restore(this.name); return false;">Restore</a>
                                             </j:if>
                                         </j:if>
                                         <j:if test="${configs.getState().toString() != 'For Deletion'}">
-                                            <a href="create?name=${configs.getProjectName()}&amp;type=ApproveReject" class="approve-reject-link">Approve/Reject</a>
+                                            <a class="approve-reject-link" href="create?name=${configs.getProjectName()}&amp;type=ApproveReject">Approve/Reject</a>
                                         </j:if>
                                     </j:if>
                                 </j:if>
-
                                 <j:if test="${configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER) &amp;&amp; !configs.getJobUpdate()}">
-                                    <a href="#" onclick="createJob(this.name);" name="${configs.getProjectName()}" class="approve-reject-link">
-                                        <j:if test="${!it.isJobCreated(configs.getProjectName())}">
-                                            Create Job
+                                    <a class="approve-reject-link" href="#" name="${configs.getProjectName()}" onclick="createJob(this.name);">
+                                        <j:if test="${!it.isJobCreated(configs.getProjectName())}">Create Job
                                         </j:if>
-                                        <j:if test="${it.isJobCreated(configs.getProjectName())}">
-                                            Update Job
+                                        <j:if test="${it.isJobCreated(configs.getProjectName())}">Update Job
                                         </j:if>
                                     </a>
                                 </j:if>
-
                                 <j:if test="${h.hasPermission(app.ADMINISTER) &amp;&amp; it.isJobCreated(configs.getProjectName())}">
-                                    <a href="#" onclick="deleteJob(this.name);" name="delete_${configs.getProjectName()}" class="edit-link">Delete Job</a>
+                                    <a class="edit-link" href="#" name="delete_${configs.getProjectName()}" onclick="deleteJob(this.name);">Delete Job</a>
                                 </j:if>
-
                                 <j:if test="${(isCreator || h.hasPermission(app.ADMINISTER)) &amp;&amp; configs.getState().toString() != 'For Deletion'}">
-                                    <a href="create?name=${configs.getProjectName()}&amp;type=edit" class="edit-link">Edit</a>
-                                    <a href="#" onclick="setDeletion(this.name); return false;" class="delete-link" name="${configs.getProjectName()}">Delete</a>
+                                    <a class="edit-link" href="create?name=${configs.getProjectName()}&amp;type=edit">Edit</a>
+                                    <a class="delete-link" href="#" name="${configs.getProjectName()}" onclick="setDeletion(this.name); return false;">Delete</a>
                                 </j:if>
                                 <j:if test="${!isCreator &amp;&amp; configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
-                                    <a href="create?name=${configs.getProjectName()}&amp;type=view" class="edit-link">View</a>
+                                    <a class="edit-link" href="create?name=${configs.getProjectName()}&amp;type=view">View</a>
                                 </j:if>
-                                    <a href="#" onclick='copyConfiguration("${configs.getProjectName()}");' class="edit-link" >Copy</a>
-                                <span></span>
+                                <a class="edit-link" href="#" onclick="copyConfiguration(&quot;${configs.getProjectName()}&quot;);">Copy</a>
+                                <span/>
                             </td>
                             <td class="state">${configs.getFullNameCreator()}</td>
                         </tr>
                     </j:forEach>
                 </tbody>
             </table>
-
-            <div id="copyConfig" class="modal display-none">
+            <div class="modal display-none" id="copyConfig">
                 <div class="modal-content">
                     <div class="modal-header">
                         <span class="close" id="closeCopyConfig">×</span>
                         <h2 id="copyConfigHeader">Copy configuration</h2>
                     </div>
                     <div class="modal-body">
-
-                        <f:form method="post" action="copyConfig" id="copyConfigForm">
-                           <div class="user">
-                               <label>New configuration name </label>
-                               <input type="text" name="newConfigName" id="newConfigName" onchange="isCopyNameCorrect()"></input>
-                               <input type="hidden" name="copyConfigName" id="copyConfigName"/>
-                               <input type="submit" value="Copy" class="button-copy" onclick="return isCopyNameCorrect();"/>
-                           </div>
+                        <f:form action="copyConfig" id="copyConfigForm" method="post">
+                            <div class="user">
+                                <label>New configuration name </label>
+                                <input id="newConfigName" name="newConfigName" onchange="isCopyNameCorrect()" type="text"/>
+                                <input id="copyConfigName" name="copyConfigName" type="hidden"/>
+                                <input class="button-copy" onclick="return isCopyNameCorrect();" type="submit" value="Copy"/>
+                            </div>
                         </f:form>
                     </div>
                 </div>
             </div>
-
         </l:main-panel>
     </l:layout>
 </j:jelly>

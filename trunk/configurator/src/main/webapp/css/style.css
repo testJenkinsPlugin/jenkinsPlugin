@@ -403,7 +403,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     font-size: 14px;
 
 }
-.user-field, .add-user-field{
+.user-field, .add-user-field, .userStatus_new, .userStatus_deleted{
     margin-left: 120px;
     margin-top: 10px;
     margin-right: 10;
@@ -412,6 +412,14 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
 }
     .add-user-field{
         margin-left: 0;
+    }
+    .userStatus_new{
+        margin-left: 10;
+        color: green;
+    }
+    .userStatus_deleted{
+        margin-left: 5;
+        color: brown;
     }
 
 
@@ -489,11 +497,6 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
         color: brown;
     }
 
-.userStatus_new, .userStatus_deleted{
-    float: right; 
-    color: brown;
+.button-remove{
+    margin-left: 10;
 }
-    .userStatus_deleted{
-        float: right; 
-        color: green;
-    }

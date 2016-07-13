@@ -59,6 +59,8 @@ var configurator = (function () {
             jQuery("#preScript").val(t.responseObject().preScript);
             jQuery("#postScript").val(t.responseObject().postScript);
             jQuery("#comments").val(t.responseObject().comments);
+            jQuery("#regExp").val(t.responseObject().regExp);
+
             setScriptTypeSelect(t.responseObject().scriptType);
             var usersList = t.responseObject().usersList; 
             var isNewConfiguration = false;
@@ -104,11 +106,7 @@ var configurator = (function () {
                     jQuery("#userLabel").html("Created by:  " + t.responseObject());
                 })
             }
-            var dontUseBuildServer = t.responseObject().dontUseBuildServer;
-            if(dontUseBuildServer != null && dontUseBuildServer == true){
-                jQuery('#dontUseBuildServer').prop('checked', true);
-            }
-
+           
             if(t.responseObject().state != 'APPROVED'){
                 setDiffContent(name);
             }
@@ -131,8 +129,8 @@ var configurator = (function () {
             var postScript = t.responseObject().postScript;
             var email = t.responseObject().email;
             var configEmail = t.responseObject().configEmail;
-            var dontUseBuildServer = t.responseObject().dontUseBuildServer;
             var cleanWorkspace = t.responseObject().cleanWorkspace;
+            var regExp = t.responseObject().regExp;
 
 
             if(scm != null){
@@ -164,20 +162,11 @@ var configurator = (function () {
                 jQuery("#postScript_old").text(postScript);
                 jQuery("#postScript_old").removeClass('display-none');
             }
+            if(regExp != null){
+                jQuery('#regExp_old').text(regExp)
+                jQuery('#regExp_old').removeClass('display-none');
+            }
             if(cleanWorkspace != null){
-                jQuery('#cleanWorkspace_old').text('some text')
-                jQuery('#cleanWorkspace_old').removeClass('display-none')
-            }
-            if(dontUseBuildServer != null){
-                if(dontUseBuildServer==true){
-                    jQuery('#dontUseBuildServer_old').text('checked');
-                }
-                else{
-                    jQuery('#dontUseBuildServer_old').text('unchecked');
-                }
-                jQuery('#dontUseBuildServer_old').removeClass('display-none');
-            }
-             if(cleanWorkspace != null){
                 if(cleanWorkspace==true){
                     jQuery('#cleanWorkspace_old').text('checked');
                 }
@@ -663,9 +652,9 @@ var configurator = (function () {
     }
 
 
-    var emailHelp = function (emailImageHelpName) {
-        var helpBlock = jQuery("#" + emailImageHelpName + "-block");
-        var help = jQuery("#" + emailImageHelpName + "-text");    
+    var fieldHelp = function (fieldImageHelpName) {
+        var helpBlock = jQuery("#" + fieldImageHelpName + "-block");
+        var help = jQuery("#" + fieldImageHelpName + "-text");    
         if (helpBlock.attr("class") == "help-view") {
             helpBlock.addClass('display-none');
             help.addClass('display-none');
@@ -925,7 +914,7 @@ var configurator = (function () {
         deleteFromHidden:deleteFromHidden,
         closeElement:closeElement,
         disableOtherConfig:disableOtherConfig,
-        emailHelp:emailHelp,
+        fieldHelp:fieldHelp,
         commentCheckboxChange:commentCheckboxChange,
         deleteUser:deleteUser,
         addUserAccess:addUserAccess,
