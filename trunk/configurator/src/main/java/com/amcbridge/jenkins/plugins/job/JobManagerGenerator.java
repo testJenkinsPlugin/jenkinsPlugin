@@ -322,7 +322,7 @@ public class JobManagerGenerator {
         jed = new JobMailer();
         setElement(jed, doc, config);
 
-        jed = new JobVersionFile();
+        jed = new JobVersionFile(config.getRegExp());
         setElement(jed, doc, config);
 
         jed = new JobAssignedNode();

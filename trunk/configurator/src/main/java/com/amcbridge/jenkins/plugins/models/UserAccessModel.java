@@ -2,9 +2,6 @@ package com.amcbridge.jenkins.plugins.models;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-/**
- * Created by OKravets on 5/10/2016.
- */
 public class UserAccessModel {
     private String userName;
 

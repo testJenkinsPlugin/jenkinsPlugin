@@ -88,7 +88,7 @@
 
                     <f:checkbox name="isEmail" class="check-box" id="isEmail" onclick="configurator.emailCheckBoxChange(this)" title="Job E-mails notifications"/>
                     <input type="text" field="email" onblur="configurator.validateMail(this)" name="email" disabled="false" id="email" class="email-notification"/>
-                    <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.emailHelp(name)" name="email-help" class="image"/>
+                    <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.fieldHelp(name)" name="email-help" class="image"/>
                 </div>
                 <div id="email_Error" class="error-block display-none" style="margin-left: 205px;">
                     <img src="../images/16x16/error.png"/>
@@ -108,7 +108,7 @@
                         <label>Configuration E-mails notifications</label>
                     </div>
                     <input type="text" field="email" onblur="configurator.validateMail(this);" name="configEmail" id="configEmail" class="textbox"/>
-                    <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.emailHelp(name)" name="configEmail-help" class="image"/>
+                    <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.fieldHelp(name)" name="configEmail-help" class="image"/>
                 </div>
                 <div id="configEmail_Error" class="error-block display-none" style="margin-left: 205px;">
                     <img src="../images/16x16/error.png"/>
@@ -120,6 +120,22 @@
                      Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when configuration state changes.
                 </label>
                 </div>
+
+          <label id="regExp_old" class="diff_value_header display-none"></label>
+                <div class="div-textinput">
+                    <div class="div-project-name">
+                        <label>Regular expression to parse build version</label>
+                    </div>
+                    <input type="text" name="regExp" id="regExp" class="textbox"/>
+                    <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.fieldHelp(name)" name="regExp-help" class="image"/>
+                 </div>
+
+                 <div id="regExp-help-block" class="help-view display-none">
+                    <label id="regExp-help-text" class="helptext display-none">
+                        Description setter plugin regular expression field. If configured, the regular expression will be applied to each line in the build log. A description will be set based on the first match.
+                    </label>
+                 </div>
+
 <label id="cleanWorkspace_old" class="diff_value_header display-none"></label>
                 <j:if test="${it.isWsPluginInstalled()}">
 

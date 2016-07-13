@@ -30,6 +30,7 @@ public class BuildConfigurationModel {
     private String comments;
     private List<UserAccessModel> userWithAccess;
     private boolean cleanWorkspace;
+    private String regExp;
 
     public BuildConfigurationModel() {
         initCreator();
@@ -194,4 +195,11 @@ public class BuildConfigurationModel {
         this.cleanWorkspace = cleanWorkspace;
     }
 
+    public String getRegExp() {
+        return regExp;
+    }
+
+    public void setRegExp(String regExp) {
+        this.regExp = regExp;
+    }
 }

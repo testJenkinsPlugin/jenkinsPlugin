@@ -205,15 +205,25 @@
                 <div class="project-to-build-label">
                     <input type="checkbox" class="check-box" name="isVersionFiles" onclick="configurator.versionFileCheckBoxChange(this)" />
                     <label class="div-label">Version Files</label>
+
                 </div>
                 <input type="text" name="versionFilesPath" onblur="configurator.checkPath(this)" class="textbox hidden"/>
                 <input type="button" onclick="configurator.addPathFiles(this)" class="add-button hidden"  value="+" name = "addVersion" />
+                <img src="/static/c2e30787/images/16x16/help.png" onClick="configurator.imageHelp(this)" class="image" name="versionFiles-help"/>
             </j:if>
             <div error="v_files_error" class="error-block display-none" name="versionFilesPath-block">
                 <img src="../images/16x16/error.png"/>
                 <label error="v_files_error_exp"> Not correct path</label>
             </div>
-            
+
+            <div class="help-view display-none" name="versionFiles-help-block">
+                <lebel class="helptext display-none" name="versionFiles-help-text">
+                    If configured, build description will be based on the version from version file, otherwise on git hash or svn revision.
+                </lebel>
+            </div>
+
+
+
             <j:if test="${view.IsVersionFiles()}">
                 <div class="div-legend" dir="fieldSetDiv">
                     <fieldset>
