@@ -88,7 +88,7 @@ public final class BuildConfigurator implements RootAction {
 
             User user = User.current();
             boolean isCopyConfigOk = (modelToCopyName != null) && (!modelToCopyName.isEmpty());
-            boolean isNewConfigOk = (modelNewName != null) && (!modelNewName.isEmpty());
+            boolean isNewConfigOk = (modelNewName != null) && (!modelNewName.isEmpty()) && (isNameFree(modelNewName));
             if (user != null || isCopyConfigOk || isNewConfigOk) {
                 String username;
                 username = BuildConfigurationManager.getCurrentUserID();

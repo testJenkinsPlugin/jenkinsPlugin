@@ -154,15 +154,17 @@
                     <textarea cols="60" id="comments" name="comments" rows="10"/>
                 </div>
                 <br/>
-                <div>
-                    <label>User's with access to configuration:</label>
-                    <br/>
-                    <br/>
-                    <label class="div-label">add user:</label>
-                    <input class="add-user-field" id="addUserField" type="text"/>
-                    <input class="add-button" id="addUserButton" onclick="configurator.addNewUserAccess();" type="button" value="+"/>
+                <div class="userBorder">
+                    <div>
+                        <label>Users with access to configuration:</label>
+                        <br/>
+                        <br/>
+                        <label class="div-label">Add user:</label>
+                        <input class="add-user-field" id="addUserField" type="text"/>
+                        <input class="add-button" id="addUserButton" onclick="configurator.addNewUserAccess();" type="button" value="+"/>
+                    </div>
+                    <div id="usersList" class = "usersList"/>
                 </div>
-                <div id="usersList"/>
                 <div class="button-container">
                     <input class="button confirm" id="save" name="save" onclick="return configurator.isValidForm();" type="submit" value="Save"/>
                     <span class="span"/>

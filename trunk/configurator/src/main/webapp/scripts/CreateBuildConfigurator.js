@@ -344,6 +344,7 @@ var configurator = (function () {
         buildConfiguration.getUserAccessView(
             function (t) {
                var iDiv = document.createElement("div");
+               jQuery(iDiv).addClass('userDiv');
                 iDiv.innerHTML = t.responseObject().html;
                 jQuery(iDiv).find("[name=userName]").val(uName);
                 jQuery("#usersList").append(iDiv); 

@@ -404,7 +404,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
 
 }
 .user-field, .add-user-field, .userStatus_new, .userStatus_deleted{
-    margin-left: 120px;
+    margin-left: 5;
     margin-top: 10px;
     margin-right: 10;
     margin-bottom: 10;
@@ -498,5 +498,41 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     }
 
 .button-remove{
-    margin-left: 10;
+        margin-left: 10;
+    float: right;
+}
+
+.userView, .userViewNEW, .userViewDELETED{
+    background-color: darkseagreen;
+    height: 25;
+  
+    padding: 5;
+    margin: 5;
+    display: table-cell;
+    float: left;
+}
+    .userViewNEW{
+        background-color: bisque;
+    }
+    .userViewDELETED{
+        background-color: #f77979;
+    }
+
+.usersList{
+    max-width: 800;
+    display: block;
+    overflow: hidden;
+}
+
+.userInput{
+    background:rgba(0,0,0,0);
+    border:none;
+    margin: 0;
+    width: 166;
+}
+
+.userBorder{
+    border: 3px solid rgba(128, 128, 128, 0.39);
+    width: 655px;
+    padding: 5px;
 }
