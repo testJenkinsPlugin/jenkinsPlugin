@@ -46,7 +46,7 @@ var configurator = (function () {
         });
 
         jQuery("#cancelButton").click(function () {
-            location.href = '../BuildConfigurator';
+            location.href = './';
         })
     };
 
