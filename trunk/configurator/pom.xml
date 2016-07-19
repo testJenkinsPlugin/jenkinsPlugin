@@ -38,8 +38,18 @@
 
     <dependencies>
 
-	
-	<dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci.main</groupId>
+            <artifactId>jenkins-war</artifactId>
+            <type>war</type>
+            <version>2.13</version>
+            <scope>test</scope>
+        </dependency>
+
+
+
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>mailer</artifactId>
             <version>1.5</version>
@@ -128,12 +138,12 @@
             <artifactId>xstream</artifactId>
             <version>1.4.7</version>
         </dependency>
-<!--
-        <dependency>
-            <groupId>com.amcbridge.jenkins.plugins</groupId>
-            <artifactId>amcbridge-jenkins-plugins-lib</artifactId>
-            <version>1.0</version>
-        </dependency>-->
+        <!--
+                <dependency>
+                    <groupId>com.amcbridge.jenkins.plugins</groupId>
+                    <artifactId>amcbridge-jenkins-plugins-lib</artifactId>
+                    <version>1.0</version>
+                </dependency>-->
 
         <dependency>
             <groupId>org.kohsuke</groupId>
@@ -179,14 +189,13 @@
 
         </plugins>
     </build>
-<!--                <profiles>
-                    <profile>
-                    
-                        <id>jenkins_debug</id>
-                        <build>
-                            <directory>work/plugins</directory>
-                        </build>
-                    </profile>
-                </profiles>-->
-    
+<!--    <profiles>
+        <profile>
+
+            <id>jenkins_debug</id>
+            <build>
+                <directory>work/plugins</directory>
+            </build>
+        </profile>
+    </profiles>-->
 </project>
