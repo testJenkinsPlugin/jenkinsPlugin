@@ -35,7 +35,7 @@
             </table>
             <table class="config table" id="table">
                 <thead>
-                    <tr bgcolor="#eee" height="30">
+                    <tr bgcolor="#eeeeee" height="30">
                         <th class="project-name-column">Project name</th>
                         <th class="state-column">State</th>
                         <th class="last-update-date-column">Last update date</th>

@@ -85,7 +85,8 @@
 
 .div-textinput {
     margin-top: 15px;
-    height: 30px;
+    /* height: 30px; */
+    overflow: hidden;
 }
 
         .div-textinput label {
@@ -172,7 +173,7 @@ div[name='builders'], div[name='builders_deleted'] {
 .div-drop-down, .args, .builder-config{
     float: left;
     margin-top: 10px;
-    width: 173px;
+    /* width: 173px; */
     margin-left: 15px;
 }
     .builder-config{
@@ -236,7 +237,6 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
         .button-container .button.reject {
             margin-top: 10px;
             margin-left: 10px;
-            font-size: 15px;
             display: none;
         }
 
@@ -480,6 +480,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
 .diff_value{
     margin-left: 150;
     color:brown;
+    width: 330 !important;
 }
 
 .diff_value_header{
@@ -499,4 +500,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
 
 .button-remove{
     margin-left: 10;
+}
+.comments{
+    margin-left: 120px;
 }

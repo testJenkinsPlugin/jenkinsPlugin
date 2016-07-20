@@ -14,7 +14,7 @@
                 <label style=" float: right; color: brown;">${view_old_builder.getBuilder()}</label>
                 <br/>
             </j:if>
-            <label>Builder:</label>
+            <label>Builder: </label>
             <select name="builder" style="float: right;">
                 <j:forEach indexVar="i" items="${builders}" var="build">
                     <j:if test="${build.getValue() == view.getBuilder()}">
@@ -31,7 +31,7 @@
                 <label style="float: right; color: brown;">${view_old_builder.getPlatform()}</label>
                 <br/>
             </j:if>
-            <label>Platform:</label>
+            <label>Platform: </label>
             <select name="platform" style="float: right;">
                 <j:forEach indexVar="i" items="${platforms}" var="platform">
                     <j:if test="${platform == view.getPlatform()}">

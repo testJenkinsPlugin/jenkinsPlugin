@@ -100,7 +100,7 @@
                     <label class="diff_value">&quot;${artifact}&quot;</label>
                     <br/>
                 </j:forEach>
-                <br/>
+
             </j:if>
             <div class="project-to-build-label">
                 <label class="div-file-chooser-label">Path to artifacts:</label>
@@ -142,7 +142,6 @@
                     <label class="diff_value">&quot;${versionFile}&quot;</label>
                     <br/>
                 </j:forEach>
-                <br/>
             </j:if>
             <j:if test="${view_old != null and !view_old.IsVersionFiles()}">
                 <label class="diff_value">Version files disabled</label>

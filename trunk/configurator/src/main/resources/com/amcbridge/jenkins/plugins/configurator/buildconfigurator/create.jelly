@@ -148,10 +148,11 @@
                 </div>
                 <br/>
                 <div>
-                    <f:checkbox class="div-label" id="isComment" onclick="configurator.commentCheckboxChange(this)" title="Comments" type="checkbox"/>
-                    <br/>
-                    <label class="div-label"/>
-                    <textarea cols="60" id="comments" name="comments" rows="10"/>
+                    <f:checkbox class="check-box" id="isComment" onclick="configurator.commentCheckboxChange(this)" title="Comments" type="checkbox"/>
+                    <div>
+                        <br/>
+                        <textarea cols="60" id="comments" name="comments" rows="10" class="comments"/>
+                    </div>
                 </div>
                 <br/>
                 <div>
