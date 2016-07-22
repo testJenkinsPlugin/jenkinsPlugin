@@ -84,7 +84,8 @@
 }
 
 .div-textinput {
-    margin-top: 15px;
+    margin-top: 2px;
+    margin-bottom: 15px;
     /* height: 30px; */
     overflow: hidden;
 }
@@ -210,6 +211,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     width: 655px;
     border: 3px solid rgba(128, 128, 128, 0.79);
     padding-left: 30px;
+    padding-top: 10px;
 }
     div[name='projectToBuild_deleted']{
          border: 3px solid red;
@@ -251,6 +253,9 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     padding: 2px 5px;
     background: rgba(128, 128, 128, 0.39);
 }
+    .close-project-to-build{
+        margin-top: -10;
+    }
 
 
 .help-view{
@@ -504,3 +509,19 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
 .comments{
     margin-left: 120px;
 }
+
+.builder-platform-container{
+    overflow: hidden;
+    position: relative;
+    min-height: 40px;
+}
+
+
+.builder, .platform{
+    position: absolute;
+    bottom: 0;
+}
+
+    .platform{
+        left: 177px;
+    }

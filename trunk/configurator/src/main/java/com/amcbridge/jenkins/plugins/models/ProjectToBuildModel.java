@@ -111,9 +111,13 @@ public class ProjectToBuildModel {
             res = splittedCredentials[credentialsNamePosition].trim();
         }
         return res;
-
     }
 
+    public boolean isListsEqual(String[] array1, String[] array2) {
+        List<String> list1 = Arrays.asList(array1);
+        List<String> list2 = Arrays.asList(array2);
+        return list1.containsAll(list2) && list2.containsAll(list1);
+    }
 
     public String[] getVersionFiles() {
         return versionFiles;

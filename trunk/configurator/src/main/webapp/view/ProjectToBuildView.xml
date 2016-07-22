@@ -9,7 +9,7 @@
             <label class="projectToBuild_status_new">NEW! </label>
         </j:if>
         <div class="div-textinput">
-            <j:if test="${view_old != null and view_old.getProjectUrl() != null}">
+            <j:if test="${view_old != null and view_old.getProjectUrl() != null and !view_old.getProjectUrl().equals(view.getProjectUrl())}">
                 <label class="diff_value">&quot;${view_old.getProjectUrl()}&quot;</label>
                 <br/>
             </j:if>
@@ -21,7 +21,7 @@
                 <img src="../images/16x16/error.png"/>Not correct url</div>
         </div>
         <div class="div-textinput">
-            <j:if test="${view_old != null and view_old.getCredentials() != null}">
+            <j:if test="${view_old != null and view_old.getCredentials() != null and !view_old.getCredentials().equals(view.getCredentials())}">
                 <label class="diff_value">&quot;${view_old.getCredentialsNameById(view_old.getCredentials())}&quot;</label>
                 <br/>
             </j:if>
@@ -51,7 +51,7 @@
             </div>
         </div>
         <div class="div-textinput">
-            <j:if test="${view_old != null and view_old.getBranchName() != null}">
+            <j:if test="${view_old != null and view_old.getBranchName() != null and !view_old.getBranchName().equals(view.getBranchName())}">
                 <label class="diff_value">&quot;${view_old.getBranchName()}&quot;</label>
                 <br/>
             </j:if>
@@ -61,7 +61,7 @@
             </div>
         </div>
         <div class="div-textinput">
-            <j:if test="${view_old != null and view_old.getLocalDirectoryPath() != null}">
+            <j:if test="${view_old != null and view_old.getLocalDirectoryPath() != null and !view_old.getLocalDirectoryPath().equals(view.getLocalDirectoryPath())}">
                 <label class="diff_value">&quot;${view_old.getLocalDirectoryPath()}&quot; </label>
                 <br/>
             </j:if>
@@ -78,7 +78,7 @@
             </lebel>
         </div>
         <div class="div-textinput">
-            <j:if test="${view_old != null and view_old.getFileToBuild() != null}">
+            <j:if test="${view_old != null and view_old.getFileToBuild() != null and  !view_old.getFileToBuild().equals(view.getFileToBuild())}">
                 <label class="diff_value">&quot;${view_old.getFileToBuild()}&quot;</label>
                 <br/>
             </j:if>
@@ -95,7 +95,7 @@
             </lebel>
         </div>
         <div class="div-project-to-build">
-            <j:if test="${view_old != null and view_old.getArtefacts() != null}">
+            <j:if test="${view_old != null and view_old.getArtefacts() != null and !view.isListsEqual(view.getArtefacts(), view_old.getArtefacts())}">
                 <j:forEach indexVar="i" items="${view_old.getArtefacts()}" var="artifact">
                     <label class="diff_value">&quot;${artifact}&quot;</label>
                     <br/>
@@ -103,7 +103,7 @@
 
             </j:if>
             <div class="project-to-build-label">
-                <label class="div-file-chooser-label">Path to artifacts:</label>
+                <label class="div-file-chooser-label">Path to artifacts1:</label>
             </div>
             <div>
                 <input class="textbox" name="pathToArtefacts" onblur="configurator.checkPath(this)" type="text"/>
@@ -137,7 +137,7 @@
             </div>
         </div>
         <div class="div-project-version-file">
-            <j:if test="${view_old != null and view_old.getVersionFiles() != null and view_old.IsVersionFiles()}">
+            <j:if test="${view_old != null and view_old.getVersionFiles() != null and view_old.IsVersionFiles() and !view.isListsEqual(view_old.getVersionFiles(), view.getVersionFiles())}">
                 <j:forEach indexVar="i" items="${view_old.getVersionFiles()}" var="versionFile">
                     <label class="diff_value">&quot;${versionFile}&quot;</label>
                     <br/>

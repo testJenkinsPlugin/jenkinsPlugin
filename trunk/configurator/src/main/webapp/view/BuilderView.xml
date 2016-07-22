@@ -9,43 +9,45 @@
         <j:if test="${builderStatus.equals('NEW')}">
             <label class="projectToBuild_status_new">NEW! </label>
         </j:if>
-        <div class="div-drop-down">
-            <j:if test="${view_old_builder != null and view_old_builder.getBuilder() != null}">
-                <label style=" float: right; color: brown;">${view_old_builder.getBuilder()}</label>
-                <br/>
-            </j:if>
-            <label>Builder: </label>
-            <select name="builder" style="float: right;">
-                <j:forEach indexVar="i" items="${builders}" var="build">
-                    <j:if test="${build.getValue() == view.getBuilder()}">
-                        <option selected="selected" value="${build.getValue()}">${build.getValue()}</option>
-                    </j:if>
-                    <j:if test="${build.getValue() != view.getBuilder()}">
-                        <option value="${build.getValue()}">${build.getValue()}</option>
-                    </j:if>
-                </j:forEach>
-            </select>
-        </div>
-        <div class="div-drop-down">
-            <j:if test="${view_old_builder != null and view_old_builder.getPlatform() != null}">
-                <label style="float: right; color: brown;">${view_old_builder.getPlatform()}</label>
-                <br/>
-            </j:if>
-            <label>Platform: </label>
-            <select name="platform" style="float: right;">
-                <j:forEach indexVar="i" items="${platforms}" var="platform">
-                    <j:if test="${platform == view.getPlatform()}">
-                        <option selected="selected" value="${platform}">${platform}</option>
-                    </j:if>
-                    <j:if test="${platform != view.getPlatform()}">
-                        <option value="${platform}">${platform}</option>
-                    </j:if>
-                </j:forEach>
-            </select>
+        <div class="builder-platform-container">
+            <div class="div-drop-down builder">
+                <j:if test="${view_old_builder != null and view_old_builder.getBuilder() != null and !view_old_builder.getBuilder().equals(view.getBuilder())}">
+                    <label style=" float: right; color: brown;">${view_old_builder.getBuilder()}</label>
+                    <br/>
+                </j:if>
+                <label>Builder: </label>
+                <select name="builder" style="float: right;">
+                    <j:forEach indexVar="i" items="${builders}" var="build">
+                        <j:if test="${build.getValue() == view.getBuilder()}">
+                            <option selected="selected" value="${build.getValue()}">${build.getValue()}</option>
+                        </j:if>
+                        <j:if test="${build.getValue() != view.getBuilder()}">
+                            <option value="${build.getValue()}">${build.getValue()}</option>
+                        </j:if>
+                    </j:forEach>
+                </select>
+            </div>
+            <div class="div-drop-down platform">
+                <j:if test="${view_old_builder != null and view_old_builder.getPlatform() != null and !view_old_builder.getPlatform().equals(view.getPlatform())}">
+                    <label style="float: right; color: brown;">${view_old_builder.getPlatform()}</label>
+                    <br/>
+                </j:if>
+                <label>Platform: </label>
+                <select name="platform" style="float: right;">
+                    <j:forEach indexVar="i" items="${platforms}" var="platform">
+                        <j:if test="${platform == view.getPlatform()}">
+                            <option selected="selected" value="${platform}">${platform}</option>
+                        </j:if>
+                        <j:if test="${platform != view.getPlatform()}">
+                            <option value="${platform}">${platform}</option>
+                        </j:if>
+                    </j:forEach>
+                </select>
+            </div>
         </div>
         <br/>
         <div class="builder-config">
-            <j:if test="${view_old_builder != null}">
+            <j:if test="${view_old_builder != null and view_old_builder.getConfigurationsAsString()!= null and !view_old_builder.getConfigurationsAsString().equals(view.getConfigurationsAsString())}">
                 <label>${view_old_builder.getConfigurationsAsString()}</label>
                 <br/>
             </j:if>
@@ -72,7 +74,7 @@
             <div class="args">
                 <label>Command line args:</label>
                 <br/>
-                <j:if test="${view_old_builder != null and view_old_builder.getBuilderArgs() != null}">
+                <j:if test="${view_old_builder != null and view_old_builder.getBuilderArgs() != null and !view_old_builder.getBuilderArgs().equals(view.getBuilderArgs())}">
                     <label style="color: brown;">&quot;${view_old_builder.getBuilderArgs()}&quot;</label>
                     <br/>
                 </j:if>

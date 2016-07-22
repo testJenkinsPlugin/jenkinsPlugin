@@ -108,21 +108,18 @@ var configurator = (function () {
             }
            
             if(t.responseObject().state != 'APPROVED'){
-                setDiffContent(name);
+                setDiffContent(name,t);
             }
         })
     }
 
-    function setDiffContent(name){
+    function setDiffContent(name, currentConfig){
         buildConfiguration.getDiffConfiguration(name, function (t) {
             jQuery("#preScript_old").prop('disabled', true);
             jQuery("#postScript_old").prop('disabled', true);
-          
             if (t.responseObject() == null || t.responseObject().projectName == ""){
                 return;
             }
-
-
             var projectName = t.responseObject().projectName;
             var scm = t.responseObject().scm;
             var preScript = t.responseObject().preScript;
@@ -133,40 +130,40 @@ var configurator = (function () {
             var regExp = t.responseObject().regExp;
 
 
-            if(scm != null){
+            if(scm && scm != currentConfig.responseObject().scm){
                 jQuery("#typeSCM_old").text(scm);
                 jQuery("#typeSCM_old").removeClass('display-none');
             }
             
-            if(email){
+            if(email &&  email != currentConfig.responseObject().email){
                 jQuery("#isEmail_old").text(email);
                 jQuery("#isEmail_old").removeClass('display-none');
             }
 
-            if(configEmail){
+            if(configEmail && configEmail != currentConfig.responseObject().configEmail){
                 jQuery("#configEmail_old").text(configEmail);
                 jQuery("#configEmail_old").removeClass('display-none');
             }
 
-
-            if(preScript != null){
+            if(preScript && preScript != currentConfig.responseObject().preScript){
                 jQuery("#preScript_old").text(preScript);
                  jQuery("#preScript_old").removeClass('display-none');
             }
-            if(postScript != null){
+            if(postScript && postScript != currentConfig.responseObject().postScript){
                 jQuery("#postScript_old").text(postScript);
                 jQuery("#postScript_old").removeClass('display-none');
             }
 
-             if(postScript != null){
+        /*     if(postScript != null){
                 jQuery("#postScript_old").text(postScript);
                 jQuery("#postScript_old").removeClass('display-none');
-            }
-            if(regExp != null){
+            }*/
+
+            if(regExp && regExp != currentConfig.responseObject().regExp){
                 jQuery('#regExp_old').text(regExp)
                 jQuery('#regExp_old').removeClass('display-none');
             }
-            if(cleanWorkspace != null){
+            if(cleanWorkspace  && cleanWorkspace != currentConfig.responseObject().cleanWorkspace){
                 if(cleanWorkspace==true){
                     jQuery('#cleanWorkspace_old').text('checked');
                 }
