@@ -1,16 +1,22 @@
 <?jelly escape-by-default='true' encoding='UTF-8'?>
 <j:jelly xmlns:d="jelly:define" xmlns:f="/lib/form" xmlns:g="glide" xmlns:i="jelly:fmt" xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:p="/lib/hudson/project" xmlns:st="jelly:stapler" xmlns:t="/lib/hudson">
-    <div name="userWithAccess${userSuffix}">
-        <input class="user-field" name="userName" type="text" value="${userName}"/>
-        <j:if test="${userStatus.equals('DELETED')}">
-            <label class="userStatus_deleted">DELETED</label>
-        </j:if>
-        <j:if test="${!userStatus.equals('DELETED')}">
-            <input class="button-remove" onclick="configurator.deleteUser(this);" type="button" value="remove"/>
-            <j:if test="${userStatus.equals('NEW')}">
-                <label class="userStatus_new">NEW</label>
+   <div>
+        <div name="userWithAccess${userSuffix}" class = "userView${userStatus}">
+            <input class="user-field userInput" name="userName" type="text" value="${userName}"/>
+
+            <j:if test="${userStatus.equals('DELETED')}">
+                <label class="button-remove" type="button" > DELETED </label>
             </j:if>
-        </j:if>
+
+            <j:if test="${userStatus.equals('NEW')}">
+                <label> NEW</label>
+                <label class="button-remove" onclick="configurator.deleteUser(this);" type="button" >| X </label>
+            </j:if>
+
+            <j:if test="${!userStatus.equals('DELETED') and !userStatus.equals('NEW')}">
+                <label class="button-remove" onclick="configurator.deleteUser(this);" type="button" > | X </label>
+            </j:if>
+        </div>
     </div>
     <j:forEach indexVar="i" items="s" var="config"/>
 </j:jelly>
