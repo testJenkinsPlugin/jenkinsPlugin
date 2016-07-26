@@ -31,6 +31,9 @@ public class BuildConfigurationModel {
     private List<UserAccessModel> userWithAccess;
     private boolean cleanWorkspace;
     private String regExp;
+    private String pollSCMTrigger;
+    private String buildPeriodicallyTrigger;
+    private boolean buildOnCommitTrigger;
 
     public BuildConfigurationModel() {
         initCreator();
@@ -201,5 +204,29 @@ public class BuildConfigurationModel {
 
     public void setRegExp(String regExp) {
         this.regExp = regExp;
+    }
+
+    public String getPollSCMTrigger() {
+        return pollSCMTrigger;
+    }
+
+    public void setPollSCMTrigger(String pollSCMTrigger) {
+        this.pollSCMTrigger = pollSCMTrigger;
+    }
+
+    public String getBuildPeriodicallyTrigger() {
+        return buildPeriodicallyTrigger;
+    }
+
+    public void setBuildPeriodicallyTrigger(String buildPeriodicallyTrigger) {
+        this.buildPeriodicallyTrigger = buildPeriodicallyTrigger;
+    }
+
+    public boolean isBuildOnCommitTrigger() {
+        return buildOnCommitTrigger;
+    }
+
+    public void setBuildOnCommitTrigger(boolean buildOnCommitTrigger) {
+        this.buildOnCommitTrigger = buildOnCommitTrigger;
     }
 }

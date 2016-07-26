@@ -551,5 +551,17 @@ public final class BuildConfigurator implements RootAction {
         }
     }
 
+    @JavaScriptMethod
+    public String getHelpMessage(String name) {
+        Properties prop = new Properties();
+        try (InputStream inputStream = new FileInputStream(BuildConfigurationManager.getJenkins().getRootPath() + "/plugins/build-configurator/config/HelpMessage.properties")) {
+            prop.load(inputStream);
+            return prop.getProperty(name);
+        } catch (Exception ex) {
+            LOGGER.error("Error loading help properties", ex);
+            return "Error getting help message";
+        }
+    }
+
 }
 

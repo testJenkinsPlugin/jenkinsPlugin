@@ -258,7 +258,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     }
 
 
-.help-view{
+.help-view, .help-view-wide{
     width: 480px;
     margin-top: 7px;
     display: block;
@@ -267,6 +267,9 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     padding: 1em;
     margin-bottom: 1em;
 }
+    .help-view-wide{
+        width: 655px;
+    }
 
 .helptext {
     font-family: Verdana, Helvetica, sans serif;
@@ -274,9 +277,13 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     display: block;
 }
 
-.image {
+.image, .image-trigger {
     margin-left: 10px;
 }
+    .image-trigger{
+        position: relative;
+        bottom: 7px;        
+    }
 
 .error-block{
     margin-left: 150px;
@@ -301,7 +308,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
 
 .title-header {
     width: 600px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .label-add-view {
@@ -488,11 +495,14 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     width: 330 !important;
 }
 
-.diff_value_header{
+.diff_value_header, .diff_value_header_checkbox{
     margin-left: 210;
     color: brown;
-
 }
+    .diff_value_header_checkbox{
+        margin-left: 30px;        
+    }
+
 .projectToBuild_status_new, .projectToBuild_status_deleted{
     float: right; 
     margin-top: 10; 

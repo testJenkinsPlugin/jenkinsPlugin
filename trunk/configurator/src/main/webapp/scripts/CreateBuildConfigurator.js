@@ -5,7 +5,6 @@ var projectNumber = 0;
 var configurator = (function () {
     var initPage = function () {
 
-
         var parameters = document.location.search.substr(1);
         if (parameters.length != 0) {
             var projectName = getParameterValue("name");
@@ -34,6 +33,7 @@ var configurator = (function () {
             jQuery("#formType").val('CREATE');
             projectNumber = 0;
             initCommentCheckbox(false);
+            jQuery('#pollSCMTrigger').val('H * * * *');
         }
         buildConfiguration.loadCreateNewBuildConfiguration(function (t) {
             if (jQuery("#formType").val() == "CREATE") {
@@ -60,6 +60,8 @@ var configurator = (function () {
             jQuery("#postScript").val(t.responseObject().postScript);
             jQuery("#comments").val(t.responseObject().comments);
             jQuery("#regExp").val(t.responseObject().regExp);
+            jQuery("#pollSCMTrigger").val(t.responseObject().pollSCMTrigger);
+            jQuery("#buildPeriodicallyTrigger").val(t.responseObject().buildPeriodicallyTrigger);
 
             setScriptTypeSelect(t.responseObject().scriptType);
             var usersList = t.responseObject().usersList; 
@@ -77,7 +79,6 @@ var configurator = (function () {
                     jQuery("#" + bmc[i].id).prop('checked', false);
                 }
             }
-
             for (var i = 0; i < bmcValue.length; i++) {
                 if (jQuery(bmcValue[i]) != null) {
                     document.getElementById(bmcValue[i]).checked = true;
@@ -98,7 +99,14 @@ var configurator = (function () {
             var cleanWorkspace = t.responseObject().cleanWorkspace;
             if(cleanWorkspace != null &&  cleanWorkspace == false){
                 jQuery("#cleanWorkspace").prop('checked', false);
+            }
+            var buildOnCommitTriggerValue = t.responseObject().buildOnCommitTrigger;
             
+            if (buildOnCommitTrigger == null || buildOnCommitTriggerValue) {
+                jQuery('#buildOnCommitTrigger').prop('checked', true);
+            }
+            else {
+                jQuery('#buildOnCommitTrigger').prop('checked', false);    
             }
 
             if (t.responseObject().creator != null) {
@@ -117,6 +125,8 @@ var configurator = (function () {
         buildConfiguration.getDiffConfiguration(name, function (t) {
             jQuery("#preScript_old").prop('disabled', true);
             jQuery("#postScript_old").prop('disabled', true);
+            jQuery("#pollSCMTrigger_old").prop('disabled', true);
+            jQuery("#buildPeriodicallyTrigger_old").prop('disabled', true);
             if (t.responseObject() == null || t.responseObject().projectName == ""){
                 return;
             }
@@ -128,39 +138,35 @@ var configurator = (function () {
             var configEmail = t.responseObject().configEmail;
             var cleanWorkspace = t.responseObject().cleanWorkspace;
             var regExp = t.responseObject().regExp;
+            var pollSCMTrigger = t.responseObject().pollSCMTrigger;
+            var buildPeriodicallyTrigger = t.responseObject().buildPeriodicallyTrigger;
+            var buildOnCommitTrigger = t.responseObject().buildOnCommitTrigger;
 
-
-            if(scm && scm != currentConfig.responseObject().scm){
-                jQuery("#typeSCM_old").text(scm);
+            if(scm != null && scm != currentConfig.responseObject().scm){
+                jQuery("#typeSCM_old").text('\"' + scm + '\"');
                 jQuery("#typeSCM_old").removeClass('display-none');
             }
             
-            if(email &&  email != currentConfig.responseObject().email){
-                jQuery("#isEmail_old").text(email);
+            if(email != null &&  email != currentConfig.responseObject().email){
+                jQuery("#isEmail_old").text('\"' + email + '\"');
                 jQuery("#isEmail_old").removeClass('display-none');
             }
 
-            if(configEmail && configEmail != currentConfig.responseObject().configEmail){
-                jQuery("#configEmail_old").text(configEmail);
+            if(configEmail != null && configEmail != currentConfig.responseObject().configEmail){
+                jQuery("#configEmail_old").text('\"' + configEmail + '\"');
                 jQuery("#configEmail_old").removeClass('display-none');
             }
 
-            if(preScript && preScript != currentConfig.responseObject().preScript){
+            if(preScript != null && preScript != currentConfig.responseObject().preScript){
                 jQuery("#preScript_old").text(preScript);
-                 jQuery("#preScript_old").removeClass('display-none');
+                jQuery("#preScript_old").removeClass('display-none');
             }
-            if(postScript && postScript != currentConfig.responseObject().postScript){
+            if(postScript != null && postScript != currentConfig.responseObject().postScript){
                 jQuery("#postScript_old").text(postScript);
                 jQuery("#postScript_old").removeClass('display-none');
             }
-
-        /*     if(postScript != null){
-                jQuery("#postScript_old").text(postScript);
-                jQuery("#postScript_old").removeClass('display-none');
-            }*/
-
-            if(regExp && regExp != currentConfig.responseObject().regExp){
-                jQuery('#regExp_old').text(regExp)
+            if(regExp != null && regExp != currentConfig.responseObject().regExp){
+                jQuery('#regExp_old').text('\"' + regExp + '\"');
                 jQuery('#regExp_old').removeClass('display-none');
             }
             if(cleanWorkspace  && cleanWorkspace != currentConfig.responseObject().cleanWorkspace){
@@ -171,6 +177,23 @@ var configurator = (function () {
                     jQuery('#cleanWorkspace_old').text('unchecked');
                 }
                 jQuery('#cleanWorkspace_old').removeClass('display-none');
+            }
+            if(buildOnCommitTrigger != null && buildOnCommitTrigger != currentConfig.responseObject().buildOnCommitTrigger){
+                if(buildOnCommitTrigger==true){
+                    jQuery('#buildOnCommitTrigger_old').text('checked');
+                    }
+                else{
+                    jQuery('#buildOnCommitTrigger_old').text('unchecked');
+                    }
+                jQuery('#buildOnCommitTrigger_old').removeClass('display-none');
+            }
+            if(pollSCMTrigger != null && pollSCMTrigger != currentConfig.responseObject().pollSCMTrigger){
+                jQuery("#pollSCMTrigger_old").text(pollSCMTrigger);
+                jQuery("#pollSCMTrigger_old").removeClass('display-none');
+            }
+            if(buildPeriodicallyTrigger != null && buildPeriodicallyTrigger != currentConfig.responseObject().buildPeriodicallyTrigger){
+                jQuery("#buildPeriodicallyTrigger_old").text(buildPeriodicallyTrigger);
+                jQuery("#buildPeriodicallyTrigger_old").removeClass('display-none');
             }
         })
     }
@@ -878,11 +901,24 @@ var configurator = (function () {
 
     } 
 
-
     var deleteUser = function (element){
         jQuery(element).closest('div').remove();
      }
-    
+
+    var triggerHelp = function (element) {
+        var name = element.name;
+        var fieldHelp = jQuery('#' + name + '_helper');
+        var fieldHelpBlock = jQuery(fieldHelp).closest('div[name=helpDiv]');
+        if (fieldHelpBlock.attr("class") == "help-view-wide") {
+            fieldHelpBlock.addClass('display-none');
+        }
+        else {
+            buildConfiguration.getHelpMessage(name, function (t) {
+                jQuery(fieldHelp).html(t.responseObject());
+                jQuery(fieldHelpBlock).removeClass('display-none');
+            });
+        }
+    }
 
     return {
         initPage: initPage,
@@ -916,7 +952,8 @@ var configurator = (function () {
         commentCheckboxChange:commentCheckboxChange,
         deleteUser:deleteUser,
         addUserAccess:addUserAccess,
-        addNewUserAccess:addNewUserAccess
+        addNewUserAccess:addNewUserAccess,
+        triggerHelp:triggerHelp
     };
 })(); //END OF CONFIGURATOR MODULE
 window.onload = function () {

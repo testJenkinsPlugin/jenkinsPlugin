@@ -330,6 +330,12 @@ public class JobManagerGenerator {
 
         jed = getSCM(config);
         setElement(jed, doc, config);
+
+        jed = new JobBuildTriggerPeriodically();
+        setElement(jed,doc,config);
+
+        jed = new JobBuildTriggerPollSCM();
+        setElement(jed,doc,config);
     }
 
 
