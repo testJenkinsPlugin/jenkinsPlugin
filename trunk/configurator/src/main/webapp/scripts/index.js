@@ -106,7 +106,7 @@ function isCopyNameCorrect() {
    
     if (!regPath.test(copyName.value) || (copyName.value.length == 0)) {
         jQuery(copyName).addClass('wrong');
-        jQuery("#copyHelpDiv").html("Wrong name");
+        jQuery("#copyHelpDiv").html("The symbols '\\, /, ?, *, #,  %, \", >, <, :, |, .' and spaces aren't allowed.");
         jQuery('#copyHelpDiv').removeClass('display-none');
         return false;
     } 
