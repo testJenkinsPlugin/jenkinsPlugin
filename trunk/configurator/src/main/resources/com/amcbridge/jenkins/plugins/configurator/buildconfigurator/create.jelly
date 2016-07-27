@@ -109,6 +109,11 @@
                             <label>Use workspace cleanup plugin</label>
                         </div>
                         <f:checkbox checked="true" class="check-box" id="cleanWorkspace" name="cleanWorkspace"/>
+                        <img class="image" name="cleanWorkspace-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
+                    </div>
+                    <div class="help-view display-none" id="cleanWorkspace-help-block">
+                        <label class="helptext display-none" id="cleanWorkspace-help-text">This plugin deletes the workspace before the build or when a build is finished and artifacts saved. If checked  - enables workspace cleaning before build start and adds "configurationName.xml" file to exclude list.
+                        </label>
                     </div>
                 </j:if>
                 <div id="projectsToBuild"/>
