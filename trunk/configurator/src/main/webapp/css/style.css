@@ -112,6 +112,7 @@
 .div-build-machine-config {
     width: 175px;
     margin-top: 25px;
+    padding-bottom: 1px;
 }
 
 .check-box {
