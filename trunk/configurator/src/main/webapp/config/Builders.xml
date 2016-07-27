@@ -11,5 +11,6 @@
   <builder key="VS_2010" value="VS 2010"/>
   <builder key="VS_2012" value="VS 2012"/>
   <builder key="VS_2013" value="VS 2013"/>
+  <builder key="VS_2015" value="VS 2015"/>
   <builder key="XCode" value="XCode"/>
 </builders>
