@@ -143,7 +143,7 @@
                     <br/>
                 </j:forEach>
             </j:if>
-            <j:if test="${view_old != null and !view_old.IsVersionFiles()}">
+            <j:if test="${view_old != null and !view_old.IsVersionFiles() and !view.IsVersionFiles()==view_old.IsVersionFiles()}">
                 <label class="diff_value">Version files disabled</label>
                 <br/>
             </j:if>
