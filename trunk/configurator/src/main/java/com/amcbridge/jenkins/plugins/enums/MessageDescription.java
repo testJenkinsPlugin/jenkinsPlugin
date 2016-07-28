@@ -8,7 +8,8 @@ public enum MessageDescription {
     REJECT("configuration was rejected by administrator. The reasons of rejection are:"),
     MARKED_FOR_DELETION("configuration was marked for deletion."),
     DELETE_PERMANENTLY("configuration was successfully deleted."),
-    RESTORE("configuration was successfully restored.");
+    RESTORE("configuration was successfully restored."),
+    COPY("configuration was successfully copied from ");
 
     private String messageDescriptionValue;
 

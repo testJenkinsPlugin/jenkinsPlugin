@@ -98,6 +98,15 @@ public final class BuildConfigurator implements RootAction {
                 modelToCopy.setProjectName(modelNewName);
                 modelToCopy.setState(ConfigurationState.NEW);
                 BuildConfigurationManager.save(modelToCopy);
+                ConfigurationStatusMessage message
+                        = new ConfigurationStatusMessage(modelNewName);
+                message.setSubject(modelNewName);
+                message.setDescription(MessageDescription.COPY + "\"" + modelToCopyName + "\"");
+                if (!BuildConfigurationManager.getUserMailAddress(modelToCopy).isEmpty()) {
+                    message.setCC(BuildConfigurationManager.getUserMailAddress(modelToCopy));
+                }
+                message.setDestinationAddress(getAdminEmails());
+                mail.sendMail(message);
             }
             response.sendRedirect("./");
         } catch (Exception e) {
