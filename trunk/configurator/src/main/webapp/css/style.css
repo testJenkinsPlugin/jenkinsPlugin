@@ -112,6 +112,7 @@
 .div-build-machine-config {
     width: 175px;
     margin-top: 25px;
+    padding-bottom: 1px;
 }
 
 .check-box {
@@ -401,7 +402,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
 }
 
 .display-none{
-    display: none;
+    display: none !important;
 }
 
 .hidden{
@@ -498,6 +499,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
 .diff_value_header, .diff_value_header_checkbox{
     margin-left: 210;
     color: brown;
+    display: block;
 }
     .diff_value_header_checkbox{
         margin-left: 30px;        

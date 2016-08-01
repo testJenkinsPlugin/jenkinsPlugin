@@ -844,7 +844,7 @@ var configurator = (function () {
         else {
 
             projectError.removeClass('display-none');
-            projectErrorText.html(" Not correct name");
+            projectErrorText.html(" The symbols '\\, /, ?, *, #,  %, \", >, <, :, |, .' and spaces aren't allowed.");
             projectName.addClass('wrong');
 
         }
