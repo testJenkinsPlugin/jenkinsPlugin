@@ -395,7 +395,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
 }
 
 .display-none{
-    display: none;
+    display: none !important;
 }
 
 .hidden{
@@ -492,6 +492,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
 .diff_value_header{
     margin-left: 210;
     color: brown;
+    display: block;
 
 }
 .projectToBuild_status_new, .projectToBuild_status_deleted{
