@@ -456,7 +456,7 @@ var configurator = (function () {
             project.find("[name=versionFiles]").val("");
             project.find("[name=addVersion]").css("visibility", "visible");
             project.find("[name=vFiles]").css("visibility", "visible");
-            project.find("[dir=fieldSetDiv]").show();
+            project.find("[dir=fieldSetDiv]").removeClass('display-none');
         }
 
         if (!checkBox.checked) {
@@ -467,7 +467,7 @@ var configurator = (function () {
             versionFilesPath.addClass('hidden');
             project.find("[name=addVersion]").css("visibility", "hidden");
             project.find("[name=vFiles]").css("visibility", "hidden");
-            project.find("[dir=fieldSetDiv]").hide();
+            project.find("[dir=fieldSetDiv]").addClass('display-none');
         }
     }
 
