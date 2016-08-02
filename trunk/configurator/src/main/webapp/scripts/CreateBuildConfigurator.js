@@ -857,11 +857,11 @@ var configurator = (function () {
     var commentCheckboxChange = function (checkBox) {
         var comments = jQuery("#comments");
         if (!checkBox.checked) {
-            comments.hide('100');
+            comments.addClass('display-none');
             comments.val("");
         }
         else {
-            comments.show('100');
+           comments.removeClass('display-none');
         }
     }
     function initCommentCheckbox(enable){
