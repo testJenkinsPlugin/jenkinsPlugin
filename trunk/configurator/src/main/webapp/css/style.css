@@ -573,3 +573,10 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     .platform{
         left: 177px;
     }
+
+.trigger-message{
+    background-color: antiquewhite;
+    padding: 2;
+    margin-left: 120;
+    width: 500;
+}

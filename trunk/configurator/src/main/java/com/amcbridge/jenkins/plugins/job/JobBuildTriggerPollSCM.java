@@ -3,7 +3,7 @@ package com.amcbridge.jenkins.plugins.job;
 import antlr.ANTLRException;
 import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescription;
 import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
-import hudson.triggers.TimerTrigger;
+import hudson.triggers.SCMTrigger;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ import java.io.IOException;
 public class JobBuildTriggerPollSCM implements JobElementDescription {
     private static final String DEFAULT_BUILD_TRIGGER = "H * * * *";
     private static final String PARENT_ELEMENT_TAG = "triggers";
-    private static final String ELEMENT_TAG = "hudson.triggers.TimerTrigger";
+    private static final String ELEMENT_TAG = "hudson.triggers.SCMTrigger";
     private static final Logger LOGGER = LoggerFactory.getLogger(JobBuildTriggerPollSCM.class);
 
     @Override
@@ -37,17 +37,17 @@ public class JobBuildTriggerPollSCM implements JobElementDescription {
         if (config.getPollSCMTrigger() == null || "".equals(config.getPollSCMTrigger())) {
             return StringUtils.EMPTY;
         }
-        TimerTrigger timerTrigger;
+        SCMTrigger scmTrigger;
         try {
-            timerTrigger = new TimerTrigger(config.getPollSCMTrigger());
-            return JobManagerGenerator.convertToXML(timerTrigger);
+            scmTrigger = new SCMTrigger(config.getPollSCMTrigger(), false);
+            return JobManagerGenerator.convertToXML(scmTrigger);
         } catch (ANTLRException e) {
             LOGGER.error("Error setting \"" + config.getPollSCMTrigger() + "\" build trigger", e);
             try {
-                timerTrigger = new TimerTrigger(DEFAULT_BUILD_TRIGGER);
-                return JobManagerGenerator.convertToXML(timerTrigger);
+                scmTrigger = new SCMTrigger(DEFAULT_BUILD_TRIGGER, false);
+                return JobManagerGenerator.convertToXML(scmTrigger);
             } catch (ANTLRException e1) {
-                LOGGER.error("Error setting default \"" + DEFAULT_BUILD_TRIGGER +" \" build trigger", e1);
+                LOGGER.error("Error setting default \"" + DEFAULT_BUILD_TRIGGER + " \" build trigger", e1);
                 return StringUtils.EMPTY;
             }
         }

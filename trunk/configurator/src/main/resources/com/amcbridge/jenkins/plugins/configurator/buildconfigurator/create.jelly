@@ -135,8 +135,9 @@
                 <br/>
                 <div>
                     <label class="div-label">Build triggers, poll SCM:</label>
-                    <textarea cols="60" id="pollSCMTrigger" name="pollSCMTrigger" rows="6"/>
+                    <textarea cols="60" id="pollSCMTrigger" name="pollSCMTrigger" rows="6" onchange="configurator.checkTrigger(value, id)" onload="configurator.checkTrigger(value, id)"/>
                     <img class="image-trigger" name="pollSCMTrigger" onclick="configurator.triggerHelp(this)" src="/static/c2e30787/images/16x16/help.png"/>
+                   <div id="pollSCMTriggerMessage" class = "trigger-message display-none"></div>
                 </div>
                 <div class="help-view-wide display-none" name="helpDiv">
                     <div id="pollSCMTrigger_helper" class="helptext">
@@ -149,8 +150,9 @@
                 <br/>
                 <div>
                     <label class="div-label">Build triggers, build periodically</label>
-                    <textarea cols="60" id="buildPeriodicallyTrigger" name="buildPeriodicallyTrigger" rows="6"/>
+                    <textarea cols="60" id="buildPeriodicallyTrigger" name="buildPeriodicallyTrigger" rows="6" onchange="configurator.checkTrigger(value, id)" onload="configurator.checkTrigger(value, id)"/>
                      <img class="image-trigger" name="buildPeriodicallyTrigger" onclick="configurator.triggerHelp(this)" src="/static/c2e30787/images/16x16/help.png"/>
+                    <div id="buildPeriodicallyTriggerMessage" class = "trigger-message display-none"></div>
                 </div>
                 <div class="help-view-wide display-none" name="helpDiv">
                     <div id="buildPeriodicallyTrigger_helper" class="helptext">

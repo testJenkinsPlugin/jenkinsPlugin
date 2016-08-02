@@ -1,22 +1,23 @@
 package com.amcbridge.jenkins.plugins.configurator;
 
-import com.amcbridge.jenkins.plugins.job.WsPluginHelper;
-import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
-import com.amcbridge.jenkins.plugins.models.BuilderConfigModel;
-import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.enums.ConfigurationState;
 import com.amcbridge.jenkins.plugins.enums.FormResult;
 import com.amcbridge.jenkins.plugins.enums.MessageDescription;
 import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
 import com.amcbridge.jenkins.plugins.job.JobManagerGenerator;
+import com.amcbridge.jenkins.plugins.job.WsPluginHelper;
 import com.amcbridge.jenkins.plugins.messenger.ConfigurationStatusMessage;
 import com.amcbridge.jenkins.plugins.messenger.MailSender;
+import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
+import com.amcbridge.jenkins.plugins.models.BuilderConfigModel;
+import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
 import com.amcbridge.jenkins.plugins.xstreamelements.ScriptType;
 import hudson.Extension;
 import hudson.model.RootAction;
 import hudson.model.User;
+import hudson.triggers.TimerTrigger;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -570,6 +571,12 @@ public final class BuildConfigurator implements RootAction {
             LOGGER.error("Error loading help properties", ex);
             return "Error getting help message";
         }
+    }
+
+    @JavaScriptMethod
+    public String checkTrigger(String value) {
+            TimerTrigger.DescriptorImpl descriptor = new TimerTrigger.DescriptorImpl();
+            return descriptor.doCheckSpec(value, null).toString();
     }
 
 }

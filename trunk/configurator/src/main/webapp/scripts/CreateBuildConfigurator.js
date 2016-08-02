@@ -528,6 +528,14 @@ var configurator = (function () {
             jQuery("#configEmail").focus();
             return false;
         }
+        if(jQuery('#pollSCMTriggerMessage').text().includes('ERROR')){
+            jQuery('#pollSCMTrigger').focus();
+            return false;
+        }
+        if(jQuery('#buildPeriodicallyTriggerMessage').text().includes('ERROR')){
+            jQuery('#buildPeriodicallyTrigger').focus();
+            return false;
+        }
 
         validAllView();
         if (!checkingPath(pathUrl))
@@ -920,6 +928,20 @@ var configurator = (function () {
         }
     }
 
+    var checkTrigger = function (value, id) {
+        buildConfiguration.checkTrigger(value, function (t){
+            var element = jQuery("#" + id + 'Message');
+            element.html(t.responseObject());
+            element.removeClass('display-none');
+            if(element.text().includes('ERROR')){
+                element.css("background-color","red");
+            }
+            else{
+                element.css("background-color","antiquewhite");
+            }   
+        });
+    }
+
     return {
         initPage: initPage,
         addView: addView,
@@ -953,7 +975,8 @@ var configurator = (function () {
         deleteUser:deleteUser,
         addUserAccess:addUserAccess,
         addNewUserAccess:addNewUserAccess,
-        triggerHelp:triggerHelp
+        triggerHelp:triggerHelp,
+        checkTrigger:checkTrigger
     };
 })(); //END OF CONFIGURATOR MODULE
 window.onload = function () {
