@@ -111,7 +111,7 @@ public final class BuildConfigurator implements RootAction {
                 message.setDestinationAddress(getAdminEmails());
                 mail.sendMail(message);
             }
-            response.sendRedirect("./");
+            response.forwardToPreviousPage(request);
         } catch (Exception e) {
             LOGGER.error("Copy configuration fail", e);
             try {
