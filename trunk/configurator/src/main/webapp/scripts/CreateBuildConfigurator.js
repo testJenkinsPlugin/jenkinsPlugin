@@ -479,6 +479,7 @@ var configurator = (function () {
         var pathVer = jQuery("[name=versionFilesPath]");
         var build = jQuery("[name=projectToBuild]");
         var patBuild = jQuery("[name=fileToBuild]");
+        var userConfig = jQuery("[name=userConfig]");
         if (projectName.value == "") {
             jQuery("#projectErrorText").html(" Please, enter your project name");
             jQuery("#projectError").removeClass('display-none');
@@ -517,6 +518,8 @@ var configurator = (function () {
             return false;
         if (!checkingPath(patBuild))
             return false;
+        if (!checkingPath(userConfig))
+            return false;
         if (type == "edit")
             return true;
         if (type == "ApproveReject") {
@@ -542,7 +545,7 @@ var configurator = (function () {
         if (path.length == 0)
             return true;
         for (var i = 0; i < path.length; i++) {
-            if (path[i].className == "textbox wrong") {
+            if (path[i].className == "textbox wrong" || path[i].className == "wrong") {
                 path[i].focus();
                 return false;
             }
@@ -852,6 +855,10 @@ var configurator = (function () {
 
             }
         }
+        var otherConfig =  jQuery('[name=userConfig]');
+        for(var i=0; i< otherConfig.length; i++){
+            otherConfig[i].onblur();
+        }
     }
 
     var commentCheckboxChange = function (checkBox) {
@@ -882,6 +889,18 @@ var configurator = (function () {
     var deleteUser = function (element){
         jQuery(element).closest('div').remove();
      }
+
+    var checkOtherConfiguration = function(element){
+        var regexp = /^([a-zA-Z0-9_-]*)$/;
+        if(regexp.test(jQuery(element).val())){
+            jQuery(element).closest('div').find('[name=userConfigErrorBlock]').addClass('display-none');
+            jQuery(element).removeClass('wrong');
+        }
+        else{
+            jQuery(element).addClass('wrong');
+            jQuery(element).closest('div').find('[name=userConfigErrorBlock]').removeClass('display-none');
+        }
+    }
     
 
     return {
@@ -916,7 +935,8 @@ var configurator = (function () {
         commentCheckboxChange:commentCheckboxChange,
         deleteUser:deleteUser,
         addUserAccess:addUserAccess,
-        addNewUserAccess:addNewUserAccess
+        addNewUserAccess:addNewUserAccess,
+        checkOtherConfiguration:checkOtherConfiguration
     };
 })(); //END OF CONFIGURATOR MODULE
 window.onload = function () {

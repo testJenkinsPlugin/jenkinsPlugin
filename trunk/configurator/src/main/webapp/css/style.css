@@ -279,7 +279,7 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     margin-left: 10px;
 }
 
-.error-block{
+.error-block, .error-block-config{
     margin-left: 150px;
     margin-top: 5px;
     display: block;
@@ -289,6 +289,9 @@ div [name='projectToBuild'], div[name='projectToBuild_deleted']{
     line-height: 16px;
     background: no-repeat left center;
 }
+    .error-block-config{
+        margin-left: 285px;
+    }
 
 .user {
     font-size: 15px;
