@@ -811,12 +811,11 @@ var configurator = (function () {
     }
 
     var validateProject = function (project) {  //TODO !!!!!!!!!!!!!!!!!!!!
-        var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|\.\ ]*$/i;
+        var regPath = /^([a-zA-Z0-9_-]+)$/;
         var projectError = jQuery("#projectError");
         var projectErrorText = jQuery("#projectErrorText");
         var projectName = jQuery("[name=projectName]");
-        if (regPath.test(project.value) || (project.value.length == 0)) {
-            
+        if (regPath.test(project.value)) {
             projectError.addClass('display-none');
             projectErrorText.html("");
             projectName.removeClass('wrong');
@@ -824,7 +823,7 @@ var configurator = (function () {
         else {
 
             projectError.removeClass('display-none');
-            projectErrorText.html(" The symbols '\\, /, ?, *, #,  %, \", >, <, :, |, .' and spaces aren't allowed.");
+            projectErrorText.html(" This field may only contain alphanumeric characters, underscores or hyphens, and can't be empty.");
             projectName.addClass('wrong');
 
         }
