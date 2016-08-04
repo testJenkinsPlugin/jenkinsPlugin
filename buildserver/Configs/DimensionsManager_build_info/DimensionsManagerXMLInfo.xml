@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project>
+ <repository.url>https://svn.aquasoft.dp.ua/dimensions_manager/</repository.url>
+ <dir>
+  <build.base.dir>
+   <folders>
+    <folderName>\</folderName>
+   </folders>
+  </build.base.dir>
+  <deleteDir>
+   <folders>
+    <folderName>Install\Release</folderName>
+    <folderName>DimensionsManager\bin</folderName>
+   </folders>
+  </deleteDir>
+ </dir>
+ <files>
+  <vs2005>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>    
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2005>
+  <vs2008>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2008>
+  <vs2010>
+   <srcFiles>
+   <file configuration="Release" platform="Any CPU" unsafeCode="true" >Development\DimensionsManager\Common\DimensionsManager.sln</file>
+   </srcFiles>
+   <setupProjectFiles>
+   <file configuration="Release" project="Install" changePlatform="true" msiPath="Development\Install\Release">Development\DimensionsManager\Common\DimensionsManager.sln</file>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2010>
+  <vs2012>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2012>
+  <versionChanger>
+   <versionFiles>
+    <versionFile>FileToChange:@\Development\DimensionsManager\Properties\AssemblyInfo.cs@# # * %</versionFile>
+   </versionFiles>
+   <options>
+	<disableCommit>True</disableCommit>
+   </options>
+  </versionChanger>
+ </files>
+</project>
+

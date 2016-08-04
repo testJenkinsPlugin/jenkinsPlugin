@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<builders>
+    <builder name="MSBuild 2.0" architecture="x86" executeBuild="C:\\WINDOWS\\Microsoft.NET\\Framework\\v2.0.50727\\msbuild.exe" commandLine="executeBuild solution /t:rebuild [/p:Configuration=config /p:Platform=&quot;architecture&quot;]"/>
+    <builder name="MSBuild 3.5" architecture="x86" executeBuild="C:\\WINDOWS\\Microsoft.NET\\Framework\\v3.5\\msbuild.exe" commandLine="executeBuild solution /t:rebuild [/p:Configuration=config /p:Platform=&quot;architecture&quot;]"/>
+    <builder name="MSBuild 4.0" architecture="x86" executeBuild="C:\\WINDOWS\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe" commandLine="executeBuild solution /t:rebuild [/p:Configuration=config /p:Platform=&quot;architecture&quot;]"/>
+
+    <builder name="VS 2005" architecture="x86" executeBuild="C:\\Program Files\\Microsoft Visual Studio 8\\Common7\\IDE\\devenv.com" commandLine="executeBuild solution /rebuild [&quot;config|architecture&quot;]"/>
+    <builder name="VS 2008" architecture="x86" executeBuild="C:\\Program Files\\Microsoft Visual Studio 9.0\\Common7\\IDE\\devenv.com" commandLine="executeBuild solution /rebuild [&quot;config|architecture&quot;]"/>
+    <builder name="VS 2010" architecture="x86" executeBuild="C:\\Program Files\\Microsoft Visual Studio 10.0\\Common7\\IDE\\devenv.com" commandLine="executeBuild solution /rebuild [&quot;config|architecture&quot;]"/>
+    <builder name="VS 2012" architecture="x86" executeBuild="C:\\Program Files\\Microsoft Visual Studio 11.0\\Common7\\IDE\\devenv.com" commandLine="executeBuild solution /rebuild [&quot;config|architecture&quot;]"/>
+    <builder name="VS 2013" architecture="x86" executeBuild="C:\\Program Files\\Microsoft Visual Studio 12.0\\Common7\\IDE\\devenv.com" commandLine="executeBuild solution /rebuild [&quot;config|architecture&quot;]"/>
+    <builder name="VS 2015" architecture="x86" executeBuild="C:\\Program Files\\Microsoft Visual Studio 14.0\\Common7\\IDE\\devenv.com" commandLine="executeBuild solution /rebuild [&quot;config|architecture&quot;]"/>
+
+    <builder name="XCode" architecture="x86" executeBuild="xcodebuild" commandLine="executeBuild [-destination 'platform=OS X,arch=architecture'] clean install"/>
+
+    <builder name="Java ANT" architecture="x86" executeBuild="" commandLine="ant [] clean jar"/>
+    <builder name="Java MAVEN" architecture="x86" executeBuild="" commandLine="mvn [] clean package"/>
+</builders>

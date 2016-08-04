@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project>
+<repository.url>https://svn.aquasoft.dp.ua/pion/Indigo/branches/MicroDiss_4.5/</repository.url>
+ <dir>
+  <build.base.dir>
+   <folders>
+    <folderName>\</folderName>
+   </folders>
+  </build.base.dir>
+  <deleteDir>
+   <folders>
+   </folders>
+  </deleteDir>
+ </dir>
+ <files>
+  <vs2005>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2005>
+  <vs2008>
+   <srcFiles>
+   <file configuration="Release" platform="Win32" unsafeCode="true">Development\v4.5\MicroDissSetup\MicroDissSetup.sln</file>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2008>
+  <vs2010>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2010>
+  <vs2012>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2012>
+  <versionChanger>
+   <versionFiles>
+     <versionFile>Null</versionFile>
+   </versionFiles>
+   <options>
+	<disableCommit>True</disableCommit>
+   </options>
+  </versionChanger>
+ </files>
+</project>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="amcbridge-jenkins-plugins-lib-1.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../Svn/trunk/amcbridge-jenkins-plugins-lib/target/amcbridge-jenkins-plugins-lib-1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

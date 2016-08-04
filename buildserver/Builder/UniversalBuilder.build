@@ -1,0 +1,1294 @@
+﻿<?xml version="1.0"?>
+<project default="main">
+	
+    <property name="workspace"					value="${environment::get-variable('WORKSPACE')}"/>
+	<property name="build.number"				value="${environment::get-variable('BUILD_NUMBER')}"/>
+    <property name="vcbuild.exe"				value="C:\Program Files\Microsoft Visual Studio 8\VC\vcpackages\vcbuild.exe" />
+	<property name="vcbuild2008.exe"			value="C:\Program Files\Microsoft Visual Studio 9.0\VC\vcpackages\vcbuild.exe" />
+	<property name="vcbuild2010.exe"			value="C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\msbuild.exe" />
+	<property name="msbuild.exe"				value="C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\msbuild.exe" />
+	<property name="msbuild2008.exe"			value="C:\WINDOWS\Microsoft.NET\Framework\v3.5\msbuild.exe" />
+	<property name="msbuild2010.exe"			value="C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\msbuild.exe" />
+	<property name="msbuild2012.exe"			value="C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\msbuild.exe" />
+	<property name="devenv.exe"					value="C:\Program Files\Microsoft Visual Studio 8\Common7\IDE\devenv.exe" />
+	<property name="devenv2008.exe"				value="C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\devenv.exe" />
+	<property name="devenv2010.exe"				value="C:\Program Files\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe" />
+	<property name="devenv2012.exe"				value="C:\Program Files\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe" />
+    <property name="svn.exe"	            	value="C:\Program Files\SlikSvn\bin\svn.exe" />
+	<property name="iexpress.exe" 		 		value="C:\WINDOWS\system32\iexpress.exe" />
+	<property name="VerChangerFiles"        	value="" />
+	<property name="build.base.dir"				value="" />
+	<property name="build.delete.dir"			value="" />
+	<property name="vs2005SrcFiles"				value="" />
+	<property name="vs2008SrcFiles"				value="" />
+	<property name="vs2010SrcFiles"				value="" />
+	<property name="vs2012SrcFiles"				value="" />
+	<property name="vs2005SetupProjectFiles"	value="" />
+	<property name="vs2008SetupProjectFiles"	value="" />
+	<property name="vs2010SetupProjectFiles"	value="" />
+	<property name="vs2012SetupProjectFiles"	value="" />
+    <property name="vcProjectFiles2005"     	value="" />
+    <property name="vcProjectFiles2008"	        value="" />
+	<property name="vcProjectFiles2010"	        value="" />
+	<property name="vcProjectFiles2012"	        value="" />
+	<property name="XMLInfoPath"				value="" readonly="false"/>
+    <property name="VerChangerPath"				value="" readonly="false"/>
+    <property name="svn.username"           	value="vdemedetskaya@amcbridge.com.ua" />
+    <property name="svn.password"           	value="u8C7sYnj" />
+	<property name="tempFile"               	value="C:\TempFile.xml" />
+	<property name="templateFile"           	value="F:\Hudson\Hudson_Tools\template.SED" />
+	<property name="tempSEDFile"            	value="C:\template.SED" />
+	<property name="scriptFile"             	value="F:\Hudson\Hudson_Tools\script_C++.exe" />
+	<property name="repository.url"         	value="" />
+    <property name="build.needed"           	value="" />
+	<property name="current.full.version" 		value="" />
+	<property name="last.revision" 				value="" />
+	<property name="last.built.revision" 		value="" />
+	<property name="target.platform"        	value="" />
+	<property name="commit.needed"          	value="" />	
+	<property name="disableCommit"				value="" />	
+	<property name="changeVersion"     			value="" />	
+		
+	
+	<target name="main">
+		<echo message="Current workspace: ${workspace}" />
+		<echo message="Version of build script: 1.0.1" />
+		<call target="get.build.info" />
+                <echo message="${svn.exe}" />
+                <echo message="${repository.url}" />
+		<call target="check.revision" />
+	
+		<if test="${build.needed=='True'}">
+			<echo message="Build is needed" />
+            <echo message="commit: ${commit.needed}" />
+			<echo message="disableCommit: ${disableCommit}" />
+			<call target="build" />
+			<call target="commit" />
+		</if>
+		<if test="${build.needed=='False'}">
+			<echo message="Build is needed" />
+            <echo message="commit: ${commit.needed}" />
+			<call target="build" />
+			<echo message="Commit is no needed" />
+		</if>
+	
+	</target>
+
+	<target name="check.revision">
+         <exec program="svn.exe" output="${tempFile}">
+			<arg value="info" />
+            <arg value="${repository.url}" />
+			<arg value="--revision" />
+			<arg value="head" />
+			<arg value="--username" />
+	        <arg value="${svn.username}" />
+	        <arg value="--password" />
+	        <arg value="${svn.password}" />
+            <arg value="--xml" />
+			<arg value="--trust-server-cert" />
+			<arg value="--non-interactive" />
+        	</exec>
+
+		
+			<xmlpeek
+                file="${tempFile}"
+                xpath="/info/entry/@revision"
+                property="last.revision">
+			</xmlpeek>
+
+		<echo message="Number of the last revision in the repositiry: ${last.revision}" />
+
+		<script language="C#"  prefix="CSharp" failonerror="true">
+			<references>
+			       	<include name="System.dll" />
+			</references>
+			<imports>
+				<import namespace="System.Collections.Generic" />
+			</imports>
+		<code>
+			<![CDATA[
+				public static void ScriptMain(Project project)
+				{
+                                 string workspacePath = project.Properties ["workspace"].Replace("/","\\");				
+                                 string projectName = "";
+            			 for (int i = workspacePath.Length-1; i >= 0; i--)
+            			 {
+                			if (workspacePath[i] != '\\')
+                			{
+                    				projectName = workspacePath[i].ToString() + projectName;
+                			}
+                			else
+                    				break;
+            			 }
+
+				 projectName = @"C:\Hudson\jobs\" + projectName + @"\builds";
+				 
+				 DirectoryInfo info = new DirectoryInfo(projectName);
+            			 DirectoryInfo[] folders = info.GetDirectories("*.*", SearchOption.TopDirectoryOnly);
+
+            			 DateTime[] data = new DateTime[folders.Length];
+            			 for (int i = 0; i < data.Length; i++)
+            			 {
+                			data[i] = folders[i].CreationTime;
+            			 }
+
+            			 for (int i = 0; i < folders.Length; i++)
+            			{
+                			for (int j = i; j < folders.Length; j++)
+                			{
+                    				if (data[j] > data[i])
+                    				{
+                        				DirectoryInfo temp = folders[i];
+                        				folders[i] = folders[j];
+                        				folders [j] = temp;
+                    				}
+                			}
+            			}
+
+            			string st = folders[1].FullName + "\\revision.txt";
+            			List<string> revisions = new List<string>();
+            			using (StreamReader sr = new StreamReader(st))
+            			{
+                			string line;
+                			while ((line = sr.ReadLine()) != null)
+                			{
+                    				string temp = "";
+                    				for (int i = line.Length - 1; i >= 0; i--)
+                    				{
+                        				if (line[i] != '/')
+                        				{
+                            					temp = line[i].ToString() + temp;
+                        				}
+                        				else
+                            					break;
+                    				}
+                    		revisions.Add(temp);
+                			}
+            			}
+
+            			int maxRevisionNumber = Convert.ToInt32(revisions[0]);
+            			for (int i = 1; i < revisions.Count; i++)
+            			{
+                			if (Convert.ToInt32(revisions[i]) > maxRevisionNumber)
+                    			maxRevisionNumber = Convert.ToInt32(revisions[i]);
+            			}
+				project.Properties ["last.built.revision"] = maxRevisionNumber.ToString();
+
+				}
+			]]>
+			</code>
+		</script>
+
+		<echo message="Number of the last built revision: ${last.built.revision}" />
+		
+		<if test="${last.revision==last.built.revision}">
+			<property name="build.needed" value="False" />
+            <property name="commit.needed" value="False" />
+			<property name="changeVersion" value="False" />
+			<echo message="changeVersion: ${changeVersion}" />
+		</if>
+		<if test="${last.revision!=last.built.revision}">
+			<if test="${disableCommit=='False'}">
+				<property name="commit.needed" value="True" />
+			</if>
+			<if test="${disableCommit=='True'}">
+				<property name="commit.needed" value="False" />
+			</if>
+			<property name="changeVersion" value="True" />
+			<echo message="changeVersion: ${changeVersion}" />
+
+			<exec program="svn.exe" output="${tempFile}">
+            	<arg value="diff" />
+            	<arg value="${repository.url}" />
+				<arg value="-r" />
+				<arg value="${last.built.revision}:${last.revision}" />
+				<arg value="--summarize" />
+				<arg value="--username" />
+	            <arg value="${svn.username}" />
+	            <arg value="--password" />
+	            <arg value="${svn.password}" />
+                <arg value="--xml" />
+				<arg value="--trust-server-cert" />
+				<arg value="--non-interactive" />
+        		</exec>
+
+		<script language="C#"  prefix="CSharp" failonerror="true">
+			<references>
+			    <include name="System.dll" />
+			   	<include name="System.Xml.dll" />
+			</references>
+			<imports>
+				<import namespace="System.Collections.Generic" />
+				<import namespace="System.Xml" />
+				<import namespace="System.Xml.XPath" />
+			</imports>
+			<code>
+			<![CDATA[
+				public static void ScriptMain(Project project)
+				{
+                         string path = project.Properties ["tempFile"];
+
+            			 FileStream reader = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            			 XmlDocument xmlDoc = new XmlDocument();
+            			 xmlDoc.Load(reader);
+
+            			 XmlNodeList nodeList = xmlDoc.GetElementsByTagName("paths");
+
+            			 bool flag = true;
+            			 foreach (XmlNode node in nodeList[nodeList.Count - 1].ChildNodes)
+            			 {
+                			if (node.InnerText.Contains("AssemblyInfo") || node.InnerText.Contains("version.h"))
+                			{
+                    				flag = false;
+                			}
+                			else
+                			{
+                    				flag = true;
+                    				break;
+                			}
+            			 }
+                                project.Properties ["build.needed"] = flag.ToString();
+				}
+			]]>
+			</code>
+		</script>
+		</if>
+		<if test="${disableCommit=='True'}">
+			project.Properties ["build.needed"] = 'False';
+		</if>
+	</target>
+
+	<target name="commit">
+
+        <if test="${VerChangerFiles!='Null|'}">
+		<if test="${commit.needed=='True'}">
+		<property name="files.for.commit" value="" />
+
+	    	<script language="C#"  prefix="CSharp" failonerror="true">
+			<code>
+			<![CDATA[
+				public static void ScriptMain(Project project)
+				{
+                                string longString = project.Properties ["VerChangerFiles"];				
+                                string[] strings = longString.Split('|');
+                                string result = "";
+
+                                for (int i = 0; i < strings.Length; i++)
+                                {
+                                if (strings[i].Length != 0)
+                                {
+                                string[] subStrings = strings[i].Split('@');
+                                result += project.Properties ["workspace"].Replace("/","\\") + subStrings[1] + '|';
+                                }
+                                }
+                                project.Properties ["files.for.commit"] = result;
+				}
+			]]>
+			</code>
+		</script>
+		
+		<foreach item="String" in="${files.for.commit}" delim="|" property="file">
+		
+			<if test="${string::get-length(file)!=0}">
+
+				<property name="base.folder" value="" />	
+		
+				<script language="C#"  prefix="CSharp" failonerror="true">
+				<code>
+				<![CDATA[
+				public static void ScriptMain(Project project)
+				{				
+                         string path = project.Properties ["file"];
+				         string fileName = "";
+            			 for (int i = path.Length-1; i >= 0; i--)
+            			 {
+                			if (path[i] != '\\')
+                			{
+                    				fileName = path[i].ToString() + fileName;
+                			}
+                			else
+                    				break;
+            			 }
+
+            			 path = path.Remove(path.Length-fileName.Length-1,fileName.Length+1);	
+				         project.Properties ["base.folder"] = path.Replace("/","\\");
+				}
+				]]>
+				</code>
+			</script>
+
+		<echo message="${base.folder}" />
+		<echo message="&quot;${file}&quot;" />
+			<if test="${string::get-length(file)!=0}">
+				<exec program="svn.exe" failonerror="false">
+					<arg value="commit" />
+					<arg value="&quot;${base.folder}&quot;" />
+					<arg value="--force-log" />
+					<arg value="--file" />
+					<arg value="&quot;${file}&quot;" />
+					<arg value="--depth" />
+					<arg value="files" />
+					<arg value="--username" />
+					<arg value="${svn.username}" />
+					<arg value="--password" />
+					<arg value="${svn.password}" />
+					<arg value="--trust-server-cert" />
+					<arg value="--non-interactive" />
+				</exec>
+			</if>
+		</if>
+		</foreach>
+	 </if>
+	 </if>
+	 <if test="${VerChangerFiles=='Null|'}">
+			<echo message="There's no need to commit these files." />
+	 </if>
+	</target>
+
+	<target name="build" depends="clean, version.changer">
+		<echo message="Building default target" />
+		<property name="files" value="" />
+		
+            <script language="C#"  prefix="CSharp" failonerror="true">
+            <references>
+			    <include name="System.dll" />
+			   	<include name="System.Xml.dll" />
+			</references>
+			<imports>
+				<import namespace="System.Collections.Generic" />
+				<import namespace="System.Xml" />
+				<import namespace="System.Xml.XPath" />
+			</imports>
+					                       
+                <code>
+
+			     <![CDATA[
+                        
+        			[FunctionSet("GetAttribute", "GetAttribute")]
+				public class GetAttributeFunction : FunctionSetBase {        
+    				public GetAttributeFunction(Project project, PropertyDictionary properties) : base(project, properties) {
+    				}
+    				        [Function("GetXMLAttributeByName")]
+        				public string GetXMLAttributeByName(string attributeName, string fileName, string vsVersion, string nodeName, string files)
+                                 	{
+					string path = Project.Properties["XMLInfoPath"];
+						
+					List<string> listNodes = new List<string>();
+							
+					FileStream reader = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+					XmlDocument xmlDoc = new XmlDocument();
+					xmlDoc.Load(reader);
+
+					int occurrence = 0;
+					
+            				string[] usedFiles = files.Split('|');
+
+				        for (int i = 0; i < usedFiles.Length; i++)
+            				{
+                			if (usedFiles[i] == fileName)
+                			{
+			                occurrence++;
+                			}
+            				}
+
+					int currentOccurrence = 0;
+						
+					foreach (XmlNode node in xmlDoc.GetElementsByTagName(vsVersion)[0].ChildNodes)
+					{
+					if(node.Name == nodeName)
+					{
+					foreach (XmlNode snode in node.ChildNodes)
+					{
+					if(snode.InnerText == fileName)
+					{
+					currentOccurrence++;
+                        		if ((currentOccurrence == (occurrence + 1)) && (snode.Attributes[attributeName] != null))
+                        		{
+		                        return snode.Attributes[attributeName].Value;
+                        		}
+				
+					}
+					}
+					}
+					}
+                                        return "";							
+                               		} 	
+					}
+       
+                               ]]>
+                       </code>
+               </script>
+
+	       <script language="C#"  prefix="CSharp" failonerror="true">
+                        <references>
+			       	<include name="System.dll" />
+			   	<include name="System.Xml.dll" />
+			</references>
+			<imports>
+				<import namespace="System.Collections.Generic" />
+				<import namespace="System.Xml" />
+				<import namespace="System.Xml.XPath" />
+			</imports>
+					                       
+                        <code>
+
+			     <![CDATA[
+                        
+        			[FunctionSet("ChangeTargetPlatform", "ChangeTargetPlatform")]
+				public class ChangeTargetPlatformFunction : FunctionSetBase {        
+    				public ChangeTargetPlatformFunction(Project project, PropertyDictionary properties) : base(project, properties) {
+    				}
+    				        [Function("ChangeTargetPlatform")]
+        				public string ChangeTargetPlatform(string path, string folder, string changeOutputName)
+                                 	{
+					FileInfo fileInf = new FileInfo(path);
+					if(fileInf.Extension != ".vdproj")
+					{
+					DirectoryInfo dirInf = new DirectoryInfo(Project.Properties["build.base.dir"] + folder);
+					FileInfo[] projectFile = null;
+					for (int i = 0; i < 3; i++)
+                             		{
+                              		dirInf = dirInf.Parent;
+                              		projectFile = dirInf.GetFiles("*.vdproj");
+                              		if (projectFile.Length != 0)
+                              		{
+                               		break;
+                              		}
+                             		}
+					path = projectFile[0].FullName;
+					}	
+
+           				string[] allLines = System.IO.File.ReadAllLines(path);
+            				string currentPlatform = "";
+            
+            				for (int i = 0; i < allLines.Length - 1; i++)
+            				{
+			                if (allLines[i].Contains("DefaultLocation"))
+                			{
+			                if (allLines[i].Contains("ProgramFiles64Folder"))
+                    			{
+		                        allLines[i] = allLines[i].Replace("ProgramFiles64Folder", "ProgramFilesFolder");
+                			}
+			                else
+                        		allLines[i] = allLines[i].Replace("ProgramFilesFolder", "ProgramFiles64Folder");
+                			}
+			                if (allLines[i].Contains("TargetPlatform"))
+                			{
+			                if (allLines[i].Contains("3:1"))
+                    			{
+		                        allLines[i] = allLines[i].Replace("3:1", "3:0");
+                		        currentPlatform = "x86";
+                    			}
+			                else
+                    			{
+		                        allLines[i] = allLines[i].Replace("3:0", "3:1");
+                		        currentPlatform = "x64";
+                    			}
+                			}
+            				}
+
+					if (changeOutputName.Length != 0)
+            				{
+                			for (int i = 0; i < allLines.Length - 1; i++)
+                			{
+                    			if (allLines[i].Contains("OutputFilename") && (currentPlatform == "x64"))
+                    			{
+                        		allLines[i] = allLines[i].Replace(".msi", "x64.msi");
+                    			}
+                    			if (allLines[i].Contains("OutputFilename") && (currentPlatform == "x86"))
+                    			{
+                       			allLines[i] = allLines[i].Replace("x64.msi", ".msi");
+                    			}
+                			}
+            				}
+
+				        System.IO.File.WriteAllLines(path, allLines);
+					return currentPlatform;
+					}
+				}
+       
+                               ]]>
+                       </code>
+               </script>
+
+		<foreach item="String" in="${vs2005SrcFiles}" delim="|" property="file">
+			<if test="${string::get-length(file)!=0}">
+                <echo message="Build ${build.base.dir}${file}" />
+				<property name="file.config" value="${GetAttribute::GetXMLAttributeByName('configuration', file, 'vs2005', 'srcFiles', files)}" />
+				<property name="file.platform" value="${GetAttribute::GetXMLAttributeByName('platform', file, 'vs2005', 'srcFiles', files)}" />
+                <property name="file.unsafeCode" value="${GetAttribute::GetXMLAttributeByName('unsafeCode', file, 'vs2005', 'srcFiles', files)}" />
+				<property name="file.path" value="${GetAttribute::GetXMLAttributeByName('msiPath', file, 'vs2005', 'srcFiles', files)}" />
+   
+				<echo message="${file.config}|${file.platform}" />				
+				<exec program="${msbuild.exe}" failonerror="true">
+					<arg value="${build.base.dir}${file}" />
+					<arg value ="/t:rebuild" />
+					<arg value ="/property:Configuration=${file.config}" />
+					<arg value ="/property:Platform=${file.platform}" />
+					<arg value ="/property:AllowUnsafeBlocks=${file.unsafeCode}" />
+					<arg value ="/verbosity:quiet" />
+				</exec>
+
+				<if test="${string::get-length(file.path)!=0}">
+					<property name="target.platform" value="${file.platform}" />
+					<call target="createSFXPackage"/>
+					<copy todir="${workspace}\Installer_${file.platform}">
+   				 		<fileset basedir="${build.base.dir}${file.path}">
+							<include name="**/*.*" />
+						</fileset>
+					</copy>
+				</if>
+
+                <property name="files" value="${files}|${file}" />
+				<echo message="------------------------------------------------------------->" />
+			</if>
+		</foreach>
+
+		<property name="files" value="" />
+		
+		<foreach item="String" in="${vs2008SrcFiles}" delim="|" property="file">
+			<if test="${string::get-length(file)!=0}">
+				<echo message="Build ${build.base.dir}${file}" />
+				<property name="file.config" value="${GetAttribute::GetXMLAttributeByName('configuration', file, 'vs2008', 'srcFiles', files)}" />
+				<property name="file.platform" value="${GetAttribute::GetXMLAttributeByName('platform', file, 'vs2008', 'srcFiles', files)}" />
+				<property name="file.unsafeCode" value="${GetAttribute::GetXMLAttributeByName('unsafeCode', file, 'vs2008', 'srcFiles', files)}" />
+				<property name="file.path" value="${GetAttribute::GetXMLAttributeByName('msiPath', file, 'vs2008', 'srcFiles', files)}" />
+				
+				<echo message="${file.config}|${file.platform}" />
+				<exec program="${msbuild2008.exe}" failonerror="true">
+					<arg value="${build.base.dir}${file}" />
+					<arg value ="/t:rebuild" />
+					<arg value ="/property:Configuration=${file.config}" />
+					<arg value ="/property:Platform=${file.platform}" />
+					<arg value ="/property:AllowUnsafeBlocks=${file.unsafeCode}" />
+					<arg value ="/verbosity:quiet" />
+				</exec>
+
+				<if test="${string::get-length(file.path)!=0}">
+					<property name="target.platform" value="${file.platform}" />
+					<call target="createSFXPackage"/>
+					<copy todir="${workspace}\Installer_${file.platform}">
+   				 		<fileset basedir="${build.base.dir}${file.path}">
+							<include name="**/*.*" />
+    						</fileset>
+					</copy>
+				</if>
+
+				<property name="files" value="${files}|${file}" />
+				<echo message="------------------------------------------------------------->" />
+			</if>
+		</foreach>
+
+		<property name="files" value="" />
+		
+		<foreach item="String" in="${vs2010SrcFiles}" delim="|" property="file">
+			<if test="${string::get-length(file)!=0}">
+				<echo message="Build ${build.base.dir}${file}" />
+				<property name="file.config" value="${GetAttribute::GetXMLAttributeByName('configuration', file, 'vs2010', 'srcFiles', files)}" />
+				<property name="file.platform" value="${GetAttribute::GetXMLAttributeByName('platform', file, 'vs2010', 'srcFiles', files)}" />
+				<property name="file.unsafeCode" value="${GetAttribute::GetXMLAttributeByName('unsafeCode', file, 'vs2010', 'srcFiles', files)}" />
+				<property name="file.path" value="${GetAttribute::GetXMLAttributeByName('msiPath', file, 'vs2010', 'srcFiles', files)}" />
+				
+				<echo message="${file.config}|${file.platform}" />
+				<exec program="${msbuild2010.exe}" failonerror="true">
+					<arg value="${build.base.dir}${file}" />
+					<arg value ="/t:rebuild" />
+					<arg value ="/property:Configuration=${file.config}" />
+					<arg value ="/property:Platform=${file.platform}" />
+					<arg value ="/property:AllowUnsafeBlocks=${file.unsafeCode}" />
+					<arg value ="/verbosity:quiet" />
+				</exec>
+
+				<if test="${string::get-length(file.path)!=0}">
+					<property name="target.platform" value="${file.platform}" />
+					<call target="createSFXPackage"/>
+					<copy todir="${workspace}\Installer_${file.platform}">
+   				 		<fileset basedir="${build.base.dir}${file.path}">
+							<include name="**/*.*" />
+    						</fileset>
+					</copy>
+				</if>
+
+				<property name="files" value="${files}|${file}" />
+				<echo message="------------------------------------------------------------->" />
+			</if>
+		</foreach>
+		
+		<foreach item="String" in="${vs2012SrcFiles}" delim="|" property="file">
+			<if test="${string::get-length(file)!=0}">
+				<echo message="Build ${build.base.dir}${file}" />
+				<property name="file.config" value="${GetAttribute::GetXMLAttributeByName('configuration', file, 'vs2012', 'srcFiles', files)}" />
+				<property name="file.platform" value="${GetAttribute::GetXMLAttributeByName('platform', file, 'vs2012', 'srcFiles', files)}" />
+				<property name="file.unsafeCode" value="${GetAttribute::GetXMLAttributeByName('unsafeCode', file, 'vs2012', 'srcFiles', files)}" />
+				<property name="file.path" value="${GetAttribute::GetXMLAttributeByName('msiPath', file, 'vs2012', 'srcFiles', files)}" />
+				
+				<echo message="${file.config}|${file.platform}" />
+				<exec program="${msbuild2012.exe}" failonerror="true">
+					<arg value="${build.base.dir}${file}" />
+					<arg value ="/t:rebuild" />
+					<arg value ="/property:Configuration=${file.config}" />
+					<arg value ="/property:Platform=${file.platform}" />
+					<arg value ="/property:AllowUnsafeBlocks=${file.unsafeCode}" />
+					<arg value ="/verbosity:quiet" />
+				</exec>
+
+				<if test="${string::get-length(file.path)!=0}">
+					<property name="target.platform" value="${file.platform}" />
+					<call target="createSFXPackage"/>
+					<copy todir="${workspace}\Installer_${file.platform}">
+   				 		<fileset basedir="${build.base.dir}${file.path}">
+							<include name="**/*.*" />
+    						</fileset>
+					</copy>
+				</if>
+
+				<property name="files" value="${files}|${file}" />
+				<echo message="------------------------------------------------------------->" />
+			</if>
+		</foreach>
+
+		<property name="files" value="" />
+		
+		<foreach item="String" in="${vcProjectFiles2005}" delim="|" property="file">
+			<if test="${string::get-length(file)!=0}">
+                <echo message="Build ${build.base.dir}${file}" />
+				<property name="file.config" value="${GetAttribute::GetXMLAttributeByName('configuration', file, 'vs2005', 'vcProjectFiles', files)}" />
+                <property name="file.platform" value="${GetAttribute::GetXMLAttributeByName('platform', file, 'vs2005', 'vcProjectFiles', files)}" />
+				<echo message="Build ${file.config}|${file.platform}" />
+				
+				<exec program="${vcbuild.exe}" failonerror="true" 
+					commandline="&quot;${build.base.dir}${file}&quot; /rebuild ${file.config} /platform:${file.platform}">
+				</exec>
+				<property name="files" value="${files}|${file}" />
+				<echo message="------------------------------------------------------------->" />
+			</if>
+		</foreach>
+
+		<property name="files" value="" />
+
+		<foreach item="String" in="${vcProjectFiles2008}" delim="|" property="file">
+			<if test="${string::get-length(file)!=0}">
+                <echo message="Build ${build.base.dir}${file}" />
+				<property name="file.config" value="${GetAttribute::GetXMLAttributeByName('configuration', file, 'vs2008', 'vcProjectFiles', files)}" />
+				<property name="file.platform" value="${GetAttribute::GetXMLAttributeByName('platform', file, 'vs2008', 'vcProjectFiles', files)}" />
+				<echo message="Build ${file.config}|${file.platform}" />
+				
+				<exec program="${vcbuild2008.exe}" failonerror="true" 
+					commandline="&quot;${build.base.dir}${file}&quot; /rebuild ${file.config} /platform:${file.platform}">			
+				</exec>
+				<property name="files" value="${files}|${file}" />
+				<echo message="files ${files}" />
+				<echo message="------------------------------------------------------------->" />
+			</if>
+		</foreach>
+
+		<property name="files" value="" />
+		
+		<foreach item="String" in="${vcProjectFiles2010}" delim="|" property="file">
+			<if test="${string::get-length(file)!=0}">
+				<echo message="Build ${build.base.dir}${file}" />
+				<property name="file.config" value="${GetAttribute::GetXMLAttributeByName('configuration', file, 'vs2010', 'vcProjectFiles', files)}" />
+				<property name="file.platform" value="${GetAttribute::GetXMLAttributeByName('platform', file, 'vs2010', 'vcProjectFiles', files)}" />
+				
+				<echo message="${file.config}|${file.platform}" />
+				<exec program="${msbuild2010.exe}" failonerror="true">
+					<arg value="${build.base.dir}${file}" />
+					<arg value ="/t:rebuild" />
+					<arg value ="/property:Configuration=${file.config}" />
+					<arg value ="/property:Platform=${file.platform}" />
+					<arg value ="/verbosity:quiet" />
+				</exec>
+				
+				<echo message="files ${files}" />
+				<property name="files" value="${files}|${file}" />
+				<echo message="------------------------------------------------------------->" />
+			</if>
+		</foreach>
+
+		<property name="files" value="" />
+
+		<foreach item="String" in="${vs2005SetupProjectFiles}" delim="|" property="file">
+			<if test="${string::get-length(file)!=0}">
+				<echo message="Build Installer ${build.base.dir}${file}" />
+                <property name="file.config" value="${GetAttribute::GetXMLAttributeByName('configuration', file, 'vs2005', 'setupProjectFiles', files)}" />
+				<property name="file.project" value="${GetAttribute::GetXMLAttributeByName('project', file, 'vs2005', 'setupProjectFiles', files)}" />
+				<property name="file.changePlatform" value="${GetAttribute::GetXMLAttributeByName('changePlatform', file, 'vs2005', 'setupProjectFiles', files)}" />
+				<property name="file.path" value="${GetAttribute::GetXMLAttributeByName('msiPath', file, 'vs2005', 'setupProjectFiles', files)}" />
+				
+                <if test="${file.changePlatform=='true'}">
+					<property name="file.name" value="${build.base.dir}${file}" />					
+					<property name="flag.changeOutputFileName" value="${GetAttribute::GetXMLAttributeByName('changeOutputFileName', file, 'vs2005', 'setupProjectFiles', files)}" />
+					<property name="change" value="${ChangeTargetPlatform::ChangeTargetPlatform(file.name, file.path, flag.changeOutputFileName)}" />
+                    <property name="target.platform" value="${change}" />
+					<echo message="${file.config} ${change}" />
+				    	<exec program="${devenv.exe}" failonerror="true" 
+                                      		commandline="/rebuild ${file.config} /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+				    	</exec>
+
+				<call target="createSFXPackage"/>
+                
+				<copy todir="${workspace}\Installer_${change}">
+   				 	<fileset basedir="${build.base.dir}${file.path}">
+						<include name="**/*" />
+    					</fileset>
+				</copy>
+		
+				<property name="change" value="${ChangeTargetPlatform::ChangeTargetPlatform(file.name, file.path, flag.changeOutputFileName)}" />
+				<property name="target.platform" value="${change}" />
+				<echo message="${file.config} ${change}" />
+				<exec program="${devenv.exe}" failonerror="true" 
+                                      commandline="/rebuild ${file.config} /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+				</exec>	
+
+				<call target="createSFXPackage"/>
+
+				<copy todir="${workspace}\Installer_${change}">
+   				 	<fileset basedir="${build.base.dir}${file.path}">
+						<include name="**/*" />
+    					</fileset>
+				</copy>
+				</if>			
+				
+                <if test="${file.changePlatform=='false'}">
+					<property name="target.platform" value="" />
+					<echo message="${file.config}" />
+					<exec program="${devenv.exe}" failonerror="true" 
+                                      commandline="/rebuild &quot;${file.config}&quot; /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+					</exec>
+				
+				<call target="createSFXPackage"/>
+
+				</if>
+                <property name="files" value="${files}|${file}" />
+				<echo message="------------------------------------------------------------->" />
+			</if>
+		</foreach>     
+
+		<property name="files" value="" />
+
+        <foreach item="String" in="${vs2008SetupProjectFiles}" delim="|" property="file">
+			<if test="${string::get-length(file)!=0}">
+				<echo message="Build Installer ${build.base.dir}${file}" />
+                <property name="file.config" value="${GetAttribute::GetXMLAttributeByName('configuration', file, 'vs2008', 'setupProjectFiles', files)}" />
+				<property name="file.project" value="${GetAttribute::GetXMLAttributeByName('project', file, 'vs2008', 'setupProjectFiles', files)}" />							
+				<property name="file.changePlatform" value="${GetAttribute::GetXMLAttributeByName('changePlatform', file, 'vs2008', 'setupProjectFiles', files)}" />
+				<property name="file.path" value="${GetAttribute::GetXMLAttributeByName('msiPath', file, 'vs2008', 'setupProjectFiles', files)}" />
+				                           
+
+				<if test="${file.changePlatform=='true'}">
+					<property name="file.name" value="${build.base.dir}${file}" />
+					<property name="flag.changeOutputFileName" value="${GetAttribute::GetXMLAttributeByName('changeOutputFileName', file, 'vs2008', 'setupProjectFiles', files)}" />	
+					<property name="change" value="${ChangeTargetPlatform::ChangeTargetPlatform(file.name, file.path, flag.changeOutputFileName)}" />
+                    <property name="target.platform" value="${change}" />
+					<echo message="${flag.changeOutputFileName}" />
+					<echo message="${file.config} ${change}" />
+				    <exec program="${devenv2008.exe}" failonerror="true" 
+                                      commandline="/rebuild ${file.config} /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+				    </exec>
+				
+				<call target="createSFXPackage"/>
+                                	
+				<copy todir="${workspace}\Installer_${change}">
+   				 	<fileset basedir="${build.base.dir}${file.path}">
+						<include name="**/*" />
+    					</fileset>
+				</copy>
+			
+				
+				<property name="change" value="${ChangeTargetPlatform::ChangeTargetPlatform(file.name, file.path, flag.changeOutputFileName)}" />
+				<property name="target.platform" value="${change}" />
+				<echo message="${file.config} ${change}" />
+				<exec program="${devenv2008.exe}" failonerror="true" 
+                                      commandline="/rebuild ${file.config} /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+				</exec>	
+
+				<call target="createSFXPackage"/>
+
+				<copy todir="${workspace}\Installer_${change}">
+   				 	<fileset basedir="${build.base.dir}${file.path}">
+						<include name="**/*" />
+    					</fileset>
+				</copy>
+				</if>			
+				
+                <if test="${file.changePlatform=='false'}">
+					<property name="target.platform" value=" " />
+					<echo message="${file.config}" />
+					<exec program="${devenv2008.exe}" failonerror="true" 
+                                      commandline="/rebuild ${file.config} /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+					</exec>
+					<call target="createSFXPackage"/>
+				</if>
+                                <property name="files" value="${files}|${file}" />
+				<echo message="------------------------------------------------------------->" />
+			</if>
+		</foreach>
+		
+		<property name="files" value="" />
+		
+		<foreach item="String" in="${vs2010SetupProjectFiles}" delim="|" property="file">
+			<if test="${string::get-length(file)!=0}">
+				<echo message="Build Installer ${build.base.dir}${file}" />
+                <property name="file.config" value="${GetAttribute::GetXMLAttributeByName('configuration', file, 'vs2010', 'setupProjectFiles', files)}" />
+				<property name="file.project" value="${GetAttribute::GetXMLAttributeByName('project', file, 'vs2010', 'setupProjectFiles', files)}" />
+				<property name="file.changePlatform" value="${GetAttribute::GetXMLAttributeByName('changePlatform', file, 'vs2010', 'setupProjectFiles', files)}" />
+				<property name="file.path" value="${GetAttribute::GetXMLAttributeByName('msiPath', file, 'vs2010', 'setupProjectFiles', files)}" />
+				
+                <if test="${file.changePlatform=='true'}">
+					<property name="file.name" value="${build.base.dir}${file}" />					
+					<property name="flag.changeOutputFileName" value="${GetAttribute::GetXMLAttributeByName('changeOutputFileName', file, 'vs2010', 'setupProjectFiles', files)}" />
+					<property name="change" value="${ChangeTargetPlatform::ChangeTargetPlatform(file.name, file.path, flag.changeOutputFileName)}" />
+                    <property name="target.platform" value="${change}" />
+					<echo message="${file.config} ${change}" />
+				    	<exec program="${devenv2010.exe}" failonerror="true" 
+                                      		commandline="/rebuild ${file.config} /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+				    	</exec>
+
+				<call target="createSFXPackage"/>
+                                	
+				<copy todir="${workspace}\Installer_${change}">
+   				 	<fileset basedir="${build.base.dir}${file.path}">
+						<include name="**/*" />
+    					</fileset>
+				</copy>
+		
+				<property name="change" value="${ChangeTargetPlatform::ChangeTargetPlatform(file.name, file.path, flag.changeOutputFileName)}" />
+				<property name="target.platform" value="${change}" />
+				<echo message="${file.config} ${change}" />
+				<exec program="${devenv2010.exe}" failonerror="true" 
+                                      commandline="/rebuild ${file.config} /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+				</exec>	
+
+				<call target="createSFXPackage"/>
+
+				<copy todir="${workspace}\Installer_${change}">
+   				 	<fileset basedir="${build.base.dir}${file.path}">
+						<include name="**/*" />
+    					</fileset>
+				</copy>
+				</if>			
+				
+                <if test="${file.changePlatform=='false'}">
+				<property name="target.platform" value="" />
+				<echo message="${file.config}" />
+				<exec program="${devenv2010.exe}" failonerror="true" 
+                                      commandline="/rebuild &quot;${file.config}&quot; /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+				</exec>
+				
+				<call target="createSFXPackage"/>	
+
+				</if>
+                <property name="files" value="${files}|${file}" />
+				<echo message="------------------------------------------------------------->" />
+			</if>
+		</foreach>
+		
+		<foreach item="String" in="${vs2012SetupProjectFiles}" delim="|" property="file">
+			<if test="${string::get-length(file)!=0}">
+				<echo message="Build Installer ${build.base.dir}${file}" />
+                <property name="file.config" value="${GetAttribute::GetXMLAttributeByName('configuration', file, 'vs2012', 'setupProjectFiles', files)}" />
+				<property name="file.project" value="${GetAttribute::GetXMLAttributeByName('project', file, 'vs2012', 'setupProjectFiles', files)}" />
+				<property name="file.changePlatform" value="${GetAttribute::GetXMLAttributeByName('changePlatform', file, 'vs2012', 'setupProjectFiles', files)}" />
+				<property name="file.path" value="${GetAttribute::GetXMLAttributeByName('msiPath', file, 'vs2012', 'setupProjectFiles', files)}" />
+				
+                <if test="${file.changePlatform=='true'}">
+					<property name="file.name" value="${build.base.dir}${file}" />					
+					<property name="flag.changeOutputFileName" value="${GetAttribute::GetXMLAttributeByName('changeOutputFileName', file, 'vs2012', 'setupProjectFiles', files)}" />
+					<property name="change" value="${ChangeTargetPlatform::ChangeTargetPlatform(file.name, file.path, flag.changeOutputFileName)}" />
+                    <property name="target.platform" value="${change}" />
+					<echo message="${file.config} ${change}" />
+				    	<exec program="${devenv2010.exe}" failonerror="true" 
+                                      		commandline="/rebuild ${file.config} /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+				    	</exec>
+
+				<call target="createSFXPackage"/>
+                                	
+				<copy todir="${workspace}\Installer_${change}">
+   				 	<fileset basedir="${build.base.dir}${file.path}">
+						<include name="**/*" />
+    					</fileset>
+				</copy>
+		
+				<property name="change" value="${ChangeTargetPlatform::ChangeTargetPlatform(file.name, file.path, flag.changeOutputFileName)}" />
+				<property name="target.platform" value="${change}" />
+				<echo message="${file.config} ${change}" />
+				<exec program="${devenv2012.exe}" failonerror="true" 
+                                      commandline="/rebuild ${file.config} /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+				</exec>	
+
+				<call target="createSFXPackage"/>
+
+				<copy todir="${workspace}\Installer_${change}">
+   				 	<fileset basedir="${build.base.dir}${file.path}">
+						<include name="**/*" />
+    					</fileset>
+				</copy>
+				</if>			
+				
+                <if test="${file.changePlatform=='false'}">
+				<property name="target.platform" value="" />
+				<echo message="${file.config}" />
+				<exec program="${devenv2012.exe}" failonerror="true" 
+                                      commandline="/rebuild &quot;${file.config}&quot; /project ${file.project} &quot;${build.base.dir}${file}&quot;">
+				</exec>
+				
+				<call target="createSFXPackage"/>	
+
+				</if>
+                <property name="files" value="${files}|${file}" />
+				<echo message="------------------------------------------------------------->" />
+			</if>
+		</foreach>
+	</target>
+
+	<target name="createSFXPackage">
+		<if test="${string::get-length(file.path)!=0}">
+		<delete file="${tempSEDFile}"/>
+		<copy file="${templateFile}" tofile="${tempSEDFile}" overwrite="true" />
+		<property name="setup.folder" value="${build.base.dir}${file.path}" />
+		<echo message="${setup.folder}" />
+		
+		<property name="project.name" value="" />
+		<script language="C#"  prefix="CSharp" failonerror="true">
+		<code>
+		<![CDATA[
+			public static void ScriptMain(Project project)
+			{				
+				string path = project.Properties ["workspace"];
+				DirectoryInfo dirInf = new DirectoryInfo(path);	
+				project.Properties ["project.name"] = dirInf.Name;
+			}
+		]]>
+		</code>
+		</script>
+
+		<echo message="${project.name}" />
+		<property name="target.name" value="${build.base.dir}${file.path}IXP_${project.name}_${target.platform}_${current.full.version}.EXE" />
+			
+		<script language="C#">
+			<references>
+			       	<include name="System.dll" />
+			</references>
+			<imports>
+				<import namespace="System.Collections.Generic" />
+			</imports>
+			<code>
+			<![CDATA[
+				public static void ScriptMain(Project project)
+				{
+				string path = project.Properties ["setup.folder"];
+				string sedFilePath = project.Properties ["tempSEDFile"];
+				DirectoryInfo dirInf = new DirectoryInfo(path);
+				FileInfo[] files = dirInf.GetFiles("*.*", SearchOption.AllDirectories);
+				string name = project.Properties ["target.name"];
+				FileStream aiReader = new FileStream(sedFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+				byte[] bytes = new byte[aiReader.Length];
+				int numBytesToRead = (int)aiReader.Length;
+				int numBytesRead = 0;
+				while (numBytesToRead > 0)
+				{
+					// Read may return anything from 0 to numBytesToRead.
+					int n = aiReader.Read(bytes, numBytesRead, numBytesToRead);
+
+					// Break when the end of the file is reached.
+					if (n == 0)
+						break;
+
+					numBytesRead += n;
+					numBytesToRead -= n;
+				}
+				numBytesToRead = bytes.Length;
+
+				System.Text.Encoding enc = System.Text.Encoding.Default;
+				string longS = enc.GetString(bytes);
+
+				if (files.Length > 2)
+            			{
+			                longS = longS.Replace("AppLaunched=setup.exe", "AppLaunched=script_C++.exe");
+                			longS = longS.Replace("<None>", "setup.exe");
+                			if (!File.Exists(path + "\\script_C++.exe"))
+                			File.Copy(project.Properties ["scriptFile"], path + "\\script_C++.exe");
+                			files = dirInf.GetFiles("*.*", SearchOption.AllDirectories);
+           	 		}
+
+				List<string> dirs = new List<string>();
+				int index = longS.IndexOf("FILE0=");
+				longS = longS.Replace("\r\nFILE0=", "");
+				int rest = 0;
+				for(int i=0; i<files.Length; i++)
+				{
+					if(!files[i].DirectoryName.Contains(".svn"))
+					{
+					longS = longS.Insert(index, "FILE" + i.ToString() + "=" + "\"" + files[i].Name + "\"\r\n");
+					rest = files[i].Name.Length + 10;
+					index += rest;
+
+					if(!dirs.Contains(files[i].DirectoryName))
+					{
+						string dir = "\r\nSourceFiles" + dirs.Count.ToString() + "=" + files[i].DirectoryName + "\\";
+						longS = longS.Insert(longS.LastIndexOf("[SourceFiles]") + 13, dir);
+						dirs.Add(files[i].DirectoryName);
+					}
+					}
+				}
+
+				for (int i = 0; i < dirs.Count; i++)
+				{
+					longS = longS.Insert(longS.Length,"\r\n[SourceFiles" + i.ToString() + "]");
+					string file = string.Empty;
+					for (int j = 0; j < files.Length; j++)
+					{
+						if (dirs[i] == files[j].Directory.FullName)
+						{
+							file = "\r\n%" + "FILE" + j.ToString() + "%=";
+							longS = longS.Insert(longS.Length, file);
+						}
+					}
+				}
+				aiReader.Close();
+				longS = longS.Replace("PackageName", name);
+
+				FileStream newReader = new FileStream(sedFilePath, FileMode.Truncate, FileAccess.ReadWrite, FileShare.ReadWrite);
+				newReader.Write(enc.GetBytes(longS), 0, enc.GetBytes(longS).Length);
+				newReader.Close();
+				}
+				]]>
+			</code>
+	   </script>
+
+	   <exec program="${iexpress.exe}" failonerror="true" 
+                 commandline="${tempSEDFile} /n /q">
+	   </exec>
+
+	   <delete file="${setup.folder}script_C++.exe"/>
+	 </if>
+	<if test="${string::get-length(file.path)==0}">
+		<echo message="Packing is not needed" />
+	</if>
+	</target>
+	
+	<target name="clean">
+		<foreach item="String" in="${build.delete.dir}" delim="|" property="folder">
+			<if test="${string::get-length(folder)!=0}">
+				<echo message="Cleaning ${build.base.dir}${folder}" />
+				<script language="C#">
+		<code>
+			<![CDATA[
+				public static void ScriptMain(Project project)
+				{
+					string dir = project.Properties ["build.base.dir"] + project.Properties ["folder"];				
+                    			DirectoryInfo dirInfo = new DirectoryInfo(dir);
+					if(Directory.Exists(dir))
+					{
+            				FileInfo[] file = dirInfo.GetFiles("*.*", SearchOption.AllDirectories);
+            				for (int i = 0; i < file.Length; i++ )
+            				{
+                				if (!file[i].FullName.Contains(".svn"))
+                				{
+                    					file[i].Delete();
+                				}
+            				}
+					}
+				}
+			]]>
+		</code>
+	   </script>
+			</if>
+		</foreach>
+		<delete dir="${tempFile}"/>
+
+	</target>
+
+        <target name="version.changer">
+
+        <property name="major.version" value="" />
+	    <property name="minor.version" value="" />
+
+        <if test="${VerChangerFiles!='Null|'}">
+        <echo message="Not null" />
+  	    <echo message="${VerChangerFiles}" />   
+	    <script language="C#">
+		    <code>
+			    <![CDATA[
+				public static void ScriptMain(Project project)
+				{
+					string longString = project.Properties ["VerChangerFiles"];				
+                    string[] strings = longString.Split('|');
+                    string versionFile = "";
+
+                    for (int i = 0; i < 1; i++)
+                    {
+                        if (strings[i].Length != 0)
+                        {
+                            string[] subStrings = strings[i].Split('@');
+                            versionFile = project.Properties ["workspace"] + subStrings[1];
+                        }
+                    }	
+
+            FileStream reader = new FileStream(versionFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            byte[] bytes = new byte[reader.Length];
+            int numBytesToRead = Convert.ToInt32(reader.Length);
+            int numBytesRead = 0;
+            while (numBytesToRead > 0)
+            {
+                // Read may return anything from 0 to numBytesToRead.
+                int n = reader.Read(bytes, numBytesRead, numBytesToRead);
+
+                // Break when the end of the file is reached.
+                if (n == 0)
+                    break;
+
+                numBytesRead += n;
+                numBytesToRead -= n;
+            }
+            numBytesToRead = bytes.Length;
+
+            System.Text.Encoding enc = System.Text.Encoding.UTF8;
+            string longS = enc.GetString(bytes);
+            string fileExtension = Path.GetExtension(versionFile);
+            string majorVersion;
+            string minorVersion;
+
+            if ((fileExtension == ".cs") | ((fileExtension == ".vb")))
+            {
+                majorVersion = longS[longS.IndexOf("AssemblyVersion") + 17].ToString();
+                minorVersion = longS[longS.IndexOf("AssemblyVersion") + 19].ToString();
+            }
+			else if (fileExtension == ".cpp")
+			{
+				majorVersion = longS[longS.IndexOf("AssemblyVersionAttribute") + 17].ToString();
+                minorVersion = longS[longS.IndexOf("AssemblyVersionAttribute") + 19].ToString();
+			}
+            else
+            {
+                int startIndex = longS.IndexOf("Version") + 8;
+                while (!char.IsDigit(longS[startIndex]))
+                {
+                    startIndex = longS.IndexOf("Version", startIndex) + 8;
+                }
+                majorVersion = longS[startIndex].ToString();
+                minorVersion = longS[startIndex + 2].ToString();
+            }
+			project.Properties ["major.version"] = majorVersion;
+			project.Properties ["minor.version"] = minorVersion;
+				}
+			]]>
+		</code>
+	   </script>
+
+			<foreach item="String" in="${VerChangerFiles}" delim="|" property="file">
+				<if test="${string::get-length(file)!=0}">
+					<property name="last.revision" value="${int::parse(last.revision)}" />
+				</if>
+			</foreach>
+
+
+        <echo message="[getting of version of the build started by hudson] version ${major.version}.${minor.version}.${build.number}.${last.revision}" />
+		<property name="current.full.version"  value="${major.version}.${minor.version}.${build.number}.${last.revision}" />
+
+
+	   <property name="commandArgs" value="" />
+
+           <script language="C#">
+		<code>
+			<![CDATA[
+				public static void ScriptMain(Project project)
+				{
+                                string longString = project.Properties ["VerChangerFiles"];				
+                                string[] strings = longString.Split('|');
+                                string result = "";
+
+                                for (int i = 0; i < strings.Length; i++)
+                                {
+									if (strings[i].Length != 0)
+									{
+										string[] subStrings = strings[i].Split('@');
+										result += subStrings[0] + '@' + project.Properties ["workspace"] + subStrings[1] + '@' + subStrings[2].Replace("%", project.Properties ["last.revision"]).Replace("*", project.Properties ["build.number"]) + '&';
+									}
+                                }
+                                project.Properties ["commandArgs"] = result;
+				}
+			]]>
+		</code>
+	   </script>
+           <echo message="Command Line:${commandArgs}" />
+		   
+           <echo message="changeVersion:${changeVersion}" />
+           <if test="${changeVersion=='True'}">
+				<exec program="${VerChangerPath}" failonerror="true">
+					<arg value="${commandArgs}" />		    
+				</exec>
+           </if>
+	 </if>
+	 <if test="${VerChangerFiles=='Null|'}">
+			<echo message="There's no need to change the version." />
+			<property name="current.full.version"  value="1.0.0.0" />
+	 </if>
+            
+	</target>
+
+	
+	<target name="get.build.info">
+		<script language="C#"  failonerror="true">
+			<references>
+				<include name="System.dll" />
+				<include name="System.Xml.dll" />
+			</references>
+			<imports>
+				<import namespace="System.Collections.Generic" />
+				<import namespace="System.Xml" />
+				<import namespace="System.Xml.XPath" />
+			</imports>
+			<code>
+				<![CDATA[
+					public static void ScriptMain(Project project)
+					{	
+					string path = project.Properties["XMLInfoPath"]; 
+					
+					List<string> listNodes = new List<string>();
+					
+					FileStream reader = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+					XmlDocument xmlDoc = new XmlDocument();
+					xmlDoc.Load(reader);
+					
+					project.Properties ["repository.url"] = xmlDoc.GetElementsByTagName("repository.url")[0].InnerText;
+					XmlNodeList nodeList = xmlDoc.GetElementsByTagName("project");
+					
+					string text = "";
+                                        foreach (XmlNode projectsNode in nodeList[nodeList.Count - 1].ChildNodes)
+                                        {
+                                        foreach (XmlNode node in projectsNode.ChildNodes)
+                                        {
+                                        foreach (XmlNode subnode in node.ChildNodes)
+                                        {
+                                        foreach (XmlNode vsTypeNode in subnode.ChildNodes)
+                                        {
+                                        text += vsTypeNode.InnerText + "|";
+                                        }
+                                        listNodes.Add(text);
+                                        text = "";
+                                        }
+                                        }
+                                        }
+                    project.Properties ["build.base.dir"] = project.Properties ["workspace"] + listNodes[0].Remove(listNodes[0].Length-1);
+					project.Properties ["build.delete.dir"] = listNodes[1];
+					project.Properties ["vs2005SrcFiles"]= listNodes[2];
+					project.Properties ["vs2005SetupProjectFiles"]= listNodes[3];
+					project.Properties ["vcProjectFiles2005"]= listNodes[4];
+					project.Properties ["vs2008SrcFiles"]= listNodes[5];
+					project.Properties ["vs2008SetupProjectFiles"]= listNodes[6];
+					project.Properties ["vcProjectFiles2008"]= listNodes[7];
+					project.Properties ["vs2010SrcFiles"]= listNodes[8];
+					project.Properties ["vs2010SetupProjectFiles"]= listNodes[9];
+					project.Properties ["vcProjectFiles2010"]= listNodes[10];
+					project.Properties ["vs2012SrcFiles"]= listNodes[11];
+					project.Properties ["vs2012SetupProjectFiles"]= listNodes[12];
+					project.Properties ["vcProjectFiles2012"]= listNodes[13];
+				    project.Properties ["VerChangerFiles"]= listNodes[14];	
+					project.Properties ["disableCommit"]= listNodes[15].Substring(0, listNodes[15].IndexOf('|'));	
+					}
+				]]>
+			</code>
+		</script>
+	</target>
+</project>

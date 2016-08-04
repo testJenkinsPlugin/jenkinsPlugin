@@ -1,0 +1,9 @@
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_VB\Jenkins_TEST_VB\obj\Debug\ResolveAssemblyReference.cache
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_VB\Jenkins_TEST_VB\obj\Debug\Jenkins_TEST_VB.Resources.resources
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_VB\Jenkins_TEST_VB\obj\Debug\Jenkins_TEST_VB.vbproj.GenerateResource.Cache
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_VB\Jenkins_TEST_VB\bin\Debug\Jenkins_TEST_VB.exe
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_VB\Jenkins_TEST_VB\bin\Debug\Jenkins_TEST_VB.pdb
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_VB\Jenkins_TEST_VB\bin\Debug\Jenkins_TEST_VB.xml
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_VB\Jenkins_TEST_VB\obj\Debug\Jenkins_TEST_VB.exe
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_VB\Jenkins_TEST_VB\obj\Debug\Jenkins_TEST_VB.xml
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_VB\Jenkins_TEST_VB\obj\Debug\Jenkins_TEST_VB.pdb

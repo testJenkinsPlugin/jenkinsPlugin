@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project>
+ <repository.url>https://svn.aquasoft.dp.ua/sce_sharepoint_integration/</repository.url>
+ <dir>
+  <build.base.dir>
+   <folders>
+    <folderName>\Development\</folderName>
+   </folders>
+  </build.base.dir>
+  <deleteDir>
+   <folders>
+   </folders>
+  </deleteDir>
+ </dir>
+ <files>
+  <vs2005>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2005>
+  <vs2008>
+   <srcFiles>
+    </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2008>
+  <vs2010>
+   <srcFiles>
+	<file configuration="Release" platform="x86" unsafeCode="false">common\SpaceClaim.sln</file>
+	<file configuration="Release" platform="x64" unsafeCode="false">common\SpaceClaim.sln</file>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+	<file configuration="Release" platform="Win32">BootStrap\BootStrap.vcxproj</file>
+   </vcProjectFiles>
+  </vs2010>
+  <vs2012>
+   <srcFiles>
+    </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2012>
+  <versionChanger>
+   <versionFiles>
+    <versionFile>FileToChange:@\Development\SharePoint\Properties\AssemblyInfo.cs@# # * %</versionFile>
+    <versionFile>FileToChange:@\Development\SpaceClaimAddIn\Properties\AssemblyInfo.cs@# # * %</versionFile>
+	<versionFile>FileToChange:@\Development\Utils\Properties\AssemblyInfo.cs@# # * %</versionFile>
+	<versionFile>FileToChange:@\Development\BootStrap\version.h@# # * %</versionFile>
+	<versionFile>FileToChange:@\Development\ActiveX\Properties\AssemblyInfo.cs@# # * %</versionFile>
+   </versionFiles>
+   <options>
+	<disableCommit>True</disableCommit>
+   </options>
+  </versionChanger>
+ </files>
+</project>
+

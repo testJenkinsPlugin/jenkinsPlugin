@@ -1,0 +1,118 @@
+﻿<?xml version="1.0"?>
+<project default="main">
+	
+  
+	 <property name="version"	value=" " />
+   <property name="build.number" value="${environment::get-variable('BUILD_NUMBER')}"/>
+    <property name="last.revision" value="${environment::get-variable('SVN_REVISION')}" />
+    
+	 <property name="File" value="C:\Jenkins\workspace\PION_v5.1\Development\v5.1\MicroDissSetup\bin\Release\AuPRO.msi" />
+	
+	
+	<property name="repository.url"   value="https://svn.amcbridge.com/pion/Indigo/branches/MicroDiss_5.1" />
+	<property name="svn.username"     value="builduser" />
+    <property name="svn.password"     value="r4Gt7k8b" />
+  	
+	<target name="main">
+			
+		<echo message="Obtaining file version" />
+		<call target="parser" />
+		<echo message="Version: ${version}" />
+		<call target="check.revision" />
+        <call target="RenameFile" />
+	</target>
+                 
+ 
+<target name="parser" >
+		
+        <script language="C#"  prefix="CSharp" failonerror="true">
+        <references>
+			<include name="System.dll" />
+			<include name="System.Xml.dll" />
+		</references>
+		<imports>
+			<import namespace="System.Collections.Generic" />
+			<import namespace="System.Xml" />
+			<import namespace="System.Xml.XPath" />
+		</imports>
+					                       
+        <code>
+
+		    <![CDATA[
+                        
+        	     public static void ScriptMain(Project project) 
+                    {
+            
+                    string pathToFile = "C:\\Jenkins\\workspace\\PION_v5.1\\Development\\v5.1\\OdissayDriver\\version.rc";
+					FileInfo fileInfo = new FileInfo(pathToFile);
+					StreamReader reader = fileInfo.OpenText();
+				string line;
+				string version = null;
+				string versionTag = "ProductVersion";
+
+				while ((line = reader.ReadLine()) != null)
+				{
+					if (line.Contains(versionTag))
+					{
+						string trimmedLine = line.Trim();
+						int startIndex = trimmedLine.IndexOf(versionTag) + 4 + versionTag.Length;
+						int length = trimmedLine.Length - startIndex - 2;
+						string fullVersion = trimmedLine.Substring(startIndex, length);
+						string[] versions = fullVersion.Split(',');
+						for (int i = 0; i < versions.Length - 2; i++)
+							version += versions[i].TrimStart() + ".";
+
+						break;
+                }
+            }
+
+							project.Properties ["version"]= version;
+                                         
+                        }                                           
+						]]>
+                    </code>
+				</script>
+			</target> 
+			
+			
+			
+<target name="check.revision">
+        
+
+		<echo message="Number of the last revision in the repositiry: ${last.revision}" />
+
+</target>
+
+                    <target name="RenameFile" >
+					
+					<tstamp property="build.date" pattern="yyyy.MM.dd_HH.mm" verbose="true" />
+					
+					    <property name="PionFile" value="AuPRO_5.1.${build.number}.${last.revision}_${build.date}.msi"/>  
+                    
+                         <echo message="Full version: 5.1.${build.number}.${last.revision}" />
+						 
+						  
+		              
+					  <copy file="${File}" tofile="C:\Jenkins\workspace\PION_v5.1\Builds_automation\${PionFile}" />
+
+                         <echo message="Installer was copied to ftp://pion:XbSf6CRrX5@212.3.115.7" />
+
+                     
+
+               <loadtasks assembly="D:\Builder\w3c-nant-1.2.0.48\W3CValidationTasks.dll" />
+                          
+                  <ftpUpload host="212.3.115.7" username="pion" password="XbSf6CRrX5" todir="/">
+                      <fileset>
+                             <include name="C:\Jenkins\workspace\PION_v5.1\Builds_automation\${PionFile}" />
+                             
+                      </fileset>
+                    </ftpUpload>
+
+                  <echo message="Delete file *.msi on local"/>
+                  
+                 <delete file="C:\Jenkins\workspace\PION_v5.1\Builds_automation\${PionFile}" />   
+                        
+                                    
+                    </target>
+				
+</project>
