@@ -61,13 +61,15 @@
             <j:if test="${!view.isConfigChecked('DEBUG')}">
                 <input name="debug" type="checkbox"/>Debug</j:if>
             <j:if test="${view.isConfigChecked('OTHER')}">
-                <input checked="checked" name="other" onclick="configurator.disableOtherConfig(this)" type="checkbox"/>Other
+                <input checked="checked" name="other" onclick="configurator.disableOtherConfig(this)"  type="checkbox"/>Other
                 
-                <input field="userConfig_${divID}" name="userConfig" type="text" value="${view.getUserConfig()}"/></j:if>
-            <j:if test="${!view.isConfigChecked('OTHER')}">
-                <input name="other" onclick="configurator.disableOtherConfig(this)" type="checkbox"/>Other
+                <input field="userConfig_${divID}" name="userConfig" type="text" value="${view.getUserConfig()}" onblur="configurator.checkOtherConfiguration(this)" /></j:if>
+                <j:if test="${!view.isConfigChecked('OTHER')}">
+                <input name="other" onclick="configurator.disableOtherConfig(this)" onchange="configurator.checkOtherConfiguration(this)" type="checkbox"/>Other
                 
-                <input class="hidden" field="userConfig_${divID}" name="userConfig" type="text"/></j:if>
+                <input class="hidden" field="userConfig_${divID}" name="userConfig" type="text" onblur="configurator.checkOtherConfiguration(this)" />
+                <div class="error-block-config display-none" name="userConfigErrorBlock"><img src="../images/16x16/error.png"/>Only letters, digits, '_' and '-' are allowed</div>
+            </j:if>
         </div>
         <br/>
         <j:if test="${isAdmin}">

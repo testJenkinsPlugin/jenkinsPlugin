@@ -100,13 +100,13 @@ function copyConfiguration(configToCopyName) {
 
 }
 
-function isCopyNameCorrect() {
-    var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|\.\ ]*$/i;
+function isCopyNameCorrect(clickSubmit) {
+    var regPath = /^([a-zA-Z0-9_-]+)$/;
     var copyName = jQuery('#newConfigName')[0];
    
-    if (!regPath.test(copyName.value) || (copyName.value.length == 0)) {
+    if (!regPath.test(copyName.value) ) {
         jQuery(copyName).addClass('wrong');
-        jQuery("#copyHelpDiv").html("The symbols '\\, /, ?, *, #,  %, \", >, <, :, |, .' and spaces aren't allowed.");
+        jQuery("#copyHelpDiv").html("This field may only contain alphanumeric characters, underscores or hyphens, and can't be empty");
         jQuery('#copyHelpDiv').removeClass('display-none');
         return false;
     } 
@@ -118,8 +118,10 @@ function isCopyNameCorrect() {
         if (t.responseObject() != false) {
             jQuery('#copyHelpDiv').addClass('display-none');
             jQuery(copyName).removeClass('wrong');
-            jQuery("#copyButton").prop('onclick', null);
-            jQuery("#copyButton").click();
+            if(clickSubmit){
+                jQuery("#copyButton").prop('onclick', null);
+                jQuery("#copyButton").click();
+            }
             }
             else {
                 jQuery("#copyHelpDiv").html("Configuration with name '" + copyName.value + "' already exists. Please select another name.");
@@ -128,5 +130,5 @@ function isCopyNameCorrect() {
             }
     });
 
-return false;
+    return false;
 }

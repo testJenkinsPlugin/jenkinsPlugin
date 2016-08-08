@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configurations>
+  <job name="Test">
+    <projects>
+      <project pathToFile="configurator.hpi" localDirectory="Development">
+        <repository type="Subversion" url="https://scm.amcbridge.com/scm/svn/repo_build_automation_management_tool"/>
+        <pathToArtefacts/>
+        <versionFiles versionFile="false"/>
+      </project>
+    </projects>
+    <scripts/>
+  </job>
+</configurations>

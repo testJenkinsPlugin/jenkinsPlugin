@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<projects>
+	<project name="vasya1">
+		<repository.url type="svn">https://svn.aquasoft.dp.ua/rapid_sheet_metal/</repository.url>
+		<srcFiles>
+			<file builder="msbuild2010" configuration="Release" platform="x86" unsafeCode="false">\Development\common\MachineQuote.sln </file>
+			<file builder="msbuild2010" configuration="Release" platform="x64" unsafeCode="false">\Development\common\MachineQuote.sln </file>
+			<file builder="devenv2005" configuration="Release" platform="x64" unsafeCode="false">\Development\common\MachineQuote.sln </file>
+			<file builder="vcbuild2010" configuration="Release" platform="x64" unsafeCode="false">\Development\common\MachineQuote.sln </file>
+		</srcFiles>
+		<versionFiles>
+			<file disableCommit="True">FileToChange:@\Development\MachineQuote\AssemblyInfo.cs@# # * %</file>
+		</versionFiles>
+	</project>
+	<project name="vasya2">
+		<repository.url type="svn">https://svn.aquasoft.dp.ua/rapid_sheet_metal/</repository.url>
+		<srcFiles>
+			<file builder="msbuild2010" configuration="Release" platform="x86" unsafeCode="false">\Development\common\MachineQuote.sln </file>
+			<file builder="msbuild2010" configuration="Release" platform="x64" unsafeCode="false">\Development\common\MachineQuote.sln </file>
+			<file builder="devenv2005" configuration="Release" platform="x64" unsafeCode="false">\Development\common\MachineQuote.sln </file>
+			<file builder="vcbuild2010" configuration="Release" platform="x64" unsafeCode="false">\Development\common\MachineQuote.sln </file>
+		</srcFiles>
+		<versionFiles>
+			<file disableCommit="True">FileToChange:@\Development\MachineQuote\AssemblyInfo.cs@# # * %</file>
+		</versionFiles>
+	</project>
+</projects>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project>
+ <repository.url>https://svn.aquasoft.dp.ua/sw_epdm_kompas3d_addin/</repository.url>
+ <dir>
+  <build.base.dir>
+   <folders>
+    <folderName>\Src\</folderName>
+   </folders>
+  </build.base.dir>
+  <deleteDir>
+   <folders>
+    <folderName>Build\Release</folderName>
+    <folderName>Build\Release64</folderName>
+    <folderName>Setup\x86</folderName>
+    <folderName>Setup\x86\ru-ru</folderName>
+    <folderName>Setup\x64</folderName>
+    <folderName>Setup\x64\ru-ru</folderName>
+   </folders>
+  </deleteDir>
+ </dir>
+ <files>
+  <vs2005>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2005>
+  <vs2008>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2008>
+  <vs2010>
+   <srcFiles>
+	<file configuration="Release" platform="Win32" unsafeCode="true"  >Kompas.sln</file>
+    <file configuration="Release" platform="x64" unsafeCode="true"  >Kompas.sln</file>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2010>
+  <vs2012>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2012>
+  <versionChanger>
+   <versionFiles>
+    <versionFile>FileToChange:@\Src\version\version.h@# # * %</versionFile>
+   </versionFiles>
+   <options>
+	<disableCommit>False</disableCommit>
+   </options>
+  </versionChanger>
+ </files>
+</project>
+

@@ -1,0 +1,5 @@
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_CSharp\Jenkins_TEST_CSharp\bin\Debug\Jenkins_TEST_CSharp.exe
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_CSharp\Jenkins_TEST_CSharp\bin\Debug\Jenkins_TEST_CSharp.pdb
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_CSharp\Jenkins_TEST_CSharp\obj\Debug\ResolveAssemblyReference.cache
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_CSharp\Jenkins_TEST_CSharp\obj\Debug\Jenkins_TEST_CSharp.exe
+C:\VisualStudio\Projects\TEST\Jenkins_TEST_CSharp\Jenkins_TEST_CSharp\obj\Debug\Jenkins_TEST_CSharp.pdb

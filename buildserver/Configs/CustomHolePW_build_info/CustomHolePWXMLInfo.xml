@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project>
+<repository.url>https://svn.aquasoft.dp.ua/duracell_power_design_wizard/Development-2.1/trunk</repository.url>
+ <dir>
+  <build.base.dir>
+   <folders>
+    <folderName>\</folderName>
+   </folders>
+  </build.base.dir>
+  <deleteDir>
+   <folders>
+   </folders>
+  </deleteDir>
+ </dir>
+ <files>
+  <vs2005>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2005>
+  <vs2008>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2008>
+  <vs2010>
+   <srcFiles>
+	<file configuration="Release" platform="x64" unsafeCode="true">Development\Development\SW Personal Power Wizard.sln</file>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2010>
+  <vs2012>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2012>
+  <versionChanger>
+   <versionFiles>
+     <versionFile>FileToChange:@\Development\Development\PowerWizard\Properties\AssemblyInfo.cs@# # * %</versionFile>
+	 <versionFile>FileToChange:@\Development\Development\DowelHoleWizard\Properties\AssemblyInfo.cs@# # * %</versionFile>
+	 <versionFile>FileToChange:@\Development\Development\RulesUtility\Properties\AssemblyInfo.cs@# # * %</versionFile>
+	 <versionFile>FileToChange:@\Development\Development\FastenerHoleWizard\Properties\AssemblyInfo.cs@# # * %</versionFile>
+	 <versionFile>FileToChange:@\Development\Development\PipeBuilderWizard\Properties\AssemblyInfo.cs@# # * %</versionFile>
+	 <versionFile>FileToChange:@\Development\Development\PipeThreadWizard\Properties\AssemblyInfo.cs@# # * %</versionFile>
+	 <versionFile>FileToChange:@\Development\Development\SwitchThreadWizard\Properties\AssemblyInfo.cs@# # * %</versionFile>
+   </versionFiles>
+   <options>
+	<disableCommit>True</disableCommit>
+   </options>
+  </versionChanger>
+ </files>
+</project>

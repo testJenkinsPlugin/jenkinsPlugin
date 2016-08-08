@@ -148,17 +148,15 @@ public class BuildConfigurationManager {
             throws IOException, ServletException, JAXBException {
         List<BuildConfigurationModel> configs = new ArrayList<>();
         File file = new File(getRootDirectory());
-
-        if (!file.exists()) {
+        if (!file.exists() || file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY) == null) {
             return new LinkedList<>();
         }
-
         File[] directories = file.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
         for (File directory : directories) {
-            if (!isCurrentUserHasAccess(directory.getName())) {
-                continue;
+            File configFile = new File(directory, "config.xml");
+            if (isCurrentUserHasAccess(directory.getName()) && configFile.exists()) {
+                configs.add(load(directory.getName()));
             }
-            configs.add(load(directory.getName()));
         }
         return configs;
     }

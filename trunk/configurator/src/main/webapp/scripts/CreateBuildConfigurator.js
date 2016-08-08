@@ -479,7 +479,7 @@ var configurator = (function () {
             project.find("[name=versionFiles]").val("");
             project.find("[name=addVersion]").css("visibility", "visible");
             project.find("[name=vFiles]").css("visibility", "visible");
-            project.find("[dir=fieldSetDiv]").show();
+            project.find("[dir=fieldSetDiv]").removeClass('display-none');
         }
 
         if (!checkBox.checked) {
@@ -490,7 +490,7 @@ var configurator = (function () {
             versionFilesPath.addClass('hidden');
             project.find("[name=addVersion]").css("visibility", "hidden");
             project.find("[name=vFiles]").css("visibility", "hidden");
-            project.find("[dir=fieldSetDiv]").hide();
+            project.find("[dir=fieldSetDiv]").addClass('display-none');
         }
     }
 
@@ -502,6 +502,7 @@ var configurator = (function () {
         var pathVer = jQuery("[name=versionFilesPath]");
         var build = jQuery("[name=projectToBuild]");
         var patBuild = jQuery("[name=fileToBuild]");
+        var userConfig = jQuery("[name=userConfig]");
         if (projectName.value == "") {
             jQuery("#projectErrorText").html(" Please, enter your project name");
             jQuery("#projectError").removeClass('display-none');
@@ -548,6 +549,8 @@ var configurator = (function () {
             return false;
         if (!checkingPath(patBuild))
             return false;
+        if (!checkingPath(userConfig))
+            return false;
         if (type == "edit")
             return true;
         if (type == "ApproveReject") {
@@ -573,7 +576,7 @@ var configurator = (function () {
         if (path.length == 0)
             return true;
         for (var i = 0; i < path.length; i++) {
-            if (path[i].className == "textbox wrong") {
+            if (path[i].className == "textbox wrong" || path[i].className == "wrong") {
                 path[i].focus();
                 return false;
             }
@@ -839,12 +842,11 @@ var configurator = (function () {
     }
 
     var validateProject = function (project) {  //TODO !!!!!!!!!!!!!!!!!!!!
-        var regPath = /^[^\\\/\?\*\#\%\"\>\<\:\|\.\ ]*$/i;
+        var regPath = /^([a-zA-Z0-9_-]+)$/;
         var projectError = jQuery("#projectError");
         var projectErrorText = jQuery("#projectErrorText");
         var projectName = jQuery("[name=projectName]");
-        if (regPath.test(project.value) || (project.value.length == 0)) {
-            
+        if (regPath.test(project.value)) {
             projectError.addClass('display-none');
             projectErrorText.html("");
             projectName.removeClass('wrong');
@@ -852,7 +854,7 @@ var configurator = (function () {
         else {
 
             projectError.removeClass('display-none');
-            projectErrorText.html(" The symbols '\\, /, ?, *, #,  %, \", >, <, :, |, .' and spaces aren't allowed.");
+            projectErrorText.html(" This field may only contain alphanumeric characters, underscores or hyphens, and can't be empty.");
             projectName.addClass('wrong');
 
         }
@@ -883,16 +885,20 @@ var configurator = (function () {
 
             }
         }
+        var otherConfig =  jQuery('[name=userConfig]');
+        for(var i=0; i< otherConfig.length; i++){
+            otherConfig[i].onblur();
+        }
     }
 
     var commentCheckboxChange = function (checkBox) {
         var comments = jQuery("#comments");
         if (!checkBox.checked) {
-            comments.hide('100');
+            comments.addClass('display-none');
             comments.val("");
         }
         else {
-            comments.show('100');
+           comments.removeClass('display-none');
         }
     }
     function initCommentCheckbox(enable){
@@ -925,8 +931,22 @@ var configurator = (function () {
                 jQuery(fieldHelp).html(t.responseObject());
                 jQuery(fieldHelpBlock).removeClass('display-none');
             });
+       }
+    }
+    
+    var checkOtherConfiguration = function(element){
+        var regexp = /^([a-zA-Z0-9_-]*)$/;
+        if(regexp.test(jQuery(element).val())){
+            jQuery(element).closest('div').find('[name=userConfigErrorBlock]').addClass('display-none');
+            jQuery(element).removeClass('wrong');
+        }
+        else{
+            jQuery(element).addClass('wrong');
+            jQuery(element).closest('div').find('[name=userConfigErrorBlock]').removeClass('display-none');
         }
     }
+    
+
 
     var checkTrigger = function (value, id) {
         buildConfiguration.checkTrigger(value, function (t){
@@ -976,6 +996,7 @@ var configurator = (function () {
         addUserAccess:addUserAccess,
         addNewUserAccess:addNewUserAccess,
         triggerHelp:triggerHelp,
+        checkOtherConfiguration:checkOtherConfiguration,
         checkTrigger:checkTrigger
     };
 })(); //END OF CONFIGURATOR MODULE

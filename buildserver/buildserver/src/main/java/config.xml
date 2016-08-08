@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configurations>
+  <job name="test">
+    <projects>
+      <project pathToFile="configurator\trunk\configurator\work\plugins\configurator\builder.sln">
+        <repository type="Subversion" url="https://scm.amcbridge.com/scm/svn/repo_build_automation_management_tool/1"/>
+        <pathToArtefacts/>
+        <versionFiles versionFile="false"/>
+        <configs>
+          <config builder="VS 2012" platform="x86" configuration="Release"/>
+          <config builder="VS 2012" platform="x86" configuration="Debug"/>
+          <config builder="VS 2013" platform="x64" userConfig="other" configuration="Other"/>
+          <config builder="VS 2010" platform="Any CPU" configuration="Release"/>
+        </configs>
+      </project>
+      <project pathToFile="configurator\trunk1.sln">
+        <repository type="Subversion" url="https://scm.amcbridge.com/scm/svn/repo_build_automation_management_tool/2"/>
+        <pathToArtefacts/>
+        <versionFiles versionFile="false"/>
+        <configs>
+          <config builder="MSBuild 3.5" platform="Win32" configuration="Release"/>
+          <config builder="JavaC" platform="x64" configuration="Debug"/>
+          <config builder="XCode" platform="Win32" userConfig="xcode" configuration="Other"/>
+        </configs>
+      </project>
+    </projects>
+    <scripts/>
+  </job>
+</configurations>

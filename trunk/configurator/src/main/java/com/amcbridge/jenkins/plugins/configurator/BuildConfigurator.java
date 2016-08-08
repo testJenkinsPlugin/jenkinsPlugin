@@ -30,6 +30,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Extension
 public final class BuildConfigurator implements RootAction {
@@ -40,6 +42,7 @@ public final class BuildConfigurator implements RootAction {
     private static final String ICON_PATH = "/plugin/build-configurator/icons/system_config_services.png";
     private static final String DEFAULT_PAGE_URL = "buildconfigurator";
     private static final Logger LOGGER = LoggerFactory.getLogger(BuildConfigurator.class);
+    private static final String USER_CONFIG_PATTERN = "^([a-zA-Z0-9_-]*)$";
 
 
     public BuildConfigurator() {
@@ -109,7 +112,7 @@ public final class BuildConfigurator implements RootAction {
                 message.setDestinationAddress(getAdminEmails());
                 mail.sendMail(message);
             }
-            response.sendRedirect("./");
+            response.forwardToPreviousPage(request);
         } catch (Exception e) {
             LOGGER.error("Copy configuration fail", e);
             try {
@@ -183,8 +186,9 @@ public final class BuildConfigurator implements RootAction {
             }
 
             if (isArgsOk(currentConfig, newConfig)) {
+                checkBuildersUserConfig(newConfig);
                 BuildConfigurationManager.save(newConfig);
-                if (isCurrentUserAdministrator() && saveForDiff) {
+                if (saveForDiff && isCurrentUserAdministrator()) {
                     BuildConfigurationManager.saveForDiff(newConfig);
                 }
                 message.setDestinationAddress(getAdminEmails());
@@ -204,36 +208,41 @@ public final class BuildConfigurator implements RootAction {
         }
     }
 
+    private void checkBuildersUserConfig(BuildConfigurationModel configModel) {
+        Pattern pattern;
+        Matcher matcher;
+        pattern = Pattern.compile(USER_CONFIG_PATTERN);
+        Map<UUID,BuilderConfigModel> buildersMap = getBuildersMap(configModel);
+        for (Map.Entry<UUID,BuilderConfigModel> entry:buildersMap.entrySet()){
+            BuilderConfigModel builderModel = entry.getValue();
+            matcher = pattern.matcher(builderModel.getUserConfig());
+            if(!matcher.matches()){
+                builderModel.setUserConfig("");
+            }
+        }
+    }
 
     private boolean isArgsOk(BuildConfigurationModel currentBuildModel, BuildConfigurationModel newBuildModel) {
         String projectName = currentBuildModel.getProjectName();
-
-
         if (newBuildModel == null) {
             return false;
         }
-
         // User created new config with builder args
         if (!isCurrentUserAdministrator()) {
             boolean isConfigCompletelyNew = projectName == null || projectName.length() == 0;
-
             Map<UUID, BuilderConfigModel> newBuildersMap = getBuildersMap(newBuildModel);
             List<BuilderConfigModel> newBuildersList = new LinkedList<>(newBuildersMap.values());
-
             if (isConfigCompletelyNew) {
                 for (BuilderConfigModel builderModel : newBuildersList) {
                     if (!"".equals(builderModel.getBuilderArgs())) {
                         return false;
                     }
                 }
-
             } else {
                 Map<UUID, BuilderConfigModel> currentBuildersMap = getBuildersMap(currentBuildModel);
-
                 for (BuilderConfigModel newBuilder : newBuildersList) {
                     boolean isBuilderExistInCurrentConfig = currentBuildersMap.containsKey(newBuilder.getGuid());
                     BuilderConfigModel currentBuilder = currentBuildersMap.get(newBuilder.getGuid());
-
                     if (isBuilderExistInCurrentConfig) {
                         if (!newBuilder.getBuilderArgs().equals(currentBuilder.getBuilderArgs()))
                             return false;
@@ -243,11 +252,8 @@ public final class BuildConfigurator implements RootAction {
                         }
                     }
                 }
-
             }
-
         }
-
         // Action made by admin or user doesn't added/changed args
         return true;
     }

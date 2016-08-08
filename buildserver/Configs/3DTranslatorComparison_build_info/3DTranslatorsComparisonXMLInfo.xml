@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<project>
+<repository.url>https://svn.aquasoft.dp.ua/3d_translators_comparison_research/dev</repository.url>
+ <dir>
+  <build.base.dir>
+   <folders>
+    <folderName>\</folderName>
+   </folders>
+  </build.base.dir>
+  <deleteDir>
+   <folders>
+   </folders>
+  </deleteDir>
+ </dir>
+ <files>
+  <vs2005>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2005>
+  <vs2008>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2008>
+  <vs2010>
+   <srcFiles>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2010>
+  <vs2012>
+   <srcFiles>
+   <file configuration="Release" platform="x64" unsafeCode="false">Development\windows\src\Addins\GeomAnalyzeAddins.sln</file>
+   <file configuration="Release" platform="Win32" unsafeCode="false">Development\windows\src\Addins\GeomAnalyzeAddins.sln</file>
+   <file configuration="Release" platform="x64" unsafeCode="false">Development\windows\src\ParasolidTools\ParasolidTools.sln</file>
+   <file configuration="Release" platform="Win32" unsafeCode="false">Development\windows\src\ParasolidTools\ParasolidTools.sln</file>
+   <file configuration="Release_2012" platform="x64" unsafeCode="false">Development\windows\src\Translator\Translator_VS2012.sln</file>
+   <file configuration="Release_2012" platform="x86" unsafeCode="false">Development\windows\src\Translator\Translator_VS2012.sln</file>
+   </srcFiles>
+   <setupProjectFiles>
+   </setupProjectFiles>
+   <vcProjectFiles>
+   </vcProjectFiles>
+  </vs2012>
+  <versionChanger>
+   <versionFiles>
+     <versionFile>Null</versionFile>
+   </versionFiles>
+   <options>
+	<disableCommit>True</disableCommit>
+   </options>
+  </versionChanger>
+ </files>
+</project>

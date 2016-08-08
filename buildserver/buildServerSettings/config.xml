@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configurations>
+  <job name="MecSoft-Onshape Integration">
+    <projects>
+      <project pathToFile="\trunk\Src\OnshapeService.sln" localDirectory="Development">
+        <repository type="Subversion" url="https://scm.amcbridge.com/scm/svn/repo_mecsoft_onshape_integration"/>
+        <pathToArtefacts>
+          <file>Development/trunk/Bin/x64/Release/*.exp</file>
+          <file>Development/trunk/Bin/x64/Release/*.lib</file>
+          <file>Development/trunk/Bin/x64/Release/*.vca</file>
+          <file>Development/trunk/Bin/x64/Release/*.exe</file>
+          <file>Development/trunk/Bin/x64/Release/*.config</file>
+          <file>Development/trunk/Bin/x64/Release/*.dll</file>
+        </pathToArtefacts>
+        <versionFiles versionFile="false"/>
+        <configs>
+          <config builder="VS 2010" platform="x64" configuration="Release"/>
+        </configs>
+      </project>
+    </projects>
+    <scripts/>
+    <buildMachineConfiguration>
+      <string>Windows-x64</string>
+    </buildMachineConfiguration>
+  </job>
+  <job name="Sketchup Havok Integration">
+    <projects>
+      <project pathToFile="\HavokApp\HavokApp.sln" localDirectory="Development">
+        <repository type="Subversion" url="https://scm.amcbridge.com/scm/svn/repo_sketchup_havok_integration/"/>
+        <pathToArtefacts>
+          <file>Development/HavokApp/bin/x86/Release/*.msi</file>
+        </pathToArtefacts>
+        <versionFiles versionFile="false"/>
+        <configs>
+          <config builder="VS 2012" platform="x86" configuration="Release"/>
+        </configs>
+      </project>
+    </projects>
+    <scripts/>
+    <buildMachineConfiguration>
+      <string>Windows-x86</string>
+    </buildMachineConfiguration>
+  </job>
+</configurations>
