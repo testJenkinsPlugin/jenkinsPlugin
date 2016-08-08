@@ -103,7 +103,7 @@
 
             </j:if>
             <div class="project-to-build-label">
-                <label class="div-file-chooser-label">Path to artifacts1:</label>
+                <label class="div-file-chooser-label">Path to artifacts:</label>
             </div>
             <div>
                 <input class="textbox" name="pathToArtefacts" onblur="configurator.checkPath(this)" type="text"/>
