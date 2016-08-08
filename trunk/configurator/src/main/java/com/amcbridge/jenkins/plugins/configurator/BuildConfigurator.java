@@ -40,6 +40,7 @@ public final class BuildConfigurator implements RootAction {
     private static final String PLUGIN_NAME = "Build Configurator";
     private static final String ICON_PATH = "/plugin/build-configurator/icons/system_config_services.png";
     private static final String DEFAULT_PAGE_URL = "buildconfigurator";
+    private static final String LOGIN_PAGE_URL = "login";
     private static final Logger LOGGER = LoggerFactory.getLogger(BuildConfigurator.class);
     private static final String USER_CONFIG_PATTERN = "^([a-zA-Z0-9_-]*)$";
 
@@ -67,7 +68,7 @@ public final class BuildConfigurator implements RootAction {
     @Override
     public String getUrlName() {
         if (User.current() == null) {
-            return null;
+            return LOGIN_PAGE_URL;
         }
         return DEFAULT_PAGE_URL;
     }
