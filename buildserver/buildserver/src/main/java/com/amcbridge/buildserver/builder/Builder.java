@@ -7,7 +7,10 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 public class Builder {
 
     @XStreamAsAttribute
-    private String name, architecture, executeBuild, commandLine;
+    private String name;
+    private String architecture;
+    private String executeBuild;
+    private String commandLine;
 
     public String getName() {
         return name;

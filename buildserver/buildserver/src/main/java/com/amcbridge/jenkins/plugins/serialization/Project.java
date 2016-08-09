@@ -11,7 +11,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public class Project {
 
     @XStreamAsAttribute
-    private String pathToFile, localDirectory;
+    private String pathToFile;
+    private String localDirectory;
     private Repository repository;
     private PathToArtefacts pathToArtefacts;
     private VersionFile versionFiles;

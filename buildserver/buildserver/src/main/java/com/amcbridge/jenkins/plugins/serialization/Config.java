@@ -10,7 +10,11 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 public class Config {
 
     @XStreamAsAttribute
-    private String builder, platform, userConfig, configuration, builderArgs;
+    private String builder;
+    private String platform;
+    private String userConfig;
+    private String configuration;
+    private String builderArgs;
 
     public Config() {
     }

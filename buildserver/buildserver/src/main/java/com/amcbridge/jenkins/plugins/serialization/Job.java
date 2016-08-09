@@ -12,10 +12,9 @@ public class Job {
 
     @XStreamAsAttribute
     private String name;
-
     private List<Project> projects;
-
-    private String[] scripts, buildMachineConfiguration;
+    private String[] scripts;
+    private String[] buildMachineConfiguration;
 
     public Job() {
         this.projects = Lists.newLinkedList();
