@@ -14,7 +14,7 @@ public class BuilderManager {
     private List<Builder> builders;
 
     public BuilderManager() {
-        builders = new ArrayList<Builder>();
+        builders = new ArrayList<>();
     }
 
     public void init() throws Exception {
@@ -33,7 +33,6 @@ public class BuilderManager {
         }
         throw new Exception(String.format("Can not find %-2s builder", name));
     }
-
 
     private void loadBuilders() throws Exception {
         File buildersFile = new File(System.getProperty("user.dir"), BUILDERS_FILE);
