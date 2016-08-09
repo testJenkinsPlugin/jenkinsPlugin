@@ -44,7 +44,7 @@ public class Job {
         buildMachineConfiguration = value;
     }
 
-    public String[] getBuildMachineConfigurstion() {
+    public String[] getBuildMachineConfiguration() {
         return buildMachineConfiguration;
     }
 
