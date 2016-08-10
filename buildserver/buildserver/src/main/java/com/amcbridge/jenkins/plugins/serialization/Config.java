@@ -25,32 +25,16 @@ public class Config {
         this.platform = platform;
     }
 
-    public void setBuilder(String value) {
-        builder = value;
-    }
-
     public String getBuilder() {
         return builder;
-    }
-
-    public void setConfiguration(String value) {
-        configuration = value;
     }
 
     public String getConfiguration() {
         return configuration;
     }
 
-    public void setPlatform(String value) {
-        platform = value;
-    }
-
     public String getPlatform() {
         return platform;
-    }
-
-    public void setUserConfig(String value) {
-        userConfig = value;
     }
 
     public String getUserConfig() {
@@ -59,6 +43,22 @@ public class Config {
 
     public String getBuilderArgs() {
         return builderArgs;
+    }
+
+    public void setBuilder(String builder) {
+        this.builder = builder;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
+
+    public void setUserConfig(String userConfig) {
+        this.userConfig = userConfig;
+    }
+
+    public void setConfiguration(String configuration) {
+        this.configuration = configuration;
     }
 
     public void setBuilderArgs(String builderArgs) {
