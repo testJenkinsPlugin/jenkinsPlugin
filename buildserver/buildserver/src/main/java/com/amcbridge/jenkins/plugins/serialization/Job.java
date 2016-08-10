@@ -24,32 +24,32 @@ public class Job {
         this.name = name;
     }
 
-    public void setName(String value) {
-        name = value;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setProjects(List<Project> value) {
-        projects = value;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<Project> getProjects() {
         return projects;
     }
 
-    public void setBuildMachineConfiguration(String[] value) {
-        buildMachineConfiguration = value;
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
+    }
+
+    public void setScripts(String[] scripts) {
+        this.scripts = scripts;
     }
 
     public String[] getBuildMachineConfiguration() {
         return buildMachineConfiguration;
     }
 
-    public void setScripts(String[] value) {
-        scripts = value;
+    public void setBuildMachineConfiguration(String[] buildMachineConfiguration) {
+        this.buildMachineConfiguration = buildMachineConfiguration;
     }
 
     public String[] getScripts() {
