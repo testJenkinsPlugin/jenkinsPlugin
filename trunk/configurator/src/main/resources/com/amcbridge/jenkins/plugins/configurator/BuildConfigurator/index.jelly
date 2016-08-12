@@ -8,120 +8,122 @@
         <st:include it="${app}" page="sidepanel.jelly"/>
         <j:set value="${it.isCurrentUserAdministrator()}" var="isAdmin"/>
         <l:main-panel>
-            <div class="div-none" id="overlay">
-                <div class="div-none" id="rejectDiv">
-                    <label class="reject-label" id="helpReject">Please type reasons of rejection: </label>
-                    <div>
-                        <input class="button-reject" id="OkReject" onClick="OkReject()" type="button" value="OK"/>
-                        <input class="button-reject" id="CancelReject" onClick="CancelReject()" type="button" value="Cancel"/>
+            <j:if test="${it.isCurrentUserHasAccessToPlugin()}">
+                <div class="div-none" id="overlay">
+                    <div class="div-none" id="rejectDiv">
+                        <label class="reject-label" id="helpReject">Please type reasons of rejection: </label>
+                        <div>
+                            <input class="button-reject" id="OkReject" onClick="OkReject()" type="button" value="OK"/>
+                            <input class="button-reject" id="CancelReject" onClick="CancelReject()" type="button" value="Cancel"/>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <h1>Configurations</h1>
-            <div class="version">ver ${it.getBuildConfiguratorVersion()}</div>
-            <j:if test="${isAdmin}">
-                <j:if test="${!it.isJenkinsEmailConfigOK()}">
-                    <label class="wrong-email">Please, set correct email properties to receive email notifications from Jenkins</label>
-                    <br/>
+                <h1>Configurations</h1>
+                <div class="version">ver ${it.getBuildConfiguratorVersion()}</div>
+                <j:if test="${isAdmin}">
+                    <j:if test="${!it.isJenkinsEmailConfigOK()}">
+                        <label class="wrong-email">Please, set correct email properties to receive email notifications from Jenkins</label>
+                        <br/>
+                    </j:if>
                 </j:if>
-            </j:if>
-            <a class="CreateBuildConfigurator" href="create">Create new build configuration</a>
-            <table>
-                <thead>
-                    <tr height="10">
-                        <td/>
-                    </tr>
-                </thead>
-            </table>
-            <table class="config table" id="table">
-                <thead>
-                    <tr bgcolor="#eeeeee" height="30">
-                        <th class="project-name-column">Project name</th>
-                        <th class="state-column">State</th>
-                        <th class="last-update-date-column">Last update date</th>
-                        <th class="action-column">Action</th>
-                        <th class="user-name">Username</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <j:forEach indexVar="i" items="${it.getAllConfigurations()}" var="configs">
-                        <j:set value="${it.isCurrentUserHasAccess(configs.getProjectName())}" var="isCreator"/>
-                        <tr height="25">
-                            <j:choose>
-                                <j:when test="${it.isJobCreated(configs.getProjectName())}">
-                                    <td class="projectName">
-                                        <a href="../job/${configs.getProjectName()}">${configs.getProjectName()}</a>
-                                    </td>
-                                </j:when>
-                                <j:otherwise>
-                                    <td class="projectName">
-                                        <a href="#">${configs.getProjectName()}</a>
-                                    </td>
-                                </j:otherwise>
-                            </j:choose>
-                            <td class="state">
-                                <label class="${configs.getState().getCSSClassName()}" id="${configs.getState().toString()}">${configs.getState().toString()}</label>
-                            </td>
-                            <td class="state">${configs.getDate()}</td>
-                            <td>
-                                <j:if test="${configs.getState().toString() != 'Approved' &amp;&amp; configs.getState().toString() != 'Rejected'}">
-                                    <j:if test="${isAdmin}">
-                                        <j:if test="${configs.getState().toString() == 'For Deletion'}">
-                                            <j:if test="${h.hasPermission(app.ADMINISTER)}">
-                                                <a class="approve-reject-link" href="#" name="${configs.getProjectName()}" onclick="deletePermanently(this.name); return false;">Delete configuration permanently</a>
-                                                <a class="approve-reject-link" href="#" name="${configs.getProjectName()}" onclick="restore(this.name); return false;">Restore</a>
+                <a class="CreateBuildConfigurator" href="create">Create new build configuration</a>
+                <table>
+                    <thead>
+                        <tr height="10">
+                            <td/>
+                        </tr>
+                    </thead>
+                </table>
+                <table class="config table" id="table">
+                    <thead>
+                        <tr bgcolor="#eeeeee" height="30">
+                            <th class="project-name-column">Project name</th>
+                            <th class="state-column">State</th>
+                            <th class="last-update-date-column">Last update date</th>
+                            <th class="action-column">Action</th>
+                            <th class="user-name">Username</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <j:forEach indexVar="i" items="${it.getAllConfigurations()}" var="configs">
+                            <j:set value="${it.isCurrentUserHasAccess(configs.getProjectName())}" var="isCreator"/>
+                            <tr height="25">
+                                <j:choose>
+                                    <j:when test="${it.isJobCreated(configs.getProjectName())}">
+                                        <td class="projectName">
+                                            <a href="../job/${configs.getProjectName()}">${configs.getProjectName()}</a>
+                                        </td>
+                                    </j:when>
+                                    <j:otherwise>
+                                        <td class="projectName">
+                                            <a href="#">${configs.getProjectName()}</a>
+                                        </td>
+                                    </j:otherwise>
+                                </j:choose>
+                                <td class="state">
+                                    <label class="${configs.getState().getCSSClassName()}" id="${configs.getState().toString()}">${configs.getState().toString()}</label>
+                                </td>
+                                <td class="state">${configs.getDate()}</td>
+                                <td>
+                                    <j:if test="${configs.getState().toString() != 'Approved' &amp;&amp; configs.getState().toString() != 'Rejected'}">
+                                        <j:if test="${isAdmin}">
+                                            <j:if test="${configs.getState().toString() == 'For Deletion'}">
+                                                <j:if test="${h.hasPermission(app.ADMINISTER)}">
+                                                    <a class="approve-reject-link" href="#" name="${configs.getProjectName()}" onclick="deletePermanently(this.name); return false;">Delete configuration permanently</a>
+                                                    <a class="approve-reject-link" href="#" name="${configs.getProjectName()}" onclick="restore(this.name); return false;">Restore</a>
+                                                </j:if>
+                                            </j:if>
+                                            <j:if test="${configs.getState().toString() != 'For Deletion'}">
+                                                <a class="approve-reject-link" href="create?name=${configs.getProjectName()}&amp;type=ApproveReject">Approve/Reject</a>
                                             </j:if>
                                         </j:if>
-                                        <j:if test="${configs.getState().toString() != 'For Deletion'}">
-                                            <a class="approve-reject-link" href="create?name=${configs.getProjectName()}&amp;type=ApproveReject">Approve/Reject</a>
-                                        </j:if>
                                     </j:if>
-                                </j:if>
-                                <j:if test="${configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER) &amp;&amp; !configs.getJobUpdate()}">
-                                    <a class="approve-reject-link" href="#" name="${configs.getProjectName()}" onclick="createJob(this.name);">
-                                        <j:if test="${!it.isJobCreated(configs.getProjectName())}">Create Job
-                                        </j:if>
-                                        <j:if test="${it.isJobCreated(configs.getProjectName())}">Update Job
-                                        </j:if>
-                                    </a>
-                                </j:if>
-                                <j:if test="${h.hasPermission(app.ADMINISTER) &amp;&amp; it.isJobCreated(configs.getProjectName())}">
-                                    <a class="edit-link" href="#" name="delete_${configs.getProjectName()}" onclick="deleteJob(this.name);">Delete Job</a>
-                                </j:if>
-                                <j:if test="${(isCreator || h.hasPermission(app.ADMINISTER)) &amp;&amp; configs.getState().toString() != 'For Deletion'}">
-                                    <a class="edit-link" href="create?name=${configs.getProjectName()}&amp;type=edit">Edit</a>
-                                    <a class="delete-link" href="#" name="${configs.getProjectName()}" onclick="setDeletion(this.name); return false;">Delete</a>
-                                </j:if>
-                                <j:if test="${!isCreator &amp;&amp; configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
-                                    <a class="edit-link" href="create?name=${configs.getProjectName()}&amp;type=view">View</a>
-                                </j:if>
-                                <a class="edit-link" href="#" onclick="copyConfiguration(&quot;${configs.getProjectName()}&quot;);">Copy</a>
-                                <span/>
-                            </td>
-                            <td class="state">${configs.getFullNameCreator()}</td>
-                        </tr>
-                    </j:forEach>
-                </tbody>
-            </table>
-            <div class="modal display-none" id="copyConfig">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <span class="close" id="closeCopyConfig">×</span>
-                        <h2 id="copyConfigHeader">Copy configuration</h2>
-                    </div>
-                    <div class="modal-body">
-                        <f:form action="copyConfig" id="copyConfigForm" method="post" name="copyConfig">
-                            <div class="user">
-                                <label>New configuration name </label>
-                                <input id="newConfigName" name="newConfigName" onchange="isCopyNameCorrect(false)" type="text"/>
-                                <input id="copyConfigName" name="copyConfigName" type="hidden"/>
-                                <input class="button-copy" id="copyButton" onclick="return isCopyNameCorrect(true);" type="submit" value="Copy"/>
-                            </div>
-                        </f:form>
-                        <div id="copyHelpDiv" class="rejected display-none"/>
+                                    <j:if test="${configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER) &amp;&amp; !configs.getJobUpdate()}">
+                                        <a class="approve-reject-link" href="#" name="${configs.getProjectName()}" onclick="createJob(this.name);">
+                                            <j:if test="${!it.isJobCreated(configs.getProjectName())}">Create Job
+                                            </j:if>
+                                            <j:if test="${it.isJobCreated(configs.getProjectName())}">Update Job
+                                            </j:if>
+                                        </a>
+                                    </j:if>
+                                    <j:if test="${h.hasPermission(app.ADMINISTER) &amp;&amp; it.isJobCreated(configs.getProjectName())}">
+                                        <a class="edit-link" href="#" name="delete_${configs.getProjectName()}" onclick="deleteJob(this.name);">Delete Job</a>
+                                    </j:if>
+                                    <j:if test="${(isCreator || h.hasPermission(app.ADMINISTER)) &amp;&amp; configs.getState().toString() != 'For Deletion'}">
+                                        <a class="edit-link" href="create?name=${configs.getProjectName()}&amp;type=edit">Edit</a>
+                                        <a class="delete-link" href="#" name="${configs.getProjectName()}" onclick="setDeletion(this.name); return false;">Delete</a>
+                                    </j:if>
+                                    <j:if test="${!isCreator &amp;&amp; configs.getState().toString() == 'Approved' &amp;&amp; h.hasPermission(app.ADMINISTER)}">
+                                        <a class="edit-link" href="create?name=${configs.getProjectName()}&amp;type=view">View</a>
+                                    </j:if>
+                                    <a class="edit-link" href="#" onclick="copyConfiguration(&quot;${configs.getProjectName()}&quot;);">Copy</a>
+                                    <span/>
+                                </td>
+                                <td class="state">${configs.getFullNameCreator()}</td>
+                            </tr>
+                        </j:forEach>
+                    </tbody>
+                </table>
+                <div class="modal display-none" id="copyConfig">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <span class="close" id="closeCopyConfig">×</span>
+                            <h2 id="copyConfigHeader">Copy configuration</h2>
+                        </div>
+                        <div class="modal-body">
+                            <f:form action="copyConfig" id="copyConfigForm" method="post" name="copyConfig">
+                                <div class="user">
+                                    <label>New configuration name </label>
+                                    <input id="newConfigName" name="newConfigName" onchange="isCopyNameCorrect(false)" type="text"/>
+                                    <input id="copyConfigName" name="copyConfigName" type="hidden"/>
+                                    <input class="button-copy" id="copyButton" onclick="return isCopyNameCorrect(true);" type="submit" value="Copy"/>
+                                </div>
+                            </f:form>
+                            <div id="copyHelpDiv" class="rejected display-none"/>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </j:if>
         </l:main-panel>
     </l:layout>
 </j:jelly>
