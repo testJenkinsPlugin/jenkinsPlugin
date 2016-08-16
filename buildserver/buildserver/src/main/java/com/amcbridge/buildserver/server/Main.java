@@ -3,16 +3,17 @@ package com.amcbridge.buildserver.server;
 import org.apache.commons.lang3.StringUtils;
 
 public class Main {
-    private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(BuildServer.class);
+    private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Main.class);
+    private static final String FORMAT_STRING = "%n%s:\t%s%n";
 
     public static void main(String[] args) throws Exception {
-        logger.info(String.format("%n%s:\t%s%n", "STEP 1", "Start build server".toUpperCase()));
+        logger.info(String.format(FORMAT_STRING, "STEP 1", "Start build server".toUpperCase()));
         identifyEnvUserDir();
         BuildServer.Builder builder = BuildServer.newBuilder();
         BuildServer server = builder.setArgs(args).build();
-        logger.info(String.format("%n%s:\t%s%n", "STEP 2", "Initialize build server".toUpperCase()));
+        logger.info(String.format(FORMAT_STRING, "STEP 2", "Initialize build server".toUpperCase()));
         server.init();
-        logger.info(String.format("%n%s:\t%s%n", "STEP 3", "Execute build server".toUpperCase()));
+        logger.info(String.format(FORMAT_STRING, "STEP 3", "Execute build server".toUpperCase()));
         server.execute();
     }
 
