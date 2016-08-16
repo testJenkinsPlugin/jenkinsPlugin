@@ -14,23 +14,12 @@ public class ProjectVersion {
 
     private String major;
     private String minor;
-//    private String buildNumber;
     private String revision;
     private boolean versionFile;
 
-    private ProjectVersion() {
-    }
-
-    public ProjectVersion(Project project) {
+    public void processVersions(Project project) {
         major = "";
         minor = "";
-//        buildNumber = System.getenv("BUILD_NUMBER");
-        processVersions(project);
-
-    }
-
-    private void processVersions(Project project) {
-
         if (project.getVersionFiles().isVersionFile() && project.getVersionFiles().getFiles().size() == 1) {
             initMajorMinorVersions(project.getVersionFiles().getFiles().get(0));
             versionFile = true;
