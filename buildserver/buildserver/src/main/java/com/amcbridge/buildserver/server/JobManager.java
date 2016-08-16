@@ -52,7 +52,7 @@ public class JobManager {
         Document docProject;
 
         bldDoc = docBF.newDocumentBuilder();
-        File config = buildServer.getProperty(BuildServer.Builder.APP_PROPERTY_CONFIG);
+        File config = buildServer.getConfigFile();
         docProject = bldDoc.parse(config);
         Node jobNode = docProject.getDocumentElement();
         if (jobNode == null) {

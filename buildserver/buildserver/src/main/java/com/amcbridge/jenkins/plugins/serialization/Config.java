@@ -11,9 +11,13 @@ public class Config {
 
     @XStreamAsAttribute
     private String builder;
+    @XStreamAsAttribute
     private String platform;
+    @XStreamAsAttribute
     private String userConfig;
+    @XStreamAsAttribute
     private String configuration;
+    @XStreamAsAttribute
     private String builderArgs;
 
     public Config() {

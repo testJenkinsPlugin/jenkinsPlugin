@@ -12,10 +12,15 @@ public class Project {
 
     @XStreamAsAttribute
     private String pathToFile;
+    @XStreamAsAttribute
     private String localDirectory;
+    @XStreamAsAttribute
     private Repository repository;
+    @XStreamAsAttribute
     private PathToArtefacts pathToArtefacts;
+    @XStreamAsAttribute
     private VersionFile versionFiles;
+    @XStreamAsAttribute
     private List<Config> configs;
 
     public Project() {

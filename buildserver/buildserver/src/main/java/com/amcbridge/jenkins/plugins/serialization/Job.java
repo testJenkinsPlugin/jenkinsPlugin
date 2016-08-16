@@ -12,8 +12,11 @@ public class Job {
 
     @XStreamAsAttribute
     private String name;
+    @XStreamAsAttribute
     private List<Project> projects;
+    @XStreamAsAttribute
     private String[] scripts;
+    @XStreamAsAttribute
     private String[] buildMachineConfiguration;
 
     public Job() {

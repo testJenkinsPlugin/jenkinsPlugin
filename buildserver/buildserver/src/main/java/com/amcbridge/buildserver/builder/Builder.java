@@ -8,8 +8,11 @@ public class Builder {
 
     @XStreamAsAttribute
     private String name;
+    @XStreamAsAttribute
     private String architecture;
+    @XStreamAsAttribute
     private String executeBuild;
+    @XStreamAsAttribute
     private String commandLine;
 
     public String getName() {
