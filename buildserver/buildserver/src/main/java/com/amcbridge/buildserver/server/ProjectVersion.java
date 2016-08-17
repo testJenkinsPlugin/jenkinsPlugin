@@ -1,10 +1,9 @@
 package com.amcbridge.buildserver.server;
 
 import com.amcbridge.jenkins.plugins.serialization.Project;
+import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ProjectVersion {
 
@@ -12,7 +11,7 @@ public class ProjectVersion {
     private String minor;
     private String revision;
     private boolean versionFile;
-    private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ProjectVersion.class);
+    private static Logger logger = Logger.getLogger(ProjectVersion.class);
 
     public void processVersions(Project project) {
         major = "";
