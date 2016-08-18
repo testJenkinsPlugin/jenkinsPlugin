@@ -1,9 +1,10 @@
 package com.amcbridge.buildserver.server;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 public class Main {
-    private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Main.class);
+    private static org.apache.log4j.Logger logger = Logger.getLogger(Main.class);
     private static final String FORMAT_STRING = "%n%s:\t%s%n";
 
     public static void main(String[] args) throws Exception {
