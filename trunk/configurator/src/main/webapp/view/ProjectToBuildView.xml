@@ -162,8 +162,8 @@
                 </div>
                 <input class="textbox hidden" name="versionFilesPath" onblur="configurator.checkPath(this)" type="text"/>
                 <input class="add-button hidden" name="addVersion" onclick="configurator.addPathFiles(this)" type="button" value="+"/>
-                <img class="image" name="versionFiles-help" onClick="configurator.imageHelp(this)" src="/static/c2e30787/images/16x16/help.png"/>
             </j:if>
+            <img class="image" name="versionFiles-help" onClick="configurator.imageHelp(this)" src="/static/c2e30787/images/16x16/help.png"/>
             <div class="error-block display-none" error="v_files_error" name="versionFilesPath-block">
                 <img src="../images/16x16/error.png"/>
                 <label error="v_files_error_exp">Not correct path</label>

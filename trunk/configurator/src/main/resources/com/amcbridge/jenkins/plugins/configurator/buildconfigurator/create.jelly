@@ -7,121 +7,122 @@
     <l:layout>
         <st:include it="${app}" page="sidepanel.jelly"/>
         <l:main-panel>
-            <div class="overlay display-none" id="overlay">
-                <div class="reject-div display-none" id="rejectDiv">
-                    <label class="reject-label">Please type reasons of rejection: </label>
-                    <input class="textReject" id="textReject" name="textReject" type="text"/>
-                    <input class="button-reject" id="OkReject" onClick="configurator.OkReject()" type="button" value="OK"/>
-                    <input class="button-reject" id="CancelReject" onClick="configurator.CancelReject()" type="button" value="Cancel"/>
-                </div>
-            </div>
-            <div class="" id="fieldHelpView">
-                <div class="field-help-error display-none" id="fieldHelp"/>
-            </div>
-            <div class="title-header">
-                <h1 class="header" id="titlePage">Create new build configuration</h1>
-                <label class="reason" id="reasonLabel"/>
-            </div>
-            <f:form action="createNewConfigurator" id="createNewConfigurator" method="post" name="createNewConfigurator">
-                <div class="user">
-                    <label id="userLabel"/>
-                </div>
-                <div class="div-textinput">
-                    <div class="div-project-name">
-                        <label>Project Name</label>
-                    </div>
-                    <input class="textbox" id="projectName" name="projectName" onblur="configurator.validateProject(this);" type="text"/>
-                </div>
-                <div class="error-block display-none" id="projectError" style="margin-left: 205px;">
-                    <img src="../images/16x16/error.png"/>
-                    <label id="projectErrorText"/>
-                </div>
-                <label class="diff_value_header display-none" compare="true" id="typeSCM_old">SCM: </label>
-                <div class="div-textinput">
-                    <div class="div-project-name">
-                        <label>SCM:</label>
-                    </div>
-                    <div class="div-url-type">
-                        <select class="div-drop-down-list-item" id="typeSCM" name="scm">
-                            <j:forEach items="${it.getSCM()}" var="sct">
-                                <option value="${sct}">${sct}</option>
-                            </j:forEach>
-                        </select>
+             <j:if test="${it.isCurrentUserHasAccessToPlugin()}">
+                <div class="overlay display-none" id="overlay">
+                    <div class="reject-div display-none" id="rejectDiv">
+                        <label class="reject-label">Please type reasons of rejection: </label>
+                        <input class="textReject" id="textReject" name="textReject" type="text"/>
+                        <input class="button-reject" id="OkReject" onClick="configurator.OkReject()" type="button" value="OK"/>
+                        <input class="button-reject" id="CancelReject" onClick="configurator.CancelReject()" type="button" value="Cancel"/>
                     </div>
                 </div>
-                <j:if test="${it.getNodesName().size() &gt;0}">
-                    <div class="div-build-machine-config">
-                        <div style="float:left">
-                            <label>Build machine configuration:</label>
-                            <input id="build_machine_configuration" name="build_machine_configuration" type="hidden" value=""/>
-                        </div>
-                        <div class="div-radiogroup">
-                            <j:forEach items="${it.getNodesName()}" var="node">
-                                <f:checkbox id="${node}" name="node" onclick="configurator.bMCChange(this)" title="${node}" value="${node}"/>
-                                <br/>
-                            </j:forEach>
-                        </div>
+                <div class="" id="fieldHelpView">
+                    <div class="field-help-error display-none" id="fieldHelp"/>
+                </div>
+                <div class="title-header">
+                    <h1 class="header" id="titlePage">Create new build configuration</h1>
+                    <label class="reason" id="reasonLabel"/>
+                </div>
+                <f:form action="createNewConfigurator" id="createNewConfigurator" method="post" name="createNewConfigurator">
+                    <div class="user">
+                        <label id="userLabel"/>
                     </div>
-                </j:if>
-                <label class="diff_value_header display-none" id="isEmail_old"/>
-                <div class="div-textinput">
-                    <f:checkbox class="check-box" id="isEmail" name="isEmail" onclick="configurator.emailCheckBoxChange(this)" title="Job E-mails notifications"/>
-                    <input class="email-notification" disabled="false" field="email" id="email" name="email" onblur="configurator.validateMail(this)" type="text"/>
-                    <img class="image" name="email-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
-                </div>
-                <div class="error-block display-none" id="email_Error" style="margin-left: 205px;">
-                    <img src="../images/16x16/error.png"/>Not correct e-mail</div>
-                <div class="help-view display-none" id="email-help-block">
-                    <lebel class="helptext display-none" id="email-help-text">Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build. E-mail will be sent when a build fails, becomes unstable or returns to stable.
-                </lebel>
-                </div>
-                <label class="diff_value_header display-none" compare="true" id="configEmail_old"/>
-                <div class="div-textinput">
-                    <div class="div-project-name">
-                        <label class="display-none" compare="true" id="configEmail_old">Config Email</label>
-                        <label>Configuration E-mails notifications</label>
-                    </div>
-                    <input class="textbox" field="email" id="configEmail" name="configEmail" onblur="configurator.validateMail(this);" type="text"/>
-                    <img class="image" name="configEmail-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
-                </div>
-                <div class="error-block display-none" id="configEmail_Error" style="margin-left: 205px;">
-                    <img src="../images/16x16/error.png"/>Not correct e-mail</div>
-                <div class="help-view display-none" id="configEmail-help-block">
-                    <label class="helptext display-none" id="configEmail-help-text">Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when configuration state changes.
-                </label>
-                </div>
-                <label class="diff_value_header display-none" id="regExp_old"/>
-                <div class="div-textinput">
-                    <div class="div-project-name">
-                        <label>Regular expression to parse build version</label>
-                    </div>
-                    <input class="textbox" id="regExp" name="regExp" type="text"/>
-                    <img class="image" name="regExp-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
-                </div>
-                <div class="help-view display-none" id="regExp-help-block">
-                    <label class="helptext display-none" id="regExp-help-text">Description setter plugin regular expression field. If configured, the regular expression will be applied to each line in the build log. A description will be set based on the first match.
-                    </label>
-                </div>
-                <label class="diff_value_header display-none" id="cleanWorkspace_old"/>
-                <j:if test="${it.isWsPluginInstalled()}">
                     <div class="div-textinput">
                         <div class="div-project-name">
-                            <label>Use workspace cleanup plugin</label>
+                            <label>Project Name</label>
                         </div>
-                        <f:checkbox checked="true" class="check-box" id="cleanWorkspace" name="cleanWorkspace"/>
-                        <img class="image" name="cleanWorkspace-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
+                        <input class="textbox" id="projectName" name="projectName" onblur="configurator.validateProject(this);" type="text"/>
                     </div>
-                    <div class="help-view display-none" id="cleanWorkspace-help-block">
-                        <label class="helptext display-none" id="cleanWorkspace-help-text">This plugin deletes the workspace before the build or when a build is finished and artifacts saved. If checked  - enables workspace cleaning before build start and adds "configurationName.xml" file to exclude list.
+                    <div class="error-block display-none" id="projectError" style="margin-left: 205px;">
+                        <img src="../images/16x16/error.png"/>
+                        <label id="projectErrorText"/>
+                    </div>
+                    <label class="diff_value_header display-none" compare="true" id="typeSCM_old">SCM: </label>
+                    <div class="div-textinput">
+                        <div class="div-project-name">
+                            <label>SCM:</label>
+                        </div>
+                        <div class="div-url-type">
+                            <select class="div-drop-down-list-item" id="typeSCM" name="scm">
+                                <j:forEach items="${it.getSCM()}" var="sct">
+                                    <option value="${sct}">${sct}</option>
+                                </j:forEach>
+                            </select>
+                        </div>
+                    </div>
+                    <j:if test="${it.getNodesName().size() &gt;0}">
+                        <div class="div-build-machine-config">
+                            <div style="float:left">
+                                <label>Build machine configuration:</label>
+                                <input id="build_machine_configuration" name="build_machine_configuration" type="hidden" value=""/>
+                            </div>
+                            <div class="div-radiogroup">
+                                <j:forEach items="${it.getNodesName()}" var="node">
+                                    <f:checkbox id="${node}" name="node" onclick="configurator.bMCChange(this)" title="${node}" value="${node}"/>
+                                    <br/>
+                                </j:forEach>
+                            </div>
+                        </div>
+                    </j:if>
+                    <label class="diff_value_header display-none" id="isEmail_old"/>
+                    <div class="div-textinput">
+                        <f:checkbox class="check-box" id="isEmail" name="isEmail" onclick="configurator.emailCheckBoxChange(this)" title="Job E-mails notifications"/>
+                        <input class="email-notification" disabled="false" field="email" id="email" name="email" onblur="configurator.validateMail(this)" type="text"/>
+                        <img class="image" name="email-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
+                    </div>
+                    <div class="error-block display-none" id="email_Error" style="margin-left: 205px;">
+                        <img src="../images/16x16/error.png"/>Not correct e-mail</div>
+                    <div class="help-view display-none" id="email-help-block">
+                        <lebel class="helptext display-none" id="email-help-text">Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build. E-mail will be sent when a build fails, becomes unstable or returns to stable.
+                    </lebel>
+                    </div>
+                    <label class="diff_value_header display-none" compare="true" id="configEmail_old"/>
+                    <div class="div-textinput">
+                        <div class="div-project-name">
+                            <label class="display-none" compare="true" id="configEmail_old">Config Email</label>
+                            <label>Configuration E-mails notifications</label>
+                        </div>
+                        <input class="textbox" field="email" id="configEmail" name="configEmail" onblur="configurator.validateMail(this);" type="text"/>
+                        <img class="image" name="configEmail-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
+                    </div>
+                    <div class="error-block display-none" id="configEmail_Error" style="margin-left: 205px;">
+                        <img src="../images/16x16/error.png"/>Not correct e-mail</div>
+                    <div class="help-view display-none" id="configEmail-help-block">
+                        <label class="helptext display-none" id="configEmail-help-text">Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when configuration state changes.
+                    </label>
+                    </div>
+                    <label class="diff_value_header display-none" id="regExp_old"/>
+                    <div class="div-textinput">
+                        <div class="div-project-name">
+                            <label>Regular expression to parse build version</label>
+                        </div>
+                        <input class="textbox" id="regExp" name="regExp" type="text"/>
+                        <img class="image" name="regExp-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
+                    </div>
+                    <div class="help-view display-none" id="regExp-help-block">
+                        <label class="helptext display-none" id="regExp-help-text">Description setter plugin regular expression field. If configured, the regular expression will be applied to each line in the build log. A description will be set based on the first match.
                         </label>
                     </div>
-                </j:if>
-                <div id="projectsToBuild"/>
-                <div id="projectsToBuildDeleted"/>
-                <div class="div-add-view">
-                    <input id="addProjectToBuild" onClick="configurator.addView()" type="button" value="Add project to build"/>
-                    <label class="label-add-view" id="label-add-view">You should create one project to build</label>
-                </div>
+                    <label class="diff_value_header display-none" id="cleanWorkspace_old"/>
+                    <j:if test="${it.isWsPluginInstalled()}">
+                        <div class="div-textinput">
+                            <div class="div-project-name">
+                                <label>Use workspace cleanup plugin</label>
+                            </div>
+                            <f:checkbox checked="true" class="check-box" id="cleanWorkspace" name="cleanWorkspace"/>
+                            <img class="image" name="cleanWorkspace-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
+                        </div>
+                        <div class="help-view display-none" id="cleanWorkspace-help-block">
+                            <label class="helptext display-none" id="cleanWorkspace-help-text">This plugin deletes the workspace before the build or when a build is finished and artifacts saved. If checked  - enables workspace cleaning before build start and adds "configurationName.xml" file to exclude list.
+                            </label>
+                        </div>
+                    </j:if>
+                    <div id="projectsToBuild"/>
+                    <div id="projectsToBuildDeleted"/>
+                    <div class="div-add-view">
+                        <input id="addProjectToBuild" onClick="configurator.addView()" type="button" value="Add project to build"/>
+                        <label class="label-add-view" id="label-add-view">You should create one project to build</label>
+                    </div>
                 <br/>
                  <label class="diff_value_header_checkbox display-none" id="buildOnCommitTrigger_old"/><br/>
                 <div>
@@ -160,68 +161,69 @@
                 </div>
                 <br/>
                 <br/>
-                <div>
-                    <label class="div-label">Script type</label>
-                    <select id="scriptTypeSelect" name="scriptType">
-                        <j:forEach items="${it.getScriptTypes()}" var="script">
-                            <option value="${script}">${script}</option>
-                        </j:forEach>
-                    </select>
+                    <div>
+                        <label class="div-label">Script type</label>
+                        <select id="scriptTypeSelect" name="scriptType">
+                            <j:forEach items="${it.getScriptTypes()}" var="script">
+                                <option value="${script}">${script}</option>
+                            </j:forEach>
+                        </select>
+                        <br/>
+                    </div>
+                <br/>
+                    <div>
+                        <label class="div-label"/>
+                        <textarea class="display-none" cols="60" id="preScript_old" rows="10"/>
+                    </div>
                     <br/>
-                </div>
-                <br/>
-                <div>
-                    <label class="div-label"/>
-                    <textarea class="display-none" cols="60" id="preScript_old" rows="10"/>
-                </div>
-                <br/>
-                <div>
-                    <label class="div-label">Prebuild script:</label>
-                    <textarea cols="60" id="preScript" name="preScript" rows="10"/>
-                </div>
-                <br/>
-                <div>
-                    <label class="div-label"/>
-                    <textarea class="display-none" cols="60" id="postScript_old" rows="10"/>
-                </div>
-                <br/>
-                <div>
-                    <label class="div-label">Postbuild script:</label>
-                    <textarea cols="60" id="postScript" name="postScript" onblur="configurator.validatePostbuildScript(id)" rows="10"/>
-                </div>
-                <br/>
-                <div>
-                    <f:checkbox class="check-box" id="isComment" onclick="configurator.commentCheckboxChange(this)" title="Comments" type="checkbox"/>
                     <div>
-                        <br/>
-                        <textarea cols="60" id="comments" name="comments" rows="10" class="comments"/>
+                        <label class="div-label">Prebuild script:</label>
+                        <textarea cols="60" id="preScript" name="preScript" rows="10"/>
                     </div>
-                </div>
-                <br/>
-                <div class="userBorder">
+                    <br/>
                     <div>
-                        <label>Users with access to configuration:</label>
-                        <br/>
-                        <br/>
-                        <label class="div-label">Add user:</label>
-                        <input class="add-user-field" id="addUserField" type="text"/>
-                        <input class="add-button" id="addUserButton" onclick="configurator.addNewUserAccess();" type="button" value="+"/>
+                        <label class="div-label"/>
+                        <textarea class="display-none" cols="60" id="postScript_old" rows="10"/>
                     </div>
-                    <div id="usersList" class = "usersList"/>
-                </div>
-                <div class="button-container">
-                    <input class="button confirm" id="save" name="save" onclick="return configurator.isValidForm();" type="submit" value="Save"/>
-                    <span class="span"/>
-                    <input class="button reject" id="reject" name="reject" onclick="configurator.rejectDiv();" type="button" value="Reject"/>
-                    <input class="display-none" id="rejectSubmit" name="rejectSubmit" onclick="return configurator.rejectionSubmit();" type="submit"/>
-                    <span class="span" id="spanReject"/>
-                    <input class="button confirm" id="cancelButton" type="button" value="Cancel"/>
-                    <input id="formResultHidden" name="formResultHidden" type="hidden"/>
-                    <input id="formType" name="formType" type="hidden"/>
-                    <input id="rejectionReason" name="rejectionReason" type="hidden" value=""/>
-                    <input id="def_cred" name="default_credentials" type="hidden" value="${it.getDefaultUserCredentials()}"/>
-                </div>
-            </f:form>
+                    <br/>
+                    <div>
+                        <label class="div-label">Postbuild script:</label>
+                        <textarea cols="60" id="postScript" name="postScript" onblur="configurator.validatePostbuildScript(id)" rows="10"/>
+                    </div>
+                    <br/>
+                    <div>
+                        <f:checkbox class="check-box" id="isComment" onclick="configurator.commentCheckboxChange(this)" title="Comments" type="checkbox"/>
+                        <div>
+                            <br/>
+                            <textarea cols="60" id="comments" name="comments" rows="10" class="comments"/>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="userBorder">
+                        <div>
+                            <label>Users with access to configuration:</label>
+                            <br/>
+                            <br/>
+                            <label class="div-label">Add user:</label>
+                            <input class="add-user-field" id="addUserField" type="text"/>
+                            <input class="add-button" id="addUserButton" onclick="configurator.addNewUserAccess();" type="button" value="+"/>
+                        </div>
+                        <div id="usersList" class = "usersList"/>
+                    </div>
+                    <div class="button-container">
+                        <input class="button confirm" id="save" name="save" onclick="return configurator.isValidForm();" type="submit" value="Save"/>
+                        <span class="span"/>
+                        <input class="button reject" id="reject" name="reject" onclick="configurator.rejectDiv();" type="button" value="Reject"/>
+                        <input class="display-none" id="rejectSubmit" name="rejectSubmit" onclick="return configurator.rejectionSubmit();" type="submit"/>
+                        <span class="span" id="spanReject"/>
+                        <input class="button confirm" id="cancelButton" type="button" value="Cancel"/>
+                        <input id="formResultHidden" name="formResultHidden" type="hidden"/>
+                        <input id="formType" name="formType" type="hidden"/>
+                        <input id="rejectionReason" name="rejectionReason" type="hidden" value=""/>
+                        <input id="def_cred" name="default_credentials" type="hidden" value="${it.getDefaultUserCredentials()}"/>
+                    </div>
+                </f:form>
+            </j:if>
         </l:main-panel>
     </l:layout>
 </j:jelly>
