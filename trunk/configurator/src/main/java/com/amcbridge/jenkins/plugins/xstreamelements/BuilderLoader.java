@@ -1,7 +1,6 @@
 package com.amcbridge.jenkins.plugins.xstreamelements;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.List;
 
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
@@ -13,7 +12,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class BuilderLoader {
 
     private static final String BUILDER = "/plugins/build-configurator/config/Builders.xml";
-    List<Builder> builders;
+    private List<Builder> builders;
 
     public BuilderLoader() throws JenkinsInstanceNotFoundException {
         load();
