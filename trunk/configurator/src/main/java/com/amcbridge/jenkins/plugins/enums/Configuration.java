@@ -6,9 +6,9 @@ public enum Configuration {
     DEBUG("Debug"),
     OTHER("Other");
 
-    private String configurationValue;
+    private final String configurationValue;
 
-    private Configuration(String value) {
+    Configuration(String value) {
         this.configurationValue = value;
     }
 
