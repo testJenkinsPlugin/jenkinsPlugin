@@ -32,7 +32,7 @@ public class ScriptTypeLoader {
 
 
 
-    public void load() throws JenkinsInstanceNotFoundException {
+    private void load() throws JenkinsInstanceNotFoundException {
         XStream xstream = new XStream();
         xstream.alias("scriptTypes", ScriptTypeLoader.class);
         xstream.alias("scriptType", ScriptType.class);
