@@ -22,32 +22,32 @@ public class Config {
         this.builderArgs = builderArgs;
     }
 
-    public void setBuilder(String value) {
-        builder = value;
+    public void setBuilder(String builder) {
+        this.builder = builder;
     }
 
     public String getBuilder() {
         return builder;
     }
 
-    public void setConfiguration(String value) {
-        configuration = value;
+    public void setConfiguration(String configuration) {
+        this.configuration = configuration;
     }
 
     public String getConfiguration() {
         return configuration;
     }
 
-    public void setPlatform(String value) {
-        platform = value;
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 
     public String getPlatform() {
         return platform;
     }
 
-    public void setUserConfig(String value) {
-        userConfig = value;
+    public void setUserConfig(String userConfig) {
+        this.userConfig = userConfig;
     }
 
     public String getUserConfig() {
