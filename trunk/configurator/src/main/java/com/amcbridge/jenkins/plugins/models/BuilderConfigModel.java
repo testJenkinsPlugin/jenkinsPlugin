@@ -53,10 +53,7 @@ public class BuilderConfigModel {
 
     public Boolean isConfigChecked(String value) {
         Configuration conf = Configuration.valueOf(value);
-        if (configs.indexOf(conf) != -1) {
-            return true;
-        }
-        return false;
+        return configs.indexOf(conf) != -1;
     }
 
     public String getBuilder() {
