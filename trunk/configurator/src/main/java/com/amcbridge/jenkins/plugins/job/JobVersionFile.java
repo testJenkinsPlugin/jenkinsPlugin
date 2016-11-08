@@ -14,7 +14,7 @@ public class JobVersionFile implements JobElementDescription {
     private static final String PARENT_ELEMENT_TAG = "publishers";
     private static final String REGEXP_TAG = "regexp";
     private static final String EXPRESSION = "\\[getting of version of the build started by hudson\\] (.*)";
-    private String regExp;
+    private final String regExp;
 
     public JobVersionFile(String regExp){
         this.regExp = regExp;
