@@ -8,9 +8,9 @@ public enum FormResult {
     REJECT("reject"),
     CANCEL("cancel");
 
-    private String resultValue;
+    private final String resultValue;
 
-    private FormResult(String value) {
+    FormResult(String value) {
         this.resultValue = value;
     }
 
