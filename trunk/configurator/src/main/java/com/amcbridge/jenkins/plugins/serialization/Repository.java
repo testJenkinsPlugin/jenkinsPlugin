@@ -14,16 +14,16 @@ public class Repository {
     @XStreamAsAttribute
     private String url;
 
-    public void setType(String value) {
-        type = value;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getType() {
         return type;
     }
 
-    public void setUrl(String value) {
-        url = value;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getUrl() {
