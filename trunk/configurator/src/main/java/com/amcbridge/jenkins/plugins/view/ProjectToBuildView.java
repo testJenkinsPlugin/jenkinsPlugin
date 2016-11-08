@@ -13,16 +13,16 @@ public class ProjectToBuildView {
         this.viewId = viewId;
     }
 
-    public void setHtml(String value) {
-        html = value;
+    public void setHtml(String html) {
+        this.html = html;
     }
 
     public String getHtml() {
         return html;
     }
 
-    public void setViewId(Integer value) {
-        viewId = value;
+    public void setViewId(Integer viewId) {
+        this.viewId = viewId;
     }
 
     public Integer getViewId() {
