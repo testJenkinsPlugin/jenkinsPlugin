@@ -1,7 +1,6 @@
 package com.amcbridge.jenkins.plugins.messenger;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import javax.mail.*;
@@ -19,12 +18,11 @@ public class MailSender implements Runnable {
     private String from;
     private String pass;
     private Integer port;
-    private static MessageInfo message;
+    private MessageInfo message;
     private static final String MAIL_PROPERTIES_FILE_NAME = "/plugins/build-configurator/config/MailSender.properties";
     private static final Logger logger = LoggerFactory.getLogger(BuildConfigurator.class);
 
-    public void sendMail(MessageInfo message) throws AddressException,
-            MessagingException {
+    public void sendMail(MessageInfo message) throws MessagingException {
         this.message = message;
         Thread theard = new Thread(new MailSender());
         theard.start();
