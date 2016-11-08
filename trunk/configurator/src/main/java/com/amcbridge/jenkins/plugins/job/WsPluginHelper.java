@@ -40,16 +40,12 @@ public class WsPluginHelper {
 
     private static void createWsPluginNode(Document doc, BuildConfigurationModel config) throws XPathExpressionException, IOException, SAXException, ParserConfigurationException {
         if (isWsPluginIncluded(doc)) {
-            if (isExcludePatternIncluded(doc, config.getProjectName())) {
-                return;
-            } else {
+            if (!isExcludePatternIncluded(doc, config.getProjectName())) {
                 insertWsExcludePattern(doc, config);
-
             }
         } else {
             insertWsCleanupPlugin(doc, config);
         }
-
     }
 
     private static void insertWsCleanupPlugin(Document doc, BuildConfigurationModel config) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
