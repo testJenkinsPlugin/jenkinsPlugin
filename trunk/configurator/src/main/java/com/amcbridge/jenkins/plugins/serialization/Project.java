@@ -21,16 +21,16 @@ public class Project {
         this.configs = Lists.newLinkedList();
     }
 
-    public void setPathToArtefacts(PathToArtefacts value) {
-        pathToArtefacts = value;
+    public void setPathToArtefacts(PathToArtefacts pathToArtefacts) {
+        this.pathToArtefacts = pathToArtefacts;
     }
 
     public PathToArtefacts getPathToArtefacts() {
         return pathToArtefacts;
     }
 
-    public void setPathToFile(String value) {
-        pathToFile = value;
+    public void setPathToFile(String pathToFile) {
+        this.pathToFile = pathToFile;
     }
 
     public String getPathToFile() {
@@ -41,28 +41,28 @@ public class Project {
         return localDirectory;
     }
 
-    public void setLocalDirectory(String value) {
-        localDirectory = value;
+    public void setLocalDirectory(String localDirectory) {
+        this.localDirectory = localDirectory;
     }
 
-    public void setRepository(Repository value) {
-        repository = value;
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
     public Repository getRepository() {
         return repository;
     }
 
-    public void setVersionFiles(VersionFile value) {
-        versionFiles = value;
+    public void setVersionFiles(VersionFile versionFiles) {
+        this.versionFiles = versionFiles;
     }
 
     public VersionFile getVersionFiles() {
         return versionFiles;
     }
 
-    public void setConfigs(List<Config> value) {
-        configs = value;
+    public void setConfigs(List<Config> configs) {
+        this.configs = configs;
     }
 
     public List<Config> getConfigs() {
