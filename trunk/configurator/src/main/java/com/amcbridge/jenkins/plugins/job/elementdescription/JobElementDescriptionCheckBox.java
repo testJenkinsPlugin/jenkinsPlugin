@@ -4,7 +4,7 @@ import org.w3c.dom.Document;
 
 public interface JobElementDescriptionCheckBox extends JobElementDescription {
 
-    public void unCheck(Document doc);
+    void unCheck(Document doc);
 
-    public void check(Document doc);
+    void check(Document doc);
 }
