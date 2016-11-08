@@ -10,11 +10,11 @@ import java.io.IOException;
 
 public interface JobElementDescription {
 
-    public String getElementTag();
+    String getElementTag();
 
-    public String getParentElementTag();
+    String getParentElementTag();
 
-    public String generateXML(BuildConfigurationModel config) throws ParserConfigurationException, XPathExpressionException, IOException, SAXException;
+    String generateXML(BuildConfigurationModel config) throws ParserConfigurationException, XPathExpressionException, IOException, SAXException;
 
-    public void appendToXML(BuildConfigurationModel config, Document xml) throws ParserConfigurationException, XPathExpressionException, SAXException, IOException;
+    void appendToXML(BuildConfigurationModel config, Document xml) throws ParserConfigurationException, XPathExpressionException, SAXException, IOException;
 }
