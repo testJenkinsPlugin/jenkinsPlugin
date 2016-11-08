@@ -49,7 +49,7 @@ public class ViewGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewGenerator.class);
     private Integer id;
-    private BuilderLoader builderLoader;
+    private final BuilderLoader builderLoader;
 
     public ViewGenerator() throws JenkinsInstanceNotFoundException {
         id = 0;
@@ -57,7 +57,7 @@ public class ViewGenerator {
     }
 
 
-    public ProjectToBuildView getProjectToBuildlView()
+    public ProjectToBuildView getProjectToBuildView()
             throws UnsupportedEncodingException, JellyException, JenkinsInstanceNotFoundException {
         ProjectToBuildView result = new ProjectToBuildView();
         String viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + PROJECT_TO_BUILD_VIEW;
@@ -85,7 +85,7 @@ public class ViewGenerator {
         return result;
     }
 
-    public ProjectToBuildView getProjectToBuildlView(BuildConfigurationModel configurationModel, BuildConfigurationModel configurationModelCompareWith)
+    public ProjectToBuildView getProjectToBuildView(BuildConfigurationModel configurationModel, BuildConfigurationModel configurationModelCompareWith)
             throws UnsupportedEncodingException, JellyException, JenkinsInstanceNotFoundException {
         List<ProjectToBuildModel> viewsCurrentConfig = configurationModel.getProjectToBuild();
         boolean showDiffToUser = BuildConfigurationManager.isCurrentUserAdministrator() && configurationModel.getState().equals(ConfigurationState.UPDATED) &&
@@ -265,11 +265,11 @@ public class ViewGenerator {
             return result;
         }
 
-        List<UserAccessModel> currentUserlist = currentConfig.getUserWithAccess();
-        List<UserAccessModel> oldUserlist = new LinkedList<>();
+        List<UserAccessModel> currentUserList = currentConfig.getUserWithAccess();
+        List<UserAccessModel> oldUserList = new LinkedList<>();
 
         if (oldConfig != null && oldConfig.getUserWithAccess() != null) {
-            oldUserlist = oldConfig.getUserWithAccess();
+            oldUserList = oldConfig.getUserWithAccess();
         }
 
         String viewTemplatePath = BuildConfigurationManager.getJenkins().getRootDir() + USER_ACCESS_VIEW_PATH;
@@ -277,17 +277,17 @@ public class ViewGenerator {
         StringBuilder html = new StringBuilder("");
 
         JellyContext jcontext = new JellyContext();
-        for (UserAccessModel userModel : currentUserlist) {
+        for (UserAccessModel userModel : currentUserList) {
             jcontext.setVariable("userName", userModel.getUserName());
             jcontext.setVariable("userSuffix", HTML_DIV_NAME_NORMAL_SUFFIX);
             jcontext.setVariable("userStatus", null);
-            if (showDiff && !oldUserlist.remove(userModel)) {
+            if (showDiff && !oldUserList.remove(userModel)) {
                 jcontext.setVariable("userStatus", VIEW_STATUS_NEW);
             }
             html.append(launchScript(jcontext, viewTemplatePath));
         }
         if (showDiff) {
-            for (UserAccessModel userModel : oldUserlist) {
+            for (UserAccessModel userModel : oldUserList) {
                 jcontext.setVariable("userName", userModel.getUserName());
                 jcontext.setVariable("userSuffix", HTML_DIV_NAME_DELETED_SUFFIX);
                 jcontext.setVariable("userStatus", VIEW_STATUS_DELETED);

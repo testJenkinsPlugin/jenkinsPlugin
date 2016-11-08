@@ -281,7 +281,7 @@ public final class BuildConfigurator implements RootAction {
                 loadCreateNewBuildConfiguration();
             }
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
-                    .getProjectToBuildlView();
+                    .getProjectToBuildView();
         } catch (Exception e) {
             LOGGER.error("Error creating view", e);
             return null;
@@ -301,7 +301,7 @@ public final class BuildConfigurator implements RootAction {
             }
 
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
-                    .getProjectToBuildlView(conf, confDiff);
+                    .getProjectToBuildView(conf, confDiff);
         } catch (Exception e) {
             LOGGER.error("Error loading views", e);
             return null;
