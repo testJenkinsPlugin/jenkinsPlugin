@@ -4,8 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import com.amcbridge.jenkins.plugins.configurator.BuildConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -34,9 +32,8 @@ public class JobSCM {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
         Node scm;
-        try {
+        try(InputStream inputSCM = new ByteArrayInputStream(xml.getBytes())) {
             docBuilder = docFactory.newDocumentBuilder();
-            InputStream inputSCM = new ByteArrayInputStream(xml.getBytes());
             scm = docBuilder.parse(inputSCM);
             Node node = doc.importNode(scm.getChildNodes().item(0), true);
             doc.getChildNodes().item(0).appendChild(node);
