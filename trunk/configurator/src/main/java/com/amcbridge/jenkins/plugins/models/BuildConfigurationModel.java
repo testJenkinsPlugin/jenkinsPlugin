@@ -6,7 +6,6 @@ import hudson.model.User;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -70,16 +69,16 @@ public class BuildConfigurationModel {
         return date;
     }
 
-    public void setProjectName(String value) {
-        projectName = value;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
     public String getProjectName() {
         return projectName;
     }
 
-    public void setScm(String value) {
-        scm = value;
+    public void setScm(String scm) {
+        this.scm = scm;
     }
 
     public String getScm() {
@@ -90,36 +89,36 @@ public class BuildConfigurationModel {
         return isJobUpdate;
     }
 
-    public void setJobUpdate(Boolean value) {
-        isJobUpdate = value;
+    public void setJobUpdate(Boolean isJobUpdate) {
+        this.isJobUpdate = isJobUpdate;
     }
 
-    public void setBuildMachineConfiguration(String[] value) {
-        buildMachineConfiguration = value;
+    public void setBuildMachineConfiguration(String[] buildMachineConfiguration) {
+        this.buildMachineConfiguration = buildMachineConfiguration;
     }
 
     public String[] getBuildMachineConfiguration() {
         return buildMachineConfiguration;
     }
 
-    public void setEmail(String value) {
-        email = value;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setConfigEmail(String value) {
-        configEmail = value;
+    public void setConfigEmail(String configEmail) {
+        this.configEmail = configEmail;
     }
 
     public String getConfigEmail() {
         return configEmail;
     }
 
-    public void setProjectToBuild(List<ProjectToBuildModel> value) {
-        projectToBuild = value;
+    public void setProjectToBuild(List<ProjectToBuildModel> projectToBuild) {
+        this.projectToBuild = projectToBuild;
     }
 
     public List<ProjectToBuildModel> getProjectToBuild() {
@@ -130,44 +129,44 @@ public class BuildConfigurationModel {
         return preScript;
     }
 
-    public void setPreScript(String value) {
-        preScript = value;
+    public void setPreScript(String preScript) {
+        this.preScript = preScript;
     }
 
     public String getPostScript() {
         return postScript;
     }
 
-    public void setPostScript(String value) {
-        postScript = value;
+    public void setPostScript(String postScript) {
+        this.postScript = postScript;
     }
 
-    public void setScripts(String[] value) {
-        scripts = value;
+    public void setScripts(String[] scripts) {
+        this.scripts = scripts;
     }
 
     public String[] getScripts() {
         return scripts;
     }
 
-    public void setState(ConfigurationState value) {
-        state = value;
+    public void setState(ConfigurationState state) {
+        this.state = state;
     }
 
     public ConfigurationState getState() {
         return state;
     }
 
-    public void setCreator(String value) {
-        creator = value;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public String getCreator() {
         return creator;
     }
 
-    public void setRejectionReason(String reject) {
-        rejectionReason = reject;
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 
     public String getRejectionReason() {
