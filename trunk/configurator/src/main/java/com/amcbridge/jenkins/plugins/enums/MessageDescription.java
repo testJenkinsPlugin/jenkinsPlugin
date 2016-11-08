@@ -11,9 +11,9 @@ public enum MessageDescription {
     RESTORE("configuration was successfully restored."),
     COPY("configuration was successfully copied from ");
 
-    private String messageDescriptionValue;
+    private final String messageDescriptionValue;
 
-    private MessageDescription(String value) {
+    MessageDescription(String value) {
         this.messageDescriptionValue = value;
     }
 
