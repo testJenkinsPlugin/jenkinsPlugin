@@ -2,8 +2,6 @@ package com.amcbridge.jenkins.plugins.job;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import com.amcbridge.jenkins.plugins.configurator.BuildConfigurator;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
