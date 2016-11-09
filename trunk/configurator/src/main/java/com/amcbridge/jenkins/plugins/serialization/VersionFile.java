@@ -20,8 +20,8 @@ public class VersionFile {
         this.versionFile = false;
     }
 
-    public void setFiles(List<String> value) {
-        files = value;
+    public void setFiles(List<String> files) {
+        this.files = files;
     }
 
     public List<String> getFiles() {
@@ -32,8 +32,8 @@ public class VersionFile {
         files.add(value);
     }
 
-    public void setIsVersionFile(Boolean value) {
-        versionFile = value;
+    public void setIsVersionFile(Boolean versionFile) {
+        this.versionFile = versionFile;
     }
 
     public Boolean isVersionFile() {
