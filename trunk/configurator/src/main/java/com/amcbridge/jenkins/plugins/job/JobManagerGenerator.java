@@ -457,7 +457,7 @@ public class JobManagerGenerator {
                 repo.setType(config.getScm());
                 repo.setUrl(projectModel.getProjectUrl());
 
-                PathToArtefacts artifacts = new PathToArtefacts();
+                PathToArtifacts artifacts = new PathToArtifacts();
                 for (String artifactPath : projectModel.getArtifacts()) {
                     artifacts.addFile(artifactPath);
                 }
@@ -477,7 +477,7 @@ public class JobManagerGenerator {
                 newProject.setRepository(repo);
                 newProject.setPathToFile(projectModel.getFileToBuild());
                 newProject.setLocalDirectory(localDirectory);
-                newProject.setPathToArtefacts(artifacts);
+                newProject.setPathToArtifacts(artifacts);
                 newProject.setVersionFiles(versionFiles);
                 newProject.setConfigs(configurations);
                 job.getProjects().add(newProject);

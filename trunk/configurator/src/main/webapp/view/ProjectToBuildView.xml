@@ -95,8 +95,8 @@
             </lebel>
         </div>
         <div class="div-project-to-build">
-            <j:if test="${view_old != null and view_old.getArtefacts() != null and !view.isListsEqual(view.getArtefacts(), view_old.getArtefacts())}">
-                <j:forEach indexVar="i" items="${view_old.getArtefacts()}" var="artifact">
+            <j:if test="${view_old != null and view_old.getArtifacts() != null and !view.isListsEqual(view.getArtifacts(), view_old.getArtifacts())}">
+                <j:forEach indexVar="i" items="${view_old.getArtifacts()}" var="artifact">
                     <label class="diff_value">&quot;${artifact}&quot;</label>
                     <br/>
                 </j:forEach>
@@ -106,16 +106,16 @@
                 <label class="div-file-chooser-label">Path to artifacts:</label>
             </div>
             <div>
-                <input class="textbox" name="pathToArtefacts" onblur="configurator.checkPath(this)" type="text"/>
+                <input class="textbox" name="pathToArtifacts" onblur="configurator.checkPath(this)" type="text"/>
                 <input class="add-button" name="addProject" onclick="configurator.addArtifactPath(this)" type="button" value="+"/>
-                <img class="image" name="pathToArtefacts-help" onClick="configurator.imageHelp(this)" src="/static/c2e30787/images/16x16/help.png"/>
+                <img class="image" name="pathToArtifacts-help" onClick="configurator.imageHelp(this)" src="/static/c2e30787/images/16x16/help.png"/>
             </div>
-            <div class="error-block display-none" error="artifact_error" name="pathToArtefacts-block">
+            <div class="error-block display-none" error="artifact_error" name="pathToArtifacts-block">
                 <img src="../images/16x16/error.png"/>
                 <label error="artifact_error_exp">Not correct path</label>
             </div>
-            <div class="help-view display-none" name="pathToArtefacts-help-block">
-                <lebel class="helptext display-none" name="pathToArtefacts-help-text">You can use wildcards like 'module/dist/**/*.zip'. See 
+            <div class="help-view display-none" name="pathToArtifacts-help-block">
+                <lebel class="helptext display-none" name="pathToArtifacts-help-text">You can use wildcards like 'module/dist/**/*.zip'. See
                     
                     
                     
@@ -125,9 +125,9 @@
             <div class="div-legend">
                 <fieldset>
                     <legend>Artifacts</legend>
-                    <select class="select" id="files_${sourceId[1]}" name="artefacts_group" onkeydown="configurator.deleteFromSelect(this, event)" size="3">
+                    <select class="select" id="files_${sourceId[1]}" name="artifacts_group" onkeydown="configurator.deleteFromSelect(this, event)" size="3">
                         <j:set value="" var="forHidden"/>
-                        <j:forEach indexVar="i" items="${view.getArtefacts()}" var="art">
+                        <j:forEach indexVar="i" items="${view.getArtifacts()}" var="art">
                             <option value="${art}">${art}</option>
                             <j:set value="${forHidden+art+';'}" var="forHidden"/>
                         </j:forEach>
