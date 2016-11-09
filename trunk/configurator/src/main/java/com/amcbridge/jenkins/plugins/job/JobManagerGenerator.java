@@ -70,8 +70,8 @@ public class JobManagerGenerator {
 
         List<String[]> prevArtefacts = new ArrayList<>(config.getProjectToBuild().size());
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
-            prevArtefacts.add(Arrays.copyOf(config.getProjectToBuild().get(i).getArtefacts(),
-                    config.getProjectToBuild().get(i).getArtefacts().length));
+            prevArtefacts.add(Arrays.copyOf(config.getProjectToBuild().get(i).getArtifacts(),
+                    config.getProjectToBuild().get(i).getArtifacts().length));
         }
         correctArtifactPaths(config.getProjectToBuild());
         correctVersionFilesPaths(config.getProjectToBuild());
@@ -84,7 +84,7 @@ public class JobManagerGenerator {
             BuildConfigurationManager.getJenkins().createProjectFromXML(jobName, fis);
         }
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
-            config.getProjectToBuild().get(i).setArtefacts(prevArtefacts.get(i));
+            config.getProjectToBuild().get(i).setArtifacts(prevArtefacts.get(i));
         }
     }
 
@@ -92,12 +92,12 @@ public class JobManagerGenerator {
         String pathPrefix;
         for (ProjectToBuildModel projectModel : projectModels) {
             pathPrefix = createPathPrefix(projectModel);
-            String[] paths = new String[projectModel.getArtefacts().length];
+            String[] paths = new String[projectModel.getArtifacts().length];
             for (int i = 0; i < paths.length; i++) {
-                String newPath = pathPrefix + projectModel.getArtefacts()[i].replaceAll("\\./", "");
+                String newPath = pathPrefix + projectModel.getArtifacts()[i].replaceAll("\\./", "");
                 paths[i] = newPath;
             }
-            projectModel.setArtefacts(paths);
+            projectModel.setArtifacts(paths);
         }
     }
 
@@ -458,7 +458,7 @@ public class JobManagerGenerator {
                 repo.setUrl(projectModel.getProjectUrl());
 
                 PathToArtefacts artifacts = new PathToArtefacts();
-                for (String artifactPath : projectModel.getArtefacts()) {
+                for (String artifactPath : projectModel.getArtifacts()) {
                     artifacts.addFile(artifactPath);
                 }
 

@@ -55,7 +55,7 @@ public class JobArtifacts implements JobElementDescription {
         }
 
         for (ProjectToBuildModel artf : config.getProjectToBuild()) {
-            local = StringUtils.join(artf.getArtefacts(), JobManagerGenerator.COMMA_SEPARATOR);
+            local = StringUtils.join(artf.getArtifacts(), JobManagerGenerator.COMMA_SEPARATOR);
             if (result.length() > 0 && local.length() > 0) {
                 result += JobManagerGenerator.COMMA_SEPARATOR + local;
             } else {

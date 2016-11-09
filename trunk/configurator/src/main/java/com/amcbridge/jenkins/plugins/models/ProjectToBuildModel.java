@@ -21,20 +21,21 @@ public class ProjectToBuildModel {
     private String credentials;
     private Boolean isVersionFiles;
     private List<BuilderConfigModel> builders;
-    private String[] artefacts;
+    private String[] artifacts;
     private String[] versionFiles;
     private UUID guid;
+    private static Logger log = Logger.getLogger(ProjectToBuildModel.class.getName());
 
     public ProjectToBuildModel(){}
     @DataBoundConstructor
     public ProjectToBuildModel(String projectUrl, String credentials, String branchName, String fileToBuild,
-                               String artefacts, String versionFiles, String localDirectoryPath,
+                               String artifacts, String versionFiles, String localDirectoryPath,
                                Boolean isVersionFiles, List <BuilderConfigModel> builders, String guid) {
         this.projectUrl = projectUrl;
         this.credentials = credentials;
         this.branchName = branchName;
         this.fileToBuild = fileToBuild;
-        this.artefacts = BuildConfigurationManager.getPath(artefacts);
+        this.artifacts = BuildConfigurationManager.getPath(artifacts);
         this.versionFiles = BuildConfigurationManager.getPath(versionFiles);
         this.localDirectoryPath = localDirectoryPath;
         this.isVersionFiles = isVersionFiles;
@@ -57,21 +58,17 @@ public class ProjectToBuildModel {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(ProjectToBuildModel.class.getName()).log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, null, ex);
         }
         return result;
     }
 
     public static Boolean isCredentialSelected(String curCredentials, String testedCredential) {
-        if ((curCredentials == null) || (testedCredential == null)) {
-            return false;
-        } else {
-            return curCredentials.equalsIgnoreCase(testedCredential);
-        }
+        return !((curCredentials == null) || (testedCredential == null))
+                && curCredentials.equalsIgnoreCase(testedCredential);
     }
 
     public static String getCredentialId(String curCredentials) {
-        // credential looks like: "credentialsName";"credentialsId"
         int idPosition = 1;
         String res = "";
         if (curCredentials.isEmpty()) {
@@ -100,7 +97,6 @@ public class ProjectToBuildModel {
     }
 
     public static String getCredentialName(String curCredentials) {
-        // credential looks like: "credentialsName";"credentialsId"
         int credentialsNamePosition = 0;
         String res = "";
         if (curCredentials.isEmpty()) {
@@ -123,24 +119,24 @@ public class ProjectToBuildModel {
         return versionFiles;
     }
 
-    public void setCredentials(String value) {
-        credentials = value;
+    public void setCredentials(String credentials) {
+        this.credentials = credentials;
     }
 
     public String getCredentials() {
         return credentials;
     }
 
-    public void setProjectUrl(String value) {
-        projectUrl = value;
+    public void setProjectUrl(String projectUrl) {
+        this.projectUrl = projectUrl;
     }
 
     public String getProjectUrl() {
         return projectUrl;
     }
 
-    public void setBranchName(String value) {
-        branchName = value;
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
     }
 
     public String getBranchName() {
@@ -151,40 +147,40 @@ public class ProjectToBuildModel {
         return isVersionFiles;
     }
 
-    public void setFileToBuild(String value) {
-        fileToBuild = value;
+    public void setFileToBuild(String fileToBuild) {
+        this.fileToBuild = fileToBuild;
     }
 
     public String getFileToBuild() {
         return fileToBuild;
     }
 
-    public void setLocalDirectoryPath(String value) {
-        localDirectoryPath = value;
+    public void setLocalDirectoryPath(String localDirectoryPath) {
+        this.localDirectoryPath = localDirectoryPath;
     }
 
     public String getLocalDirectoryPath() {
         return localDirectoryPath;
     }
 
-    public void setBuilders(List<BuilderConfigModel> value) {
-        builders = value;
+    public void setBuilders(List<BuilderConfigModel> builders) {
+        this.builders = builders;
     }
 
     public List<BuilderConfigModel> getBuilders() {
         return builders;
     }
 
-    public String[] getArtefacts() {
-        return artefacts;
+    public String[] getArtifacts() {
+        return artifacts;
     }
 
-    public void setArtefacts(String[] values) {
-        artefacts = values;
+    public void setArtifacts(String[] artifacts) {
+        this.artifacts = artifacts;
     }
 
-    public void setVersionFiles(String[] values) {
-        versionFiles = values;
+    public void setVersionFiles(String[] versionFiles) {
+        this.versionFiles = versionFiles;
     }
 
     public UUID getGuid() {

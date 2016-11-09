@@ -133,7 +133,7 @@
                         </j:forEach>
                     </select>
                 </fieldset>
-                <input name="artefacts" type="hidden" value="${forHidden}"/>
+                <input name="artifacts" type="hidden" value="${forHidden}"/>
             </div>
         </div>
         <div class="div-project-version-file">
