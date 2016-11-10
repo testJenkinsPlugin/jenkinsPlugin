@@ -13,13 +13,13 @@ import java.util.List;
 public class SCMLoader {
 
     private static final String SCM = "/plugins/build-configurator/config/scm.xml";
-    List<com.amcbridge.jenkins.plugins.xstreamelements.SCM> scms = new LinkedList<>();
+    private List<SCM> scms = new LinkedList<>();
 
     public SCMLoader() throws JenkinsInstanceNotFoundException {
         load();
     }
 
-    public List<com.amcbridge.jenkins.plugins.xstreamelements.SCM> getSCMs() {
+    public List<SCM> getSCMs() {
         return scms;
     }
 
@@ -28,8 +28,7 @@ public class SCMLoader {
         xstream.addImplicitCollection(SCMLoader.class, "scms");
         xstream.processAnnotations(SCMLoader.class);
         File file = new File(BuildConfigurationManager.getJenkins().getRootDir() + SCM);
-        xstream.setClassLoader(com.amcbridge.jenkins.plugins.xstreamelements.SCM.class.getClassLoader());
+        xstream.setClassLoader(SCM.class.getClassLoader());
         scms = ((SCMLoader) xstream.fromXML(file)).getSCMs();
     }
-
 }
