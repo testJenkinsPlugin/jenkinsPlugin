@@ -299,13 +299,11 @@ public class JobManagerGenerator {
         String userContentPath = BuildConfigurationManager.getJenkins().getRootDir() + "/userContent/" + jobName + ".xml";
 
         try(FileOutputStream fos = new FileOutputStream(userContentPath);
-            Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING))
-        {
+            Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING)) {
             out.write(XML_TITLE);
             out.write(paramsXML);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             logger.error("Error writing to job file", e);
         }
     }
@@ -388,11 +386,9 @@ public class JobManagerGenerator {
         if (xml.isEmpty()) {
             return docBuilder.newDocument();
         }
-        try(InputStream input = new ByteArrayInputStream(xml.getBytes()))
-        {
+        try(InputStream input = new ByteArrayInputStream(xml.getBytes())) {
             return docBuilder.parse(input);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("Error parsing xml",e);
             return null;
         }
