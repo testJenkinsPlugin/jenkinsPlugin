@@ -6,16 +6,12 @@ import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.Configuration;
 import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
-import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescription;
-import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescriptionCheckBox;
-import com.amcbridge.jenkins.plugins.job.scm.JobGit;
-import com.amcbridge.jenkins.plugins.job.scm.JobNone;
-import com.amcbridge.jenkins.plugins.job.scm.JobSubversion;
+import com.amcbridge.jenkins.plugins.job.elementdescription.*;
+import com.amcbridge.jenkins.plugins.job.scm.*;
 import com.amcbridge.jenkins.plugins.serialization.*;
-import com.amcbridge.jenkins.plugins.serialization.Job;
-import com.amcbridge.jenkins.plugins.serialization.Project;
 import com.thoughtworks.xstream.XStream;
-import hudson.model.*;
+import hudson.model.Item;
+import hudson.model.AbstractItem;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -29,8 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.*;
 import javax.xml.xpath.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -118,7 +113,7 @@ public class JobManagerGenerator {
         if (projectModel.getLocalDirectoryPath() == null || projectModel.getLocalDirectoryPath().isEmpty()) {
             pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/') + 1);
         } else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath()) &&
-                !".".equals(projectModel.getLocalDirectoryPath())) // No need to add prefix for workspace direct checkout
+                !".".equals(projectModel.getLocalDirectoryPath()))
         {
             pathPrefix = projectModel.getLocalDirectoryPath();
         }
@@ -133,9 +128,7 @@ public class JobManagerGenerator {
             String localDirectory = projectModel.getLocalDirectoryPath();
             String repoUrl = projectModel.getProjectUrl();
             if ((localDirectory == null || localDirectory.isEmpty()) && (repoUrl != null && !repoUrl.isEmpty())) {
-                localDirectory =
-                        repoUrl.substring(                  // Adding last URL's entry as local directory
-                                repoUrl.lastIndexOf('/') + 1);
+                localDirectory = repoUrl.substring(repoUrl.lastIndexOf('/') + 1);
             }
             projectModel.setLocalDirectoryPath(localDirectory);
         }
@@ -304,12 +297,17 @@ public class JobManagerGenerator {
         String paramsXML = xstream.toXML(job);
         String jobName = job.getName();
         String userContentPath = BuildConfigurationManager.getJenkins().getRootDir() + "/userContent/" + jobName + ".xml";
-        FileOutputStream fos = new FileOutputStream(userContentPath);
-        Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING);
-        out.write(XML_TITLE);
-        out.write(paramsXML);
-        out.close();
-        fos.close();
+
+        try(FileOutputStream fos = new FileOutputStream(userContentPath);
+            Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING))
+        {
+            out.write(XML_TITLE);
+            out.write(paramsXML);
+        }
+        catch (Exception e)
+        {
+            logger.error("Error writing to job file", e);
+        }
     }
 
 
@@ -390,8 +388,14 @@ public class JobManagerGenerator {
         if (xml.isEmpty()) {
             return docBuilder.newDocument();
         }
-        InputStream input = new ByteArrayInputStream(xml.getBytes());
-        return docBuilder.parse(input);
+        try(InputStream input = new ByteArrayInputStream(xml.getBytes()))
+        {
+            return docBuilder.parse(input);
+        } catch (Exception e)
+        {
+            logger.error("Error parsing xml",e);
+            return null;
+        }
     }
 
     public static Document loadTemplate(String path) throws ParserConfigurationException, IOException, SAXException {
