@@ -3,7 +3,7 @@ package com.amcbridge.jenkins.plugins.xstreamelements;
 public class ScriptType {
 
     private String scriptTypeName;
-    
+
     public ScriptType(String scriptTypeName) {
         this.scriptTypeName = scriptTypeName;
     }

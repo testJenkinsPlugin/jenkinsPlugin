@@ -36,15 +36,14 @@ import java.util.regex.Pattern;
 @Extension
 public final class BuildConfigurator implements RootAction {
 
-    private MailSender mail;
+    private final MailSender mail;
     private static final String VIEW_GENERATOR = "viewGenerator";
     private static final String PLUGIN_NAME = "Build Configurator";
     private static final String ICON_PATH = "/plugin/build-configurator/icons/system_config_services.png";
     private static final String DEFAULT_PAGE_URL = "buildconfigurator";
     private static final String LOGIN_PAGE_URL = "../login";
-    private static final Logger LOGGER = LoggerFactory.getLogger(BuildConfigurator.class);
+    private static final Logger logger = LoggerFactory.getLogger(BuildConfigurator.class);
     private static final String USER_CONFIG_PATTERN = "^([a-zA-Z0-9_-]*)$";
-
 
     public BuildConfigurator() {
         mail = new MailSender();
@@ -76,7 +75,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.loadAllConfigurations();
         } catch (Exception e) {
-            LOGGER.error("Configurations list problem", e);
+            logger.error("Configurations list problem", e);
             return new LinkedList<>();
         }
     }
@@ -112,18 +111,17 @@ public final class BuildConfigurator implements RootAction {
             }
             response.forwardToPreviousPage(request);
         } catch (Exception e) {
-            LOGGER.error("Copy configuration fail", e);
+            logger.error("Copy configuration fail", e);
             try {
                 response.sendRedirect("./");
             } catch (IOException e1) {
-                LOGGER.error("Copy configuration fail", e1);
+                logger.error("Copy configuration fail", e1);
             }
         }
     }
 
     public void doCreateNewConfigurator(final StaplerRequest request,
                                         final StaplerResponse response) {
-
         try {
             JSONObject formAttribute = request.getSubmittedForm();
 
@@ -192,16 +190,13 @@ public final class BuildConfigurator implements RootAction {
                 message.setDestinationAddress(getAdminEmails());
                 mail.sendMail(message);
             }
-
-
         } catch (Exception e) {
-            LOGGER.error("Fail creating new configuration", e);
-
+            logger.error("Fail creating new configuration", e);
         } finally {
             try {
                 response.sendRedirect("./");
             } catch (IOException e) {
-                LOGGER.error("Redirect page error", e);
+                logger.error("Redirect page error", e);
             }
         }
     }
@@ -225,7 +220,7 @@ public final class BuildConfigurator implements RootAction {
         if (newBuildModel == null) {
             return false;
         }
-        // User created new config with builder args
+
         if (!isCurrentUserAdministrator()) {
             boolean isConfigCompletelyNew = projectName == null || projectName.length() == 0;
             Map<UUID, BuilderConfigModel> newBuildersMap = getBuildersMap(newBuildModel);
@@ -252,17 +247,9 @@ public final class BuildConfigurator implements RootAction {
                 }
             }
         }
-        // Action made by admin or user doesn't added/changed args
         return true;
     }
 
-    //TODO: check users
-  /*  private boolean isUsersAccessChangedOk(BuildConfigurationModel modelNew, BuildConfigurationModel modelOld){
-        List usersAccessNew = modelNew.getUserWithAccess();
-        List usersAccessOld = modelNew.getUserWithAccess();
-
-    }
-*/
     private Map<UUID, BuilderConfigModel> getBuildersMap(BuildConfigurationModel configs) {
         Map<UUID, BuilderConfigModel> buildersMap = new HashMap<>();
         for (ProjectToBuildModel projectModel : configs.getProjectToBuild()) {
@@ -283,10 +270,9 @@ public final class BuildConfigurator implements RootAction {
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getProjectToBuildView();
         } catch (Exception e) {
-            LOGGER.error("Error creating view", e);
+            logger.error("Error creating view", e);
             return null;
         }
-
     }
 
     @JavaScriptMethod
@@ -303,7 +289,7 @@ public final class BuildConfigurator implements RootAction {
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getProjectToBuildView(conf, confDiff);
         } catch (Exception e) {
-            LOGGER.error("Error loading views", e);
+            logger.error("Error loading views", e);
             return null;
         }
     }
@@ -317,7 +303,7 @@ public final class BuildConfigurator implements RootAction {
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getUserAccessView();
         } catch (Exception e) {
-            LOGGER.error("Error getting users with access", e);
+            logger.error("Error getting users with access", e);
             return null;
         }
     }
@@ -336,10 +322,9 @@ public final class BuildConfigurator implements RootAction {
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getUserAccessView(conf, confDiff);
         } catch (Exception e) {
-            LOGGER.error("Users access problem", e);
+            logger.error("Users access problem", e);
             return null;
         }
-
     }
 
     @JavaScriptMethod
@@ -348,11 +333,10 @@ public final class BuildConfigurator implements RootAction {
             if (Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR) == null) {
                 loadCreateNewBuildConfiguration();
             }
-
             return ((ViewGenerator) Stapler.getCurrentRequest().getSession().getAttribute(VIEW_GENERATOR))
                     .getBuilderView();
         } catch (Exception e) {
-            LOGGER.error("Error getting builder", e);
+            logger.error("Error getting builder", e);
             return null;
         }
     }
@@ -362,7 +346,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             BuildConfigurationManager.markConfigurationForDeletion(name);
         } catch (Exception e) {
-            LOGGER.error("Error setting for deletion", e);
+            logger.error("Error setting for deletion", e);
         }
     }
 
@@ -372,7 +356,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             Stapler.getCurrentRequest().getSession().setAttribute(VIEW_GENERATOR, new ViewGenerator());
         } catch (JenkinsInstanceNotFoundException e) {
-            LOGGER.error("Error creating configuration", e);
+            logger.error("Error creating configuration", e);
         }
     }
 
@@ -381,7 +365,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return !BuildConfigurationManager.isNameUsing(name);
         } catch (JenkinsInstanceNotFoundException e) {
-            LOGGER.error("Error checking existing configuration with this name", e);
+            logger.error("Error checking existing configuration with this name", e);
             return false;
         }
     }
@@ -397,7 +381,7 @@ public final class BuildConfigurator implements RootAction {
                 throw new NullPointerException("user not found");
             }
         } catch (Exception e) {
-            LOGGER.error("Creator not found", e);
+            logger.error("Creator not found", e);
             return "Error, user not found";
 
         }
@@ -408,7 +392,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             BuildConfigurationManager.deleteConfigurationPermanently(name);
         } catch (Exception e) {
-            LOGGER.error("Permanent deletion error", e);
+            logger.error("Permanent deletion error", e);
         }
     }
 
@@ -417,7 +401,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             BuildConfigurationManager.restoreConfiguration(name);
         } catch (Exception e) {
-            LOGGER.error("Error restoring configuration", e);
+            logger.error("Error restoring configuration", e);
         }
     }
 
@@ -426,7 +410,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.isCurrentUserHasAccess(name);
         } catch (Exception e) {
-            LOGGER.error("Error checking if user has access", e);
+            logger.error("Error checking if user has access", e);
             return false;
         }
     }
@@ -436,7 +420,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.isCurrentUserAdministrator();
         } catch (Exception e) {
-            LOGGER.error("Error checking user permissions", e);
+            logger.error("Error checking user permissions", e);
             return false;
         }
     }
@@ -445,7 +429,7 @@ public final class BuildConfigurator implements RootAction {
     public static Boolean isCurrentUserHasAccessToPlugin() {
         if (User.current() == null) {
             try {
-                LOGGER.info(Stapler.getCurrentRequest().getRequestURIWithQueryString());
+                logger.info(Stapler.getCurrentRequest().getRequestURIWithQueryString());
                 String requestedURI = Stapler.getCurrentRequest().getRequestURIWithQueryString();
                 String pageToRedirect;
                 if (requestedURI != null && !requestedURI.equals("")) {
@@ -455,7 +439,7 @@ public final class BuildConfigurator implements RootAction {
                 }
                 Stapler.getCurrentResponse().sendRedirect2(pageToRedirect);
             } catch (IOException e) {
-                LOGGER.error("Redirecting error ", e);
+                logger.error("Redirecting error ", e);
                 return false;
             }
             return false;
@@ -469,20 +453,20 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.getConfiguration(name);
         } catch (Exception e) {
-            LOGGER.error("Error getting configuration", e);
+            logger.error("Error getting configuration", e);
             return null;
         }
     }
 
     @JavaScriptMethod
     public BuildConfigurationModel getDiffConfiguration(String name) {
-          try {
+        try {
             if (isCurrentUserAdministrator()) {
                 return BuildConfigurationManager.getConfiguration(name + "/diff");
-             }
+            }
             return null;
         } catch (Exception e) {
-            LOGGER.error("Error getting configuration", e);
+            logger.error("Error getting configuration", e);
             return null;
         }
     }
@@ -495,7 +479,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.getSCM();
         } catch (Exception e) {
-            LOGGER.error("Error getting emails", e);
+            logger.error("Error getting emails", e);
             return new LinkedList<>();
         }
     }
@@ -504,7 +488,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.getNodesName();
         } catch (Exception e) {
-            LOGGER.error("Error getting nodes", e);
+            logger.error("Error getting nodes", e);
             return new LinkedList<>();
         }
     }
@@ -515,7 +499,7 @@ public final class BuildConfigurator implements RootAction {
             BuildConfigurationManager.createJob(name);
             return true;
         } catch (Exception e) {
-            LOGGER.error("Error job creating", e);
+            logger.error("Error job creating", e);
             return false;
         }
     }
@@ -525,7 +509,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return JobManagerGenerator.isJobExist(JobManagerGenerator.validJobName(name));
         } catch (Exception e) {
-            LOGGER.error("Error while checking job state", e);
+            logger.error("Error while checking job state", e);
             return false;
         }
     }
@@ -533,10 +517,9 @@ public final class BuildConfigurator implements RootAction {
     @JavaScriptMethod
     public void deleteJob(String name) {
         try {
-
             BuildConfigurationManager.deleteJob(name);
         } catch (Exception e) {
-            LOGGER.error("Error job deleting", e);
+            logger.error("Error job deleting", e);
         }
     }
 
@@ -558,7 +541,7 @@ public final class BuildConfigurator implements RootAction {
             return isEmailPropertiesOK && isPortOk;
 
         } catch (Exception e) {
-            LOGGER.error("Error checking email", e);
+            logger.error("Error checking email", e);
             return false;
         }
     }
@@ -573,7 +556,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return BuildConfigurationManager.getScriptTypes();
         } catch (Exception e) {
-            LOGGER.error("Error getting scripts", e);
+            logger.error("Error getting scripts", e);
             return new LinkedList<>();
         }
     }
@@ -583,7 +566,7 @@ public final class BuildConfigurator implements RootAction {
         try {
             return WsPluginHelper.isWsPluginInstalled();
         } catch (Exception e) {
-            LOGGER.error("Error checking if Workspace plugin installed", e);
+            logger.error("Error checking if Workspace plugin installed", e);
             return true;
         }
     }
@@ -595,7 +578,7 @@ public final class BuildConfigurator implements RootAction {
             prop.load(inputStream);
             return prop.getProperty(name);
         } catch (Exception ex) {
-            LOGGER.error("Error loading help properties", ex);
+            logger.error("Error loading help properties", ex);
             return "Error getting help message";
         }
     }
@@ -605,6 +588,5 @@ public final class BuildConfigurator implements RootAction {
             TimerTrigger.DescriptorImpl descriptor = new TimerTrigger.DescriptorImpl();
             return descriptor.doCheckSpec(value, null).toString();
     }
-
 }
 
