@@ -63,9 +63,9 @@ public class JobManagerGenerator {
             SAXException, IOException, TransformerException, XPathExpressionException {
         String jobName = validJobName(config.getProjectName());
 
-        List<String[]> prevArtefacts = new ArrayList<>(config.getProjectToBuild().size());
+        List<String[]> prevArtifacts = new ArrayList<>(config.getProjectToBuild().size());
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
-            prevArtefacts.add(Arrays.copyOf(config.getProjectToBuild().get(i).getArtifacts(),
+            prevArtifacts.add(Arrays.copyOf(config.getProjectToBuild().get(i).getArtifacts(),
                     config.getProjectToBuild().get(i).getArtifacts().length));
         }
         correctArtifactPaths(config.getProjectToBuild());
@@ -79,7 +79,7 @@ public class JobManagerGenerator {
             BuildConfigurationManager.getJenkins().createProjectFromXML(jobName, fis);
         }
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
-            config.getProjectToBuild().get(i).setArtifacts(prevArtefacts.get(i));
+            config.getProjectToBuild().get(i).setArtifacts(prevArtifacts.get(i));
         }
     }
 

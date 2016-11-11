@@ -380,8 +380,8 @@ var configurator = (function () {
          jQuery(selectionBox).find('option:selected').remove();
 
            switch (selectionBox.name) {
-                     case 'artefacts_group':
-                         hiddenFieldName = "artefacts";
+                     case 'artifacts_group':
+                         hiddenFieldName = "artifacts";
                          break;
                      case 'vFiles':
                          hiddenFieldName = "versionFiles";
@@ -435,8 +435,8 @@ var configurator = (function () {
         selectionBox.add(option);
 
         var hiddenInputName;
-        if (selectionBox.name == "artefacts_group"){
-            hiddenInputName="artefacts";
+        if (selectionBox.name == "artifacts_group"){
+            hiddenInputName="artifacts";
         }
         else if(selectionBox.name == "vFiles"){
             hiddenInputName="versionFiles";
@@ -498,7 +498,7 @@ var configurator = (function () {
         var projectName = jQuery("#projectName")[0];
         var pathFolder = jQuery("[name=localDirectoryPath]");
         var pathUrl = jQuery("[name=projectUrl]");
-        var pathArt = jQuery("[name=pathToArtefacts]");
+        var pathArt = jQuery("[name=pathToArtifacts]");
         var pathVer = jQuery("[name=versionFilesPath]");
         var build = jQuery("[name=projectToBuild]");
         var patBuild = jQuery("[name=fileToBuild]");
@@ -628,19 +628,19 @@ var configurator = (function () {
     var addArtifactPath = function (button) {
         var projectId = getProjectId(button);
         var project = jQuery(projectId); 
-        var pathValue = project.find("[name=pathToArtefacts]").val();
-        var error = project.find("[name=pathToArtefacts-block]").attr("class");
-        var pathBlock = project.find("[name=pathToArtefacts-block]");
+        var pathValue = project.find("[name=pathToArtifacts]").val();
+        var error = project.find("[name=pathToArtifacts-block]").attr("class");
+        var pathBlock = project.find("[name=pathToArtifacts-block]");
 
         if ((pathValue.length <= 0) || (error == "error-block")) {
             return;
         }
-        var selectionBox = jQuery(projectId).find("[name=artefacts_group]")[0];
+        var selectionBox = jQuery(projectId).find("[name=artifacts_group]")[0];
 
         if (!checkPathRepeat(pathValue, selectionBox)) {
             addToSelectionBox(selectionBox, pathValue);
             pathBlock.addClass('display-none');
-            project.find("[name=pathToArtefacts]").val("");
+            project.find("[name=pathToArtifacts]").val("");
         }
         else {
             pathBlock.removeClass('display-none');
@@ -798,7 +798,7 @@ var configurator = (function () {
                 regPath = /(^\.[A-Za-z0-9]*$)|^(?:(?!\.)[^\\/:*?"<>|\r\n]+\/?)*$/;				// Match only one . or valid folder structure (zero-length - ok)
                 break;
 
-            case 'pathToArtefacts':
+            case 'pathToArtifacts':
                 regPath = /^(?![*?])(?:[^\\/:"*?<>|\r\n]+?(?:\/?|\/\*{0,2})*?|\/\*\.\*$)*?$/;// Allow Ant wildcards valid folder/file structure only
                 break;
 
