@@ -40,7 +40,7 @@ public class PlatformLoader {
             xstream.alias("platforms", PlatformLoader.class);
             xstream.alias("platform", Platform.class);
             xstream.addImplicitCollection(PlatformLoader.class, "platformList");
-            xstream.setClassLoader(com.amcbridge.jenkins.plugins.xstreamelements.PlatformLoader.class.getClassLoader());
+            xstream.setClassLoader(PlatformLoader.class.getClassLoader());
             platformList = ((PlatformLoader) xstream.fromXML(new File(BuildConfigurationManager.getJenkins().getRootDir() + PLATFORMS))).getPlatformList();
         } catch (Exception e) {
             logger.error("Error loading platforms list", e);
