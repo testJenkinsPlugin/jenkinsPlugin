@@ -98,7 +98,7 @@ public final class BuildConfigurator implements RootAction {
                 modelToCopy.setCreator(username);
                 modelToCopy.setProjectName(modelNewName);
                 modelToCopy.setState(ConfigurationState.NEW);
-                BuildConfigurationManager.save(modelToCopy);
+                BuildConfigurationManager.save(modelToCopy,false);
                 ConfigurationStatusMessage message
                         = new ConfigurationStatusMessage(modelNewName);
                 message.setSubject(modelNewName);
@@ -164,7 +164,7 @@ public final class BuildConfigurator implements RootAction {
                     newConfig.setState(ConfigurationState.APPROVED);
                     newConfig.setCreator(currentConfig.getCreator());
                     newConfig.setJobUpdate(false);
-                    BuildConfigurationManager.save(newConfig);
+                    BuildConfigurationManager.save(newConfig,false);
                     message.setDescription(MessageDescription.APPROVE.toString());
                     break;
                 case REJECT:
@@ -183,9 +183,9 @@ public final class BuildConfigurator implements RootAction {
 
             if (isArgsOk(currentConfig, newConfig)) {
                 checkBuildersUserConfig(newConfig);
-                BuildConfigurationManager.save(newConfig);
+                BuildConfigurationManager.save(newConfig,false);
                 if (saveForDiff && isCurrentUserAdministrator()) {
-                    BuildConfigurationManager.saveForDiff(newConfig);
+                    BuildConfigurationManager.save(newConfig,true);
                 }
                 message.setDestinationAddress(getAdminEmails());
                 mail.sendMail(message);
