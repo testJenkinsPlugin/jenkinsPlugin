@@ -154,8 +154,7 @@ public class BuildConfigurationManager {
         }
     }
 
-    static void markConfigurationForDeletion(String name)
-            throws IOException, ParserConfigurationException,
+    static void markConfigurationForDeletion(String name) throws IOException, ParserConfigurationException,
             JAXBException, MessagingException {
         BuildConfigurationModel config = load(name);
         if (config.getState() == ConfigurationState.FOR_DELETION) {
@@ -164,14 +163,7 @@ public class BuildConfigurationManager {
         config.setState(ConfigurationState.FOR_DELETION);
         config.initCurrentDate();
         save(config,false);
-        String userEmail = StringUtils.EMPTY;
-        if (!getUserMailAddress(config).isEmpty()) {
-            userEmail = getUserMailAddress(config);
-        }
-        ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
-                getAdminEmail(), userEmail, MessageDescription.MARKED_FOR_DELETION.toString(),
-                config.getProjectName());
-        mail.sendMail(message);
+        sendEmailOnChangeConfiguration(config,MessageDescription.MARKED_FOR_DELETION);
     }
 
     static void restoreConfiguration(String name) throws IOException, ParserConfigurationException,
@@ -179,16 +171,21 @@ public class BuildConfigurationManager {
         BuildConfigurationModel config = load(name);
         config.setState(ConfigurationState.UPDATED);
         save(config,false);
+        sendEmailOnChangeConfiguration(config,MessageDescription.RESTORE);
+    }
+
+    private static void sendEmailOnChangeConfiguration(BuildConfigurationModel config,
+                                                       MessageDescription messageDescription)
+            throws MessagingException {
         String userEmail = StringUtils.EMPTY;
         if (!getUserMailAddress(config).isEmpty()) {
             userEmail = getUserMailAddress(config);
         }
         ConfigurationStatusMessage message = new ConfigurationStatusMessage(config.getProjectName(),
-                getAdminEmail(), userEmail, MessageDescription.RESTORE.toString(),
+                getAdminEmail(), userEmail, messageDescription.toString(),
                 config.getProjectName());
         mail.sendMail(message);
     }
-
 
     public static Boolean isNameUsing(String name) throws JenkinsInstanceNotFoundException {
         File checkName = new File(getRootDirectory() + "/" + name);
