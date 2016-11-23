@@ -13,10 +13,10 @@ var configurator = (function () {
             loadViews(projectName);
             loadUsers(projectName);
             setContent(projectName);
-            jQuery("#projectName").prop('disabled', true);
+            var projectNameTextBox = jQuery("#projectName");
+            projectNameTextBox.prop('disabled', true);
+            projectNameTextBox.attr('onchange', null);
             initCommentCheckbox(true);    
-           
-
 
             if (type == "ApproveReject") {
                 jQuery("#titlePage").html("Approve/reject build configuration");
