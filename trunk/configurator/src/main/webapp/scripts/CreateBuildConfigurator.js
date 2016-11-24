@@ -16,6 +16,7 @@ var configurator = (function () {
             var projectNameTextBox = jQuery("#projectName");
             projectNameTextBox.prop('disabled', true);
             projectNameTextBox.attr('onchange', null);
+            projectNameTextBox.attr('onblur', null);
             initCommentCheckbox(true);    
 
             if (type == "ApproveReject") {
