@@ -47,8 +47,12 @@
         </div>
         <br/>
         <div class="builder-config">
-            <j:if test="${view_old_builder != null and view_old_builder.getConfigurationsAsString()!= null and !view_old_builder.getConfigurationsAsString().equals(view.getConfigurationsAsString())}">
-                <label>${view_old_builder.getConfigurationsAsString()}</label>
+            <j:if test="${view_old_builder != null and view_old_builder.getConfigurationsAsString()!= null and !view_old_builder.getConfigurationsAsString().equals(view.getConfigurationsAsString()) and !view_old_builder.isConfigChecked('OTHER')}">
+                <label style="color: brown;">${view_old_builder.getConfigurationsAsString()} </label>
+                <br/>
+            </j:if>
+            <j:if test="${view_old_builder != null and view_old_builder.getUserConfig()!= null and view_old_builder.isConfigChecked('OTHER') and !view_old_builder.getUserConfig().equals(view.getUserConfig())}">
+                <label style="color: brown;">${view_old_builder.getConfigurationsAsString()} - ${view_old_builder.getUserConfig()} </label>
                 <br/>
             </j:if>
             <label>Configuration:</label>
@@ -64,7 +68,7 @@
                 <input checked="checked" name="other" onclick="configurator.disableOtherConfig(this)"  type="checkbox"/>Other
                 
                 <input field="userConfig_${divID}" name="userConfig" type="text" value="${view.getUserConfig()}" onblur="configurator.checkOtherConfiguration(this)" /></j:if>
-                <j:if test="${!view.isConfigChecked('OTHER')}">
+            <j:if test="${!view.isConfigChecked('OTHER')}">
                 <input name="other" onclick="configurator.disableOtherConfig(this)" onchange="configurator.checkOtherConfiguration(this)" type="checkbox"/>Other
                 
                 <input class="hidden" field="userConfig_${divID}" name="userConfig" type="text" onblur="configurator.checkOtherConfiguration(this)" />
