@@ -6,16 +6,12 @@ import com.amcbridge.jenkins.plugins.models.ProjectToBuildModel;
 import com.amcbridge.jenkins.plugins.configurator.BuildConfigurationManager;
 import com.amcbridge.jenkins.plugins.enums.Configuration;
 import com.amcbridge.jenkins.plugins.exceptions.JenkinsInstanceNotFoundException;
-import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescription;
-import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescriptionCheckBox;
-import com.amcbridge.jenkins.plugins.job.scm.JobGitScm;
-import com.amcbridge.jenkins.plugins.job.scm.JobNone;
-import com.amcbridge.jenkins.plugins.job.scm.JobSubversion;
+import com.amcbridge.jenkins.plugins.job.elementdescription.*;
+import com.amcbridge.jenkins.plugins.job.scm.*;
 import com.amcbridge.jenkins.plugins.serialization.*;
-import com.amcbridge.jenkins.plugins.serialization.Job;
-import com.amcbridge.jenkins.plugins.serialization.Project;
 import com.thoughtworks.xstream.XStream;
-import hudson.model.*;
+import hudson.model.Item;
+import hudson.model.AbstractItem;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -29,8 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.*;
 import javax.xml.xpath.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -68,10 +63,10 @@ public class JobManagerGenerator {
             SAXException, IOException, TransformerException, XPathExpressionException {
         String jobName = validJobName(config.getProjectName());
 
-        List<String[]> prevArtefacts = new ArrayList<>(config.getProjectToBuild().size());
+        List<String[]> prevArtifacts = new ArrayList<>(config.getProjectToBuild().size());
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
-            prevArtefacts.add(Arrays.copyOf(config.getProjectToBuild().get(i).getArtefacts(),
-                    config.getProjectToBuild().get(i).getArtefacts().length));
+            prevArtifacts.add(Arrays.copyOf(config.getProjectToBuild().get(i).getArtifacts(),
+                    config.getProjectToBuild().get(i).getArtifacts().length));
         }
         correctArtifactPaths(config.getProjectToBuild());
         correctVersionFilesPaths(config.getProjectToBuild());
@@ -84,7 +79,7 @@ public class JobManagerGenerator {
             BuildConfigurationManager.getJenkins().createProjectFromXML(jobName, fis);
         }
         for (int i = 0; i < config.getProjectToBuild().size(); i++) {
-            config.getProjectToBuild().get(i).setArtefacts(prevArtefacts.get(i));
+            config.getProjectToBuild().get(i).setArtifacts(prevArtifacts.get(i));
         }
     }
 
@@ -92,12 +87,12 @@ public class JobManagerGenerator {
         String pathPrefix;
         for (ProjectToBuildModel projectModel : projectModels) {
             pathPrefix = createPathPrefix(projectModel);
-            String[] paths = new String[projectModel.getArtefacts().length];
+            String[] paths = new String[projectModel.getArtifacts().length];
             for (int i = 0; i < paths.length; i++) {
-                String newPath = pathPrefix + projectModel.getArtefacts()[i].replaceAll("\\./", "");
+                String newPath = pathPrefix + projectModel.getArtifacts()[i].replaceAll("\\./", "");
                 paths[i] = newPath;
             }
-            projectModel.setArtefacts(paths);
+            projectModel.setArtifacts(paths);
         }
     }
 
@@ -118,7 +113,7 @@ public class JobManagerGenerator {
         if (projectModel.getLocalDirectoryPath() == null || projectModel.getLocalDirectoryPath().isEmpty()) {
             pathPrefix = projectModel.getProjectUrl().substring(projectModel.getProjectUrl().lastIndexOf('/') + 1);
         } else if (Pattern.matches("^\\.$|^(?:(?!\\.)[^\\\\/:*?\"<>|\\r\\n]+\\/?)*$", projectModel.getLocalDirectoryPath()) &&
-                !".".equals(projectModel.getLocalDirectoryPath())) // No need to add prefix for workspace direct checkout
+                !".".equals(projectModel.getLocalDirectoryPath()))
         {
             pathPrefix = projectModel.getLocalDirectoryPath();
         }
@@ -133,9 +128,7 @@ public class JobManagerGenerator {
             String localDirectory = projectModel.getLocalDirectoryPath();
             String repoUrl = projectModel.getProjectUrl();
             if ((localDirectory == null || localDirectory.isEmpty()) && (repoUrl != null && !repoUrl.isEmpty())) {
-                localDirectory =
-                        repoUrl.substring(                  // Adding last URL's entry as local directory
-                                repoUrl.lastIndexOf('/') + 1);
+                localDirectory = repoUrl.substring(repoUrl.lastIndexOf('/') + 1);
             }
             projectModel.setLocalDirectoryPath(localDirectory);
         }
@@ -179,7 +172,7 @@ public class JobManagerGenerator {
         if (!useBuildServer) {
             removeBuildersRunScript(doc);
         }
-        if (isFileForUpdate && useBuildServer && !isBuilderScriptNodesExists(doc)) {
+        if (isFileForUpdate && useBuildServer) {
             importScriptNode(loadTemplate(JOB_TEMPLATE_PATH), doc);
         }
         setJobConfigFileName(doc, config.getProjectName());
@@ -219,19 +212,6 @@ public class JobManagerGenerator {
         if (batchScriptNode != null) {
             batchScriptNode.getParentNode().removeChild(batchScriptNode);
         }
-    }
-
-    private static boolean isBuilderScriptNodesExists(Document doc) {
-        Node batchScriptNode;
-        Node shellScriptNode;
-        try {
-            batchScriptNode = getBuildersScriptNode(doc, BATCH_EXPRESSION_TEXT, BATCH_LABEL_TEXT, BATCH_COMMAND_TEXT);
-            shellScriptNode = getBuildersScriptNode(doc, SHELL_EXPRESSION_TEXT, SHELL_LABEL_TEXT, SHELL_COMMAND_TEXT);
-        } catch (XPathExpressionException e) {
-            logger.error("Error parsing builder script nodes", e);
-            return false;
-        }
-        return batchScriptNode != null && shellScriptNode != null;
     }
 
     private static NodeList getBuildersNodeList(Document doc) throws XPathExpressionException {
@@ -317,12 +297,15 @@ public class JobManagerGenerator {
         String paramsXML = xstream.toXML(job);
         String jobName = job.getName();
         String userContentPath = BuildConfigurationManager.getJenkins().getRootDir() + "/userContent/" + jobName + ".xml";
-        FileOutputStream fos = new FileOutputStream(userContentPath);
-        Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING);
-        out.write(XML_TITLE);
-        out.write(paramsXML);
-        out.close();
-        fos.close();
+
+        try(FileOutputStream fos = new FileOutputStream(userContentPath);
+            Writer out = new OutputStreamWriter(fos, BuildConfigurationManager.ENCODING)) {
+            out.write(XML_TITLE);
+            out.write(paramsXML);
+        }
+        catch (Exception e) {
+            logger.error("Error writing to job file", e);
+        }
     }
 
 
@@ -343,6 +326,12 @@ public class JobManagerGenerator {
 
         jed = getSCM(config);
         setElement(jed, doc, config);
+
+        jed = new JobBuildTriggerPeriodically();
+        setElement(jed,doc,config);
+
+        jed = new JobBuildTriggerPollSCM();
+        setElement(jed,doc,config);
     }
 
 
@@ -401,8 +390,12 @@ public class JobManagerGenerator {
         if (xml.isEmpty()) {
             return docBuilder.newDocument();
         }
-        InputStream input = new ByteArrayInputStream(xml.getBytes());
-        return docBuilder.parse(input);
+        try(InputStream input = new ByteArrayInputStream(xml.getBytes())) {
+            return docBuilder.parse(input);
+        } catch (Exception e) {
+            logger.error("Error parsing xml",e);
+            return null;
+        }
     }
 
     public static Document loadTemplate(String path) throws ParserConfigurationException, IOException, SAXException {
@@ -468,8 +461,8 @@ public class JobManagerGenerator {
                 repo.setType(config.getScm());
                 repo.setUrl(projectModel.getProjectUrl());
 
-                PathToArtefacts artifacts = new PathToArtefacts();
-                for (String artifactPath : projectModel.getArtefacts()) {
+                PathToArtifacts artifacts = new PathToArtifacts();
+                for (String artifactPath : projectModel.getArtifacts()) {
                     artifacts.addFile(artifactPath);
                 }
 
@@ -488,7 +481,7 @@ public class JobManagerGenerator {
                 newProject.setRepository(repo);
                 newProject.setPathToFile(projectModel.getFileToBuild());
                 newProject.setLocalDirectory(localDirectory);
-                newProject.setPathToArtefacts(artifacts);
+                newProject.setPathToArtifacts(artifacts);
                 newProject.setVersionFiles(versionFiles);
                 newProject.setConfigs(configurations);
                 job.getProjects().add(newProject);
