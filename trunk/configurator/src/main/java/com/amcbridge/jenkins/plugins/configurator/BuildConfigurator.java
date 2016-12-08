@@ -15,9 +15,11 @@ import com.amcbridge.jenkins.plugins.view.ProjectToBuildView;
 import com.amcbridge.jenkins.plugins.view.ViewGenerator;
 import com.amcbridge.jenkins.plugins.xstreamelements.ScriptType;
 import hudson.Extension;
+import hudson.model.Node;
 import hudson.model.RootAction;
 import hudson.model.User;
 import hudson.triggers.TimerTrigger;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -131,8 +133,18 @@ public final class BuildConfigurator implements RootAction {
             request.bindJSON(newConfig, formAttribute);
 
             if (formAttribute.get("build_machine_configuration") != null) {
-                newConfig.setBuildMachineConfiguration(BuildConfigurationManager
-                        .getPath(formAttribute.get("build_machine_configuration").toString()));
+                Map<String, Boolean> buildMachineConfiguration = new HashMap<>();
+                String[] buildMachineConfigurationStr = BuildConfigurationManager
+                        .getPath(formAttribute.get("build_machine_configuration").toString());
+                for (Node item : Jenkins.getInstance().getNodes()) {
+                    buildMachineConfiguration.put(item.getNodeName(), false);
+                }
+                for (String item : buildMachineConfigurationStr) {
+                    if(buildMachineConfiguration.containsKey(item)) {
+                        buildMachineConfiguration.put(item, true);
+                    }
+                }
+                newConfig.setBuildMachineConfiguration(buildMachineConfiguration);
             }
             newConfig.initCurrentDate();
             newConfig.setJobUpdate(true);

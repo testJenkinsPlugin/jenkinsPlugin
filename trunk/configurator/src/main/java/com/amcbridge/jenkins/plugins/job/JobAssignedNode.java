@@ -10,6 +10,8 @@ import org.w3c.dom.Node;
 import com.amcbridge.jenkins.plugins.models.BuildConfigurationModel;
 import com.amcbridge.jenkins.plugins.job.elementdescription.JobElementDescriptionCheckBox;
 
+import java.util.Map;
+
 public class JobAssignedNode implements JobElementDescriptionCheckBox {
 
     private static final String ELEMENT_TAG = "assignedNode";
@@ -64,10 +66,17 @@ public class JobAssignedNode implements JobElementDescriptionCheckBox {
     private String getNodes(BuildConfigurationModel config) {
         String result = StringUtils.EMPTY;
         if (config.getBuildMachineConfiguration() == null
-                || config.getBuildMachineConfiguration().length == 0) {
+                || config.getBuildMachineConfiguration().size() == 0) {
             return result;
         }
-        result = StringUtils.join(config.getBuildMachineConfiguration(), NODE_SEPARATOR);
+        for (Map.Entry<String, Boolean> entry : config.getBuildMachineConfiguration().entrySet()) {
+            if(entry.getValue()) {
+                if (!result.isEmpty()) {
+                    result = result + NODE_SEPARATOR;
+                }
+                result = result + entry.getKey();
+            }
+        }
         return result;
     }
 

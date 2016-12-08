@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class BuildConfigurationModel {
 
@@ -25,7 +26,7 @@ public class BuildConfigurationModel {
     private ConfigurationState state;
     private List<ProjectToBuildModel> projectToBuild;
     private String[] scripts;
-    private String[] buildMachineConfiguration;
+    private Map<String, Boolean> buildMachineConfiguration;
     private String comments;
     private List<UserAccessModel> userWithAccess;
     private boolean cleanWorkspace;
@@ -93,12 +94,12 @@ public class BuildConfigurationModel {
         this.isJobUpdate = isJobUpdate;
     }
 
-    public void setBuildMachineConfiguration(String[] buildMachineConfiguration) {
-        this.buildMachineConfiguration = buildMachineConfiguration;
+    public Map<String, Boolean> getBuildMachineConfiguration() {
+        return buildMachineConfiguration;
     }
 
-    public String[] getBuildMachineConfiguration() {
-        return buildMachineConfiguration;
+    public void setBuildMachineConfiguration(Map<String, Boolean> buildMachineConfiguration) {
+        this.buildMachineConfiguration = buildMachineConfiguration;
     }
 
     public void setEmail(String email) {

@@ -58,7 +58,8 @@
                             </div>
                             <div class="div-radiogroup">
                                 <j:forEach items="${it.getNodesName()}" var="node">
-                                    <f:checkbox id="${node}" name="node" onclick="configurator.bMCChange(this)" title="${node}" value="${node}"/>
+                                    <f:checkbox style="color:orange;" id="${node}" name="node" onclick="configurator.bMCChange(this)" value="${node}"/>
+                                    <label id="label_${node}">${node}</label>
                                     <br/>
                                 </j:forEach>
                             </div>

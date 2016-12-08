@@ -31,6 +31,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class JobManagerGenerator {
@@ -452,7 +453,6 @@ public class JobManagerGenerator {
         Job job = new Job();
 
         job.setName(JobManagerGenerator.validJobName(config.getProjectName()));
-        job.setBuildMachineConfiguration(config.getBuildMachineConfiguration());
         job.setScripts(config.getScripts());
         if (config.getProjectToBuild() != null) {
             job.setProjects(new ArrayList<Project>(config.getProjectToBuild().size()));

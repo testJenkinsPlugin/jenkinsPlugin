@@ -80,13 +80,14 @@ var configurator = (function () {
                     jQuery("#" + bmc[i].id).prop('checked', false);
                 }
             }
-            for (var i = 0; i < bmcValue.length; i++) {
-                if (jQuery(bmcValue[i]) != null) {
-                    document.getElementById(bmcValue[i]).checked = true;
+
+            Object.keys(bmcValue).forEach(function (key) {
+                if (bmcValue[key]) {
+                    document.getElementById(key).checked = true;
                     var isBelongToProject = false;
-                    addToHidden("build_machine_configuration", bmcValue[i], null, isBelongToProject);
+                    addToHidden("build_machine_configuration", key, null, isBelongToProject);
                 }
-            }
+            });
 
             var mail = t.responseObject().email;
             if (mail.length != 0) {
@@ -142,6 +143,13 @@ var configurator = (function () {
             var pollSCMTrigger = t.responseObject().pollSCMTrigger;
             var buildPeriodicallyTrigger = t.responseObject().buildPeriodicallyTrigger;
             var buildOnCommitTrigger = t.responseObject().buildOnCommitTrigger;
+            var buildMachineConfiguration = t.responseObject().buildMachineConfiguration;
+
+            Object.keys(buildMachineConfiguration).forEach(function (key) {
+                if (buildMachineConfiguration[key] != currentConfig.responseObject().buildMachineConfiguration[key]) {
+                    jQuery("#label_" + key).css("color", "brown");
+                }
+            });
 
             if(scm != null && scm != currentConfig.responseObject().scm){
                 jQuery("#typeSCM_old").text('\"' + scm + '\"');
