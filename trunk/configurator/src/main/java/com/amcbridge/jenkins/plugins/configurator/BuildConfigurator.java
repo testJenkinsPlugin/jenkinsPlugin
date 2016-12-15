@@ -265,8 +265,10 @@ public final class BuildConfigurator implements RootAction {
     private Map<UUID, BuilderConfigModel> getBuildersMap(BuildConfigurationModel configs) {
         Map<UUID, BuilderConfigModel> buildersMap = new HashMap<>();
         for (ProjectToBuildModel projectModel : configs.getProjectToBuild()) {
-            for (BuilderConfigModel builderModel : projectModel.getBuilders()) {
-                buildersMap.put(builderModel.getGuid(), builderModel);
+            if(projectModel.getBuilders() != null) {
+                for (BuilderConfigModel builderModel : projectModel.getBuilders()) {
+                    buildersMap.put(builderModel.getGuid(), builderModel);
+                }
             }
         }
         return buildersMap;
