@@ -72,9 +72,9 @@
                         <img class="image" name="email-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
                     </div>
                     <div class="error-block display-none" id="email_Error" style="margin-left: 205px;">
-                        <img src="../images/16x16/error.png"/>Not correct e-mail</div>
+                        <img src="../images/16x16/error.png"/>Invalid email address or Incorrect email</div>
                     <div class="help-view display-none" id="email-help-block">
-                        <lebel class="helptext display-none" id="email-help-text">Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when job makes build. E-mail will be sent when a build fails, becomes unstable or returns to stable.
+                        <lebel class="helptext display-none" id="email-help-text">Whitespace-separated list of recipient addresses. If list is not empty it will be used for sending notifications when job makes build. E-mail will be sent when a build fails, becomes unstable or returns to stable.
                     </lebel>
                     </div>
                     <label class="diff_value_header display-none" compare="true" id="configEmail_old"/>
@@ -87,9 +87,9 @@
                         <img class="image" name="configEmail-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
                     </div>
                     <div class="error-block display-none" id="configEmail_Error" style="margin-left: 205px;">
-                        <img src="../images/16x16/error.png"/>Not correct e-mail</div>
+                        <img src="../images/16x16/error.png"/>Invalid email address or Incorrect email</div>
                     <div class="help-view display-none" id="configEmail-help-block">
-                        <label class="helptext display-none" id="configEmail-help-text">Whitespace-separated list of recipient addresses. If list is not empty it will be used to send notifications when configuration state changes.
+                        <label class="helptext display-none" id="configEmail-help-text">Whitespace-separated list of recipient addresses. If list is not empty it will be used for sending notifications when configuration state changes.
                     </label>
                     </div>
                     <label class="diff_value_header display-none" id="regExp_old"/>
@@ -101,7 +101,7 @@
                         <img class="image" name="regExp-help" onClick="configurator.fieldHelp(name)" src="/static/c2e30787/images/16x16/help.png"/>
                     </div>
                     <div class="help-view display-none" id="regExp-help-block">
-                        <label class="helptext display-none" id="regExp-help-text">Description setter plugin regular expression field. If configured, the regular expression will be applied to each line in the build log. A description will be set based on the first match.
+                        <label class="helptext display-none" id="regExp-help-text">Description Setter plugin regular expression field. If configured, the regular expression will be applied to each line in the build log. A description will be set basing on the first match.
                         </label>
                     </div>
                     <label class="diff_value_header display-none" id="cleanWorkspace_old"/>

@@ -93,7 +93,7 @@ public class ProjectToBuildModel {
                 return getCredentialName(credentialsFull);
             }
         }
-        return "Credentials with given ID not found on server";
+        return "Credentials for such ID are not found on server";
     }
 
     public static String getCredentialName(String curCredentials) {

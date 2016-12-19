@@ -573,7 +573,7 @@ var configurator = (function () {
                 document.getElementById('save').click();
             }
             else {
-                jQuery("#fieldHelp").html("Configuration with name '" + projectName.value + "' already exists. Please select another name.");
+                jQuery("#fieldHelp").html("Configuration with name '" + projectName.value + "' already exists. Please use another name.");
                 jQuery("#fieldHelp").removeClass('display-none');
 
             }

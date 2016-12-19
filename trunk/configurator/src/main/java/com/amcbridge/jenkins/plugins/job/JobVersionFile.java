@@ -13,7 +13,7 @@ public class JobVersionFile implements JobElementDescription {
     private static final String ELEMENT_TAG = "hudson.plugins.descriptionsetter.DescriptionSetterPublisher";
     private static final String PARENT_ELEMENT_TAG = "publishers";
     private static final String REGEXP_TAG = "regexp";
-    private static final String EXPRESSION = "\\[getting of version of the build started by hudson\\] (.*)";
+    private static final String EXPRESSION = "\\[Getting build version has been started in Hudson?\\] (.*)";
     private final String regExp;
 
     public JobVersionFile(String regExp){

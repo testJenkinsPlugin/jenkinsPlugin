@@ -6,7 +6,7 @@ function setDeletion(name)
 {
     document.getElementById("rejectDiv").className = "reject-div";
     document.getElementById("overlay").className = "overlay";
-    document.getElementById("helpReject").innerHTML = "Are you sure you want delete '" + name + "' configuration";
+    document.getElementById("helpReject").innerHTML = "Are you sure you want to delete '" + name + "' configuration";
     nameAction = name+"?setDeletion";  
 }
 
@@ -14,7 +14,7 @@ function deletePermanently(name)
 {
     document.getElementById("rejectDiv").className = "reject-div";
     document.getElementById("overlay").className = "overlay";
-    document.getElementById("helpReject").innerHTML = "Are you sure you want delete '" + name + "' configuration permanently";
+    document.getElementById("helpReject").innerHTML = "Are you sure you want to delete '" + name + "' configuration permanently";
     nameAction = name+"?deletePermanently"; 
 }
 
@@ -22,7 +22,7 @@ function restore(name)
 {
     document.getElementById("rejectDiv").className = "reject-div";
     document.getElementById("overlay").className = "overlay";
-    document.getElementById("helpReject").innerHTML = "Are you sure you want restore '" + name + "' configuration";
+    document.getElementById("helpReject").innerHTML = "Are you sure you want to restore '" + name + "' configuration";
     nameAction = name+"?restore"; 
 }
 
@@ -73,7 +73,7 @@ function deleteJob(name)
     name = name.replace("delete_", "");
     document.getElementById("rejectDiv").className = "reject-div";
     document.getElementById("overlay").className = "overlay";
-    document.getElementById("helpReject").innerHTML = "Are you sure you want delete '" + name + "' job?";
+    document.getElementById("helpReject").innerHTML = "Are you sure you want to delete '" + name + "' job?";
     nameAction = name+"?deleteJob"; 
 }
 

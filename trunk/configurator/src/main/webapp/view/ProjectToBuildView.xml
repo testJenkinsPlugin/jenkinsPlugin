@@ -91,7 +91,7 @@
                 <img src="../images/16x16/error.png"/>Not correct file name</div>
         </div>
         <div class="help-view display-none" name="fileToBuild-help-block">
-            <lebel class="helptext display-none" name="fileToBuild-help-text">Project file name (with extension)
+            <lebel class="helptext display-none" name="fileToBuild-help-text">Incorrect/invalid  file name (with extension)
             </lebel>
         </div>
         <div class="div-project-to-build">
@@ -144,7 +144,7 @@
                 </j:forEach>
             </j:if>
             <j:if test="${view_old != null and !view_old.IsVersionFiles() and !view.IsVersionFiles()==view_old.IsVersionFiles()}">
-                <label class="diff_value">Version files disabled</label>
+                <label class="diff_value">Incorrect/invalid path</label>
                 <br/>
             </j:if>
             <j:if test="${view.IsVersionFiles()}">

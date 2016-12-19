@@ -2,14 +2,14 @@ package com.amcbridge.jenkins.plugins.enums;
 
 public enum MessageDescription {
 
-    CREATE("configuration was successfully created!"),
-    CHANGE("configuration was changed."),
-    APPROVE("configuration was successfully approved!"),
-    REJECT("configuration was rejected by administrator. The reasons of rejection are:"),
-    MARKED_FOR_DELETION("configuration was marked for deletion."),
-    DELETE_PERMANENTLY("configuration was successfully deleted."),
-    RESTORE("configuration was successfully restored."),
-    COPY("configuration was successfully copied from ");
+    CREATE("Configuration has been successfully created!"),
+    CHANGE("Configuration has been changed."),
+    APPROVE("Configuration has been successfully approved!"),
+    REJECT("Configuration has been rejected by administrator. The reasons of rejection are:"),
+    MARKED_FOR_DELETION("Configuration has been marked for deletion."),
+    DELETE_PERMANENTLY("Configuration has been successfully deleted."),
+    RESTORE("Configuration has been successfully restored."),
+    COPY("Configuration has been successfully copied from.");
 
     private final String messageDescriptionValue;
 
