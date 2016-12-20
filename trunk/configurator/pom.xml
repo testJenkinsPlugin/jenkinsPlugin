@@ -11,7 +11,7 @@
     <version>1.0.6.0</version>
     <packaging>hpi</packaging>
     <name>Jenkins Build Automation Management Tool</name>
-    <description>Allows configure and administrate project builds, automatically create jobs for Jenkins.</description>
+    <description>Allows user to configure and administrate project builds, automatically create jobs for Jenkins.</description>
 
 
     <licenses>
