@@ -1,0 +1,111 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="com.amcbridge.jenkins.plugins.models.BuildConfigurationModel">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element type="xs:string" name="projectName"/>
+                <xs:element type="xs:string" name="email"/>
+                <xs:element type="xs:string" name="creator"/>
+                <xs:element type="xs:string" name="date"/>
+                <xs:element type="xs:string" name="rejectionReason"/>
+                <xs:element type="xs:string" name="scm"/>
+                <xs:element type="xs:string" name="configEmail"/>
+                <xs:element type="xs:string" name="scriptType"/>
+                <xs:element type="xs:string" name="preScript"/>
+                <xs:element type="xs:string" name="postScript"/>
+                <xs:element type="xs:string" name="isJobUpdate"/>
+                <xs:element type="xs:string" name="state"/>
+                <xs:element name="projectToBuild">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="com.amcbridge.jenkins.plugins.models.ProjectToBuildModel" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="projectUrl"/>
+                                        <xs:element type="xs:string" name="fileToBuild"/>
+                                        <xs:element type="xs:string" name="localDirectoryPath"/>
+                                        <xs:element type="xs:string" name="branchName"/>
+                                        <xs:element type="xs:string" name="credentials"/>
+                                        <xs:element type="xs:string" name="isVersionFiles"/>
+                                        <xs:element name="builders">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="com.amcbridge.jenkins.plugins.models.BuilderConfigModel" maxOccurs="unbounded" minOccurs="0">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element type="xs:string" name="builder"/>
+                                                                <xs:element type="xs:string" name="platform"/>
+                                                                <xs:element type="xs:string" name="userConfig"/>
+                                                                <xs:element name="configs">
+                                                                    <xs:complexType>
+                                                                        <xs:sequence>
+                                                                            <xs:element type="xs:string" name="com.amcbridge.jenkins.plugins.enums.Configuration" maxOccurs="unbounded" minOccurs="0"/>
+                                                                        </xs:sequence>
+                                                                    </xs:complexType>
+                                                                </xs:element>
+                                                                <xs:element type="xs:string" name="builderArgs"/>
+                                                                <xs:element type="xs:string" name="guid"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="artifacts">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="string" maxOccurs="unbounded" minOccurs="0"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="versionFiles">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="string" maxOccurs="unbounded" minOccurs="0"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element type="xs:string" name="guid"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="buildMachineConfiguration">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="entry" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="string"/>
+                                        <xs:element type="xs:string" name="boolean"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element type="xs:string" name="comments"/>
+                <xs:element name="userWithAccess">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="com.amcbridge.jenkins.plugins.models.UserAccessModel" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="userName"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element type="xs:string" name="cleanWorkspace"/>
+                <xs:element type="xs:string" name="regExp"/>
+                <xs:element type="xs:string" name="pollSCMTrigger"/>
+                <xs:element type="xs:string" name="buildPeriodicallyTrigger"/>
+                <xs:element type="xs:string" name="buildOnCommitTrigger"/>
+            </xs:sequence>
+            <xs:attribute type="xs:string" name="plugin"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
