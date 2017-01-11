@@ -17,7 +17,7 @@ public class Project {
     @XStreamAsAttribute
     private Repository repository;
     @XStreamAsAttribute
-    private PathToArtefacts pathToArtefacts;
+    private PathToArtifacts pathToArtifacts;
     @XStreamAsAttribute
     private VersionFile versionFiles;
     @XStreamAsAttribute
@@ -27,12 +27,12 @@ public class Project {
         this.configs = Lists.newLinkedList();
     }
 
-    public void setPathToArtefacts(PathToArtefacts value) {
-        pathToArtefacts = value;
+    public void setPathToArtefacts(PathToArtifacts value) {
+        pathToArtifacts = value;
     }
 
-    public PathToArtefacts getPathToArtefacts() {
-        return pathToArtefacts;
+    public PathToArtifacts getPathToArtefacts() {
+        return pathToArtifacts;
     }
 
     public void setPathToFile(String value) {
@@ -85,7 +85,7 @@ public class Project {
                 .append(this.pathToFile, other.pathToFile)
                 .append(this.localDirectory, other.localDirectory)
                 .append(this.repository, other.repository)
-                .append(this.pathToArtefacts, other.pathToArtefacts)
+                .append(this.pathToArtifacts, other.pathToArtifacts)
                 .append(this.versionFiles, other.versionFiles)
                 .append(this.configs, other.configs)
                 .isEquals();
@@ -97,7 +97,7 @@ public class Project {
                 .append(this.pathToFile)
                 .append(this.localDirectory)
                 .append(this.repository)
-                .append(this.pathToArtefacts)
+                .append(this.pathToArtifacts)
                 .append(this.versionFiles)
                 .append(this.configs)
                 .toHashCode();

@@ -2,6 +2,8 @@ package com.amcbridge.jenkins.plugins.serialization;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import java.util.Map;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -17,7 +19,7 @@ public class Job {
     @XStreamAsAttribute
     private String[] scripts;
     @XStreamAsAttribute
-    private String[] buildMachineConfiguration;
+    private Map<String, Boolean> buildMachineConfiguration;
 
     public Job() {
         this.projects = Lists.newLinkedList();
@@ -47,11 +49,11 @@ public class Job {
         this.scripts = scripts;
     }
 
-    public String[] getBuildMachineConfiguration() {
+    public Map<String, Boolean> getBuildMachineConfiguration() {
         return buildMachineConfiguration;
     }
 
-    public void setBuildMachineConfiguration(String[] buildMachineConfiguration) {
+    public void setBuildMachineConfiguration(Map<String, Boolean> buildMachineConfiguration) {
         this.buildMachineConfiguration = buildMachineConfiguration;
     }
 
