@@ -17,7 +17,7 @@ var configurator = (function () {
             projectNameTextBox.prop('disabled', true);
             projectNameTextBox.attr('onchange', null);
             projectNameTextBox.attr('onblur', null);
-            initCommentCheckbox(true);    
+            initCommentCheckbox(true);
 
             if (type == "ApproveReject") {
                 jQuery("#titlePage").html("Approve/reject build configuration");
@@ -31,16 +31,16 @@ var configurator = (function () {
 
         }
         else {
+            buildConfiguration.loadCreateNewBuildConfiguration(function (t) {
+                if (jQuery("#formType").val() == "CREATE") {
+                    addView();
+                }
+            });
             jQuery("#formType").val('CREATE');
             projectNumber = 0;
             initCommentCheckbox(false);
             jQuery('#pollSCMTrigger').val('H * * * *');
         }
-        buildConfiguration.loadCreateNewBuildConfiguration(function (t) {
-            if (jQuery("#formType").val() == "CREATE") {
-                addView();
-            }
-        });
 
         buildConfiguration.isCurrentUserAdministrator(function (t) {
             isAdmin = t.responseObject();
