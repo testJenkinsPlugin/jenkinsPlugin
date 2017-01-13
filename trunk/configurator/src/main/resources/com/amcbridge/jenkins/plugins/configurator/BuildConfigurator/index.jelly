@@ -34,10 +34,10 @@
                         </tr>
                     </thead>
                 </table>
-                <table class="config table" id="table">
+                <table class="config sortable table" id="table">
                     <thead>
                         <tr bgcolor="#eeeeee" height="30">
-                            <th class="project-name-column">Project name</th>
+                            <th class="project-name-column" initialSortDir="down">Project name</th>
                             <th class="state-column">State</th>
                             <th class="last-update-date-column">Last update date</th>
                             <th class="action-column">Action</th>
