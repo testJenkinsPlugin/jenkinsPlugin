@@ -18,8 +18,10 @@ public class ProjectToBuildModel {
     private String fileToBuild;
     private String localDirectoryPath;
     private String branchName;
+    private String archiveName;
     private String credentials;
     private Boolean isVersionFiles;
+    private Boolean isArchiveArtifacts;
     private List<BuilderConfigModel> builders;
     private String[] artifacts;
     private String[] versionFiles;
@@ -30,7 +32,8 @@ public class ProjectToBuildModel {
     @DataBoundConstructor
     public ProjectToBuildModel(String projectUrl, String credentials, String branchName, String fileToBuild,
                                String artifacts, String versionFiles, String localDirectoryPath,
-                               Boolean isVersionFiles, List <BuilderConfigModel> builders, String guid) {
+                               Boolean isVersionFiles, List <BuilderConfigModel> builders, String guid,
+                               Boolean isArchiveArtifacts, String archiveName) {
         this.projectUrl = projectUrl;
         this.credentials = credentials;
         this.branchName = branchName;
@@ -40,6 +43,8 @@ public class ProjectToBuildModel {
         this.localDirectoryPath = localDirectoryPath;
         this.isVersionFiles = isVersionFiles;
         this.builders = builders;
+        this.isArchiveArtifacts = isArchiveArtifacts;
+        this.archiveName = archiveName;
 
         if (guid == null || "".equals(guid)) {
             this.guid = UUID.randomUUID();
@@ -143,8 +148,20 @@ public class ProjectToBuildModel {
         return branchName;
     }
 
+    public void setArchiveName(String archiveName) {
+        this.archiveName = archiveName;
+    }
+
+    public String getArchiveName() {
+        return archiveName;
+    }
+
     public Boolean IsVersionFiles() {
         return isVersionFiles;
+    }
+
+    public Boolean IsArchiveArtifacts() {
+        return isArchiveArtifacts;
     }
 
     public void setFileToBuild(String fileToBuild) {

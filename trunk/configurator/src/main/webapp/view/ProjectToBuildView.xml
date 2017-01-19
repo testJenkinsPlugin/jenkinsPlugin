@@ -135,6 +135,24 @@
                 </fieldset>
                 <input name="artifacts" type="hidden" value="${forHidden}"/>
             </div>
+            <j:if test="${view.IsArchiveArtifacts()}">
+                <input class="check-box" name="isArchiveArtifacts" onclick="configurator.archiveArtifactsCheckBoxChange(this)" type="checkbox" checked="checked"/>
+                <label class="div-label">Artifacts to zip archive</label>
+            <br/>
+                <div class="project-to-build-label" dir="archiveName">
+                    <label class="div-label">Name to archive:</label>
+                    <input class="textbox" type="text" name="archiveName" value="${view.getArchiveName()}"/>
+                </div>
+            </j:if>
+            <j:if test="${!view.IsArchiveArtifacts()}">
+                <input class="check-box" name="isArchiveArtifacts" onclick="configurator.archiveArtifactsCheckBoxChange(this)" type="checkbox"/>
+                <label class="div-label">Artifacts to zip archive</label>
+                <br/>
+                <div class="project-to-build-label hidden" dir="archiveName">
+                    <label class="div-label">Name to archive:</label>
+                    <input class="textbox" type="text" name="archiveName" value="${view.getArchiveName()}"/>
+                </div>
+            </j:if>
         </div>
         <div class="div-project-version-file">
             <j:if test="${view_old != null and view_old.getVersionFiles() != null and view_old.IsVersionFiles() and !view.isListsEqual(view_old.getVersionFiles(), view.getVersionFiles())}">

@@ -1,12 +1,18 @@
 package com.amcbridge.buildserver.server;
 
 import com.amcbridge.jenkins.plugins.serialization.Job;
+import com.amcbridge.jenkins.plugins.serialization.PathToArtifacts;
 import com.amcbridge.jenkins.plugins.serialization.Project;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.DirectoryScanner;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class BuildServer {
     private static final String NODE_NAME_MASTER = "master";
@@ -77,10 +83,37 @@ public class BuildServer {
             if (returnCode != 0) {
                 System.exit(returnCode);
             }
+            if(project.getPathToArtefacts().getNameArchive()!= null) {
+                artifactsArchive(project.getPathToArtefacts(), fullProjectPath);
+            }
         } catch (Exception ex) {
             logger.error("Executing project's command error: ", ex);
             System.exit(1);
         }
+    }
+
+    private void artifactsArchive(PathToArtifacts artifacts, File fullProjectPath) throws IOException {
+        String [] countFiles = new String[artifacts.getFiles().size()];
+        for(int i=0; i<artifacts.getFiles().size(); i++) {
+            countFiles[i] = artifacts.getFiles().get(i);
+        }
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.setIncludes(countFiles);
+        scanner.setBasedir(fullProjectPath);
+        scanner.setCaseSensitive(false);
+        scanner.scan();
+        String[] filterFiles = scanner.getIncludedFiles();
+
+        File f = new File(fullProjectPath + File.separator + artifacts.getNameArchive()+".zip");
+        ZipOutputStream out = new ZipOutputStream(new FileOutputStream((f)));
+        for(String file:filterFiles) {
+            ZipEntry e = new ZipEntry(file);
+            out.putNextEntry(e);
+            byte[] data = Files.readAllBytes(new File(fullProjectPath+ File.separator +file).toPath());
+            out.write(data, 0, data.length);
+            out.closeEntry();
+        }
+        out.close();
     }
 
     private int processOutput(InputStream stream, String message) {

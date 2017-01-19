@@ -465,7 +465,7 @@ public class JobManagerGenerator {
                 for (String artifactPath : projectModel.getArtifacts()) {
                     artifacts.addFile(artifactPath);
                 }
-
+                artifacts.setNameArchive(projectModel.getArchiveName());
                 VersionFile versionFiles = new VersionFile();
                 for (String versionFilePath : projectModel.getVersionFiles()) {
                     versionFiles.addFile(versionFilePath);

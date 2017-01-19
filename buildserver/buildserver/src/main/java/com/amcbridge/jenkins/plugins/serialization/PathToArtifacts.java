@@ -11,6 +11,16 @@ public class PathToArtifacts {
     @XStreamImplicit(itemFieldName = "file")
     private List<String> files;
 
+    private String nameArchive;
+
+    public String getNameArchive() {
+        return nameArchive;
+    }
+
+    public void setNameArchive(String nameArchive) {
+        this.nameArchive = nameArchive;
+    }
+
     public PathToArtifacts() {
         this.files = Lists.newLinkedList();
     }
@@ -35,6 +45,7 @@ public class PathToArtifacts {
         PathToArtifacts other = PathToArtifacts.class.cast(obj);
         return new EqualsBuilder()
                 .append(this.files, other.files)
+                .append(this.nameArchive, other.nameArchive)
                 .isEquals();
     }
 
@@ -42,6 +53,7 @@ public class PathToArtifacts {
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(this.files)
+                .append(this.nameArchive)
                 .toHashCode();
     }
 }

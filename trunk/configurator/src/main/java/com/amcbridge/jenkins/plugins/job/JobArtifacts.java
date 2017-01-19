@@ -38,13 +38,17 @@ public class JobArtifacts implements JobElementDescription {
     public void appendToXML(BuildConfigurationModel config, Document xml) {
         Node node = xml.getElementsByTagName(PATH_TAG).item(0);
         String artf = getArtifacts(config);
-        String artifacts;
+
 
         if (artf.isEmpty()) {
             return;
         }
-        artifacts = getArtifacts(config);
-        node.setTextContent(artifacts);
+        if(config.getProjectToBuild().get(0).getArchiveName() != null) {
+            artf = config.getProjectToBuild().get(0).getArchiveName()+".zip";
+        } else {
+            artf = getArtifacts(config);
+        }
+        node.setTextContent(artf);
     }
 
     private String getArtifacts(BuildConfigurationModel config) {

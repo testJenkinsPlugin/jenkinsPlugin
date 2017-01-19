@@ -503,6 +503,20 @@ var configurator = (function () {
         }
     }
 
+    var archiveArtifactsCheckBoxChange = function (checkBox) {
+            var projectId = getProjectId(checkBox);
+            var project = jQuery(projectId);
+            var versionFilesPath = project.find("[dir=archiveName]");
+            if (checkBox.checked) {
+                versionFilesPath.removeClass('hidden');
+                project.find("[name=archiveName]").val("");
+            }
+
+            if (!checkBox.checked) {
+                versionFilesPath.addClass('hidden');
+            }
+        }
+
     var isValidForm = function () {
         var projectName = jQuery("#projectName")[0];
         var pathFolder = jQuery("[name=localDirectoryPath]");
@@ -888,7 +902,8 @@ var configurator = (function () {
             textboxes = view[i].getElementsByClassName("textbox");
             for (var j = 0; j < textboxes.length; j++) {
                 if ((textboxes[j].name != "credentials") && (textboxes[j].name != "branchName") &&
-                    (textboxes[j].name != "preScript") && (textboxes[j].name != "postScript")) {
+                    (textboxes[j].name != "preScript") && (textboxes[j].name != "postScript") &&
+                    (textboxes[j].name != "archiveName")) {
                     textboxes[j].onblur();
                 }
 
@@ -980,6 +995,7 @@ var configurator = (function () {
         deleteFromSelect : deleteFromSelect,
         emailCheckBoxChange: emailCheckBoxChange,
         versionFileCheckBoxChange: versionFileCheckBoxChange,
+        archiveArtifactsCheckBoxChange: archiveArtifactsCheckBoxChange,
         isValidForm: isValidForm,
         rejectDiv: rejectDiv,
         rejectionSubmit: rejectionSubmit,
